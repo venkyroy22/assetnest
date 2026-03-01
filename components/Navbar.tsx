@@ -113,6 +113,7 @@ const Navbar = () => {
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40 px-1">Discover</p>
                                 <div className="grid grid-cols-1 gap-2">
                                     {[
+                                        { name: "Top Tools", href: "/tools" },
                                         { name: "Pinterest Keywords", href: "/keywords" },
                                         { name: "QR Generator", href: "/tools/qr" },
                                         { name: "Video Edit Assets", href: "/video-editing", isDevelopment: true },

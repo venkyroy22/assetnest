@@ -6,7 +6,7 @@ import { assets } from "@/data/mockData";
 import AssetCard from "@/components/AssetCard";
 import CategoryCard from "@/components/CategoryCard";
 import FireParticles from "@/components/FireParticles";
-import { TrendingUp, Sparkles } from "lucide-react";
+import { TrendingUp, Sparkles, Wrench, QrCode, Search, ArrowRight } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -121,6 +121,76 @@ export default function Home() {
             {categories.map((category) => (
               <CategoryCard key={category.title} {...category} />
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Top Tools Section */}
+      <section className="py-16 px-10">
+        <div className="mb-10 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Wrench className="text-white" size={20} />
+            <h2 className="text-xl font-black tracking-tight text-white uppercase">Top Tools</h2>
+          </div>
+          <Link
+            href="/tools"
+            className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors"
+          >
+            View All <ArrowRight size={12} />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* QR Generator */}
+          <Link href="/tools/qr" className="group relative overflow-hidden border border-zinc-800 bg-zinc-900/50 p-6 hover:border-white/30 hover:bg-zinc-800/50 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full gap-4">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 bg-white/10 flex items-center justify-center border border-white/10 group-hover:border-white/30 transition-all">
+                  <QrCode size={18} className="text-white" />
+                </div>
+                <ArrowRight size={14} className="text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-white mb-1">QR Generator</h3>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">Create beautiful, customizable QR codes in seconds. Free to use, no sign-up needed.</p>
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 w-fit">Free Tool</span>
+            </div>
+          </Link>
+
+          {/* Pinterest Keywords */}
+          <Link href="/keywords" className="group relative overflow-hidden border border-zinc-800 bg-zinc-900/50 p-6 hover:border-white/30 hover:bg-zinc-800/50 transition-all duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="relative z-10 flex flex-col h-full gap-4">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 bg-red-500/10 flex items-center justify-center border border-red-500/20 group-hover:border-red-500/40 transition-all">
+                  <Search size={18} className="text-red-400" />
+                </div>
+                <ArrowRight size={14} className="text-zinc-600 group-hover:text-white group-hover:translate-x-1 transition-all" />
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-white mb-1">Pinterest Keywords</h3>
+                <p className="text-xs text-zinc-400 font-medium leading-relaxed">Discover the best-performing keywords to grow your Pinterest reach and profile traffic.</p>
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-emerald-400 border border-emerald-400/30 bg-emerald-400/10 px-2 py-0.5 w-fit">Free Tool</span>
+            </div>
+          </Link>
+
+          {/* Coming Soon Slot */}
+          <div className="group relative overflow-hidden border border-dashed border-zinc-800 bg-zinc-950/30 p-6 opacity-60">
+            <div className="relative z-10 flex flex-col h-full gap-4">
+              <div className="flex items-center justify-between">
+                <div className="w-10 h-10 bg-zinc-800/50 flex items-center justify-center border border-zinc-700/50">
+                  <Sparkles size={18} className="text-zinc-600" />
+                </div>
+              </div>
+              <div>
+                <h3 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-1">More Tools</h3>
+                <p className="text-xs text-zinc-600 font-medium leading-relaxed">More powerful free tools dropping soon. Stay tuned.</p>
+              </div>
+              <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 w-fit">Coming Soon</span>
+            </div>
           </div>
         </div>
       </section>

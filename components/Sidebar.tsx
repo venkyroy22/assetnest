@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode } from "lucide-react";
+import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
 
 const PinterestIcon = ({ size = 16 }: { size?: number }) => (
@@ -18,6 +18,11 @@ const Sidebar = () => {
     const pathname = usePathname();
 
     const menuItems = [
+        {
+            name: "Top Tools",
+            href: "/tools",
+            icon: Wrench,
+        },
         {
             name: "Pinterest Keywords",
             href: "/keywords",
