@@ -714,20 +714,42 @@ export default function QRGeneratorPage() {
 
                             <div className="relative flex flex-row lg:flex-col items-center gap-4 lg:gap-0 p-3 sm:p-4 lg:p-10 bg-zinc-950/90 lg:bg-zinc-900 border border-zinc-700/50 lg:border-zinc-800 rounded-[1.5rem] lg:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.8)] lg:shadow-[0_40px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:backdrop-blur-none">
 
-                                {/* QR canvas — tap on mobile opens lightbox */}
-                                <div
-                                    className="flex items-center justify-center bg-white p-2 lg:p-4 rounded-[1rem] lg:rounded-[1.5rem] overflow-hidden shadow-inner shrink-0 w-[90px] h-[90px] lg:w-full lg:h-auto cursor-pointer lg:cursor-default relative group/qr"
-                                    onClick={openLightbox}
-                                    title="Tap to enlarge"
-                                >
-                                    <canvas
-                                        ref={canvasRef}
-                                        className="w-full max-w-full h-auto rounded-md lg:rounded-lg"
-                                    />
-                                    {/* Tap hint overlay — only on mobile */}
-                                    <div className="lg:hidden absolute inset-0 flex items-end justify-center pb-1 opacity-0 group-hover/qr:opacity-100 transition-opacity pointer-events-none">
-                                        <span className="text-[7px] font-black uppercase tracking-widest bg-black/60 text-white px-1.5 py-0.5 rounded-full">tap</span>
+                                {/* QR canvas — click/tap opens fullscreen lightbox */}
+                                <div className="flex flex-col items-center gap-2 shrink-0 lg:w-full">
+                                    <div
+                                        className="relative cursor-pointer group/qr w-[90px] h-[90px] lg:w-full lg:h-auto"
+                                        onClick={openLightbox}
+                                        title="Click to view fullscreen"
+                                    >
+                                        {/* Pulsing ring — always visible on mobile, subtle on desktop */}
+                                        <div className="absolute -inset-[3px] rounded-[1.1rem] lg:rounded-[1.6rem] border-2 border-white/30 lg:border-white/10 group-hover/qr:border-white/60 transition-all duration-300 pointer-events-none" />
+
+                                        {/* QR canvas */}
+                                        <div className="flex items-center justify-center bg-white p-2 lg:p-4 rounded-[1rem] lg:rounded-[1.5rem] overflow-hidden shadow-inner w-full h-full">
+                                            <canvas
+                                                ref={canvasRef}
+                                                className="w-full max-w-full h-auto rounded-md lg:rounded-lg"
+                                            />
+                                        </div>
+
+                                        {/* Expand icon badge — always visible top-right */}
+                                        <div className="absolute -top-2 -right-2 bg-zinc-900 border border-zinc-700 rounded-lg p-1.5 shadow-lg group-hover/qr:bg-white group-hover/qr:border-white transition-all duration-200 pointer-events-none">
+                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 group-hover/qr:text-black transition-colors">
+                                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                                            </svg>
+                                        </div>
                                     </div>
+
+                                    {/* "Tap to view" label — always visible on mobile only */}
+                                    <button
+                                        onClick={openLightbox}
+                                        className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-full text-[9px] font-black uppercase tracking-widest text-zinc-300 active:scale-95 transition-all"
+                                    >
+                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
+                                        </svg>
+                                        View Full Screen
+                                    </button>
                                 </div>
 
                                 <div className="flex-1 lg:w-full lg:mt-10 flex flex-col justify-center">
