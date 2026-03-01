@@ -1,22 +1,85 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
-import { Menu, X, Search, ChevronDown } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Menu, X, Search, ChevronDown, ArrowRight } from "lucide-react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
+import { useRouter } from "next/navigation";
+
+// ── Searchable content index ──────────────────────────────────────────────────
+const SEARCH_INDEX = [
+    // Tools
+    { title: "Image Compressor", desc: "Compress JPEG, PNG & WebP images in your browser", href: "/tools/image-compressor", tag: "Tool" },
+    { title: "QR Code Generator", desc: "Generate beautiful customizable QR codes for free", href: "/tools/qr", tag: "Tool" },
+    { title: "Pomodoro Timer", desc: "Focus timer with achievements, session tracking and breaks", href: "/tools/pomodoro", tag: "Tool" },
+    { title: "Top Tools", desc: "All free tools for creators and designers", href: "/tools", tag: "Tool" },
+    // Keywords
+    { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
+    { title: "Pinterest Keywords for NFT Creators", desc: "Strategic search terms for NFT and crypto art", href: "/keywords", tag: "Keywords" },
+    // Pages
+    { title: "Premium", desc: "Get Pro access to AssetNest", href: "/premium", tag: "Page" },
+    { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
+    { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
+];
+// ─────────────────────────────────────────────────────────────────────────────
+
+const TAG_COLORS: Record<string, string> = {
+    Tool: "text-emerald-400",
+    Keywords: "text-red-400",
+    Page: "text-zinc-400",
+};
 
 const Navbar = () => {
     const { isOpen, toggle } = useSidebar();
     const [scrolled, setScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [query, setQuery] = useState("");
+    const [results, setResults] = useState<typeof SEARCH_INDEX>([]);
+    const [showResults, setShowResults] = useState(false);
+    const searchRef = useRef<HTMLDivElement>(null);
+    const router = useRouter();
+
+    // Filter results as user types
+    useEffect(() => {
+        const q = query.trim().toLowerCase();
+        if (q.length < 2) { setResults([]); setShowResults(false); return; }
+        const found = SEARCH_INDEX.filter(
+            (item) =>
+                item.title.toLowerCase().includes(q) ||
+                item.desc.toLowerCase().includes(q) ||
+                item.tag.toLowerCase().includes(q)
+        ).slice(0, 6);
+        setResults(found);
+        setShowResults(true);
+    }, [query]);
+
+    // Close dropdown when clicking outside
+    useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+                setShowResults(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, []);
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && results.length > 0) {
+            router.push(results[0].href);
+            setQuery("");
+            setShowResults(false);
+        }
+        if (e.key === "Escape") {
+            setShowResults(false);
+        }
+    };
 
     useEffect(() => {
         setMounted(true);
-        const handleScroll = () => {
-            setScrolled(window.scrollY > 50);
-        };
+        const handleScroll = () => setScrolled(window.scrollY > 50);
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
@@ -35,14 +98,9 @@ const Navbar = () => {
     }
 
     return (
-        <nav
-            className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled
-                ? "bg-background/95 backdrop-blur-md"
-                : "bg-background"
-                }`}
-        >
+        <nav className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md" : "bg-background"}`}>
             <div className="flex h-full items-center">
-                {/* Fixed Width Toggle Section to match Sidebar Icon Alignment */}
+                {/* Sidebar Toggle */}
                 <div className={`hidden lg:flex items-center h-full transition-all duration-300 ease-in-out ${isOpen ? "w-64 justify-start pl-[42px]" : "w-16 justify-center"}`}>
                     <button
                         onClick={toggle}
@@ -55,8 +113,8 @@ const Navbar = () => {
 
                 <div className="flex-grow h-full px-10">
                     <div className="flex justify-between items-center h-full gap-8">
+                        {/* Logo */}
                         <div className="flex items-center gap-4">
-                            {/* Logo */}
                             <Link href="/" className="group active:scale-95 transition-all">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-white/5 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -65,33 +123,69 @@ const Navbar = () => {
                             </Link>
                         </div>
 
-                        {/* Nav Search Bar */}
-                        <div className="hidden lg:flex items-center flex-grow max-w-lg">
-                            <div className="flex items-center bg-zinc-900 border border-zinc-800 px-4 py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:border-white focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)]">
-                                <Search size={16} className="text-zinc-500 mr-3" />
+                        {/* ── Functional Search Bar ── */}
+                        <div ref={searchRef} className="hidden lg:flex items-center flex-grow max-w-lg relative">
+                            <div className={`flex items-center bg-zinc-900 border px-4 py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
+                                <Search size={16} className="text-zinc-500 mr-3 shrink-0" />
                                 <input
                                     type="text"
-                                    placeholder="Search assets..."
-                                    className="bg-transparent text-sm w-full focus:outline-none placeholder:text-secondary/50 font-medium"
+                                    id="global-search"
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    onKeyDown={handleKeyDown}
+                                    onFocus={() => query.length >= 2 && setShowResults(true)}
+                                    placeholder="Search tools, keywords, pages…"
+                                    autoComplete="off"
+                                    className="bg-transparent text-sm w-full focus:outline-none placeholder:text-zinc-600 font-medium"
                                 />
+                                {query && (
+                                    <button onClick={() => { setQuery(""); setShowResults(false); }} className="text-zinc-600 hover:text-white transition-colors ml-2">
+                                        <X size={14} />
+                                    </button>
+                                )}
                             </div>
+
+                            {/* Dropdown Results */}
+                            {showResults && (
+                                <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-700 shadow-2xl z-[200] overflow-hidden">
+                                    {results.length > 0 ? (
+                                        <>
+                                            {results.map((item, i) => (
+                                                <Link
+                                                    key={i}
+                                                    href={item.href}
+                                                    onClick={() => { setQuery(""); setShowResults(false); }}
+                                                    className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0 group"
+                                                >
+                                                    <div className="flex flex-col">
+                                                        <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-white">{item.title}</span>
+                                                        <span className="text-[11px] text-zinc-500 font-medium mt-0.5">{item.desc}</span>
+                                                    </div>
+                                                    <div className="flex items-center gap-2 shrink-0 ml-4">
+                                                        <span className={`text-[9px] font-black uppercase tracking-widest ${TAG_COLORS[item.tag] || "text-zinc-500"}`}>{item.tag}</span>
+                                                        <ArrowRight size={12} className="text-zinc-600 group-hover:text-white transition-colors" />
+                                                    </div>
+                                                </Link>
+                                            ))}
+                                        </>
+                                    ) : (
+                                        <div className="px-4 py-6 text-center">
+                                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500">No results for &ldquo;{query}&rdquo;</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Desktop Actions */}
                         <div className="hidden md:flex items-center space-x-6">
-                            <Link
-                                href="/premium"
-                                className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-foreground text-background px-6 py-2.5 hover:opacity-90 active:scale-95 transition-all"
-                            >
+                            <Link href="/premium" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-foreground text-background px-6 py-2.5 hover:opacity-90 active:scale-95 transition-all">
                                 GET PRO
                             </Link>
                         </div>
 
                         {/* Mobile Menu Toggle */}
-                        <button
-                            className="md:hidden p-2 text-foreground"
-                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                        >
+                        <button className="md:hidden p-2 text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
                             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
@@ -104,10 +198,30 @@ const Navbar = () => {
                                 <Search size={16} className="text-zinc-500 mr-3" />
                                 <input
                                     type="text"
-                                    placeholder="Search assets..."
+                                    value={query}
+                                    onChange={(e) => setQuery(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter" && results.length > 0) {
+                                            router.push(results[0].href);
+                                            setQuery(""); setMobileMenuOpen(false); setShowResults(false);
+                                        }
+                                    }}
+                                    placeholder="Search tools, keywords…"
                                     className="bg-transparent border-none outline-none text-sm w-full font-medium"
                                 />
                             </div>
+                            {/* Mobile search results */}
+                            {showResults && results.length > 0 && (
+                                <div className="border border-zinc-800 overflow-hidden -mt-4">
+                                    {results.map((item, i) => (
+                                        <Link key={i} href={item.href} onClick={() => { setQuery(""); setShowResults(false); setMobileMenuOpen(false); }}
+                                            className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800 border-b border-zinc-800/50 last:border-0">
+                                            <span className="text-xs font-black uppercase tracking-widest text-white">{item.title}</span>
+                                            <span className={`text-[9px] font-black uppercase ${TAG_COLORS[item.tag]}`}>{item.tag}</span>
+                                        </Link>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className="space-y-6">
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40 px-1">Discover</p>
@@ -122,27 +236,12 @@ const Navbar = () => {
                                         { name: "Wallpapers", href: "/category/wallpapers", isDevelopment: true },
                                         { name: "Sound Effects", href: "/category/sound-effects", isDevelopment: true },
                                     ].map((item) => (
-                                        <Link
-                                            key={item.href}
-                                            href={item.isDevelopment ? "#" : item.href}
-                                            className={`flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all ${item.isDevelopment
-                                                ? "text-zinc-600 cursor-not-allowed opacity-50"
-                                                : "text-white/70 hover:text-white hover:bg-zinc-800/50"
-                                                }`}
-                                            onClick={(e) => {
-                                                if (item.isDevelopment) {
-                                                    e.preventDefault();
-                                                } else {
-                                                    setMobileMenuOpen(false);
-                                                }
-                                            }}
+                                        <Link key={item.href} href={item.isDevelopment ? "#" : item.href}
+                                            className={`flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all ${item.isDevelopment ? "text-zinc-600 cursor-not-allowed opacity-50" : "text-white/70 hover:text-white hover:bg-zinc-800/50"}`}
+                                            onClick={(e) => { if (item.isDevelopment) { e.preventDefault(); } else { setMobileMenuOpen(false); } }}
                                         >
-                                            <div className="flex flex-col">
-                                                <span>{item.name}</span>
-                                                {item.isDevelopment && (
-                                                    <span className="text-[9px] font-black uppercase text-amber-500 mt-0.5 tracking-[0.1em]">Stay Updated</span>
-                                                )}
-                                            </div>
+                                            <span>{item.name}</span>
+                                            {item.isDevelopment && <span className="text-[9px] font-black uppercase text-amber-500 tracking-[0.1em]">Stay Updated</span>}
                                             {!item.isDevelopment && <ChevronDown size={14} className="-rotate-90 opacity-40" />}
                                         </Link>
                                     ))}
@@ -150,11 +249,9 @@ const Navbar = () => {
                             </div>
 
                             <div className="pt-6 border-t border-white/5">
-                                <Link
-                                    href="/premium"
+                                <Link href="/premium"
                                     className="flex items-center justify-center w-full py-4 bg-white text-black text-[11px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98]"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                >
+                                    onClick={() => setMobileMenuOpen(false)}>
                                     Get Pro Access
                                 </Link>
                             </div>
