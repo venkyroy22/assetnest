@@ -1,70 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import Container from "./Container";
 import { useState, useEffect } from "react";
-import { Menu, X, Search, ChevronDown, Sparkles, LogIn, PanelLeftClose, PanelLeftOpen, User, LogOut } from "lucide-react";
+import { Menu, X, Search, ChevronDown } from "lucide-react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter, usePathname } from "next/navigation";
-import { assetFilters } from "@/data/mockData";
-
 
 const Navbar = () => {
     const { isOpen, toggle } = useSidebar();
     const [scrolled, setScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [user, setUser] = useState<any>(null);
-    const [isLoadingUser, setIsLoadingUser] = useState(true);
-    const router = useRouter();
-    const pathname = usePathname();
-
-    const supabase = createClient();
-
-    const handleSignOut = async () => {
-        setIsLoadingUser(true);
-        const { error } = await supabase.auth.signOut();
-        if (error) {
-            console.error("Error signing out:", error.message);
-            setIsLoadingUser(false);
-        } else {
-            setUser(null);
-            router.push("/");
-            router.refresh();
-            // Force a reload as a fallback to ensure all state is cleared
-            if (typeof window !== "undefined") {
-                window.location.reload();
-            }
-        }
-    };
 
     useEffect(() => {
         setMounted(true);
         const handleScroll = () => {
             setScrolled(window.scrollY > 50);
         };
-
-        const getUser = async () => {
-            const { data: { user } } = await supabase.auth.getUser();
-            setUser(user);
-            setIsLoadingUser(false);
-        };
-
-        getUser();
-
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null);
-            setIsLoadingUser(false);
-        });
-
         window.addEventListener("scroll", handleScroll);
-        return () => {
-            window.removeEventListener("scroll", handleScroll);
-            subscription.unsubscribe();
-        };
-    }, [supabase]);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
 
     if (!mounted) {
         return (
@@ -110,7 +65,7 @@ const Navbar = () => {
                             </Link>
                         </div>
 
-                        {/* Nav Search Bar (Permanently Visible) */}
+                        {/* Nav Search Bar */}
                         <div className="hidden lg:flex items-center flex-grow max-w-lg">
                             <div className="flex items-center bg-zinc-900 border border-zinc-800 px-4 py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:border-white focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                                 <Search size={16} className="text-zinc-500 mr-3" />
@@ -130,40 +85,6 @@ const Navbar = () => {
                             >
                                 GET PRO
                             </Link>
-
-                            <div className="flex items-center gap-6 border-l border-border pl-8">
-                                {!isLoadingUser && user ? (
-                                    <div className="flex items-center gap-4">
-                                        <div className="flex flex-col items-end">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-white truncate max-w-[100px]">
-                                                {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                                            </span>
-                                        </div>
-                                        <button
-                                            onClick={handleSignOut}
-                                            className="text-[10px] font-black uppercase tracking-widest border border-zinc-800 px-4 py-2 hover:border-white transition-all flex items-center gap-2"
-                                        >
-                                            <LogOut size={12} />
-                                            LOGOUT
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <Link
-                                            href="/signin"
-                                            className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2 hover:opacity-70 transition-opacity"
-                                        >
-                                            SIGN IN
-                                        </Link>
-                                        <Link
-                                            href="/signup"
-                                            className="hidden xl:block text-[10px] font-black uppercase tracking-widest px-4 py-2 border border-border hover:border-white transition-all"
-                                        >
-                                            JOIN US
-                                        </Link>
-                                    </>
-                                )}
-                            </div>
                         </div>
 
                         {/* Mobile Menu Toggle */}
@@ -194,6 +115,7 @@ const Navbar = () => {
                                     {[
                                         { name: "Pinterest Keywords", href: "/keywords" },
                                         { name: "QR Generator", href: "/tools/qr" },
+                                        { name: "IG Downloader", href: "/tools/ig-downloader" },
                                         { name: "Video Edit Assets", href: "/video-editing", isDevelopment: true },
                                         { name: "Useful Websites", href: "/useful-websites", isDevelopment: true },
                                         { name: "AI Tools", href: "/ai-tools", isDevelopment: true },
@@ -204,8 +126,8 @@ const Navbar = () => {
                                             key={item.href}
                                             href={item.isDevelopment ? "#" : item.href}
                                             className={`flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all ${item.isDevelopment
-                                                    ? "text-zinc-600 cursor-not-allowed opacity-50"
-                                                    : "text-white/70 hover:text-white hover:bg-zinc-800/50"
+                                                ? "text-zinc-600 cursor-not-allowed opacity-50"
+                                                : "text-white/70 hover:text-white hover:bg-zinc-800/50"
                                                 }`}
                                             onClick={(e) => {
                                                 if (item.isDevelopment) {
@@ -227,7 +149,7 @@ const Navbar = () => {
                                 </div>
                             </div>
 
-                            <div className="pt-6 border-t border-white/5 space-y-3">
+                            <div className="pt-6 border-t border-white/5">
                                 <Link
                                     href="/premium"
                                     className="flex items-center justify-center w-full py-4 bg-white text-black text-[11px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98]"
@@ -235,50 +157,6 @@ const Navbar = () => {
                                 >
                                     Get Pro Access
                                 </Link>
-                                <div className="grid grid-cols-1 gap-3">
-                                    {!isLoadingUser && user ? (
-                                        <div className="space-y-3">
-                                            <div className="flex items-center gap-3 px-4 py-3 bg-zinc-900/50 rounded-xl border border-zinc-800">
-                                                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-black uppercase tracking-widest text-white">
-                                                    {(user.user_metadata?.full_name?.[0] || user.email?.[0] || '?')}
-                                                </div>
-                                                <div className="flex flex-col">
-                                                    <span className="text-xs font-bold text-white leading-tight">
-                                                        {user.user_metadata?.full_name || user.email?.split('@')[0]}
-                                                    </span>
-                                                    <span className="text-[10px] text-zinc-500 font-medium">Verified Account</span>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={() => {
-                                                    handleSignOut();
-                                                    setMobileMenuOpen(false);
-                                                }}
-                                                className="flex items-center justify-center w-full py-3.5 border border-red-500/20 bg-red-500/5 text-red-500 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all"
-                                            >
-                                                <LogOut size={14} className="mr-2" />
-                                                Log Out
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <Link
-                                                href="/signin"
-                                                className="flex items-center justify-center py-3.5 border border-zinc-800 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all hover:bg-zinc-900"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                            >
-                                                Sign In
-                                            </Link>
-                                            <Link
-                                                href="/signup"
-                                                className="flex items-center justify-center py-3.5 border border-zinc-800 text-[11px] font-black uppercase tracking-widest rounded-xl transition-all hover:bg-zinc-900"
-                                                onClick={() => setMobileMenuOpen(false)}
-                                            >
-                                                Join Us
-                                            </Link>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </div>
