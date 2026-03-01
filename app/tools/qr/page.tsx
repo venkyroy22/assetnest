@@ -33,6 +33,16 @@ export default function QRGeneratorPage() {
     const cornerInputRef = useRef<HTMLInputElement>(null);
     const centerInputRef = useRef<HTMLInputElement>(null);
 
+    const [lightboxOpen, setLightboxOpen] = useState(false);
+    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+
+    const openLightbox = () => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        setLightboxSrc(canvas.toDataURL("image/png"));
+        setLightboxOpen(true);
+    };
+
     const loadImage = (src: string): Promise<HTMLImageElement> => {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -704,11 +714,20 @@ export default function QRGeneratorPage() {
 
                             <div className="relative flex flex-row lg:flex-col items-center gap-4 lg:gap-0 p-3 sm:p-4 lg:p-10 bg-zinc-950/90 lg:bg-zinc-900 border border-zinc-700/50 lg:border-zinc-800 rounded-[1.5rem] lg:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.8)] lg:shadow-[0_40px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:backdrop-blur-none">
 
-                                <div className="flex items-center justify-center bg-white p-2 lg:p-4 rounded-[1rem] lg:rounded-[1.5rem] overflow-hidden shadow-inner shrink-0 w-[90px] h-[90px] lg:w-full lg:h-auto">
+                                {/* QR canvas — tap on mobile opens lightbox */}
+                                <div
+                                    className="flex items-center justify-center bg-white p-2 lg:p-4 rounded-[1rem] lg:rounded-[1.5rem] overflow-hidden shadow-inner shrink-0 w-[90px] h-[90px] lg:w-full lg:h-auto cursor-pointer lg:cursor-default relative group/qr"
+                                    onClick={openLightbox}
+                                    title="Tap to enlarge"
+                                >
                                     <canvas
                                         ref={canvasRef}
                                         className="w-full max-w-full h-auto rounded-md lg:rounded-lg"
                                     />
+                                    {/* Tap hint overlay — only on mobile */}
+                                    <div className="lg:hidden absolute inset-0 flex items-end justify-center pb-1 opacity-0 group-hover/qr:opacity-100 transition-opacity pointer-events-none">
+                                        <span className="text-[7px] font-black uppercase tracking-widest bg-black/60 text-white px-1.5 py-0.5 rounded-full">tap</span>
+                                    </div>
                                 </div>
 
                                 <div className="flex-1 lg:w-full lg:mt-10 flex flex-col justify-center">
@@ -725,6 +744,55 @@ export default function QRGeneratorPage() {
                     </div>
                 </div>
             </Container>
+
+            {/* ── Lightbox Modal ── */}
+            {lightboxOpen && lightboxSrc && (
+                <div
+                    className="fixed inset-0 z-[500] flex flex-col items-center justify-center bg-black/95 backdrop-blur-md p-4"
+                    onClick={() => setLightboxOpen(false)}
+                >
+                    {/* Close button */}
+                    <button
+                        className="absolute top-4 right-4 p-3 bg-zinc-800 border border-zinc-700 text-white rounded-2xl hover:bg-zinc-700 transition-all active:scale-95 z-10"
+                        onClick={() => setLightboxOpen(false)}
+                    >
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                        </svg>
+                    </button>
+
+                    {/* QR Image — stop click from bubbling */}
+                    <div
+                        className="flex flex-col items-center gap-6 w-full max-w-sm"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="bg-white p-4 rounded-[1.5rem] shadow-2xl w-full">
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img
+                                src={lightboxSrc}
+                                alt="QR Code"
+                                className="w-full h-auto rounded-lg"
+                            />
+                        </div>
+
+                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Tap outside to close</p>
+
+                        {/* Download in lightbox */}
+                        <button
+                            onClick={() => {
+                                const a = document.createElement("a");
+                                a.href = lightboxSrc!;
+                                a.download = "assetnest-custom-qr.png";
+                                a.click();
+                            }}
+                            className="w-full flex items-center justify-center gap-2 bg-white text-black py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 active:scale-[0.98] transition-all"
+                        >
+                            <Download size={15} /> Download QR Code
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

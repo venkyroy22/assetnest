@@ -69,8 +69,15 @@ export const metadata: Metadata = {
   alternates: {
     canonical: siteUrl,
   },
+  icons: {
+    icon: [
+      { url: "/logo.png", type: "image/png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   verification: {
-    // google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",  // Add when you have it
+    // google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
   },
 };
 
@@ -82,7 +89,9 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark" style={{ colorScheme: 'dark' }}>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logo.png" type="image/png" />
+        <link rel="shortcut icon" href="/logo.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="canonical" href={siteUrl} />
         <meta name="theme-color" content="#000000" />
         {/* JSON-LD Structured Data for Google */}
