@@ -115,7 +115,6 @@ const Navbar = () => {
                                     {[
                                         { name: "Pinterest Keywords", href: "/keywords" },
                                         { name: "QR Generator", href: "/tools/qr" },
-                                        { name: "IG Downloader", href: "/tools/ig-downloader" },
                                         { name: "Video Edit Assets", href: "/video-editing", isDevelopment: true },
                                         { name: "Useful Websites", href: "/useful-websites", isDevelopment: true },
                                         { name: "AI Tools", href: "/ai-tools", isDevelopment: true },

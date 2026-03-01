@@ -29,12 +29,6 @@ const Sidebar = () => {
             icon: QrCode,
         },
         {
-            name: "InstaFetch Downloader",
-            href: "/tools/ig-downloader",
-            icon: Video,
-            isDevelopment: false,
-        },
-        {
             name: "Video Edit Assets",
             href: "/video-editing",
             icon: Video,
