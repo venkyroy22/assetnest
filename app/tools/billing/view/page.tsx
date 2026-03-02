@@ -13,13 +13,13 @@ interface BillPayload {
 type LangCode = "en" | "hi" | "ml" | "te" | "ta" | "kn";
 
 // ── Supported languages ───────────────────────────────────────────────────────
-const LANGS: { code: LangCode; native: string; label: string }[] = [
-    { code: "en", native: "English", label: "English" },
-    { code: "hi", native: "हिन्दी", label: "Hindi" },
-    { code: "ml", native: "മലയാളം", label: "Malayalam" },
-    { code: "te", native: "తెలుగు", label: "Telugu" },
-    { code: "ta", native: "தமிழ்", label: "Tamil" },
-    { code: "kn", native: "ಕನ್ನಡ", label: "Kannada" },
+const LANGS: { code: LangCode; native: string }[] = [
+    { code: "en", native: "English"  },
+    { code: "hi", native: "हिन्दी"   },
+    { code: "ml", native: "മലയാളം"  },
+    { code: "te", native: "తెలుగు"  },
+    { code: "ta", native: "தமிழ்"   },
+    { code: "kn", native: "ಕನ್ನಡ"   },
 ];
 
 // ── Static UI translations ────────────────────────────────────────────────────
@@ -109,11 +109,11 @@ function fmtDate(iso: string) {
 }
 function lineTotal(item: LineItem) {
     const base = item.q * item.r;
-    const tax = (base * item.t) / 100;
+    const tax  = (base * item.t) / 100;
     return { base, tax, total: base + tax };
 }
 
-// ── Google Translate (unofficial public endpoint, no key needed) ───────────────
+// ── Google Translate (unofficial public endpoint, no key) ─────────────────────
 async function translateBatch(texts: string[], targetLang: string): Promise<string[]> {
     if (targetLang === "en") return texts;
     const results: string[] = [];
@@ -121,29 +121,24 @@ async function translateBatch(texts: string[], targetLang: string): Promise<stri
         if (!text.trim()) { results.push(text); continue; }
         try {
             const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
-            const res = await fetch(url);
-            const data = await res.json();
-            // Shape: [ [ ["translated", "src", ...], ... ], ..., "src_lang" ]
-            const translated = (data[0] as string[][]).map(seg => seg[0]).join("");
-            results.push(translated || text);
-        } catch {
-            results.push(text); // fallback: original
-        }
+            const data = await (await fetch(url)).json();
+            results.push((data[0] as string[][]).map(s => s[0]).join("") || text);
+        } catch { results.push(text); }
     }
     return results;
 }
 
-// ── Bill Viewer ───────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────────────
 function BillViewer() {
-    const searchParams = useSearchParams();
-    const [bill, setBill] = useState<BillPayload | null>(null);
-    const [error, setError] = useState(false);
-    const [lang, setLang] = useState<LangCode>("en");
-    const [translating, setTranslating] = useState(false);
-    const [txNames, setTxNames] = useState<string[] | null>(null); // translated item names
-    const printRef = useRef<HTMLDivElement>(null);
+    const searchParams                      = useSearchParams();
+    const [bill,        setBill]            = useState<BillPayload | null>(null);
+    const [error,       setError]           = useState(false);
+    const [lang,        setLang]            = useState<LangCode>("en");
+    const [translating, setTranslating]     = useState(false);
+    const [txNames,     setTxNames]         = useState<string[] | null>(null);
+    const printRef                          = useRef<HTMLDivElement>(null);
 
-    // ── Decode bill from URL ───────────────────────────────────────────────────
+    // Decode ─────────────────────────────────────────────────────────────────
     useEffect(() => {
         const d = searchParams.get("d");
         if (!d) { setError(true); return; }
@@ -152,27 +147,19 @@ function BillViewer() {
         setBill(data);
     }, [searchParams]);
 
-    // ── Translate when language changes ───────────────────────────────────────
+    // Translate item names ───────────────────────────────────────────────────
     useEffect(() => {
         if (!bill) return;
-        if (lang === "en") {
-            setTxNames(null);
-            return;
-        }
+        if (lang === "en") { setTxNames(null); return; }
         setTranslating(true);
-        const names = bill.l.map(it => it.n);
-        translateBatch(names, lang).then(translatedNames => {
-            setTxNames(translatedNames);
-            setTranslating(false);
-        }).catch(() => setTranslating(false));
+        translateBatch(bill.l.map(it => it.n), lang)
+            .then(r => { setTxNames(r); setTranslating(false); })
+            .catch(() => setTranslating(false));
     }, [lang, bill]);
-
-    // ── Print / Download ──────────────────────────────────────────────────────
-    const handleDownload = () => window.print();
 
     const t = UI[lang];
 
-    // ── Error state ───────────────────────────────────────────────────────────
+    // ── Error ─────────────────────────────────────────────────────────────────
     if (error) return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
             <div className="text-center">
@@ -183,7 +170,7 @@ function BillViewer() {
         </div>
     );
 
-    // ── Loading state ─────────────────────────────────────────────────────────
+    // ── Loading ───────────────────────────────────────────────────────────────
     if (!bill) return (
         <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
@@ -191,23 +178,22 @@ function BillViewer() {
     );
 
     // ── Compute totals ────────────────────────────────────────────────────────
-    const subtotal = bill.l.reduce((s, it) => s + lineTotal(it).base, 0);
-    const totalTax = bill.l.reduce((s, it) => s + lineTotal(it).tax, 0);
+    const subtotal   = bill.l.reduce((s, it) => s + lineTotal(it).base, 0);
+    const totalTax   = bill.l.reduce((s, it) => s + lineTotal(it).tax,  0);
     const grandTotal = subtotal + totalTax;
-    const rates = [0, 5, 12, 18, 28];
-    const gstBreakdown = rates.map(rate => {
+    const gstBreakdown = [0, 5, 12, 18, 28].map(rate => {
         const taxable = bill.l.filter(it => it.t === rate).reduce((s, it) => s + lineTotal(it).base, 0);
         return { rate, taxable, half: (taxable * rate) / 200 };
     }).filter(x => x.taxable > 0);
 
+    // ── Render ────────────────────────────────────────────────────────────────
     return (
         <>
-            {/* ── Print styles ── */}
-            <style dangerouslySetInnerHTML={{
-                __html: `
+            {/* Print styles */}
+            <style dangerouslySetInnerHTML={{ __html: `
                 * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 @media print {
-                    .no-print   { display: none !important; }
+                    .no-print    { display: none !important; }
                     .screen-only { display: none !important; }
                     .print-only  { display: block !important; }
                     body { background: #fff !important; margin: 0; }
@@ -218,7 +204,7 @@ function BillViewer() {
 
             <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 flex flex-col items-center py-6 px-4">
 
-                {/* ── Language Switcher ── */}
+                {/* ── Language Switcher (screen only) ── */}
                 <div className="no-print w-full max-w-md mb-5">
                     <div className="flex items-center gap-2 mb-2">
                         <Globe size={13} className="text-zinc-500" />
@@ -229,10 +215,11 @@ function BillViewer() {
                             <button
                                 key={l.code}
                                 onClick={() => setLang(l.code)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${lang === l.code
-                                    ? "bg-emerald-500 border-emerald-500 text-black"
-                                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
-                                    }`}
+                                className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${
+                                    lang === l.code
+                                        ? "bg-emerald-500 border-emerald-500 text-black"
+                                        : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
+                                }`}
                             >
                                 {l.native}
                             </button>
@@ -246,8 +233,10 @@ function BillViewer() {
                     )}
                 </div>
 
-                {/* ── Receipt card (screen only) ── */}
-                <div className="receipt-wrapper screen-only w-full max-w-md" ref={printRef}>
+                {/* ══════════════════════════════════════════════════════════
+                    SCREEN RECEIPT (dark card — hidden during print)
+                ══════════════════════════════════════════════════════════ */}
+                <div className="screen-only w-full max-w-md" ref={printRef}>
 
                     {/* Badge */}
                     <div className="no-print flex items-center justify-center gap-2 mb-5">
@@ -257,21 +246,16 @@ function BillViewer() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t.title}</span>
                     </div>
 
-                    {/* Main receipt */}
-                    <div className="receipt-card bg-white rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
-
+                    <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
                         {/* Shop Header */}
                         <div className="bg-zinc-950 px-6 py-6 text-center">
-                            <p className="text-xl font-black text-white mb-1 uppercase tracking-wide">
-                                {bill.s}
-                            </p>
+                            <p className="text-xl font-black text-white mb-1 uppercase tracking-wide">{bill.s}</p>
                             {bill.a && <p className="text-xs text-zinc-400 font-medium leading-relaxed">{bill.a}</p>}
                             <div className="flex items-center justify-center gap-4 mt-2 flex-wrap">
                                 {bill.p && <p className="text-[11px] text-zinc-500">📞 {bill.p}</p>}
                                 {bill.g && <p className="text-[10px] text-zinc-600 font-mono">GST: {bill.g}</p>}
                             </div>
                         </div>
-
                         {/* Invoice meta */}
                         <div className="bg-zinc-100 px-6 py-3 flex items-center justify-between">
                             <div>
@@ -283,26 +267,21 @@ function BillViewer() {
                                 <p className="text-xs font-bold text-zinc-700">{fmtDate(bill.d)}</p>
                             </div>
                         </div>
-
-                        {/* Items table */}
+                        {/* Items */}
                         <div className="px-5 py-4">
-                            {/* Header */}
                             <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 pb-2 border-b-2 border-zinc-200 mb-1">
                                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{t.item}</p>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">{t.qty}</p>
                                 <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 text-right">{t.amount}</p>
                             </div>
-
-                            {/* Rows */}
                             <div className="divide-y divide-zinc-100">
                                 {bill.l.map((item, idx) => {
-                                    const { base, tax, total } = lineTotal(item);
-                                    const displayName = txNames?.[idx] ?? item.n;
+                                    const { tax, total } = lineTotal(item);
                                     return (
                                         <div key={idx} className="py-2.5 grid grid-cols-[1fr_auto_auto] gap-x-3 items-start">
                                             <div>
                                                 <p className={`text-sm font-bold text-zinc-900 ${translating ? "opacity-50" : ""}`}>
-                                                    {displayName}
+                                                    {txNames?.[idx] ?? item.n}
                                                 </p>
                                                 <p className="text-[10px] text-zinc-400 font-medium">
                                                     {fmtINR(item.r)}{item.t > 0 ? ` + ${item.t}% GST` : ""}
@@ -317,11 +296,8 @@ function BillViewer() {
                                     );
                                 })}
                             </div>
-
-                            {/* Divider */}
+                            {/* Totals */}
                             <div className="my-3 border-t-2 border-dashed border-zinc-300" />
-
-                            {/* Tax summary */}
                             <div className="space-y-1.5 mb-3">
                                 <div className="flex justify-between text-sm text-zinc-500">
                                     <span>{t.subtotal}</span>
@@ -346,7 +322,6 @@ function BillViewer() {
                                     </div>
                                 )}
                             </div>
-
                             {/* Grand Total */}
                             <div className="bg-zinc-950 rounded-2xl px-5 py-4 flex items-center justify-between">
                                 <div>
@@ -356,7 +331,6 @@ function BillViewer() {
                                 <p className="text-3xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
                             </div>
                         </div>
-
                         {/* Footer */}
                         <div className="bg-zinc-50 border-t border-zinc-200 px-6 py-4 text-center">
                             <p className="text-xs font-black text-zinc-800 mb-1">{t.thank}</p>
@@ -370,9 +344,9 @@ function BillViewer() {
                         </div>
                     </div>
 
-                    {/* ── Download button ── */}
+                    {/* Download button */}
                     <button
-                        onClick={handleDownload}
+                        onClick={() => window.print()}
                         className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-emerald-500 text-black py-4 rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
                     >
                         <Download size={16} />
@@ -385,114 +359,122 @@ function BillViewer() {
                     </p>
                 </div>
 
-                {/* ── Print-only professional invoice ── */}
-                <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", maxWidth: "100%", color: "#09090b" }}>
+                {/* ══════════════════════════════════════════════════════════
+                    PRINT-ONLY WHITE GST INVOICE (shown only when printing)
+                ══════════════════════════════════════════════════════════ */}
+                <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", color: "#09090b", border: "1px solid #d4d4d8", width: "100%" }}>
 
-                    {/* Header */}
-                    <div style={{ background: "#10b981", padding: "20px 28px", color: "#fff" }}>
-                        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase" }}>
-                            {bill.s}
-                        </h1>
-                        {bill.a && <p style={{ margin: "4px 0 0", fontSize: "11px", opacity: 0.9 }}>{bill.a}</p>}
-                        <div style={{ display: "flex", gap: "20px", marginTop: "6px", fontSize: "11px", opacity: 0.85 }}>
-                            {bill.p && <span>📞 {bill.p}</span>}
-                            {bill.g && <span>GST: {bill.g}</span>}
-                        </div>
+                    {/* Title bar */}
+                    <div style={{ background: "#10b981", padding: "10px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <span style={{ color: "#fff", fontSize: "18px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>Tax Invoice</span>
+                        <span style={{ color: "#d1fae5", fontSize: "11px", fontWeight: 600 }}>Powered by AssetNest</span>
                     </div>
 
-                    {/* Invoice meta */}
-                    <div style={{ background: "#f4f4f5", padding: "10px 28px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #d4d4d8" }}>
-                        <div>
-                            <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a" }}>{t.invoiceNo}</div>
-                            <div style={{ marginTop: "2px", fontSize: "12px", fontWeight: 700, fontFamily: "monospace" }}>{bill.i}</div>
+                    {/* Two-column header */}
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #09090b" }}>
+                        <div style={{ padding: "14px 20px", borderRight: "1px solid #d4d4d8" }}>
+                            <div style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{bill.s}</div>
+                            {bill.a && <div style={{ fontSize: "11px", color: "#52525b", marginBottom: "3px" }}>{bill.a}</div>}
+                            {bill.p && <div style={{ fontSize: "11px", color: "#52525b", marginBottom: "3px" }}>📞 {bill.p}</div>}
+                            {bill.g && <div style={{ fontSize: "11px", color: "#52525b", fontWeight: 600 }}>GSTIN: {bill.g}</div>}
                         </div>
-                        <div style={{ textAlign: "right" }}>
-                            <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a" }}>{t.dateTime}</div>
-                            <div style={{ marginTop: "2px", fontSize: "12px", fontWeight: 600, color: "#3f3f46" }}>{fmtDate(bill.d)}</div>
+                        <div style={{ padding: "14px 20px", background: "#f9fafb" }}>
+                            <div style={{ marginBottom: "10px" }}>
+                                <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a", marginBottom: "3px" }}>{t.invoiceNo}</div>
+                                <div style={{ fontSize: "15px", fontWeight: 800, fontFamily: "monospace" }}>{bill.i}</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a", marginBottom: "3px" }}>{t.dateTime}</div>
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "#3f3f46" }}>{fmtDate(bill.d)}</div>
+                            </div>
                         </div>
                     </div>
 
                     {/* Items table */}
-                    <div style={{ padding: "16px 28px" }}>
-                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
-                            <thead>
-                                <tr style={{ borderBottom: "2px solid #09090b" }}>
-                                    <th style={{ textAlign: "left", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#52525b" }}>{t.item}</th>
-                                    <th style={{ textAlign: "center", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>{t.qty}</th>
-                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>Rate</th>
-                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>GST%</th>
-                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>{t.amount}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {bill.l.map((item, idx) => {
-                                    const { tax, total } = lineTotal(item);
-                                    const displayName = txNames?.[idx] ?? item.n;
-                                    return (
-                                        <tr key={idx} style={{ borderBottom: "1px solid #e4e4e7" }}>
-                                            <td style={{ padding: "9px 4px", fontWeight: 600 }}>
-                                                {displayName}
-                                                {item.t > 0 && <span style={{ fontSize: "10px", color: "#71717a", fontWeight: 400, marginLeft: "4px" }}>(tax {fmtINR(tax)})</span>}
-                                            </td>
-                                            <td style={{ padding: "9px 4px", textAlign: "center", color: "#52525b" }}>{item.q}</td>
-                                            <td style={{ padding: "9px 4px", textAlign: "right", color: "#52525b" }}>{fmtINR(item.r)}</td>
-                                            <td style={{ padding: "9px 4px", textAlign: "right", color: "#52525b" }}>{item.t}%</td>
-                                            <td style={{ padding: "9px 4px", textAlign: "right", fontWeight: 700 }}>{fmtINR(total)}</td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
-                        </table>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                        <thead>
+                            <tr style={{ background: "#f4f4f5", borderBottom: "2px solid #09090b" }}>
+                                <th style={{ padding: "8px 12px", textAlign: "left",   fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>#</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "left",   fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.item}</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.qty}</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>Rate</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>Taxable</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>GST%</th>
+                                <th style={{ padding: "8px 12px", textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.amount}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {bill.l.map((item, idx) => {
+                                const { base, tax, total } = lineTotal(item);
+                                return (
+                                    <tr key={idx} style={{ borderBottom: "1px solid #e4e4e7", background: idx % 2 === 1 ? "#fafafa" : "#fff" }}>
+                                        <td style={{ padding: "9px 12px", color: "#a1a1aa", fontSize: "11px" }}>{idx + 1}</td>
+                                        <td style={{ padding: "9px 8px", fontWeight: 600 }}>
+                                            {txNames?.[idx] ?? item.n}
+                                            {item.t > 0 && <span style={{ fontSize: "10px", color: "#71717a", fontWeight: 400, marginLeft: "6px" }}>(tax {fmtINR(tax)})</span>}
+                                        </td>
+                                        <td style={{ padding: "9px 8px", textAlign: "center", color: "#52525b" }}>{item.q}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "right",  color: "#52525b" }}>{fmtINR(item.r)}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "right",  color: "#52525b" }}>{fmtINR(base)}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "center", color: "#52525b" }}>{item.t > 0 ? `${item.t}%` : "—"}</td>
+                                        <td style={{ padding: "9px 12px", textAlign: "right", fontWeight: 700 }}>{fmtINR(total)}</td>
+                                    </tr>
+                                );
+                            })}
+                        </tbody>
+                    </table>
 
-                        {/* Tax summary */}
-                        <div style={{ marginTop: "14px", borderTop: "1px dashed #a1a1aa", paddingTop: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b" }}>
+                    {/* Totals — right aligned */}
+                    <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "2px solid #09090b" }}>
+                        <div style={{ minWidth: "280px", padding: "14px 20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", paddingBottom: "6px", marginBottom: "6px", borderBottom: "1px dashed #d4d4d8" }}>
                                 <span>{t.subtotal}</span>
                                 <span style={{ fontWeight: 600 }}>{fmtINR(subtotal)}</span>
                             </div>
                             {gstBreakdown.map(g => (
                                 <div key={g.rate}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a", marginBottom: "3px" }}>
                                         <span>{t.cgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                         <span>{fmtINR(g.half)}</span>
                                     </div>
-                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a", marginBottom: "3px" }}>
                                         <span>{t.sgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                         <span>{fmtINR(g.half)}</span>
                                     </div>
                                 </div>
                             ))}
                             {totalTax > 0 && (
-                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", marginTop: "2px" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", marginTop: "4px", paddingTop: "6px", borderTop: "1px dashed #d4d4d8" }}>
                                     <span>{t.totalTax}</span>
                                     <span style={{ fontWeight: 600 }}>{fmtINR(totalTax)}</span>
                                 </div>
                             )}
-                        </div>
-
-                        {/* Grand Total */}
-                        <div style={{ marginTop: "14px", background: "#ecfdf5", border: "2px solid #10b981", borderRadius: "10px", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <div>
-                                <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#065f46" }}>{t.totalAmount}</div>
-                                <div style={{ marginTop: "2px", fontSize: "10px", color: "#059669" }}>{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</div>
+                            {/* Grand Total */}
+                            <div style={{ marginTop: "12px", padding: "12px 16px", background: "#ecfdf5", border: "2px solid #10b981", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#065f46" }}>{t.totalAmount}</span>
+                                <span style={{ fontSize: "24px", fontWeight: 900, color: "#059669" }}>{fmtINR(grandTotal)}</span>
                             </div>
-                            <div style={{ fontSize: "30px", fontWeight: 900, color: "#059669" }}>{fmtINR(grandTotal)}</div>
                         </div>
                     </div>
 
                     {/* Footer */}
-                    <div style={{ borderTop: "1px solid #e4e4e7", background: "#f9fafb", padding: "14px 28px", textAlign: "center" }}>
-                        <p style={{ margin: 0, fontSize: "12px", fontWeight: 700, color: "#09090b" }}>{t.thank}</p>
-                        <p style={{ margin: "4px 0 0", fontSize: "10px", color: "#71717a" }}>{t.generated}</p>
-                        <p style={{ margin: "10px 0 0", fontSize: "9px", color: "#a1a1aa", textTransform: "uppercase", letterSpacing: "0.1em" }}>Powered by AssetNest</p>
+                    <div style={{ borderTop: "1px solid #e4e4e7", padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f9fafb" }}>
+                        <div>
+                            <p style={{ margin: 0, fontSize: "12px", fontWeight: 700, color: "#09090b" }}>{t.thank}</p>
+                            <p style={{ margin: "3px 0 0", fontSize: "10px", color: "#a1a1aa" }}>{t.generated}</p>
+                        </div>
+                        <div style={{ textAlign: "right", fontSize: "9px", color: "#a1a1aa", textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: "1.6" }}>
+                            Powered by<br /><strong style={{ color: "#10b981", fontSize: "11px" }}>AssetNest</strong>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </>
     );
 }
 
-// ── Page (wrapped in Suspense for useSearchParams) ────────────────────────────
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function BillViewPage() {
     return (
         <Suspense fallback={
