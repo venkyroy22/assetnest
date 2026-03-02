@@ -141,7 +141,6 @@ function BillViewer() {
     const [lang, setLang] = useState<LangCode>("en");
     const [translating, setTranslating] = useState(false);
     const [txNames, setTxNames] = useState<string[] | null>(null); // translated item names
-    const [txShop, setTxShop] = useState<string | null>(null);   // translated shop name
     const printRef = useRef<HTMLDivElement>(null);
 
     // ── Decode bill from URL ───────────────────────────────────────────────────
@@ -158,18 +157,12 @@ function BillViewer() {
         if (!bill) return;
         if (lang === "en") {
             setTxNames(null);
-            setTxShop(null);
             return;
         }
         setTranslating(true);
         const names = bill.l.map(it => it.n);
-        // Translate item names + shop name in parallel
-        Promise.all([
-            translateBatch(names, lang),
-            translateBatch([bill.s], lang).then(r => r[0]),
-        ]).then(([translatedNames, translatedShop]) => {
+        translateBatch(names, lang).then(translatedNames => {
             setTxNames(translatedNames);
-            setTxShop(translatedShop);
             setTranslating(false);
         }).catch(() => setTranslating(false));
     }, [lang, bill]);
@@ -235,8 +228,8 @@ function BillViewer() {
                                 key={l.code}
                                 onClick={() => setLang(l.code)}
                                 className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${lang === l.code
-                                        ? "bg-emerald-500 border-emerald-500 text-black"
-                                        : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
+                                    ? "bg-emerald-500 border-emerald-500 text-black"
+                                    : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
                                     }`}
                             >
                                 {l.native}
@@ -268,7 +261,7 @@ function BillViewer() {
                         {/* Shop Header */}
                         <div className="bg-zinc-950 px-6 py-6 text-center">
                             <p className="text-xl font-black text-white mb-1 uppercase tracking-wide">
-                                {txShop || bill.s}
+                                {bill.s}
                             </p>
                             {bill.a && <p className="text-xs text-zinc-400 font-medium leading-relaxed">{bill.a}</p>}
                             <div className="flex items-center justify-center gap-4 mt-2 flex-wrap">
