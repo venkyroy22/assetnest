@@ -205,13 +205,15 @@ function BillViewer() {
             {/* ── Print styles ── */}
             <style dangerouslySetInnerHTML={{
                 __html: `
+                * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
                 @media print {
-                    .no-print { display: none !important; }
+                    .no-print   { display: none !important; }
+                    .screen-only { display: none !important; }
+                    .print-only  { display: block !important; }
                     body { background: #fff !important; margin: 0; }
-                    .receipt-wrapper { max-width: 100% !important; padding: 0 !important; }
-                    .receipt-card { box-shadow: none !important; border-radius: 0 !important; }
-                    @page { margin: 0.5cm; }
+                    @page { margin: 1cm; size: A4; }
                 }
+                @media screen { .print-only { display: none !important; } }
             `}} />
 
             <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 flex flex-col items-center py-6 px-4">
@@ -244,8 +246,8 @@ function BillViewer() {
                     )}
                 </div>
 
-                {/* ── Receipt card ── */}
-                <div className="receipt-wrapper w-full max-w-md" ref={printRef}>
+                {/* ── Receipt card (screen only) ── */}
+                <div className="receipt-wrapper screen-only w-full max-w-md" ref={printRef}>
 
                     {/* Badge */}
                     <div className="no-print flex items-center justify-center gap-2 mb-5">
@@ -381,6 +383,109 @@ function BillViewer() {
                         This receipt was shared digitally — no paper needed.<br />
                         No personal data is collected or stored.
                     </p>
+                </div>
+
+                {/* ── Print-only professional invoice ── */}
+                <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", maxWidth: "100%", color: "#09090b" }}>
+
+                    {/* Header */}
+                    <div style={{ background: "#10b981", padding: "20px 28px", color: "#fff" }}>
+                        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 900, letterSpacing: "0.06em", textTransform: "uppercase" }}>
+                            {bill.s}
+                        </h1>
+                        {bill.a && <p style={{ margin: "4px 0 0", fontSize: "11px", opacity: 0.9 }}>{bill.a}</p>}
+                        <div style={{ display: "flex", gap: "20px", marginTop: "6px", fontSize: "11px", opacity: 0.85 }}>
+                            {bill.p && <span>📞 {bill.p}</span>}
+                            {bill.g && <span>GST: {bill.g}</span>}
+                        </div>
+                    </div>
+
+                    {/* Invoice meta */}
+                    <div style={{ background: "#f4f4f5", padding: "10px 28px", display: "flex", justifyContent: "space-between", borderBottom: "1px solid #d4d4d8" }}>
+                        <div>
+                            <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a" }}>{t.invoiceNo}</div>
+                            <div style={{ marginTop: "2px", fontSize: "12px", fontWeight: 700, fontFamily: "monospace" }}>{bill.i}</div>
+                        </div>
+                        <div style={{ textAlign: "right" }}>
+                            <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a" }}>{t.dateTime}</div>
+                            <div style={{ marginTop: "2px", fontSize: "12px", fontWeight: 600, color: "#3f3f46" }}>{fmtDate(bill.d)}</div>
+                        </div>
+                    </div>
+
+                    {/* Items table */}
+                    <div style={{ padding: "16px 28px" }}>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                            <thead>
+                                <tr style={{ borderBottom: "2px solid #09090b" }}>
+                                    <th style={{ textAlign: "left", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#52525b" }}>{t.item}</th>
+                                    <th style={{ textAlign: "center", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>{t.qty}</th>
+                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>Rate</th>
+                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>GST%</th>
+                                    <th style={{ textAlign: "right", padding: "6px 4px", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", color: "#52525b" }}>{t.amount}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {bill.l.map((item, idx) => {
+                                    const { tax, total } = lineTotal(item);
+                                    const displayName = txNames?.[idx] ?? item.n;
+                                    return (
+                                        <tr key={idx} style={{ borderBottom: "1px solid #e4e4e7" }}>
+                                            <td style={{ padding: "9px 4px", fontWeight: 600 }}>
+                                                {displayName}
+                                                {item.t > 0 && <span style={{ fontSize: "10px", color: "#71717a", fontWeight: 400, marginLeft: "4px" }}>(tax {fmtINR(tax)})</span>}
+                                            </td>
+                                            <td style={{ padding: "9px 4px", textAlign: "center", color: "#52525b" }}>{item.q}</td>
+                                            <td style={{ padding: "9px 4px", textAlign: "right", color: "#52525b" }}>{fmtINR(item.r)}</td>
+                                            <td style={{ padding: "9px 4px", textAlign: "right", color: "#52525b" }}>{item.t}%</td>
+                                            <td style={{ padding: "9px 4px", textAlign: "right", fontWeight: 700 }}>{fmtINR(total)}</td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+
+                        {/* Tax summary */}
+                        <div style={{ marginTop: "14px", borderTop: "1px dashed #a1a1aa", paddingTop: "12px", display: "flex", flexDirection: "column", gap: "4px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b" }}>
+                                <span>{t.subtotal}</span>
+                                <span style={{ fontWeight: 600 }}>{fmtINR(subtotal)}</span>
+                            </div>
+                            {gstBreakdown.map(g => (
+                                <div key={g.rate}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a" }}>
+                                        <span>{t.cgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
+                                        <span>{fmtINR(g.half)}</span>
+                                    </div>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a" }}>
+                                        <span>{t.sgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
+                                        <span>{fmtINR(g.half)}</span>
+                                    </div>
+                                </div>
+                            ))}
+                            {totalTax > 0 && (
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", marginTop: "2px" }}>
+                                    <span>{t.totalTax}</span>
+                                    <span style={{ fontWeight: 600 }}>{fmtINR(totalTax)}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Grand Total */}
+                        <div style={{ marginTop: "14px", background: "#ecfdf5", border: "2px solid #10b981", borderRadius: "10px", padding: "14px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <div>
+                                <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#065f46" }}>{t.totalAmount}</div>
+                                <div style={{ marginTop: "2px", fontSize: "10px", color: "#059669" }}>{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</div>
+                            </div>
+                            <div style={{ fontSize: "30px", fontWeight: 900, color: "#059669" }}>{fmtINR(grandTotal)}</div>
+                        </div>
+                    </div>
+
+                    {/* Footer */}
+                    <div style={{ borderTop: "1px solid #e4e4e7", background: "#f9fafb", padding: "14px 28px", textAlign: "center" }}>
+                        <p style={{ margin: 0, fontSize: "12px", fontWeight: 700, color: "#09090b" }}>{t.thank}</p>
+                        <p style={{ margin: "4px 0 0", fontSize: "10px", color: "#71717a" }}>{t.generated}</p>
+                        <p style={{ margin: "10px 0 0", fontSize: "9px", color: "#a1a1aa", textTransform: "uppercase", letterSpacing: "0.1em" }}>Powered by AssetNest</p>
+                    </div>
                 </div>
             </div>
         </>
