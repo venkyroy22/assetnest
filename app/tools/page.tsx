@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Wrench, Search, X, FileImage, QrCode, Sparkles, Timer } from "lucide-react";
+import { Wrench, Search, X, FileImage, QrCode, Sparkles, Timer, Receipt } from "lucide-react";
 import Link from "next/link";
 
 // ─── ADD NEW TOOLS HERE ───────────────────────────────────────────────────────
@@ -32,6 +32,15 @@ const ALL_TOOLS = [
         badge: "Free" as const,
         icon: Timer,
         tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break"],
+    },
+    {
+        id: "billing",
+        name: "Smart Billing Tool",
+        description: "Paperless billing for small merchants. Scan barcodes, add items, generate a customer QR receipt — no printing needed.",
+        href: "/tools/billing",
+        badge: "Free" as const,
+        icon: Receipt,
+        tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
     },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
