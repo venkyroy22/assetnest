@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Wrench, Search, X, FileImage, QrCode, Sparkles, Timer, Receipt } from "lucide-react";
+import { Wrench, Search, X, FileImage, QrCode, Sparkles, Timer, Receipt, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 // ─── ADD NEW TOOLS HERE ───────────────────────────────────────────────────────
@@ -41,6 +41,15 @@ const ALL_TOOLS = [
         badge: "Free" as const,
         icon: Receipt,
         tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
+    },
+    {
+        id: "image-converter",
+        name: "Image Converter",
+        description: "Convert JPG to PNG, PNG to WebP, or JPG to WebP instantly in your browser. Batch support, quality control, 100% private.",
+        href: "/tools/image-converter",
+        badge: "Free" as const,
+        icon: RefreshCw,
+        tags: ["image", "convert", "jpg", "jpeg", "png", "webp", "format", "converter", "batch"],
     },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
