@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
-import Container from "@/components/Container";
 import { Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2, Image as ImageIcon, Smile, Star, ChevronDown, Maximize, ImagePlus, Square } from "lucide-react";
 
 const FG_PRESETS = ['#000000', '#27272a', '#1e3a8a', '#4c1d95', '#be123c', '#047857'];
@@ -18,7 +17,13 @@ export default function QRGeneratorPage() {
 
     const [patternType, setPatternType] = useState<PatternType>("square");
     const [cornerType, setCornerType] = useState<CornerType>("square");
-    const [openSection, setOpenSection] = useState<string>("pattern");
+    const [openSection, setOpenSection] = useState<string>("");
+    const [headerVisible, setHeaderVisible] = useState(false);
+
+    useEffect(() => {
+        const t = setTimeout(() => setHeaderVisible(true), 100);
+        return () => clearTimeout(t);
+    }, []);
 
     const [emojiChar, setEmojiChar] = useState("🔥");
     const [patternLogo, setPatternLogo] = useState<string | null>(null);
@@ -375,22 +380,61 @@ export default function QRGeneratorPage() {
     };
 
     return (
-        <div className="py-8 lg:py-24 min-h-screen bg-black">
-            <Container>
+        <div className="py-8 lg:py-16 min-h-screen bg-black px-6 md:px-10 relative">
+            {/* Page-wide background grid to match Tools page */}
+            <div
+                className="fixed inset-0 pointer-events-none z-0"
+                style={{
+                    backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)`,
+                    backgroundSize: "32px 32px",
+                    maskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
+                    WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
+                }}
+            />
+
+            <div className="relative z-10 w-full">
                 <header className="mb-8 lg:mb-16 text-center">
-                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6">
+                    <div
+                        style={{
+                            opacity: headerVisible ? 1 : 0,
+                            transform: headerVisible ? "translateY(0)" : "translateY(-14px)",
+                            transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
+                        }}
+                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6"
+                    >
                         <QrCode size={12} className="text-zinc-500" />
                         <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Pro Utilities</span>
                     </div>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 text-white leading-none">
+                    <h1
+                        style={{
+                            opacity: headerVisible ? 1 : 0,
+                            transform: headerVisible ? "translateY(0)" : "translateY(20px)",
+                            transition: "opacity 0.55s ease 0.06s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.06s",
+                        }}
+                        className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 text-white leading-none"
+                    >
                         Custom <span className="italic text-zinc-700">QR Engine</span>
                     </h1>
-                    <p className="text-sm text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed">
+                    <p
+                        style={{
+                            opacity: headerVisible ? 1 : 0,
+                            transform: headerVisible ? "translateY(0)" : "translateY(14px)",
+                            transition: "opacity 0.55s ease 0.12s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.12s",
+                        }}
+                        className="text-sm text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed"
+                    >
                         The fully unrestricted QR generator. Build QRs out of stars, emojis, embedded brand patterns, and custom overlays.
                     </p>
                 </header>
 
-                <div className="max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 relative">
+                <div
+                    style={{
+                        opacity: headerVisible ? 1 : 0,
+                        transform: headerVisible ? "translateY(0)" : "translateY(20px)",
+                        transition: "opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.23,1,0.32,1) 0.2s",
+                    }}
+                    className="max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 relative"
+                >
                     {/* Controls (Spans 7 cols) */}
                     <div className="lg:col-span-7 space-y-4 lg:space-y-6 order-2 lg:order-1 flex-1">
                         <div className="p-5 lg:p-8 bg-zinc-900/50 border border-zinc-800 rounded-[2.5rem] shadow-2xl backdrop-blur-sm">
@@ -765,7 +809,7 @@ export default function QRGeneratorPage() {
                         </div>
                     </div>
                 </div>
-            </Container>
+            </div>
 
             {/* ── Lightbox Modal ── */}
             {lightboxOpen && lightboxSrc && (

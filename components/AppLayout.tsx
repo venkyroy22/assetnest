@@ -5,6 +5,8 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
 import { SidebarProvider } from "@/components/SidebarProvider";
+import { PinProvider } from "@/components/PinProvider";
+import { MusicProvider } from "@/components/MusicProvider";
 
 export default function AppLayout({
     children,
@@ -19,17 +21,21 @@ export default function AppLayout({
     }
 
     return (
-        <SidebarProvider>
-            <Navbar />
-            <div className="flex flex-1">
-                <Sidebar />
-                <main className="flex-grow flex flex-col">
-                    <div className="flex-grow">
-                        {children}
+        <MusicProvider>
+            <SidebarProvider>
+                <PinProvider>
+                    <Navbar />
+                    <div className="flex flex-1">
+                        <Sidebar />
+                        <main className="flex-grow flex flex-col">
+                            <div className="flex-grow">
+                                {children}
+                            </div>
+                            <Footer />
+                        </main>
                     </div>
-                    <Footer />
-                </main>
-            </div>
-        </SidebarProvider>
+                </PinProvider>
+            </SidebarProvider>
+        </MusicProvider>
     );
 }

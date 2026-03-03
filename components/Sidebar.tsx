@@ -3,11 +3,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-    ChevronRight, Video, Globe, Sparkles, Volume2,
-    Image as ImageIcon, QrCode, Wrench,
-} from "lucide-react";
+import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
+import { usePins } from "./PinProvider";
+import { ALL_TOOLS } from "@/lib/tools";
 
 // ── Pinterest icon ────────────────────────────────────────────────────────────
 const PinterestIcon = ({ size = 16 }: { size?: number }) => (
@@ -46,7 +45,7 @@ function NavItem({
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const t = setTimeout(() => setVisible(true), 50 + index * 40);
+        const t = setTimeout(() => setVisible(true), 100 + index * 50);
         return () => clearTimeout(t);
     }, [index]);
 
@@ -69,8 +68,8 @@ function NavItem({
             title={!isOpen ? `${item.name}${disabled ? " (Coming Soon)" : ""}` : ""}
             style={{
                 opacity: visible ? (disabled ? 0.4 : 1) : 0,
-                transform: visible ? "translateX(0)" : "translateX(-8px)",
-                transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
+                transform: visible ? "translateX(0)" : "translateX(-12px)",
+                transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
             }}
             className={`group relative overflow-hidden flex items-center border transition-all duration-200 rounded-lg
                 ${isOpen
@@ -156,7 +155,7 @@ function NavItem({
                 </div>
 
                 <span
-                    className={`text-[13px] font-bold tracking-tight leading-tight transition-all duration-300
+                    className={`text-[13px] font-bold tracking-tight leading-tight transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                         ${isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 h-0 overflow-hidden"}`}
                     style={{
                         color: isActive ? "inherit" : hovered ? accent : undefined,
@@ -174,7 +173,7 @@ function NavItem({
             {isOpen && !disabled && (
                 <ChevronRight
                     size={13}
-                    className="relative z-10 shrink-0 transition-all duration-300"
+                    className="relative z-10 shrink-0 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]"
                     style={{
                         color: isActive ? "currentColor" : hovered ? accent : "transparent",
                         transform: hovered || isActive ? "translateX(2px)" : "translateX(0)",
@@ -188,12 +187,15 @@ function NavItem({
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const Sidebar = () => {
     const { isOpen } = useSidebar();
+    const { pinnedToolIds } = usePins();
     const pathname = usePathname();
     const isHome = pathname === "/";
 
+    const pinnedTools = ALL_TOOLS.filter(tool => pinnedToolIds.includes(tool.id));
+
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] sticky top-20 hidden lg:block bg-zinc-900/50 transition-all duration-300 ease-in-out
+            className={`h-[calc(100vh-5rem)] sticky top-20 hidden lg:block bg-zinc-900/50 shrink-0 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                 ${isOpen ? "w-64" : isHome ? "w-0 opacity-0 overflow-hidden" : "w-16"}`}
         >
             {/* Background dot grid */}
@@ -213,9 +215,36 @@ const Sidebar = () => {
 
             {/* Content */}
             <div className={`relative z-10 flex flex-col h-full transition-all duration-300 ${isOpen ? "p-6" : "p-2"}`}>
-                <div className="flex-grow">
+                <div className="flex-grow overflow-y-auto custom-scrollbar pr-1 -mr-1">
+                    {/* Pinned Section */}
+                    {pinnedTools.length > 0 && (
+                        <div className="mb-8">
+                            <p className={`text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 px-2 flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                                ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
+                                <Pin size={10} className="text-zinc-500" fill="currentColor" /> Pinned
+                            </p>
+                            <nav className={`flex flex-col ${isOpen ? "gap-0.5" : "gap-1.5"}`}>
+                                {pinnedTools.map((tool, i) => (
+                                    <NavItem
+                                        key={`pinned-${tool.id}`}
+                                        item={{
+                                            name: tool.name,
+                                            href: tool.href,
+                                            icon: tool.icon,
+                                            accent: tool.accent,
+                                            dev: false
+                                        }}
+                                        isOpen={isOpen}
+                                        isActive={pathname === tool.href}
+                                        index={i}
+                                    />
+                                ))}
+                            </nav>
+                        </div>
+                    )}
+
                     <div className="mb-6">
-                        <p className={`text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4 px-2 transition-all duration-300
+                        <p className={`text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4 px-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                             ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                             Discover
                         </p>
@@ -227,7 +256,7 @@ const Sidebar = () => {
                                     item={item}
                                     isOpen={isOpen}
                                     isActive={pathname === item.href}
-                                    index={i}
+                                    index={i + pinnedTools.length}
                                 />
                             ))}
                         </nav>

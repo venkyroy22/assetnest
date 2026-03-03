@@ -2,74 +2,22 @@
 
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
-    Wrench, Search, X, FileImage, QrCode, Sparkles,
-    Timer, Receipt, RefreshCw, ArrowUpRight,
+    Wrench, Search, X, Sparkles,
+    ArrowUpRight, Pin
 } from "lucide-react";
 import Link from "next/link";
-
-// ─── Tool registry ────────────────────────────────────────────────────────────
-const ALL_TOOLS = [
-    {
-        id: "image-compressor",
-        name: "Image Compressor",
-        description: "Compress JPEG, PNG & WebP images instantly in your browser. 100% private, no uploads needed.",
-        href: "/tools/image-compressor",
-        badge: "Free" as const,
-        icon: FileImage,
-        tags: ["image", "compress", "jpeg", "png", "webp", "optimize", "resize"],
-        accent: "#10b981",   // emerald
-    },
-    {
-        id: "qr",
-        name: "QR Code Generator",
-        description: "Generate beautiful, customizable QR codes instantly. Download as PNG or SVG for free.",
-        href: "/tools/qr",
-        badge: "Free" as const,
-        icon: QrCode,
-        tags: ["qr", "qrcode", "barcode", "link", "generate", "scan"],
-        accent: "#6366f1",   // indigo
-    },
-    {
-        id: "pomodoro",
-        name: "Pomodoro Timer",
-        description: "Boost your productivity with an animated focus timer, session tracking, and achievement system.",
-        href: "/tools/pomodoro",
-        badge: "Free" as const,
-        icon: Timer,
-        tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break"],
-        accent: "#f43f5e",   // rose
-    },
-    {
-        id: "billing",
-        name: "Smart Billing Tool",
-        description: "Paperless billing for small merchants. Scan barcodes, add items, generate a customer QR receipt — no printing needed.",
-        href: "/tools/billing",
-        badge: "Free" as const,
-        icon: Receipt,
-        tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
-        accent: "#f59e0b",   // amber
-    },
-    {
-        id: "image-converter",
-        name: "Image Converter",
-        description: "Convert JPG to PNG, PNG to WebP, or JPG to WebP instantly in your browser. Batch support, quality control, 100% private.",
-        href: "/tools/image-converter",
-        badge: "Free" as const,
-        icon: RefreshCw,
-        tags: ["image", "convert", "jpg", "jpeg", "png", "webp", "format", "converter", "batch"],
-        accent: "#8b5cf6",   // violet
-    },
-];
+import { ALL_TOOLS, Tool } from "@/lib/tools";
+import { usePins } from "@/components/PinProvider";
 
 // ─── Spotlight card ───────────────────────────────────────────────────────────
-interface Tool { id: string; name: string; description: string; href: string; badge: string; icon: React.ElementType; tags: string[]; accent: string; }
-
 function ToolCard({ tool, index }: { tool: Tool; index: number }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [mouse, setMouse] = useState({ x: 0, y: 0 });
     const [hovered, setHovered] = useState(false);
     const [tilt, setTilt] = useState({ x: 0, y: 0 });
     const [visible, setVisible] = useState(false);
+    const { togglePin, isPinned } = usePins();
+    const pinned = isPinned(tool.id);
 
     useEffect(() => {
         const t = setTimeout(() => setVisible(true), 80 + index * 70);
@@ -87,6 +35,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
             y: ((x / rect.width) - 0.5) * 12,
         });
     }, []);
+
+    const handlePinClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        togglePin(tool.id);
+    };
 
     const Icon = tool.icon;
     const accent = tool.accent;
@@ -112,11 +66,26 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                         : "opacity 0.45s ease, transform 0.45s cubic-bezier(0.23,1,0.32,1)",
                     boxShadow: hovered
                         ? `0 20px 60px -10px ${accent}30, 0 0 0 1px ${accent}25`
-                        : "0 0 0 1px rgba(63,63,70,0.5)",
+                        : pinned
+                            ? `0 0 0 1px ${accent}40, 0 4px 12px ${accent}10`
+                            : "0 0 0 1px rgba(63,63,70,0.5)",
                     willChange: "transform, opacity",
                 }}
-                className="relative overflow-hidden rounded-2xl bg-zinc-900/80 p-6 cursor-pointer h-full"
+                className={`relative overflow-hidden rounded-2xl bg-zinc-900/80 p-6 cursor-pointer h-full transition-shadow duration-300`}
             >
+                {/* ── Pin Button ── */}
+                <button
+                    onClick={handlePinClick}
+                    className={`absolute top-4 left-4 z-20 p-2 rounded-lg border transition-all duration-300 active:scale-95
+                        ${pinned
+                            ? "bg-white text-black border-white shadow-lg"
+                            : "bg-black/40 text-zinc-600 border-zinc-800 hover:border-zinc-500 hover:text-white backdrop-blur-md"}`}
+                    style={{ opacity: pinned || hovered ? 1 : 0 }}
+                    title={pinned ? "Unpin tool" : "Pin tool"}
+                >
+                    <Pin size={12} className={`transition-transform duration-300 ${pinned ? "rotate-45" : ""}`} fill={pinned ? "black" : "none"} />
+                </button>
+
                 {/* ── Dot-grid texture ── */}
                 <div
                     className="absolute inset-0 pointer-events-none"
@@ -159,7 +128,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                 />
 
                 {/* ── Content ── */}
-                <div className="relative z-10 flex flex-col h-full gap-4">
+                <div className="relative z-10 flex flex-col h-full gap-4 pt-2">
                     <div className="flex items-start justify-between">
                         {/* Icon box */}
                         <div
@@ -178,6 +147,11 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                         {/* Badge + arrow */}
                         <div className="flex items-center gap-2">
+                            {pinned && (
+                                <span className="text-[8px] font-black uppercase tracking-tighter text-zinc-500 mr-1 flex items-center gap-1">
+                                    <Pin size={8} fill="currentColor" /> Pinned
+                                </span>
+                            )}
                             <span
                                 className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border"
                                 style={{
@@ -266,15 +240,39 @@ export default function ToolsPage() {
         return () => clearTimeout(t);
     }, []);
 
+    const { pinnedToolIds } = usePins();
+
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
-        if (!q) return ALL_TOOLS;
-        return ALL_TOOLS.filter(t =>
-            t.name.toLowerCase().includes(q) ||
-            t.description.toLowerCase().includes(q) ||
-            t.tags.some(tag => tag.includes(q))
-        );
-    }, [query]);
+
+        // 1. Filter based on search query
+        let baseList = ALL_TOOLS;
+        if (q) {
+            baseList = ALL_TOOLS.filter(t =>
+                t.name.toLowerCase().includes(q) ||
+                t.description.toLowerCase().includes(q) ||
+                t.tags.some(tag => tag.includes(q))
+            );
+        }
+
+        // 2. Sort pinned items to the top based on pinned order
+        // We create a map of tool ID to its index in the pinnedToolIds array for O(1) lookup
+        const pinOrderMap = new Map<string, number>();
+        pinnedToolIds.forEach((id, index) => pinOrderMap.set(id, index));
+
+        return [...baseList].sort((a, b) => {
+            const aPinnedIndex = pinOrderMap.has(a.id) ? pinOrderMap.get(a.id)! : Infinity;
+            const bPinnedIndex = pinOrderMap.has(b.id) ? pinOrderMap.get(b.id)! : Infinity;
+
+            // If both are pinned, sort by their pin order
+            if (aPinnedIndex !== Infinity && bPinnedIndex !== Infinity) {
+                return aPinnedIndex - bPinnedIndex;
+            }
+
+            // If only one is pinned, it goes to the top
+            return aPinnedIndex - bPinnedIndex;
+        });
+    }, [query, pinnedToolIds]);
 
     return (
         <>

@@ -99,9 +99,9 @@ const Navbar = () => {
 
     return (
         <nav className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md" : "bg-background"}`}>
-            <div className="flex h-full items-center">
-                {/* Sidebar Toggle */}
-                <div className={`hidden lg:flex items-center h-full transition-all duration-300 ease-in-out ${isOpen ? "w-64 justify-start pl-[42px]" : "w-16 justify-center"}`}>
+            <div className="flex h-full items-center relative">
+                {/* Sidebar Toggle - Fixed stationary position */}
+                <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">
                     <button
                         onClick={toggle}
                         className="flex items-center justify-center p-2 rounded-sm border border-transparent hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
@@ -111,7 +111,8 @@ const Navbar = () => {
                     </button>
                 </div>
 
-                <div className="flex-grow h-full px-10">
+                {/* Main Navbar Content */}
+                <div className="flex-grow h-full pl-20 pr-10">
                     <div className="flex justify-between items-center h-full gap-8">
                         {/* Logo */}
                         <div className="flex items-center gap-4">

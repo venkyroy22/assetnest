@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, RotateCcw, SkipForward, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check } from "lucide-react";
+import { Play, Pause, RotateCcw, SkipForward, SkipBack, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check, Music, Volume2, VolumeX, CloudRain, Trees, Wind, Moon, Search, Link as LinkIcon, ArrowLeft, ExternalLink, RefreshCw, Trash2 } from "lucide-react";
+import { useMusic } from "@/components/MusicProvider";
 
 type Mode = "focus" | "short" | "long";
 interface Achievement { id: string; title: string; desc: string; icon: React.ReactNode; sessions: number; }
@@ -13,13 +14,18 @@ const ACHIEVEMENTS: Achievement[] = [
     { id: "streak10", title: "Legendary", desc: "10 sessions — productivity god", icon: <Trophy size={16} />, sessions: 10 },
 ];
 
-// ── SVG Ring constants ────────────────────────────────────────────────────────
+const AMBIENCE_TRACKS = [
+    { id: "lofi", name: "Lofi Beats", icon: <Music size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { id: "rain", name: "Rainy Night", icon: <CloudRain size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { id: "coffee", name: "Coffee Shop", icon: <Coffee size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+    { id: "forest", name: "Deep Forest", icon: <Trees size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+];
+
 const RADIUS = 130;
 const CX = 160;
 const CY = 160;
 const CIRC = 2 * Math.PI * RADIUS;
 
-// Quarter colors for the focus ring: blue → emerald → amber → violet
 const FOCUS_Q_COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#c084fc"];
 
 function lerpColor(a: string, b: string, t: number): string {
@@ -33,13 +39,11 @@ function lerpColor(a: string, b: string, t: number): string {
     return `rgb(${r},${g},${bl})`;
 }
 
-// Returns the focus-ring color for a given progress (1=start, 0=end),
-// blending smoothly across the last 15% of each quarter.
 function getFocusColor(progress: number): string {
-    const consumed = Math.min(1, Math.max(0, 1 - progress)); // 0→1 as timer drains
-    const qF = Math.min(consumed * 4, 3.9999);               // 0–4 range
-    const qi = Math.floor(qF);                               // which quarter: 0,1,2,3
-    const qt = qF - qi;                                      // 0–1 within that quarter
+    const consumed = Math.min(1, Math.max(0, 1 - progress));
+    const qF = Math.min(consumed * 4, 3.9999);
+    const qi = Math.floor(qF);
+    const qt = qF - qi;
     const BLEND = 0.85;
     if (qt > BLEND && qi < 3) {
         return lerpColor(FOCUS_Q_COLORS[qi], FOCUS_Q_COLORS[qi + 1], (qt - BLEND) / (1 - BLEND));
@@ -47,7 +51,6 @@ function getFocusColor(progress: number): string {
     return FOCUS_Q_COLORS[qi];
 }
 
-// Writes ring + dot position AND color directly to DOM (called from RAF loop)
 function applyProgress(
     progress: number,
     ringEl: SVGCircleElement | null,
@@ -57,7 +60,6 @@ function applyProgress(
 ) {
     const p = Math.max(0, Math.min(1, progress));
     const offset = CIRC * (1 - p);
-    // No -π/2 offset: the SVG is CSS -rotate-90°, so angle=0 → 12 o'clock visually
     const angle = 2 * Math.PI * p;
     const dotX = CX + RADIUS * Math.cos(angle);
     const dotY = CY + RADIUS * Math.sin(angle);
@@ -81,7 +83,6 @@ function applyProgress(
     }
 }
 
-// ── SVG Ring — rendered once, animated at 60fps via DOM refs ─────────────────
 function Ring({
     color, ringRef, dotRef, glowRef,
 }: {
@@ -106,7 +107,52 @@ function Ring({
     );
 }
 
-// ── Particle Burst ────────────────────────────────────────────────────────────
+function RainEffect({ active }: { active: boolean | string | null }) {
+    const [drops] = useState(() =>
+        Array.from({ length: 50 }, (_, i) => ({
+            left: Math.random() * 100,
+            top: -20 - (Math.random() * 80),
+            size: 1 + Math.random() * 2,
+            dur: 15 + Math.random() * 20,
+            delay: -Math.random() * 40,
+            opacity: 0.1 + Math.random() * 0.3,
+            blur: 0.5 + Math.random() * 1,
+        }))
+    );
+
+    if (!active) return null;
+
+    return (
+        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+            {drops.map((d, i) => (
+                <div
+                    key={i}
+                    className="absolute rounded-full bg-white/30"
+                    style={{
+                        left: `${d.left}%`,
+                        width: `${d.size}px`,
+                        height: `${d.size * 18}px`,
+                        opacity: d.opacity,
+                        filter: `blur(${d.blur}px)`,
+                        boxShadow: '0 0 10px rgba(255,255,255,0.05)',
+                        animation: `rain-slide ${d.dur}s linear infinite`,
+                        animationDelay: `${d.delay}s`,
+                    }}
+                />
+            ))}
+            <style jsx global>{`
+                @keyframes rain-slide {
+                    0% { transform: translateY(-10vh) scaleY(1); opacity: 0; }
+                    5% { opacity: 0.6; }
+                    95% { opacity: 0.4; }
+                    100% { transform: translateY(110vh) scaleY(1.5); opacity: 0; }
+                }
+            `}</style>
+            <div className="absolute inset-0 bg-black/5" />
+        </div>
+    );
+}
+
 function Particles({ active }: { active: boolean }) {
     const [particles] = useState(() =>
         Array.from({ length: 18 }, (_, i) => ({
@@ -131,7 +177,6 @@ function Particles({ active }: { active: boolean }) {
     );
 }
 
-// ── Settings Panel ────────────────────────────────────────────────────────────
 function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSave }: {
     visible: boolean; onClose: () => void;
     focusMins: number; shortMins: number; longMins: number;
@@ -182,21 +227,17 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSav
     );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────────
 export default function PomodoroPage() {
     const [focusMins, setFocusMins] = useState(25);
     const [shortMins, setShortMins] = useState(5);
     const [longMins, setLongMins] = useState(15);
-
     const durations = { focus: focusMins * 60, short: shortMins * 60, long: longMins * 60 };
 
     const COLORS: Record<Mode, string> = { focus: "#ffffff", short: "#34d399", long: "#818cf8" };
     const BG: Record<Mode, string> = { focus: "from-zinc-900 to-zinc-950", short: "from-emerald-950 to-zinc-950", long: "from-indigo-950 to-zinc-950" };
     const LABELS: Record<Mode, string> = { focus: "Focus", short: "Short Break", long: "Long Break" };
 
-    // One distinct color per quarter of the Pomodoro cycle
     const CYCLE_COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#c084fc"] as const;
-    // Quarter labels
     const QUARTER_LABELS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
     const [mode, setMode] = useState<Mode>("focus");
@@ -210,6 +251,18 @@ export default function PomodoroPage() {
     const [burst, setBurst] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
 
+    const [activeTrack, setActiveTrack] = useState<string | null>(null);
+    const [musicVolume, setMusicVolume] = useState(0.4);
+    const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+    const [playerMode, setPlayerMode] = useState<"ambient" | "youtube">("ambient");
+
+    const {
+        youtubeUrl, setYoutubeUrl, currentYoutubeEmbed, playYoutube,
+        isYTPlaying, toggleYT, skipYoutubeTrack, prevYoutubeTrack,
+        ytVolume, adjustYTVolume, resetPlayer
+    } = useMusic();
+
+    const musicAudioRef = useRef<HTMLAudioElement | null>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const audioRef = useRef<AudioContext | null>(null);
     const ringRef = useRef<SVGCircleElement>(null);
@@ -225,20 +278,32 @@ export default function PomodoroPage() {
 
     const modeRef = useRef<Mode>("focus");
     useEffect(() => { modeRef.current = mode; }, [mode]);
-
-    // Keep totalSecsRef in sync
     useEffect(() => { totalSecsRef.current = totalSecs; }, [totalSecs]);
 
-    // RAF loop — drives ring + dot at 60fps, with quarter-color blending
+    useEffect(() => {
+        if (!musicAudioRef.current) {
+            musicAudioRef.current = new Audio();
+            musicAudioRef.current.loop = true;
+        }
+        const audio = musicAudioRef.current;
+        const track = AMBIENCE_TRACKS.find(t => t.id === activeTrack);
+        if (activeTrack && track) {
+            if (audio.src !== track.url) audio.src = track.url;
+            if (isMusicPlaying) audio.play().catch(() => setIsMusicPlaying(false));
+            else audio.pause();
+        } else audio.pause();
+    }, [activeTrack, isMusicPlaying]);
+
+    useEffect(() => {
+        if (musicAudioRef.current) musicAudioRef.current.volume = musicVolume;
+    }, [musicVolume]);
+
     useEffect(() => {
         const frame = () => {
             if (endTimeMsRef.current !== null) {
                 const remaining = Math.max(0, (endTimeMsRef.current - Date.now()) / 1000);
                 const p = totalSecsRef.current > 0 ? remaining / totalSecsRef.current : 0;
-                // Pick stroke color: quarter-blend during focus, static during breaks
-                const strokeColor = modeRef.current === "focus"
-                    ? getFocusColor(p)
-                    : modeRef.current === "short" ? "#34d399" : "#818cf8";
+                const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : modeRef.current === "short" ? "#34d399" : "#818cf8";
                 applyProgress(p, ringRef.current, dotRef.current, glowRef.current, strokeColor);
                 if (glowRef.current) glowRef.current.setAttribute("opacity", "0.12");
             }
@@ -248,7 +313,6 @@ export default function PomodoroPage() {
         return () => cancelAnimationFrame(rafRef.current);
     }, []);
 
-    // Beep
     const beep = useCallback(() => {
         try {
             if (!audioRef.current) audioRef.current = new AudioContext();
@@ -263,7 +327,7 @@ export default function PomodoroPage() {
                 o.start(ctx.currentTime + delay);
                 o.stop(ctx.currentTime + delay + 0.4);
             });
-        } catch { /* blocked */ }
+        } catch { /* ignored */ }
     }, []);
 
     const tryUnlock = useCallback((total: number) => {
@@ -277,35 +341,28 @@ export default function PomodoroPage() {
     }, [unlocked]);
 
     const onComplete = useCallback(() => {
-        setRunning(false);
-        beep();
-        setBurst(true);
+        setRunning(false); beep(); setBurst(true);
         setTimeout(() => setBurst(false), 1500);
         if (mode === "focus") {
             const next = sessions + 1;
             const cycleNext = (pomodoroInCycle + 1) % 4;
-            setSessions(next);
-            setPomodoroInCycle(cycleNext);
+            setSessions(next); setPomodoroInCycle(cycleNext);
             tryUnlock(next);
             const nextMode: Mode = cycleNext === 0 ? "long" : "short";
             setTimeout(() => { setMode(nextMode); setSecondsLeft(durations[nextMode]); setTotalSecs(durations[nextMode]); }, 500);
         } else {
             setTimeout(() => { setMode("focus"); setSecondsLeft(durations.focus); setTotalSecs(durations.focus); }, 500);
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mode, sessions, pomodoroInCycle, beep, tryUnlock, durations.focus, durations.short, durations.long]);
+    }, [mode, sessions, pomodoroInCycle, beep, tryUnlock, durations]);
 
-    // 1-second interval — display text + completion
     useEffect(() => {
         if (running) {
             endTimeMsRef.current = Date.now() + secondsLeft * 1000;
-            if (glowRef.current) glowRef.current.setAttribute("opacity", "0.12");
             intervalRef.current = setInterval(() => {
                 setSecondsLeft(s => {
                     if (s <= 1) {
                         clearInterval(intervalRef.current!);
                         endTimeMsRef.current = null;
-                        if (glowRef.current) glowRef.current.setAttribute("opacity", "0");
                         onComplete();
                         return 0;
                     }
@@ -314,14 +371,12 @@ export default function PomodoroPage() {
             }, 1000);
         } else {
             endTimeMsRef.current = null;
-            if (glowRef.current) glowRef.current.setAttribute("opacity", "0");
             const p = totalSecsRef.current > 0 ? secondsLeft / totalSecsRef.current : 0;
             applyProgress(p, ringRef.current, dotRef.current, glowRef.current);
             clearInterval(intervalRef.current!);
         }
         return () => clearInterval(intervalRef.current!);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [running, onComplete]);
+    }, [running, onComplete, secondsLeft]);
 
     const switchMode = (m: Mode) => {
         setRunning(false); setMode(m);
@@ -340,148 +395,147 @@ export default function PomodoroPage() {
     };
 
     return (
-        <div className={`min-h-[80vh] py-16 px-6 md:px-10 bg-gradient-to-b ${BG[mode]} transition-all duration-1000`}>
+        <div className={`relative min-h-[80vh] py-16 px-6 md:px-10 bg-gradient-to-b ${BG[mode]} transition-all duration-1000 overflow-hidden`}>
+            {/* Dynamic Music Background */}
+            <RainEffect active={isMusicPlaying || (currentYoutubeEmbed && isYTPlaying)} />
 
-            {/* ── Header (full width) ── */}
-            <div className="max-w-7xl mx-auto mb-10 flex items-start justify-between">
-                <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 mb-4">
-                        <Brain size={11} className="text-zinc-400" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Productivity Tool</span>
-                    </div>
-                    <h1 className="text-4xl font-black tracking-tight uppercase text-white mb-1">Pomodoro Timer</h1>
-                    <p className="text-zinc-400 text-sm font-medium">Stay focused. Build habits. Achieve more.</p>
+            {/* ── Header (Centered & Balanced) ── */}
+            <div className="max-w-5xl mx-auto mb-10 flex flex-col items-center justify-center gap-6 text-center">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 w-fit">
+                    <Brain size={11} className="text-zinc-400" />
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Productivity Tool</span>
                 </div>
-                <button onClick={() => setSettingsOpen(true)}
-                    className="mt-2 p-2.5 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all"
-                    title="Timer Settings">
-                    <Settings size={18} />
-                </button>
+
+                <div className="flex flex-col items-center gap-8">
+                    <h1 className="text-5xl font-black tracking-tighter uppercase text-white">Pomodoro Timer</h1>
+
+                    <div className="flex flex-col items-center gap-6">
+                        {/* Functional Mini Player Bar */}
+                        <div className="flex items-center gap-4 bg-zinc-900/80 border border-zinc-800 p-2 pr-5 rounded-2xl shadow-2xl relative backdrop-blur-xl border-t-zinc-700/30">
+                            {currentYoutubeEmbed ? (
+                                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 animate-in fade-in slide-in-from-left-4 duration-700">
+                                    <div id="music-player-dock" className="w-full sm:w-56 h-32 rounded-xl bg-black/40 border border-zinc-800/50 shadow-inner relative shrink-0 overflow-hidden flex flex-col items-center justify-center gap-2 group/placeholder">
+                                        <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
+                                        <div className="relative flex flex-col items-center gap-2 px-6 text-center">
+                                            <div className="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center border border-zinc-700/30 group-hover/placeholder:scale-110 transition-transform duration-500">
+                                                <Music size={16} className="text-zinc-500" />
+                                            </div>
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600">Active Viewport</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col gap-2 py-1 w-full sm:w-auto">
+                                        <div className="flex items-center justify-between gap-3 mb-2 px-1">
+                                            <div className="flex items-center gap-2">
+                                                <div className="relative flex items-center justify-center">
+                                                    <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-20" />
+                                                    <div className="relative h-2 w-2 rounded-full bg-red-500" />
+                                                </div>
+                                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Live</span>
+                                            </div>
+                                            <div className="flex items-center gap-2 group/vol bg-white/5 px-2 py-1 rounded-md border border-zinc-800">
+                                                <Volume2 size={10} className="text-zinc-500" />
+                                                <input type="range" min="0" max="100" value={ytVolume} onChange={(e) => adjustYTVolume(Number(e.target.value))}
+                                                    className="w-16 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <div className="flex items-center gap-1.5">
+                                                <button onClick={() => prevYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Previous Track"><SkipBack size={12} /></button>
+                                                <button onClick={() => toggleYT()} className={`flex-[2] flex items-center justify-center gap-2 text-[10px] font-black uppercase transition-all px-3 py-1.5 rounded-lg border ${isYTPlaying ? "bg-white/5 text-zinc-400 border-zinc-800 hover:text-white" : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"}`} title={isYTPlaying ? "Pause Session" : "Resume Session"}>
+                                                    {isYTPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
+                                                    <span>{isYTPlaying ? "Pause" : "Resume"}</span>
+                                                </button>
+                                                <button onClick={() => skipYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Next Track"><SkipForward size={12} /></button>
+                                            </div>
+                                            <div className="flex items-center gap-1.5">
+                                                <button onClick={() => window.open(youtubeUrl, '_blank')} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase text-zinc-400 hover:text-red-400 transition-all bg-white/5 px-2 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700" title="Open on YouTube"><ExternalLink size={10} className="text-zinc-500" /><span>Source</span></button>
+                                                <button onClick={() => resetPlayer()} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase text-red-500/80 hover:text-red-400 transition-all bg-red-500/5 px-2 py-1.5 rounded-lg border border-red-500/10 hover:border-red-500/20" title="Clear URL & Reset"><Trash2 size={10} /><span>Reset</span></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4 h-12 px-2">
+                                    <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-600 shrink-0 border border-zinc-700/30">
+                                        <Music size={16} />
+                                    </div>
+                                    <div className="flex flex-col gap-1">
+                                        <div className="relative flex items-center gap-3">
+                                            <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="PASTE YOUTUBE URL..."
+                                                className="bg-transparent border-none text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none w-44 placeholder:text-zinc-700" />
+                                            <button onClick={() => playYoutube()} className="p-1.5 bg-red-500 text-white rounded-lg shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all hover:scale-105 active:scale-95" title="Start Playing"><Play size={12} fill="currentColor" /></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <button onClick={() => setSettingsOpen(true)} className="p-3 bg-zinc-900 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-xl shadow-xl hover:shadow-white/5" title="Timer Settings"><Settings size={20} /></button>
+                    </div>
+                </div>
             </div>
 
-            {/* ── 3-column grid ── */}
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_auto_280px] gap-8 lg:gap-10 items-start">
-
                 {/* ── LEFT: Cycle + Sessions ── */}
                 <div className="flex flex-col gap-6 lg:pt-14">
-
-                    {/* Current cycle */}
                     <div className="p-5 border border-zinc-800 bg-zinc-900/30">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Current Cycle</span>
                             <div className="flex items-center gap-1.5">
                                 <Coffee size={12} className="text-zinc-500" />
-                                <span className="text-[9px] font-black text-zinc-500">
-                                    {4 - pomodoroInCycle} to long break
-                                </span>
+                                <span className="text-[9px] font-black text-zinc-500">{4 - pomodoroInCycle} to long break</span>
                             </div>
                         </div>
                         <div className="flex gap-2 mb-3">
-                            {[0, 1, 2, 3].map(i => {
-                                const qColor = CYCLE_COLORS[i];
-                                const isDone = i < pomodoroInCycle;
-                                const isCurrent = i === pomodoroInCycle && mode === "focus";
-                                const isEmpty = !isDone && !isCurrent;
-                                return (
-                                    <div key={i} className="flex-1 flex flex-col gap-1.5">
-                                        <div
-                                            className={`h-4 w-full rounded-sm transition-all duration-700 ${isCurrent ? "animate-pulse" : ""
-                                                }`}
-                                            style={{
-                                                backgroundColor: isEmpty ? "#27272a" : qColor,
-                                                boxShadow: isDone
-                                                    ? `0 0 8px ${qColor}66`
-                                                    : isCurrent
-                                                        ? `0 0 12px ${qColor}99`
-                                                        : "none",
-                                            }}
-                                        />
-                                        <span
-                                            className="text-[8px] font-black text-center block transition-all duration-700"
-                                            style={{ color: isEmpty ? "#3f3f46" : qColor }}
-                                        >
-                                            {QUARTER_LABELS[i]}
-                                        </span>
-                                    </div>
-                                );
-                            })}
+                            {[0, 1, 2, 3].map(i => (
+                                <div key={i} className="flex-1 flex flex-col gap-1.5">
+                                    <div className={`h-4 w-full rounded-sm transition-all duration-700 ${i === pomodoroInCycle && mode === "focus" ? "animate-pulse" : ""}`}
+                                        style={{ backgroundColor: i < pomodoroInCycle ? CYCLE_COLORS[i] : (i === pomodoroInCycle && mode === "focus" ? CYCLE_COLORS[i] : "#27272a"), boxShadow: i < pomodoroInCycle ? `0 0 8px ${CYCLE_COLORS[i]}66` : (i === pomodoroInCycle && mode === "focus" ? `0 0 12px ${CYCLE_COLORS[i]}99` : "none") }} />
+                                    <span className="text-[8px] font-black text-center block transition-all duration-700" style={{ color: i <= pomodoroInCycle ? CYCLE_COLORS[i] : "#3f3f46" }}>{QUARTER_LABELS[i]}</span>
+                                </div>
+                            ))}
                         </div>
                     </div>
 
-                    {/* Total sessions */}
                     <div className="p-5 border border-zinc-800 bg-zinc-900/30">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Sessions</span>
-                            <div className="flex items-center gap-1.5">
-                                <Flame size={13} className={sessions >= 3 ? "text-orange-400" : "text-zinc-600"} />
-                                <span className="text-sm font-black text-white">{sessions}</span>
-                            </div>
+                            <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-orange-400" : "text-zinc-600"} /><span className="text-sm font-black text-white">{sessions}</span></div>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                             {Array.from({ length: Math.max(8, sessions + 2) }).map((_, i) => (
-                                <div key={i}
-                                    className={`h-2.5 w-2.5 rounded-sm transition-all duration-500 ${i < sessions ? "bg-white" : "bg-zinc-800"
-                                        }`}
-                                />
+                                <div key={i} className={`h-2.5 w-2.5 rounded-sm transition-all duration-500 ${i < sessions ? "bg-white" : "bg-zinc-800"}`} />
                             ))}
                         </div>
-                        {sessions === 0 && (
-                            <p className="text-[10px] text-zinc-600 font-medium mt-3">Complete your first session!</p>
-                        )}
                     </div>
                 </div>
 
                 {/* ── CENTER: Mode + Ring + Controls ── */}
-                <div className="flex flex-col items-center">
-                    {/* Mode selector */}
+                <div className="flex flex-col items-center max-w-xl mx-auto w-full">
                     <div className="flex gap-2 mb-8">
                         {(["focus", "short", "long"] as Mode[]).map(m => (
-                            <button key={m} onClick={() => switchMode(m)}
-                                className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ${mode === m ? "border-white bg-white text-black" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
-                                    }`}>
-                                {LABELS[m]}
-                            </button>
+                            <button key={m} onClick={() => switchMode(m)} className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ${mode === m ? "border-white bg-white text-black" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"}`}>{LABELS[m]}</button>
                         ))}
                     </div>
 
-                    {/* Ring */}
                     <div className="relative w-[320px] h-[320px] flex items-center justify-center mb-8">
                         <Ring color={color} ringRef={ringRef} dotRef={dotRef} glowRef={glowRef} />
                         <Particles active={burst} />
                         <div className="relative z-10 flex flex-col items-center gap-1 select-none">
-                            <div className="text-7xl font-black tracking-tighter tabular-nums"
-                                style={{ color, textShadow: `0 0 24px ${color}44` }}>
-                                {mins}:{secs}
-                            </div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em]"
-                                style={{ color, opacity: running ? 1 : 0.4 }}>
-                                {running ? LABELS[mode] : "Paused"}
-                            </span>
-                            <span className="text-[9px] text-zinc-600 font-medium mt-1">
-                                {LABELS[mode]} · {mode === "focus" ? focusMins : mode === "short" ? shortMins : longMins} min
-                            </span>
+                            <div className="text-7xl font-black tracking-tighter tabular-nums" style={{ color, textShadow: `0 0 24px ${color}44` }}>{mins}:{secs}</div>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color, opacity: running ? 1 : 0.4 }}>{running ? LABELS[mode] : "Paused"}</span>
+                            <span className="text-[9px] text-zinc-600 font-medium mt-1">{LABELS[mode]} · {mode === "focus" ? focusMins : mode === "short" ? shortMins : longMins} min</span>
                         </div>
                     </div>
 
-                    {/* Controls */}
                     <div className="flex items-center gap-4">
-                        <button onClick={reset} title="Reset"
-                            className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95">
-                            <RotateCcw size={18} />
+                        <button onClick={reset} title="Reset" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95"><RotateCcw size={18} /></button>
+                        <button onClick={() => setRunning(r => !r)} className="w-20 h-20 flex items-center justify-center border-2 transition-all duration-300 active:scale-95 relative overflow-hidden group" style={{ borderColor: color, boxShadow: running ? `0 0 28px ${color}44` : "none" }}>
+                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `${color}15` }} />
+                            {running ? <Pause size={28} style={{ color }} /> : <Play size={28} style={{ color }} className="translate-x-0.5" />}
                         </button>
-                        <button onClick={() => setRunning(r => !r)}
-                            className="w-20 h-20 flex items-center justify-center border-2 transition-all duration-300 active:scale-95 relative overflow-hidden group"
-                            style={{ borderColor: color, boxShadow: running ? `0 0 28px ${color}44` : "none" }}>
-                            <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                                style={{ background: `${color}15` }} />
-                            {running
-                                ? <Pause size={28} style={{ color }} />
-                                : <Play size={28} style={{ color }} className="translate-x-0.5" />}
-                        </button>
-                        <button onClick={skip} title="Skip"
-                            className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95">
-                            <SkipForward size={18} />
-                        </button>
+                        <button onClick={skip} title="Skip" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95"><SkipForward size={18} /></button>
                     </div>
                 </div>
 
@@ -492,43 +546,13 @@ export default function PomodoroPage() {
                         {ACHIEVEMENTS.map(a => {
                             const done = unlocked.includes(a.id);
                             return (
-                                <div key={a.id}
-                                    className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"
-                                        }`}>
+                                <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
                                     <div className={done ? "text-amber-400" : "text-zinc-600"}>{a.icon}</div>
-                                    <div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-white leading-tight">{a.title}</p>
-                                        <p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p>
-                                    </div>
-                                    {done && (
-                                        <span className="text-[8px] font-black uppercase tracking-widest text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 w-fit">Unlocked</span>
-                                    )}
+                                    <div><p className="text-[10px] font-black uppercase tracking-widest text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
+                                    {done && <span className="text-[8px] font-black uppercase tracking-widest text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 w-fit">Unlocked</span>}
                                 </div>
                             );
                         })}
-                    </div>
-
-                    {/* Unlock progress */}
-                    <div className="p-4 border border-zinc-800/50 bg-zinc-950/20">
-                        <p className="text-[9px] font-black uppercase tracking-widest text-zinc-600 mb-3">Unlock Progress</p>
-                        <div className="space-y-2.5">
-                            {ACHIEVEMENTS.map(a => {
-                                const done = unlocked.includes(a.id);
-                                const pct = Math.min(100, sessions > 0 ? Math.round((sessions / a.sessions) * 100) : 0);
-                                return (
-                                    <div key={a.id} className="flex items-center gap-2">
-                                        <span className="text-[8px] text-zinc-600 w-16 shrink-0 truncate">{a.title}</span>
-                                        <div className="flex-1 h-1 bg-zinc-800 overflow-hidden">
-                                            <div className={`h-full transition-all duration-1000 ${done ? "bg-amber-400" : "bg-zinc-600"}`}
-                                                style={{ width: `${pct}%` }} />
-                                        </div>
-                                        <span className="text-[8px] text-zinc-600 w-8 text-right shrink-0">
-                                            {done ? "✓" : `${sessions}/${a.sessions}`}
-                                        </span>
-                                    </div>
-                                );
-                            })}
-                        </div>
                     </div>
                 </div>
             </div>
@@ -538,22 +562,13 @@ export default function PomodoroPage() {
                 {toast && (
                     <div className="flex items-center gap-4 px-6 py-4 bg-zinc-900 border border-amber-500/50 shadow-2xl shadow-amber-500/10 min-w-[300px]">
                         <div className="text-amber-400 shrink-0">{toast.icon}</div>
-                        <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-amber-400 mb-0.5">Achievement Unlocked!</p>
-                            <p className="text-sm font-black text-white">{toast.title}</p>
-                            <p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p>
-                        </div>
+                        <div><p className="text-[10px] font-black uppercase tracking-widest text-amber-400 mb-0.5">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
                         <Trophy size={18} className="text-amber-400 shrink-0 ml-2 animate-bounce" />
                     </div>
                 )}
             </div>
 
-            <SettingsPanel
-                visible={settingsOpen}
-                onClose={() => setSettingsOpen(false)}
-                focusMins={focusMins} shortMins={shortMins} longMins={longMins}
-                onSave={saveSettings}
-            />
+            <SettingsPanel visible={settingsOpen} onClose={() => setSettingsOpen(false)} focusMins={focusMins} shortMins={shortMins} longMins={longMins} onSave={saveSettings} />
         </div>
     );
 }
