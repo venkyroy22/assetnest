@@ -196,8 +196,8 @@ export default function ImageConverterPage() {
                                     key={m.value}
                                     onClick={() => changeMode(m.value)}
                                     className={`py-3 px-4 rounded-xl border text-sm font-black transition-all ${mode === m.value
-                                            ? "bg-emerald-500 border-emerald-500 text-black"
-                                            : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500"
+                                        ? "bg-emerald-500 border-emerald-500 text-black"
+                                        : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500"
                                         }`}
                                 >
                                     <span className="text-xs">{m.from}</span>
@@ -207,6 +207,20 @@ export default function ImageConverterPage() {
                             ))}
                         </div>
                     </div>
+
+                    {/* JPG→PNG size notice */}
+                    {mode === "jpg-to-png" && (
+                        <div className="flex items-start gap-3 bg-amber-500/10 border border-amber-500/20 rounded-xl px-4 py-3">
+                            <span className="text-amber-400 text-base leading-none mt-0.5">⚠️</span>
+                            <div>
+                                <p className="text-[11px] font-black text-amber-400 mb-0.5">File size will be larger than the original</p>
+                                <p className="text-[11px] text-amber-300/70 font-medium leading-relaxed">
+                                    PNG is <strong>lossless</strong> — it preserves every pixel without discarding data, so it&apos;s always larger than a JPG.
+                                    If you need a <em>smaller</em> file, switch to <strong>JPG → WebP</strong> instead.
+                                </p>
+                            </div>
+                        </div>
+                    )}
 
                     {/* Quality slider — only for WebP output */}
                     {mode !== "jpg-to-png" && (
@@ -238,8 +252,8 @@ export default function ImageConverterPage() {
                     onDrop={handleDrop}
                     onClick={() => inputRef.current?.click()}
                     className={`border-2 border-dashed rounded-2xl flex flex-col items-center justify-center py-14 cursor-pointer transition-all ${dragging
-                            ? "border-emerald-500 bg-emerald-500/5"
-                            : "border-zinc-700 bg-zinc-900/30 hover:border-zinc-500 hover:bg-zinc-900/50"
+                        ? "border-emerald-500 bg-emerald-500/5"
+                        : "border-zinc-700 bg-zinc-900/30 hover:border-zinc-500 hover:bg-zinc-900/50"
                         }`}
                 >
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all ${dragging ? "bg-emerald-500/20 border border-emerald-500/30" : "bg-zinc-800 border border-zinc-700"
@@ -313,8 +327,8 @@ export default function ImageConverterPage() {
                                                     <ArrowRight size={10} className="text-zinc-600" />
                                                     <span className="text-[10px] text-emerald-400 font-bold">{fmtBytes(entry.outputSize)}</span>
                                                     <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${entry.outputSize < entry.originalSize
-                                                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                                                            : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                                        ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                                        : "bg-amber-500/10 text-amber-400 border border-amber-500/20"
                                                         }`}>
                                                         {savingPct(entry.originalSize, entry.outputSize)}
                                                     </span>

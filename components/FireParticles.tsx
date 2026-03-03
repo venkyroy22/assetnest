@@ -2,107 +2,130 @@
 
 import { useEffect, useRef } from "react";
 
-export default function FireParticles() {
+interface Particle {
+    x: number;
+    y: number;
+    size: number;
+    color: string;
+    opacity: number;
+    driftX: number;
+    driftY: number;
+    driftPhase: number;
+    driftSpeed: number;
+}
+
+const COLORS = [
+    "#D7DDE8", // bright silver
+    "#C4CAD6", // light silver
+    "#A8B0C0", // mid silver
+    "#9198AA", // blue-grey
+    "#757F9A", // deep blue-grey
+    "#E8ECF2", // near white silver
+    "#B0B8C8", // cool grey
+];
+
+const PARTICLE_COUNT = 280;
+
+function createParticle(w: number, h: number): Particle {
+    const depth = Math.random();
+    return {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        size: 1 + depth * 3.5,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        opacity: 0.15 + depth * 0.55,
+        driftX: (Math.random() - 0.5) * 0.35,
+        driftY: -(0.2 + Math.random() * 0.55),
+        driftPhase: Math.random() * Math.PI * 2,
+        driftSpeed: 0.004 + Math.random() * 0.006,
+    };
+}
+
+export default function FloatingParticles() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
     useEffect(() => {
         const canvas = canvasRef.current;
         if (!canvas) return;
-
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        let animationFrameId: number;
+        let animId: number;
         let particles: Particle[] = [];
+        let w = 0;
+        let h = 0;
+        let t = 0;
 
         const resize = () => {
-            if (canvas.parentElement) {
-                canvas.width = canvas.parentElement.offsetWidth;
-                canvas.height = canvas.parentElement.offsetHeight;
-            }
+            const parent = canvas.parentElement;
+            w = parent ? parent.offsetWidth : window.innerWidth;
+            h = parent ? parent.offsetHeight : window.innerHeight;
+            canvas.width = w;
+            canvas.height = h;
         };
-
-        class Particle {
-            x: number;
-            y: number;
-            size: number;
-            speedY: number;
-            speedX: number;
-            color: string;
-            opacity: number;
-            life: number;
-
-            constructor() {
-                this.x = Math.random() * canvas!.width;
-                this.y = canvas!.height + 10;
-                this.size = Math.random() * 3 + 1;
-                this.speedY = Math.random() * -2 - 1;
-                this.speedX = Math.random() * 2 - 1;
-                this.opacity = 1;
-                this.life = Math.random() * 100 + 50;
-
-                // Silver/Chrome colors
-                const colors = ["#C0C0C0", "#E8E8E8", "#D3D3D3", "#757F9A", "#D7DDE8"];
-                this.color = colors[Math.floor(Math.random() * colors.length)];
-            }
-
-            update() {
-                this.y += this.speedY;
-                this.x += this.speedX;
-                this.opacity -= 0.008; // Slower fade for a more "misty" look
-                this.life--;
-
-                if (this.size > 0.1) this.size -= 0.005;
-            }
-
-            draw() {
-                if (!ctx) return;
-                ctx.globalAlpha = this.opacity;
-                ctx.fillStyle = this.color;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-
-                // Add a silver glow effect
-                ctx.shadowBlur = 12;
-                ctx.shadowColor = this.color;
-            }
-        }
 
         const init = () => {
             particles = [];
-            for (let i = 0; i < 80; i++) {
-                particles.push(new Particle());
+            for (let i = 0; i < PARTICLE_COUNT; i++) {
+                const p = createParticle(w, h);
+                p.driftPhase = Math.random() * Math.PI * 2;
+                particles.push(p);
             }
         };
 
         const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            t++;
+            ctx.clearRect(0, 0, w, h);
 
-            if (particles.length < 150 && Math.random() > 0.7) {
-                particles.push(new Particle());
-            }
+            for (const p of particles) {
+                const wobble = Math.sin(t * p.driftSpeed + p.driftPhase) * 1.1;
+                p.x += p.driftX + wobble * 0.04;
+                p.y += p.driftY;
 
-            for (let i = 0; i < particles.length; i++) {
-                particles[i].update();
-                particles[i].draw();
-
-                if (particles[i].opacity <= 0 || particles[i].life <= 0) {
-                    particles.splice(i, 1);
-                    i--;
+                if (p.y < -10) {
+                    p.y = h + 10;
+                    p.x = Math.random() * w;
                 }
+                if (p.x < -20) p.x = w + 20;
+                if (p.x > w + 20) p.x = -20;
+
+                const len = p.size * (1.4 + Math.random() * 0.2);
+                const halfLen = len / 2;
+                const halfW = p.size / 2;
+
+                ctx.save();
+                ctx.globalAlpha = p.opacity;
+
+                const angle = Math.atan2(p.driftY, p.driftX + wobble * 0.04) + Math.PI / 2;
+                ctx.translate(p.x, p.y);
+                ctx.rotate(angle);
+
+                // Create a silver gradient for the particle in local coord space
+                const grad = ctx.createLinearGradient(-halfW, -halfLen, halfW, halfLen);
+                grad.addColorStop(0, "#757F9A"); // deep silver
+                grad.addColorStop(0.5, "#D7DDE8"); // bright silver
+                grad.addColorStop(1, "#A8B0C0"); // mid silver
+
+                ctx.fillStyle = grad;
+                ctx.beginPath();
+                ctx.roundRect(-halfW, -halfLen, p.size, len, p.size / 2);
+                ctx.fill();
+                ctx.restore();
             }
-            animationFrameId = requestAnimationFrame(animate);
+
+            animId = requestAnimationFrame(animate);
         };
 
-        window.addEventListener("resize", resize);
+        const handleResize = () => { resize(); init(); };
+        window.addEventListener("resize", handleResize);
+
         resize();
         init();
         animate();
 
         return () => {
-            window.removeEventListener("resize", resize);
-            cancelAnimationFrame(animationFrameId);
+            cancelAnimationFrame(animId);
+            window.removeEventListener("resize", handleResize);
         };
     }, []);
 
@@ -110,7 +133,7 @@ export default function FireParticles() {
         <canvas
             ref={canvasRef}
             className="absolute inset-0 pointer-events-none z-10"
-            style={{ opacity: 0.6 }}
+            style={{ opacity: 1 }}
         />
     );
 }

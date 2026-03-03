@@ -7,6 +7,7 @@ import AssetCard from "@/components/AssetCard";
 import CategoryCard from "@/components/CategoryCard";
 import FireParticles from "@/components/FireParticles";
 import { TrendingUp, Sparkles, Wrench, ArrowRight } from "lucide-react";
+import HomeToolsGrid from "@/components/HomeToolsGrid";
 import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
@@ -125,25 +126,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Top Tools Section */}
+      {/* ── Top Tools Section ── */}
       <section className="py-16 px-10">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 p-8 border border-zinc-800 bg-zinc-900/30 hover:border-zinc-600 transition-all group">
-          <div className="flex items-center gap-5">
-            <div className="w-12 h-12 bg-white/5 border border-zinc-700 flex items-center justify-center shrink-0 group-hover:border-white/30 transition-all">
-              <Wrench size={20} className="text-white" />
+
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-white/5 border border-zinc-800 flex items-center justify-center">
+              <Wrench size={15} className="text-zinc-400" />
             </div>
             <div>
-              <h2 className="text-base font-black uppercase tracking-widest text-white mb-1">Top Tools</h2>
-              <p className="text-sm text-zinc-400 font-medium">Free tools for creators — image compressor, QR generator & more dropping regularly.</p>
+              <h2 className="text-base font-black uppercase tracking-widest text-white">Top Tools</h2>
+              <p className="text-xs text-zinc-600 font-medium">Free tools for creators — 100% browser-based</p>
             </div>
           </div>
           <Link
             href="/tools"
-            className="shrink-0 flex items-center gap-2 px-6 py-3 bg-white text-black text-[10px] font-black uppercase tracking-widest hover:opacity-90 active:scale-95 transition-all"
+            className="flex items-center gap-2 px-4 py-2 border border-zinc-700 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
           >
-            Explore Tools <ArrowRight size={12} />
+            All Tools <ArrowRight size={11} />
           </Link>
         </div>
+
+        {/* Tool cards grid */}
+        <HomeToolsGrid />
       </section>
 
     </div>
