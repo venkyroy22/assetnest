@@ -28,17 +28,10 @@ import {
     Wifi,
     WifiOff,
     Info,
-    Music,
-    Volume2,
-    SkipBack,
-    Pause,
-    SkipForward,
     ExternalLink,
-    Trash2,
     X
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
-import { useMusic } from "@/components/MusicProvider";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -99,11 +92,6 @@ export default function TypingTesterPage() {
     const [opponentFinished, setOpponentFinished] = useState(false);
     const [userFinishedFirst, setUserFinishedFirst] = useState<boolean | null>(null);
 
-    const {
-        youtubeUrl, setYoutubeUrl, playYoutube,
-        isYTPlaying, toggleYT, skipYoutubeTrack, prevYoutubeTrack,
-        ytVolume, adjustYTVolume, resetPlayer, currentYoutubeEmbed
-    } = useMusic();
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const channelRef = useRef<any>(null);
@@ -494,59 +482,17 @@ export default function TypingTesterPage() {
                         </div>
 
                         <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-                            {/* Functional Mini Player Bar */}
-                            <div className="flex items-center gap-4 bg-zinc-900/80 border border-zinc-800 p-2 pr-5 rounded-2xl shadow-2xl relative backdrop-blur-xl border-t-zinc-700/30 shrink-0">
-                                {currentYoutubeEmbed ? (
-                                    <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-4 duration-700">
-                                        <div id="music-player-dock" className="w-20 h-12 rounded-xl bg-black/40 border border-zinc-800/50 shadow-inner relative shrink-0 overflow-hidden flex flex-col items-center justify-center gap-2 group/placeholder">
-                                            <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
-                                            <Music size={12} className="text-zinc-500" />
-                                        </div>
-
-                                        <div className="flex flex-col gap-1 py-0.5">
-                                            <div className="flex items-center justify-between gap-3 px-1">
-                                                <div className="flex items-center gap-1.5">
-                                                    <div className="relative h-1 w-1 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
-                                                    <span className="text-[8px] font-black uppercase tracking-[0.2em] text-white">Live</span>
-                                                </div>
-                                                <div className="flex items-center gap-1.5 bg-white/5 px-1.5 py-0.5 rounded border border-zinc-800">
-                                                    <input type="range" min="0" max="100" value={ytVolume} onChange={(e) => adjustYTVolume(Number(e.target.value))}
-                                                        className="w-10 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-500" />
-                                                </div>
-                                            </div>
-                                            <div className="flex items-center gap-1">
-                                                <button onClick={() => prevYoutubeTrack()} className="p-1 px-1.5 bg-white/5 border border-zinc-800 rounded text-zinc-500 hover:text-white transition-all"><SkipBack size={9} /></button>
-                                                <button onClick={() => toggleYT()} className="flex items-center justify-center gap-2 text-[8px] font-black uppercase transition-all px-2.5 py-1 bg-white/10 text-white rounded border border-zinc-800 hover:bg-white/20">
-                                                    {isYTPlaying ? <Pause size={8} fill="currentColor" /> : <Play size={8} fill="currentColor" />}
-                                                </button>
-                                                <button onClick={() => skipYoutubeTrack()} className="p-1 px-1.5 bg-white/5 border border-zinc-800 rounded text-zinc-500 hover:text-white transition-all"><SkipForward size={9} /></button>
-                                                <button onClick={() => resetPlayer()} className="p-1 px-1.5 bg-red-500/10 text-red-500/80 border border-red-500/20 rounded hover:bg-red-500/20 transition-all"><Trash2 size={9} /></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center gap-3 h-10 px-1">
-                                        <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-600 shrink-0 border border-zinc-700/30">
-                                            <Music size={14} />
-                                        </div>
-                                        <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="PASTE YOUTUBE URL..."
-                                            className="bg-transparent border-none text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none w-32 placeholder:text-zinc-700" />
-                                        <button onClick={() => playYoutube()} className="p-1.5 bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-all active:scale-95"><Play size={10} fill="currentColor" /></button>
-                                    </div>
-                                )}
-                            </div>
-
                             {/* Mode Switchers */}
                             <div className="flex bg-zinc-900/50 backdrop-blur-xl ring-1 ring-zinc-800 p-1 rounded-2xl shadow-2xl shrink-0">
                                 <button
                                     onClick={leaveDuel}
-                                    className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${mode === "solo" ? "bg-zinc-800 text-white shadow-xl" : "text-zinc-500 hover:text-zinc-300"}`}
+                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === "solo" ? "bg-zinc-800 text-white shadow-xl" : "text-zinc-500 hover:text-zinc-300"}`}
                                 >
                                     Solo
                                 </button>
                                 <button
                                     onClick={() => setMode("duel")}
-                                    className={`flex items-center gap-2 px-5 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${mode === "duel" ? "bg-sky-500 text-white shadow-xl shadow-sky-500/30" : "text-zinc-500 hover:text-zinc-200"}`}
+                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === "duel" ? "bg-sky-500 text-white shadow-xl shadow-sky-500/30" : "text-zinc-500 hover:text-zinc-200"}`}
                                 >
                                     Dual Duel
                                 </button>

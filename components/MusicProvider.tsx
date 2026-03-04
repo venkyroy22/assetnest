@@ -25,7 +25,6 @@ const MusicContext = createContext<MusicContextType | undefined>(undefined);
 export function MusicProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPomodoro = pathname === "/tools/pomodoro";
-    const isTypingTester = pathname === "/tools/typing-tester";
 
     const [youtubeUrl, setYoutubeUrl] = useState("");
     const [currentYoutubeEmbed, setCurrentYoutubeEmbed] = useState<string | null>(null);
@@ -112,7 +111,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dockBounds, setDockBounds] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
-    const isDockMode = isPomodoro || isTypingTester;
+    const isDockMode = isPomodoro;
 
     React.useEffect(() => {
         if (!isDockMode || !currentYoutubeEmbed) {
