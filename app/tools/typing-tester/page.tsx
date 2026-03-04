@@ -772,12 +772,13 @@ export default function TypingTesterPage() {
                                     }}
                                 >solo</button>
                                 <button
-                                    onClick={() => !duelMode && supabaseOnline && createDuel()}
+                                    onClick={() => {
+                                        if (!duelMode) setDuelMode(true);
+                                    }}
                                     className="px-3 py-1.5 rounded-lg transition-all"
                                     style={{
                                         color: duelMode ? T.accent : T.muted,
                                         background: duelMode ? `${T.accentHex}18` : "transparent",
-                                        opacity: !supabaseOnline ? 0.3 : 1,
                                     }}
                                 >duel</button>
                             </div>
@@ -787,39 +788,78 @@ export default function TypingTesterPage() {
 
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
                 {duelMode && !isActive && !isFinished && (
-                    <div className="max-w-md mx-auto mb-8 rounded-2xl p-5 border" style={{ background: T.surface, borderColor: T.border }}>
-                        {isHost ? (
-                            <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>Room Code</span>
-                                    <button
-                                        onClick={() => { navigator.clipboard.writeText(sessionCode); setCopiedCode(true); setTimeout(() => setCopiedCode(false), 2000); }}
-                                        className="flex items-center gap-1.5 text-xs font-bold"
-                                        style={{ color: T.accent }}
-                                    >
-                                        {copiedCode ? <><Check size={12} /> copied</> : <><Copy size={12} /> copy</>}
-                                    </button>
+                    <div
+                        className="max-w-xl mx-auto mb-8 rounded-2xl border overflow-hidden"
+                        style={{ background: T.surface, borderColor: T.border }}
+                    >
+                        <div className="grid grid-cols-2 divide-x" style={{ borderColor: T.border }}>
+
+                            {/* ── Create side ── */}
+                            <div className="p-5 space-y-4">
+                                <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
+                                    Create Room
                                 </div>
-                                <div className="text-3xl font-black tracking-[0.3em]" style={{ color: T.text }}>{sessionCode}</div>
+                                {sessionCode ? (
+                                    <>
+                                        <div className="text-3xl font-black tracking-[0.3em]" style={{ color: T.text }}>
+                                            {sessionCode}
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(sessionCode);
+                                                setCopiedCode(true);
+                                                setTimeout(() => setCopiedCode(false), 2000);
+                                            }}
+                                            className="flex items-center gap-1.5 text-xs font-bold px-3 py-2 rounded-lg w-full justify-center transition-all"
+                                            style={{ background: `${T.accentHex}18`, color: T.accent }}
+                                        >
+                                            {copiedCode ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Code</>}
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={createDuel}
+                                        disabled={!supabaseOnline}
+                                        className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-30"
+                                        style={{ background: T.accent }}
+                                    >
+                                        {supabaseOnline ? "Generate Code" : "Unavailable"}
+                                    </button>
+                                )}
                             </div>
-                        ) : (
-                            <div className="flex gap-2">
+
+                            {/* ── Join side ── */}
+                            <div className="p-5 space-y-4">
+                                <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
+                                    Join Room
+                                </div>
                                 <input
                                     value={joinCode}
-                                    onChange={e => setJoinCode(e.target.value)}
-                                    placeholder="Enter room code"
-                                    className="flex-1 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none border"
-                                    style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                                    onChange={e => setJoinCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+                                    onKeyDown={e => e.key === "Enter" && joinCode.length === 6 && joinDuel()}
+                                    placeholder="Enter 6-digit code"
+                                    maxLength={6}
+                                    className="w-full rounded-xl px-4 py-3 text-xl font-black tracking-[0.25em] text-center focus:outline-none border-2 transition-colors"
+                                    style={{
+                                        background: T.bg,
+                                        borderColor: joinCode.length === 6 ? T.accent : T.border,
+                                        color: T.text,
+                                    }}
                                 />
                                 <button
                                     onClick={joinDuel}
-                                    className="px-5 py-2.5 rounded-xl text-xs font-black uppercase text-black"
+                                    disabled={!supabaseOnline || joinCode.length !== 6}
+                                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-30"
                                     style={{ background: T.accent }}
-                                >Join</button>
+                                >
+                                    {supabaseOnline ? "Join Game" : "Unavailable"}
+                                </button>
                             </div>
-                        )}
+
+                        </div>
                     </div>
                 )}
+
 
                 {/* ── Live stats (while typing) ──────────────────────────────── */}
                 {isActive && (
