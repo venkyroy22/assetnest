@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo, ChangeEvent } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo, ChangeEvent, ReactNode } from "react";
 import {
     Keyboard,
     RotateCcw,
@@ -27,9 +27,18 @@ import {
     Signal,
     Wifi,
     WifiOff,
-    Info
+    Info,
+    Music,
+    Volume2,
+    SkipBack,
+    Pause,
+    SkipForward,
+    ExternalLink,
+    Trash2,
+    X
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
+import { useMusic } from "@/components/MusicProvider";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -87,6 +96,14 @@ export default function TypingTesterPage() {
     const [copiedLink, setCopiedLink] = useState(false);
     const [systemStatus, setSystemStatus] = useState<"offline" | "connecting" | "online">("connecting");
     const [configWarning, setConfigWarning] = useState(false);
+    const [opponentFinished, setOpponentFinished] = useState(false);
+    const [userFinishedFirst, setUserFinishedFirst] = useState<boolean | null>(null);
+
+    const {
+        youtubeUrl, setYoutubeUrl, playYoutube,
+        isYTPlaying, toggleYT, skipYoutubeTrack, prevYoutubeTrack,
+        ytVolume, adjustYTVolume, resetPlayer, currentYoutubeEmbed
+    } = useMusic();
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const channelRef = useRef<any>(null);
@@ -125,6 +142,8 @@ export default function TypingTesterPage() {
         setErrors(0);
         setIsActive(false);
         setIsFinished(false);
+        setOpponentFinished(false);
+        setUserFinishedFirst(null);
 
         // Broadcast new task if in duel and we are the host
         if (mode === "duel" && isHost && channelRef.current && isNewTask) {
@@ -215,6 +234,12 @@ export default function TypingTesterPage() {
                     progress: payload.progress,
                     name: "Opponent"
                 });
+                if (payload.status === "finished") {
+                    setOpponentFinished(true);
+                    if (userFinishedFirst === null) {
+                        setUserFinishedFirst(false);
+                    }
+                }
             });
 
         // 3. Subscription and Heartbeat
@@ -380,6 +405,9 @@ export default function TypingTesterPage() {
             setEndTime(Date.now());
             setIsActive(false);
             setIsFinished(true);
+            if (mode === "duel" && userFinishedFirst === null) {
+                setUserFinishedFirst(true);
+            }
         }
     };
 
@@ -461,8 +489,52 @@ export default function TypingTesterPage() {
                                 <span className="text-[10px] font-black uppercase tracking-widest">Efficiency Tool</span>
                             </div>
                             <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-2">
-                                Speed <span className="text-sky-500">Typist</span>
+                                Typing <span className="text-sky-500">Speed Test</span>
                             </h1>
+                        </div>
+
+                        {/* Functional Mini Player Bar */}
+                        <div className="hidden lg:flex flex-col items-center gap-6">
+                            <div className="flex items-center gap-4 bg-zinc-900/80 border border-zinc-800 p-2 pr-5 rounded-2xl shadow-2xl relative backdrop-blur-xl border-t-zinc-700/30">
+                                {currentYoutubeEmbed ? (
+                                    <div className="flex items-center gap-4 animate-in fade-in slide-in-from-left-4 duration-700">
+                                        <div id="music-player-dock" className="w-24 h-14 rounded-xl bg-black/40 border border-zinc-800/50 shadow-inner relative shrink-0 overflow-hidden flex flex-col items-center justify-center gap-2 group/placeholder">
+                                            <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
+                                            <Music size={14} className="text-zinc-500" />
+                                        </div>
+
+                                        <div className="flex flex-col gap-1 py-0.5">
+                                            <div className="flex items-center justify-between gap-3 px-1">
+                                                <div className="flex items-center gap-1.5">
+                                                    <div className="relative h-1.5 w-1.5 rounded-full bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                                                    <span className="text-[9px] font-black uppercase tracking-[0.2em] text-white">Live</span>
+                                                </div>
+                                                <div className="flex items-center gap-1.5 bg-white/5 px-1.5 py-0.5 rounded border border-zinc-800">
+                                                    <input type="range" min="0" max="100" value={ytVolume} onChange={(e) => adjustYTVolume(Number(e.target.value))}
+                                                        className="w-12 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-sky-500" />
+                                                </div>
+                                            </div>
+                                            <div className="flex items-center gap-1">
+                                                <button onClick={() => prevYoutubeTrack()} className="p-1 px-2 bg-white/5 border border-zinc-800 rounded text-zinc-500 hover:text-white transition-all"><SkipBack size={10} /></button>
+                                                <button onClick={() => toggleYT()} className="flex items-center justify-center gap-2 text-[9px] font-black uppercase transition-all px-3 py-1 bg-white/10 text-white rounded border border-zinc-800 hover:bg-white/20">
+                                                    {isYTPlaying ? <Pause size={9} fill="currentColor" /> : <Play size={9} fill="currentColor" />}
+                                                </button>
+                                                <button onClick={() => skipYoutubeTrack()} className="p-1 px-2 bg-white/5 border border-zinc-800 rounded text-zinc-500 hover:text-white transition-all"><SkipForward size={10} /></button>
+                                                <button onClick={() => resetPlayer()} className="p-1 px-2 bg-red-500/10 text-red-500/80 border border-red-500/20 rounded hover:bg-red-500/20 transition-all"><Trash2 size={10} /></button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="flex items-center gap-3 h-10 px-1">
+                                        <div className="w-8 h-8 rounded-lg bg-zinc-800 flex items-center justify-center text-zinc-600 shrink-0 border border-zinc-700/30">
+                                            <Music size={14} />
+                                        </div>
+                                        <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="PASTE YOUTUBE URL..."
+                                            className="bg-transparent border-none text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none w-32 placeholder:text-zinc-700" />
+                                        <button onClick={() => playYoutube()} className="p-1.5 bg-sky-500 text-white rounded-lg hover:bg-sky-400 transition-all active:scale-95"><Play size={10} fill="currentColor" /></button>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         {/* Mode Switchers */}
@@ -639,40 +711,69 @@ export default function TypingTesterPage() {
                     </div>
                 </div>
 
-                {/* --- Results Section --- */}
+                {/* --- Results Modal --- */}
                 {isFinished && (
-                    <div className="animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both ease-out">
-                        <div className="bg-gradient-to-br from-zinc-900/90 to-black/90 border border-zinc-800 rounded-[4rem] p-12 md:p-20 flex flex-col lg:flex-row items-center gap-16 shadow-[0_48px_96px_-24px_rgba(0,0,0,0.8)] backdrop-blur-3xl relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 blur-[120px] rounded-full -mr-32 -mt-32" />
+                    <div className="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
+                        <div className="relative w-full max-w-4xl animate-in slide-in-from-bottom-12 duration-500 fill-mode-both ease-out">
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setIsFinished(false)}
+                                className="absolute -top-4 -right-4 w-12 h-12 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white rounded-full flex items-center justify-center shadow-2xl z-[101] transition-all hover:rotate-90 active:scale-90"
+                            >
+                                <X size={24} />
+                            </button>
 
-                            <div className="shrink-0 relative group">
-                                <div className="absolute inset-0 bg-sky-500/30 rounded-full blur-3xl group-hover:blur-[60px] transition-all duration-1000" />
-                                <div className="relative w-48 h-48 rounded-full border-2 border-sky-500/30 bg-black flex items-center justify-center shadow-inner">
-                                    <div className="text-center">
-                                        <div className="text-6xl font-black text-white tracking-tighter leading-none">{wpm}</div>
-                                        <div className="text-xs font-black uppercase text-sky-500 tracking-widest mt-2">WPM</div>
+                            <div className="bg-gradient-to-br from-zinc-900/90 to-black/98 border border-zinc-800 rounded-[4rem] p-12 md:p-20 flex flex-col lg:flex-row items-center gap-16 shadow-[0_48px_128px_-24px_rgba(0,0,0,1)] relative overflow-hidden">
+                                <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 blur-[120px] rounded-full -mr-32 -mt-32" />
+                                <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[120px] rounded-full -ml-32 -mb-32" />
+
+                                <div className="shrink-0 relative group">
+                                    <div className="absolute inset-0 bg-sky-500/30 rounded-full blur-3xl group-hover:blur-[60px] transition-all duration-1000 animate-pulse" />
+                                    <div className="relative w-48 h-48 rounded-full border-2 border-sky-500/30 bg-black flex items-center justify-center shadow-inner">
+                                        <div className="text-center">
+                                            <div className="text-6xl font-black text-white tracking-tighter leading-none">{wpm}</div>
+                                            <div className="text-xs font-black uppercase text-sky-500 tracking-widest mt-2">WPM</div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <div className="flex-1 text-center lg:text-left">
-                                <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                                    <Trophy size={28} className="text-amber-400" />
-                                    <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white">
-                                        {mode === "duel" && opponentData ? (wpm > opponentData.wpm ? "Mission Complete - Won" : "Mission Complete - Lost") : "Stats Logged"}
-                                    </h3>
+                                <div className="flex-1 text-center lg:text-left">
+                                    <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
+                                        <div className={`p-3 rounded-2xl ${userFinishedFirst ? "bg-amber-500/10 text-amber-500" : "bg-sky-500/10 text-sky-500"}`}>
+                                            <Trophy size={28} />
+                                        </div>
+                                        <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight">
+                                            {mode === "duel"
+                                                ? (userFinishedFirst ? "Mission Complete - Won" : "Mission Complete - Lost")
+                                                : "Mission Complete"}
+                                        </h3>
+                                    </div>
+                                    <p className="text-zinc-500 text-lg mb-10 leading-relaxed max-w-xl font-medium">
+                                        Maintained <span className="text-white font-bold">{accuracy}% precision</span> with {errors} anomalies over {targetText.length} characters in {Math.floor(((endTime || Date.now()) - (startTime || Date.now())) / 1000)} seconds.
+                                        {mode === "duel" && opponentData && (
+                                            <span className="block mt-4 text-zinc-400">
+                                                Opponent finished with <span className="text-sky-400 font-bold">{opponentData.wpm} WPM</span>.
+                                            </span>
+                                        )}
+                                    </p>
+
+                                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
+                                        <button
+                                            onClick={() => resetTest(true)}
+                                            className="group flex-1 lg:flex-none flex items-center justify-center gap-4 px-12 py-5 bg-sky-500 text-white font-black text-xs uppercase tracking-[0.25em] hover:bg-sky-400 rounded-2xl shadow-2xl shadow-sky-500/40 transition-all active:scale-[0.98]"
+                                        >
+                                            <span>Next Task</span>
+                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
+                                        </button>
+                                        <button
+                                            onClick={() => resetTest(false)}
+                                            className="group flex-1 lg:flex-none flex items-center justify-center gap-4 px-10 py-5 bg-zinc-800 text-white font-black text-xs uppercase tracking-[0.25em] hover:bg-zinc-700 rounded-2xl border border-zinc-700 transition-all active:scale-[0.98]"
+                                        >
+                                            <RotateCcw size={18} className="group-hover:rotate-180 transition-transform duration-700" />
+                                            <span>Retry</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <p className="text-zinc-500 text-lg mb-10 leading-relaxed max-w-xl font-medium">
-                                    Maintained <span className="text-white font-bold">{accuracy}% precision</span> with {errors} anomalies over {targetText.length} characters in {Math.floor(((endTime || Date.now()) - (startTime || Date.now())) / 1000)} seconds.
-                                </p>
-
-                                <button
-                                    onClick={() => resetTest(true)}
-                                    className="group w-full lg:w-fit flex items-center justify-center gap-4 px-12 py-5 bg-sky-500 text-white font-black text-xs uppercase tracking-[0.25em] hover:bg-sky-400 rounded-2xl shadow-2xl shadow-sky-500/40 transition-all active:scale-[0.98]"
-                                >
-                                    <span>Proceed to Next Task</span>
-                                    <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -720,7 +821,7 @@ function StatCard({ label, value, unit, icon, active, accentClass }: {
     label: string,
     value: number | string,
     unit: string,
-    icon: React.ReactNode,
+    icon: ReactNode,
     active: boolean,
     accentClass: string
 }) {

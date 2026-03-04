@@ -25,6 +25,7 @@ const MusicContext = createContext<MusicContextType | undefined>(undefined);
 export function MusicProvider({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
     const isPomodoro = pathname === "/tools/pomodoro";
+    const isTypingTester = pathname === "/tools/typing-tester";
 
     const [youtubeUrl, setYoutubeUrl] = useState("");
     const [currentYoutubeEmbed, setCurrentYoutubeEmbed] = useState<string | null>(null);
@@ -111,8 +112,10 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     const containerRef = useRef<HTMLDivElement>(null);
     const [dockBounds, setDockBounds] = useState<{ top: number; left: number; width: number; height: number } | null>(null);
 
+    const isDockMode = isPomodoro || isTypingTester;
+
     React.useEffect(() => {
-        if (!isPomodoro || !currentYoutubeEmbed) {
+        if (!isDockMode || !currentYoutubeEmbed) {
             setDockBounds(null);
             return;
         }
@@ -143,7 +146,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
             observer.disconnect();
             window.removeEventListener("resize", update);
         };
-    }, [isPomodoro, currentYoutubeEmbed, pathname]);
+    }, [isDockMode, currentYoutubeEmbed, pathname]);
 
     const toggleYT = () => {
         if (iframeRef.current) {
@@ -200,10 +203,10 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                     <div
                         className={`
                             transition-all duration-700 ease-[cubic-bezier(0.23,1,0.32,1)]
-                            ${isPomodoro && dockBounds ? "absolute transition-none z-10" : "fixed z-[999]"}
-                            ${!isPomodoro ? (isMiniPlayerVisible ? "bottom-10 right-10 w-64 h-40 scale-100 opacity-100" : "bottom-10 right-10 w-10 h-10 scale-0 opacity-0 pointer-events-none") : ""}
+                            ${isDockMode && dockBounds ? "absolute transition-none z-10" : "fixed z-[999]"}
+                            ${!isDockMode ? (isMiniPlayerVisible ? "bottom-10 right-10 w-64 h-40 scale-100 opacity-100" : "bottom-10 right-10 w-10 h-10 scale-0 opacity-0 pointer-events-none") : ""}
                         `}
-                        style={isPomodoro && dockBounds ? {
+                        style={isDockMode && dockBounds ? {
                             top: dockBounds.top,
                             left: dockBounds.left,
                             width: dockBounds.width,
@@ -223,7 +226,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                             />
 
                             {/* Always visible Close/Hide control on MiniPlayer */}
-                            {!isPomodoro && (
+                            {!isDockMode && (
                                 <button
                                     onClick={() => setIsMiniPlayerVisible(false)}
                                     className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
@@ -236,7 +239,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                 )}
 
                 {/* Persistence Toggle Button (Invisible toggle when hidden) */}
-                {!isPomodoro && currentYoutubeEmbed && !isMiniPlayerVisible && (
+                {!isDockMode && currentYoutubeEmbed && !isMiniPlayerVisible && (
                     <button
                         onClick={() => setIsMiniPlayerVisible(true)}
                         className="fixed bottom-10 right-10 z-[999] p-4 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-400 hover:text-white shadow-2xl animate-in slide-in-from-bottom-4 duration-500"
