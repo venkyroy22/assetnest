@@ -1,8 +1,9 @@
 import { createBrowserClient } from '@supabase/ssr'
 
 export function createClient() {
-    const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ""
-    const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ""
+    // Sanitize: trim whitespace and remove accidental literal quotes
+    const rawUrl = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").trim().replace(/^["']|["']$/g, "")
+    const anonKey = (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "").trim().replace(/^["']|["']$/g, "")
 
     // Auto-prefix with https if proto is missing
     const url = (rawUrl && !rawUrl.startsWith("http"))
