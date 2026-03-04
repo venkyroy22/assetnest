@@ -460,6 +460,8 @@ export default function TypingTesterPage() {
     useEffect(() => {
         if (countdown === null) return;
         if (countdown <= 0) {
+            // When countdown hits 0, auto-focus input for the race
+            inputRef.current?.focus();
             // Small delay so user sees "GO!" then it fades
             const t = setTimeout(() => setCountdown(null), 700);
             return () => clearTimeout(t);
@@ -916,7 +918,7 @@ export default function TypingTesterPage() {
                 )}
 
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
-                {duelMode && !isActive && !isFinished && countdown === null && (
+                {duelMode && !isActive && !isFinished && countdown === null && duelStatus !== "connected" && (
                     <div
                         className="max-w-xl mx-auto mb-8 rounded-2xl border overflow-hidden"
                         style={{ background: T.surface, borderColor: T.border }}
@@ -1063,7 +1065,7 @@ export default function TypingTesterPage() {
                 <div className="relative cursor-text" onClick={() => inputRef.current?.focus()}>
 
                     {/* Blur overlay */}
-                    {!isFocused && !isFinished && (
+                    {!isFocused && !isFinished && !countdown && (!duelMode || duelStatus !== "connected") && (
                         <div
                             className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
                             style={{ background: `${T.bg}cc`, backdropFilter: "blur(2px)" }}
