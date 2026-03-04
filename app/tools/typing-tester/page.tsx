@@ -26,7 +26,8 @@ import {
     AlertCircle,
     Signal,
     Wifi,
-    WifiOff
+    WifiOff,
+    Info
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -85,9 +86,11 @@ export default function TypingTesterPage() {
     const [copiedCode, setCopiedCode] = useState(false);
     const [copiedLink, setCopiedLink] = useState(false);
     const [systemStatus, setSystemStatus] = useState<"offline" | "connecting" | "online">("connecting");
+    const [configWarning, setConfigWarning] = useState(false);
 
     const inputRef = useRef<HTMLTextAreaElement>(null);
     const channelRef = useRef<any>(null);
+    const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const supabase = useMemo(() => createClient(), []);
 
     // --- Core Actions ---
@@ -99,6 +102,13 @@ export default function TypingTesterPage() {
         }
         return nextSentence;
     }, [targetText]);
+
+    const stopHeartbeat = useCallback(() => {
+        if (heartbeatIntervalRef.current) {
+            clearInterval(heartbeatIntervalRef.current);
+            heartbeatIntervalRef.current = null;
+        }
+    }, []);
 
     const resetTest = useCallback((isNewTask: boolean = true) => {
         let nextSentence = targetText;
@@ -132,51 +142,59 @@ export default function TypingTesterPage() {
         setTimeout(focusInput, 200);
     }, [targetText, mode, isHost, pickSentence]);
 
-    // --- Dual Mode Logic with Presence Sync ---
+    // --- Hyper-Resilient Handshake (Presence + Broadcast Heartbeat) ---
 
     const joinChannel = useCallback((code: string, amIHost: boolean, hostSentence?: string) => {
+        stopHeartbeat();
         if (channelRef.current) {
             channelRef.current.unsubscribe();
         }
 
-        console.log(`Duel: Syncing to channel: duel_${code}`);
-        setSystemStatus("connecting");
+        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+        if (!supabaseUrl || supabaseUrl.includes("your-project-id") || supabaseUrl === "") {
+            setSystemStatus("offline");
+            setConfigWarning(true);
+            setIsConnecting(false);
+            return;
+        }
 
-        // We use a simplified name and broad internal broadcast support
-        const channel = supabase.channel(`duel_${code}`, {
+        setSystemStatus("connecting");
+        setConfigWarning(false);
+
+        // Use simpler channel name for better compatibility
+        const channelName = `duel_${code}`;
+        const channel = supabase.channel(channelName, {
             config: {
-                broadcast: { self: true }, // Set to true to help with cross-tab testing
+                broadcast: { self: true },
                 presence: { key: amIHost ? "host" : "joiner" }
             }
         });
 
+        // 1. Presence Logic
+        channel.on("presence", { event: "sync" }, () => {
+            const state = channel.presenceState();
+            const keys = Object.keys(state);
+            if (keys.includes("host") && keys.includes("joiner")) {
+                setDuelStatus("ready");
+                if (amIHost && hostSentence) {
+                    channel.send({ type: "broadcast", event: "force_sync", payload: { sentence: hostSentence } });
+                }
+            }
+        });
+
+        // 2. Broadcast Signals (Fallback Handshake)
         channel
-            .on("presence", { event: "sync" }, () => {
-                const state = channel.presenceState();
-                console.log("Duel: Presence Sync State:", state);
-
-                // If both host and joiner are present, we are ready
-                const keys = Object.keys(state);
-                if (keys.includes("host") && keys.includes("joiner")) {
-                    console.log("Duel: Both players detected via Presence. Locking connection.");
+            .on("broadcast", { event: "ping" }, ({ payload }) => {
+                if (amIHost && payload.from === "joiner") {
+                    console.log("Duel: Joiner pinged, replying with sentence.");
+                    channel.send({ type: "broadcast", event: "force_sync", payload: { sentence: hostSentence } });
                     setDuelStatus("ready");
-
-                    // Host re-broadcasts the sentence just in case the joiner missed it
-                    if (amIHost && hostSentence) {
-                        channel.send({
-                            type: "broadcast",
-                            event: "init_sync",
-                            payload: { sentence: hostSentence }
-                        });
-                    }
                 }
             })
-            .on("broadcast", { event: "init_sync" }, ({ payload }) => {
-                if (!amIHost) {
-                    console.log("Duel: Recv init_sync from host:", payload.sentence);
-                    setTargetText(payload.sentence);
-                    setDuelStatus("ready");
-                }
+            .on("broadcast", { event: "force_sync" }, ({ payload }) => {
+                console.log("Duel: Received forced sync from host.");
+                setTargetText(payload.sentence);
+                setDuelStatus("ready");
             })
             .on("broadcast", { event: "new_match" }, ({ payload }) => {
                 setTargetText(payload.sentence);
@@ -197,38 +215,45 @@ export default function TypingTesterPage() {
                     progress: payload.progress,
                     name: "Opponent"
                 });
-            })
-            .subscribe(async (status) => {
-                console.log(`Duel: Connection Status: ${status}`);
-                if (status === "SUBSCRIBED") {
-                    setSystemStatus("online");
-                    setIsConnecting(false);
-
-                    // Track presence
-                    await channel.track({
-                        online_at: new Date().toISOString(),
-                        is_host: amIHost
-                    });
-
-                    // If joiner, try to prompt host for init
-                    if (!amIHost) {
-                        channel.send({ type: "broadcast", event: "request_sync", payload: {} });
-                    }
-                } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-                    setSystemStatus("offline");
-                    setIsConnecting(false);
-                }
             });
 
-        // Add handler for sync request
-        channel.on("broadcast", { event: "request_sync" }, () => {
-            if (amIHost && hostSentence) {
-                channel.send({ type: "broadcast", event: "init_sync", payload: { sentence: hostSentence } });
+        // 3. Subscription and Heartbeat
+        channel.subscribe(async (status) => {
+            console.log(`Duel: Channel ${channelName} status: ${status}`);
+            if (status === "SUBSCRIBED") {
+                setSystemStatus("online");
+                setIsConnecting(false);
+
+                await channel.track({ online_at: new Date().toISOString() });
+
+                // Start Handshake Heartbeat loop (every 1.5s until ready)
+                heartbeatIntervalRef.current = setInterval(() => {
+                    if (duelStatus !== "ready") {
+                        channel.send({
+                            type: "broadcast",
+                            event: "ping",
+                            payload: { from: amIHost ? "host" : "joiner" }
+                        });
+                    } else {
+                        // Once ready, slow down or stop handshake pings
+                        stopHeartbeat();
+                    }
+                }, 1500);
+            } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+                setSystemStatus("offline");
+                setIsConnecting(false);
             }
         });
 
         channelRef.current = channel;
-    }, [supabase]);
+    }, [supabase, stopHeartbeat, duelStatus]);
+
+    // Cleanup heartbeat when ready
+    useEffect(() => {
+        if (duelStatus === "ready") {
+            stopHeartbeat();
+        }
+    }, [duelStatus, stopHeartbeat]);
 
     const createDuel = useCallback(async () => {
         setIsConnecting(true);
@@ -259,6 +284,7 @@ export default function TypingTesterPage() {
     }, [joinCodeInput, joinChannel]);
 
     const leaveDuel = useCallback(() => {
+        stopHeartbeat();
         if (channelRef.current) {
             channelRef.current.unsubscribe();
             channelRef.current = null;
@@ -275,7 +301,7 @@ export default function TypingTesterPage() {
         window.history.replaceState({}, "", url.toString());
 
         resetTest(true);
-    }, [resetTest]);
+    }, [resetTest, stopHeartbeat]);
 
     // Initial load and URL handling
     useEffect(() => {
@@ -292,6 +318,7 @@ export default function TypingTesterPage() {
 
         return () => {
             clearTimeout(t);
+            stopHeartbeat();
             if (channelRef.current) channelRef.current.unsubscribe();
         };
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -322,7 +349,7 @@ export default function TypingTesterPage() {
         setErrors(currentErrors);
         setAccuracy(currentAccuracy);
 
-        if (mode === "duel" && channelRef.current) {
+        if (mode === "duel" && channelRef.current && systemStatus === "online") {
             channelRef.current.send({
                 type: "broadcast",
                 event: "progress",
@@ -333,7 +360,7 @@ export default function TypingTesterPage() {
                 }
             });
         }
-    }, [startTime, targetText, mode]);
+    }, [startTime, targetText, mode, systemStatus]);
 
     const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value;
@@ -402,6 +429,21 @@ export default function TypingTesterPage() {
 
     return (
         <div className="relative min-h-screen py-16 px-6 md:px-10 bg-[#09090b] overflow-hidden text-zinc-100">
+            {/* Warning for unconfigured Supabase */}
+            {configWarning && (
+                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl animate-in fade-in slide-in-from-top-4 duration-500">
+                    <div className="bg-red-500/10 border border-red-500/20 backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
+                        <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white shrink-0">
+                            <AlertCircle size={20} />
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-xs font-black uppercase text-red-500 tracking-widest mb-0.5">Configuration Required</p>
+                            <p className="text-[10px] text-zinc-400 font-medium">Please fill in your <code className="text-zinc-100 font-bold bg-zinc-800 px-1.5 py-0.5 rounded">.env</code> keys to enable live duels.</p>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Background */}
             <div className="fixed inset-0 pointer-events-none z-0" style={{
                 backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)`,
@@ -495,7 +537,7 @@ export default function TypingTesterPage() {
                                     </div>
                                 </div>
                                 <div className="text-sm font-bold">
-                                    {duelStatus === "waiting" ? "Seeking Combatant..." : "Combatant connected. Ready to race!"}
+                                    {systemStatus === "offline" ? "Connection Blocked" : duelStatus === "ready" ? "Combatant connected. Ready to race!" : "Seeking Combatant..."}
                                 </div>
                             </div>
                         </div>
@@ -636,6 +678,40 @@ export default function TypingTesterPage() {
                     </div>
                 )}
             </div>
+
+            {/* Supabase Config Instructions Overlay (Only if offline/warning) */}
+            {configWarning && (
+                <div className="mt-10 max-w-2xl mx-auto p-10 bg-zinc-900/60 rounded-[3rem] border border-zinc-800 backdrop-blur-2xl">
+                    <div className="flex items-center gap-4 mb-6">
+                        <Info size={24} className="text-sky-500" />
+                        <h4 className="text-xl font-black uppercase tracking-tight">How to activate Dual Duel</h4>
+                    </div>
+                    <div className="space-y-6 text-sm text-zinc-400 font-medium">
+                        <div className="flex gap-4">
+                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">1</div>
+                            <p>Go to your <span className="text-zinc-100 transition-colors">Supabase Dashboard</span> &gt; Project Settings &gt; API.</p>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">2</div>
+                            <p>Copy the <span className="text-sky-400">Project URL</span> and <span className="text-sky-400">anon public</span> key.</p>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">3</div>
+                            <div>
+                                <p className="mb-3">Paste them into your <code className="text-zinc-100 bg-black px-2 py-1 rounded">.env</code> file:</p>
+                                <pre className="bg-black/60 p-4 rounded-xl text-[10px] font-mono text-zinc-500 leading-relaxed border border-zinc-800">
+                                    NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"<br />
+                                    NEXT_PUBLIC_SUPABASE_ANON_KEY="your-real-key-here"
+                                </pre>
+                            </div>
+                        </div>
+                        <div className="flex gap-4">
+                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">4</div>
+                            <p>Restart your server. The <span className="text-emerald-500">Green WiFi</span> will appear!</p>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
