@@ -918,7 +918,7 @@ export default function TypingTesterPage() {
                 )}
 
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
-                {duelMode && !isActive && !isFinished && countdown === null && duelStatus !== "connected" && (
+                {duelMode && !isActive && !isFinished && countdown === null && (duelStatus !== "connected" || isHost) && (
                     <div
                         className="max-w-xl mx-auto mb-8 rounded-2xl border overflow-hidden"
                         style={{ background: T.surface, borderColor: T.border }}
@@ -929,12 +929,19 @@ export default function TypingTesterPage() {
                                 className="px-5 py-2.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b"
                                 style={{
                                     borderColor: T.border,
-                                    background: duelStatus === "error" ? `${T.error}18` : T.dim,
-                                    color: duelStatus === "error" ? T.error : T.muted,
+                                    background: duelStatus === "connected" ? `${T.accentHex}18`
+                                        : duelStatus === "error" ? `${T.error}18`
+                                            : T.dim,
+                                    color: duelStatus === "connected" ? T.accent
+                                        : duelStatus === "error" ? T.error
+                                            : T.muted,
                                 }}
                             >
                                 {duelStatus === "connecting" && (
                                     <><span className="animate-spin inline-block">◌</span> Connecting to lobby…</>
+                                )}
+                                {duelStatus === "connected" && (
+                                    <><Check size={12} /> Room ready! Waiting for opponent…</>
                                 )}
                                 {duelStatus === "error" && (
                                     <>✕ Connection failed — check the code and try again</>
