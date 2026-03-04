@@ -184,19 +184,19 @@ export default function TypingTesterPage() {
 
         // 2. Broadcast Signals (Fallback Handshake)
         channel
-            .on("broadcast", { event: "ping" }, ({ payload }) => {
+            .on("broadcast", { event: "ping" }, ({ payload }: any) => {
                 if (amIHost && payload.from === "joiner") {
                     console.log("Duel: Joiner pinged, replying with sentence.");
                     channel.send({ type: "broadcast", event: "force_sync", payload: { sentence: hostSentence } });
                     setDuelStatus("ready");
                 }
             })
-            .on("broadcast", { event: "force_sync" }, ({ payload }) => {
+            .on("broadcast", { event: "force_sync" }, ({ payload }: any) => {
                 console.log("Duel: Received forced sync from host.");
                 setTargetText(payload.sentence);
                 setDuelStatus("ready");
             })
-            .on("broadcast", { event: "new_match" }, ({ payload }) => {
+            .on("broadcast", { event: "new_match" }, ({ payload }: any) => {
                 setTargetText(payload.sentence);
                 setUserInput("");
                 setStartTime(null);
@@ -209,7 +209,7 @@ export default function TypingTesterPage() {
                 setDuelStatus("ready");
                 setTimeout(() => inputRef.current?.focus(), 250);
             })
-            .on("broadcast", { event: "progress" }, ({ payload }) => {
+            .on("broadcast", { event: "progress" }, ({ payload }: any) => {
                 setOpponentData({
                     wpm: payload.wpm,
                     progress: payload.progress,
