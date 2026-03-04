@@ -253,6 +253,8 @@ export default function TypingTesterPage() {
     const [joinCode, setJoinCode] = useState("");
     const [opponentProgress, setOpponentProgress] = useState(0);
     const [opponentWpm, setOpponentWpm] = useState(0);
+    const [opponentFinished, setOpponentFinished] = useState(false);
+    const [opponentFinishWpm, setOpponentFinishWpm] = useState(0);
     const [copiedCode, setCopiedCode] = useState(false);
     const [supabaseOnline, setSupabaseOnline] = useState(false);
     // duelStatus: idle | connecting | connected | error
@@ -417,6 +419,13 @@ export default function TypingTesterPage() {
         setEndTime(Date.now());
         setIsActive(false);
         setIsFinished(true);
+        // Broadcast finish to opponent
+        if (channelRef.current) {
+            channelRef.current.send({
+                type: "broadcast", event: "finish",
+                payload: { wpm: wpmRef.current },
+            });
+        }
     }, []);
 
     // ─── Start timers ─────────────────────────────────────────────────────────
@@ -520,6 +529,8 @@ export default function TypingTesterPage() {
     const createDuel = () => {
         if (!supabase) return;
         const code = Math.floor(100000 + Math.random() * 900000).toString();
+        // Pre-generate the shared word list
+        const sharedWords = generateText(testMode === "words" ? wordConfig : 80, punctRef.current, numsRef.current);
         setSessionCode(code);
         setIsHost(true);
         setDuelStatus("connecting");
@@ -528,24 +539,64 @@ export default function TypingTesterPage() {
             setOpponentProgress(payload.progress);
             setOpponentWpm(payload.wpm);
         });
+        ch.on("broadcast", { event: "finish" }, ({ payload }: any) => {
+            setOpponentFinished(true);
+            setOpponentFinishWpm(payload.wpm);
+        });
         ch.on("broadcast", { event: "joined" }, () => {
             setDuelStatus("connected");
+            // Send the shared word list to the joiner
+            ch.send({ type: "broadcast", event: "words", payload: { text: sharedWords } });
         });
         ch.subscribe((status: string) => {
             if (status === "SUBSCRIBED") setDuelStatus("connected");
             else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") setDuelStatus("error");
         });
         channelRef.current = ch;
+        // Load the shared words into the host's state
+        const wordList = sharedWords.split(" ").map(w => ({
+            word: w,
+            chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
+            isComplete: false, hasError: false,
+        }));
+        setWords(wordList);
+        setCurrentWordIdx(0);
+        setCurrentInput("");
+        setCompletedWords([]);
+        setIsActive(false);
+        setIsFinished(false);
+        setOpponentFinished(false);
+        setOpponentFinishWpm(0);
     };
 
     const joinDuel = () => {
         if (!supabase || joinCode.length !== 6) return;
         setDuelStatus("connecting");
         setIsHost(false);
+        setOpponentFinished(false);
+        setOpponentFinishWpm(0);
         const ch = supabase.channel(`duel_${joinCode}`, { config: { broadcast: { self: false } } });
         ch.on("broadcast", { event: "progress" }, ({ payload }: any) => {
             setOpponentProgress(payload.progress);
             setOpponentWpm(payload.wpm);
+        });
+        ch.on("broadcast", { event: "finish" }, ({ payload }: any) => {
+            setOpponentFinished(true);
+            setOpponentFinishWpm(payload.wpm);
+        });
+        // Receive the shared word list from the host
+        ch.on("broadcast", { event: "words" }, ({ payload }: any) => {
+            const wordList = (payload.text as string).split(" ").map((w: string) => ({
+                word: w,
+                chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
+                isComplete: false, hasError: false,
+            }));
+            setWords(wordList);
+            setCurrentWordIdx(0);
+            setCurrentInput("");
+            setCompletedWords([]);
+            setIsActive(false);
+            setIsFinished(false);
         });
         ch.subscribe((status: string) => {
             if (status === "SUBSCRIBED") {
@@ -566,6 +617,8 @@ export default function TypingTesterPage() {
         setSessionCode("");
         setJoinCode("");
         setOpponentProgress(0);
+        setOpponentFinished(false);
+        setOpponentFinishWpm(0);
         setDuelStatus("idle");
         resetTest();
     };
@@ -609,13 +662,13 @@ export default function TypingTesterPage() {
             `}</style>
 
             {/* ── Header ─────────────────────────────────────────────────────── */}
-            <header className="max-w-5xl mx-auto px-8 pt-10 flex items-center justify-between">
-                <button onClick={resetTest} className="flex items-center gap-3 group">
+            <header className="max-w-5xl mx-auto px-4 sm:px-8 pt-6 sm:pt-10 flex items-center justify-between">
+                <button onClick={resetTest} className="flex items-center gap-2 sm:gap-3 group">
                     <div
-                        className="w-8 h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all"
+                        className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all"
                         style={{ background: T.accent, boxShadow: `0 0 20px ${T.accentHex}44` }}
                     >AN</div>
-                    <span className="text-lg font-bold tracking-tight uppercase transition-colors" style={{ color: T.text }}>
+                    <span className="text-base sm:text-lg font-bold tracking-tight uppercase transition-colors" style={{ color: T.text }}>
                         Type Test
                     </span>
                 </button>
@@ -638,11 +691,11 @@ export default function TypingTesterPage() {
                         </button>
                         {themeOpen && (
                             <div
-                                className="absolute right-0 top-10 z-50 rounded-xl p-4 shadow-2xl border"
-                                style={{ background: T.surface, borderColor: T.border, minWidth: 300 }}
+                                className="absolute right-0 top-10 z-50 rounded-xl p-3 sm:p-4 shadow-2xl border"
+                                style={{ background: T.surface, borderColor: T.border, minWidth: 240, maxWidth: "90vw" }}
                             >
                                 <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: T.muted }}>Theme</div>
-                                <div className="grid grid-cols-5 gap-3">
+                                <div className="grid grid-cols-5 gap-2 sm:gap-3">
                                     {THEMES.map((th, i) => (
                                         <button
                                             key={th.name}
@@ -677,13 +730,13 @@ export default function TypingTesterPage() {
                 </div>
             </header>
 
-            <main className={`max-w-5xl mx-auto px-8 mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
+            <main className={`max-w-5xl mx-auto px-4 sm:px-8 mt-6 sm:mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
 
                 {/* ── Mode toolbar ───────────────────────────────────────────── */}
                 {!isActive && !isFinished && (
-                    <div className="flex justify-center mb-10">
+                    <div className="flex justify-center mb-6 sm:mb-10">
                         <div
-                            className="flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider"
+                            className="flex flex-wrap items-center justify-center gap-1 rounded-xl px-2 sm:px-3 py-2 text-xs font-bold uppercase tracking-wider"
                             style={{ background: T.surface }}
                         >
                             {/* Mode toggles */}
@@ -711,11 +764,11 @@ export default function TypingTesterPage() {
                                 <button
                                     onClick={() => {
                                         const next = !usePunctuation;
-                                        punctRef.current = next;   // update ref synchronously FIRST
-                                        setUsePunctuation(next);   // then update state for UI
-                                        resetTest();               // resetTest reads from ref — always correct
+                                        punctRef.current = next;
+                                        setUsePunctuation(next);
+                                        resetTest();
                                     }}
-                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                    className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
                                     style={{
                                         color: usePunctuation ? T.accent : T.muted,
                                         background: usePunctuation ? `${T.accentHex}18` : "transparent",
@@ -723,16 +776,16 @@ export default function TypingTesterPage() {
                                     title="Toggle punctuation"
                                 >
                                     <span className="text-sm">@</span>
-                                    <span>punctuation</span>
+                                    <span className="hidden sm:inline">punctuation</span>
                                 </button>
                                 <button
                                     onClick={() => {
                                         const next = !useNumbers;
-                                        numsRef.current = next;    // update ref synchronously FIRST
-                                        setUseNumbers(next);       // then update state for UI
-                                        resetTest();               // resetTest reads from ref — always correct
+                                        numsRef.current = next;
+                                        setUseNumbers(next);
+                                        resetTest();
                                     }}
-                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                    className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
                                     style={{
                                         color: useNumbers ? T.accent : T.muted,
                                         background: useNumbers ? `${T.accentHex}18` : "transparent",
@@ -740,7 +793,7 @@ export default function TypingTesterPage() {
                                     title="Toggle numbers"
                                 >
                                     <span className="text-sm">#</span>
-                                    <span>numbers</span>
+                                    <span className="hidden sm:inline">numbers</span>
                                 </button>
                             </div>
 
@@ -836,10 +889,10 @@ export default function TypingTesterPage() {
                             </div>
                         )}
 
-                        <div className="grid grid-cols-2" style={{ borderColor: T.border }}>
+                        <div className="grid grid-cols-1 sm:grid-cols-2" style={{ borderColor: T.border }}>
 
                             {/* ── Create side ── */}
-                            <div className="p-5 space-y-4 border-r" style={{ borderColor: T.border }}>
+                            <div className="p-4 sm:p-5 space-y-4 border-b sm:border-b-0 sm:border-r" style={{ borderColor: T.border }}>
                                 <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
                                     Create Room
                                 </div>
@@ -876,7 +929,7 @@ export default function TypingTesterPage() {
                             </div>
 
                             {/* ── Join side ── */}
-                            <div className="p-5 space-y-4">
+                            <div className="p-4 sm:p-5 space-y-4">
                                 <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
                                     Join Room
                                 </div>
@@ -967,13 +1020,13 @@ export default function TypingTesterPage() {
                     {/* Words wrapper */}
                     <div
                         ref={wrapperRef}
-                        className="h-[160px] overflow-hidden relative"
+                        className="h-[120px] sm:h-[160px] overflow-hidden relative"
                         style={{ maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)" }}
                     >
                         <div
                             ref={wordsRef}
-                            className="flex flex-wrap gap-x-[0.6em] gap-y-[0.75em] relative transition-transform duration-150"
-                            style={{ fontSize: "1.6rem" }}
+                            className="flex flex-wrap gap-x-[0.5em] sm:gap-x-[0.6em] gap-y-[0.6em] sm:gap-y-[0.75em] relative transition-transform duration-150"
+                            style={{ fontSize: "clamp(1rem, 4vw, 1.6rem)" }}
                         >
                             {/* Animated caret */}
                             <div
@@ -1067,21 +1120,74 @@ export default function TypingTesterPage() {
             {/* ── Results Screen ─────────────────────────────────────────────── */}
             {isFinished && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center px-8"
+                    className="fixed inset-0 z-50 flex items-start sm:items-center justify-center px-4 sm:px-8 overflow-y-auto py-6 sm:py-0"
                     style={{ background: T.bg }}
                 >
                     <div className="w-full max-w-5xl">
-                        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-16 mb-12 items-center">
-                            <div className="space-y-6">
+
+
+                        {/* ── Duel Result Banner ── */}
+                        {duelMode && opponentFinished && (
+                            <div
+                                className="mb-6 sm:mb-10 rounded-2xl p-4 sm:p-6 border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+                                style={{
+                                    background: finalStats.finalWpm >= opponentFinishWpm ? `${T.accentHex}18` : `${T.error}18`,
+                                    borderColor: finalStats.finalWpm >= opponentFinishWpm ? T.accent : T.error,
+                                }}
+                            >
                                 <div>
-                                    <div className="text-base font-black lowercase mb-1" style={{ color: T.muted }}>wpm</div>
-                                    <div className="text-9xl font-black leading-none tracking-tight" style={{ color: T.accent }}>
+                                    <div
+                                        className="text-3xl font-black mb-1"
+                                        style={{ color: finalStats.finalWpm >= opponentFinishWpm ? T.accent : T.error }}
+                                    >
+                                        {finalStats.finalWpm >= opponentFinishWpm ? "🏆 You Won!" : "😔 You Lost"}
+                                    </div>
+                                    <div className="text-xs uppercase tracking-widest font-bold" style={{ color: T.muted }}>
+                                        {finalStats.finalWpm >= opponentFinishWpm
+                                            ? `You were faster by ${finalStats.finalWpm - opponentFinishWpm} WPM`
+                                            : `Opponent was faster by ${opponentFinishWpm - finalStats.finalWpm} WPM`}
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-8 text-center">
+                                    <div>
+                                        <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color: T.muted }}>You</div>
+                                        <div className="text-4xl font-black" style={{ color: T.accent }}>{finalStats.finalWpm}</div>
+                                        <div className="text-[10px]" style={{ color: T.muted }}>wpm</div>
+                                    </div>
+                                    <div className="text-2xl font-black" style={{ color: T.muted }}>vs</div>
+                                    <div>
+                                        <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color: T.muted }}>Opponent</div>
+                                        <div className="text-4xl font-black" style={{ color: T.error }}>{opponentFinishWpm}</div>
+                                        <div className="text-[10px]" style={{ color: T.muted }}>wpm</div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Show waiting banner if opponent hasn't finished yet */}
+                        {duelMode && !opponentFinished && (
+                            <div
+                                className="mb-10 rounded-2xl px-6 py-4 border flex items-center gap-3"
+                                style={{ background: T.surface, borderColor: T.border }}
+                            >
+                                <span className="animate-spin text-lg">◌</span>
+                                <span className="text-sm font-bold" style={{ color: T.muted }}>
+                                    Waiting for opponent to finish… ({opponentProgress}% done)
+                                </span>
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 sm:gap-16 mb-8 sm:mb-12 items-center">
+                            <div className="flex flex-row sm:flex-col gap-6 sm:gap-6">
+                                <div>
+                                    <div className="text-sm font-black lowercase mb-1" style={{ color: T.muted }}>wpm</div>
+                                    <div className="text-6xl sm:text-9xl font-black leading-none tracking-tight" style={{ color: T.accent }}>
                                         {finalStats.finalWpm}
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-base font-black lowercase mb-1" style={{ color: T.muted }}>acc</div>
-                                    <div className="text-6xl font-black leading-none" style={{ color: T.text }}>
+                                    <div className="text-sm font-black lowercase mb-1" style={{ color: T.muted }}>acc</div>
+                                    <div className="text-4xl sm:text-6xl font-black leading-none" style={{ color: T.text }}>
                                         {finalStats.finalAcc}%
                                     </div>
                                 </div>
@@ -1131,7 +1237,7 @@ export default function TypingTesterPage() {
                         </div>
 
                         {/* Detail row */}
-                        <div className="flex flex-wrap gap-10 pt-8 border-t" style={{ borderColor: T.surface }}>
+                        <div className="flex flex-wrap gap-6 sm:gap-10 pt-6 sm:pt-8 border-t" style={{ borderColor: T.surface }}>
                             {[
                                 { label: "raw", value: finalStats.finalRaw },
                                 { label: "characters", value: `${finalStats.correct}/${finalStats.incorrect}/0/0` },
@@ -1141,7 +1247,7 @@ export default function TypingTesterPage() {
                             ].map(({ label, value }) => (
                                 <div key={label} className="flex flex-col gap-1 min-w-[80px]">
                                     <div className="text-[10px] font-black lowercase tracking-wider" style={{ color: T.muted }}>{label}</div>
-                                    <div className="text-2xl font-bold tabular-nums" style={{ color: T.text }}>{value}</div>
+                                    <div className="text-lg sm:text-2xl font-bold tabular-nums" style={{ color: T.text }}>{value}</div>
                                 </div>
                             ))}
                         </div>
