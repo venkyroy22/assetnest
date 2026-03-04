@@ -120,7 +120,7 @@ export default function TypingTesterPage() {
                 type: "broadcast",
                 event: "new_match",
                 payload: { sentence: nextSentence }
-            }).then((status) => {
+            }).then((status: any) => {
                 if (status === "error") console.error("Broadcast: Send match error");
             });
         }
@@ -206,7 +206,7 @@ export default function TypingTesterPage() {
                                 type: "broadcast",
                                 event: "ping_init",
                                 payload: { sentence: hostSentence }
-                            }).then((status) => {
+                            }).then((status: any) => {
                                 if (status === "error") console.error("Pulse error: init");
                             });
                         } else {
@@ -214,7 +214,7 @@ export default function TypingTesterPage() {
                                 type: "broadcast",
                                 event: "ping_joined",
                                 payload: {}
-                            }).then((status) => {
+                            }).then((status: any) => {
                                 if (status === "error") console.error("Pulse error: joined");
                             });
                         }
