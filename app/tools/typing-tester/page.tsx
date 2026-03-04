@@ -1,786 +1,1121 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback, useMemo, ChangeEvent, ReactNode } from "react";
+import React, {
+    useState, useEffect, useRef, useCallback, useMemo,
+} from "react";
 import {
-    Keyboard,
-    RotateCcw,
-    Trophy,
-    Zap,
-    Timer,
-    Activity,
-    RefreshCcw,
-    Settings,
-    ChevronRight,
-    Play,
-    CheckCircle2,
-    XCircle,
-    BarChart3,
-    ArrowRight,
-    Users,
-    UserPlus,
-    Share2,
-    Copy,
-    Check,
-    Globe,
-    Link as LinkIcon,
-    AlertCircle,
-    Signal,
-    Wifi,
-    WifiOff,
-    Info,
-    ExternalLink,
-    X
+    Timer, Keyboard, RotateCcw, MousePointer2, ArrowRight,
+    Copy, Check, Settings2, X, Palette,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Themes ───────────────────────────────────────────────────────────────────
+interface Theme {
+    name: string;
+    bg: string;
+    surface: string;
+    border: string;
+    text: string;
+    muted: string;
+    dim: string;
+    accent: string;        // caret + correct chars
+    accentHex: string;     // raw hex for SVG / glow
+    error: string;
+}
 
-const SENTENCES = [
-    "The quick brown fox jumps over the lazy dog in a beautiful forest.",
-    "Programming is not just about writing code, it is about solving problems creatively.",
-    "Success is stumbling from failure to failure with no loss of enthusiasm.",
-    "The only way to do great work is to love what you do every single day.",
-    "Innovation distinguishes between a leader and a follower in the tech world.",
-    "Stay hungry, stay foolish, and never stop learning about new technologies.",
-    "The power of imagination makes us infinite and allows us to dream big.",
-    "In the middle of every difficulty lies a great opportunity for growth.",
-    "Your time is limited, so don't waste it living someone else's life.",
-    "The best way to predict the future is to create it yourself today.",
-    "Simplicity is the ultimate sophistication in design and architecture.",
-    "Coding is the language of the future, and everyone should learn it.",
-    "Data is the new oil, but information is the engine of the economy.",
-    "The cloud is just someone else's computer with better management.",
-    "Artificial intelligence is growing faster than we ever imagined possible.",
-    "Cybersecurity is everyone's responsibility in the modern digital age.",
-    "Open source software changes how we build and share digital solutions.",
-    "A journey of a thousand miles begins with a single step forward.",
-    "Knowledge is power, but character is the foundation of true success.",
-    "Focus on being productive instead of busy throughout your work day.",
-    "To be yourself in a world that is constantly trying to make us something else is the greatest accomplishment.",
-    "The future belongs to those who believe in the beauty of their dreams.",
-    "It is not our abilities that show what we truly are; it is our choices.",
-    "Do not go where the path may lead, go instead where there is no path and leave a trail."
+const THEMES: Theme[] = [
+    {
+        name: "midnight",
+        bg: "#0e0e10", surface: "#2c2e31", border: "#4c4f52",
+        text: "#d1d0c5", muted: "#646669", dim: "#3a3a3a",
+        accent: "#e2b714", accentHex: "#e2b714", error: "#ca4754",
+    },
+    {
+        name: "ocean",
+        bg: "#0d1b2a", surface: "#1b2d3e", border: "#2e4057",
+        text: "#e0f0ff", muted: "#6b8fa8", dim: "#1e3347",
+        accent: "#00c8ff", accentHex: "#00c8ff", error: "#ff5555",
+    },
+    {
+        name: "forest",
+        bg: "#0f1a0f", surface: "#1a2e1a", border: "#2d4a2d",
+        text: "#d4e8d4", muted: "#5a8a5a", dim: "#1e301e",
+        accent: "#5dde5d", accentHex: "#5dde5d", error: "#e05252",
+    },
+    {
+        name: "rose",
+        bg: "#1a0d0d", surface: "#2e1a1a", border: "#4a2d2d",
+        text: "#f5dada", muted: "#8a5a5a", dim: "#301e1e",
+        accent: "#ff7eb3", accentHex: "#ff7eb3", error: "#ff4444",
+    },
+    {
+        name: "lavender",
+        bg: "#0f0d1a", surface: "#1e1a2e", border: "#362d4a",
+        text: "#e0d8f5", muted: "#7a6fa0", dim: "#231e30",
+        accent: "#b894f7", accentHex: "#b894f7", error: "#f76e6e",
+    },
+    {
+        name: "ember",
+        bg: "#12080a", surface: "#251114", border: "#3e1a1f",
+        text: "#f5d8c0", muted: "#8a5a44", dim: "#2a1518",
+        accent: "#ff6b35", accentHex: "#ff6b35", error: "#ff3366",
+    },
+    {
+        name: "arctic",
+        bg: "#0d1117", surface: "#161b22", border: "#21262d",
+        text: "#c9d1d9", muted: "#484f58", dim: "#1c2128",
+        accent: "#58a6ff", accentHex: "#58a6ff", error: "#f85149",
+    },
+    {
+        name: "cream",
+        bg: "#f5f0e8", surface: "#ede7d9", border: "#cec6b4",
+        text: "#2d2416", muted: "#8a7a62", dim: "#ddd6c8",
+        accent: "#c07a1e", accentHex: "#c07a1e", error: "#c0392b",
+    },
+    {
+        name: "noir",
+        bg: "#080808", surface: "#181818", border: "#303030",
+        text: "#e8e8e8", muted: "#555555", dim: "#222222",
+        accent: "#ffffff", accentHex: "#ffffff", error: "#e05252",
+    },
+    {
+        name: "candy",
+        bg: "#1a0f24", surface: "#2d1a40", border: "#4a2e66",
+        text: "#f8e8ff", muted: "#9a72b8", dim: "#251535",
+        accent: "#ff6dd3", accentHex: "#ff6dd3", error: "#ff4444",
+    },
+    // ── 10 new themes ────────────────────────────────────────────────────────
+    {
+        name: "tokyo",
+        bg: "#0a0a12", surface: "#13131f", border: "#1f1f33",
+        text: "#f0f0ff", muted: "#5c5c8a", dim: "#16162a",
+        accent: "#ff2d78", accentHex: "#ff2d78", error: "#ff9900",
+    },
+    {
+        name: "matrix",
+        bg: "#000d00", surface: "#001a00", border: "#003300",
+        text: "#ccffcc", muted: "#2e7d32", dim: "#002200",
+        accent: "#00ff41", accentHex: "#00ff41", error: "#ff4444",
+    },
+    {
+        name: "nebula",
+        bg: "#07030f", surface: "#130a24", border: "#220f3d",
+        text: "#e8d5ff", muted: "#6a3fa0", dim: "#180d2e",
+        accent: "#a78bfa", accentHex: "#a78bfa", error: "#f43f5e",
+    },
+    {
+        name: "copper",
+        bg: "#0f0a06", surface: "#1e1509", border: "#33230f",
+        text: "#f7e8d4", muted: "#8a6535", dim: "#261b0d",
+        accent: "#e8935a", accentHex: "#e8935a", error: "#e05050",
+    },
+    {
+        name: "glacier",
+        bg: "#07111a", surface: "#0e1e2c", border: "#163040",
+        text: "#daf6ff", muted: "#4a7d99", dim: "#111e2a",
+        accent: "#4dd9e8", accentHex: "#4dd9e8", error: "#f96060",
+    },
+    {
+        name: "mint",
+        bg: "#06100d", surface: "#0e1f1a", border: "#17332c",
+        text: "#d6f5ee", muted: "#3d8070", dim: "#0e1e1a",
+        accent: "#2effc3", accentHex: "#2effc3", error: "#ff5470",
+    },
+    {
+        name: "blood",
+        bg: "#0f0000", surface: "#200000", border: "#3a0000",
+        text: "#ffd5d5", muted: "#7a3030", dim: "#1a0000",
+        accent: "#ff2222", accentHex: "#ff2222", error: "#ff9000",
+    },
+    {
+        name: "cyber",
+        bg: "#030d0a", surface: "#071a14", border: "#0d2e22",
+        text: "#e2fff5", muted: "#2e7a5c", dim: "#091a12",
+        accent: "#c6ff00", accentHex: "#c6ff00", error: "#ff4060",
+    },
+    {
+        name: "dusk",
+        bg: "#100b18", surface: "#1c1428", border: "#2e2040",
+        text: "#f5deed", muted: "#806070", dim: "#180f22",
+        accent: "#f0a0d0", accentHex: "#f0a0d0", error: "#ff6060",
+    },
+    {
+        name: "solar",
+        bg: "#fdfbf6", surface: "#f0ebe0", border: "#d8cebc",
+        text: "#2c1e0e", muted: "#9a8060", dim: "#e8e0d0",
+        accent: "#d95700", accentHex: "#d95700", error: "#c0202a",
+    },
 ];
 
-// ─── Implementation ──────────────────────────────────────────────────────────
+// ─── Word Bank ────────────────────────────────────────────────────────────────
+const WORD_BANK = [
+    "the", "be", "to", "of", "and", "a", "in", "that", "have", "it",
+    "for", "not", "on", "with", "he", "as", "you", "do", "at", "this",
+    "but", "his", "by", "from", "they", "we", "say", "her", "she", "or",
+    "an", "will", "my", "one", "all", "would", "there", "their", "what",
+    "so", "up", "out", "if", "about", "who", "get", "which", "go", "me",
+    "when", "make", "can", "like", "time", "no", "just", "him", "know",
+    "take", "people", "into", "year", "your", "good", "some", "could",
+    "them", "see", "other", "than", "then", "now", "look", "only", "come",
+    "its", "over", "think", "also", "back", "after", "use", "two", "how",
+    "our", "work", "first", "well", "way", "even", "new", "want", "because",
+    "any", "these", "give", "day", "most", "us", "more", "create", "build",
+    "future", "simple", "power", "great", "change", "digital", "modern",
+    "world", "growth", "cloud", "server", "design", "code", "logic", "run",
+    "data", "type", "speed", "write", "read", "fast", "slow", "system",
+    "open", "close", "start", "stop", "find", "keep", "need", "place",
+    "large", "public", "high", "between", "long", "big", "down", "side",
+];
 
+const TIME_OPTIONS = [15, 30, 60, 120];
+const WORD_OPTIONS = [10, 25, 50, 100];
+
+const PUNCTUATION = [",", ".", "!", "?", ";", ":", "-", "'"];
+const NUMBERS_BANK = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9",
+    "10", "12", "15", "20", "25", "30", "42", "50", "64", "100", "256", "1024"
+];
+
+function generateText(wordCount: number, withPunct: boolean, withNums: boolean): string {
+    const arr: string[] = [];
+    for (let i = 0; i < wordCount; i++) {
+        // Occasionally insert a number
+        if (withNums && i > 0 && Math.random() < 0.15) {
+            arr.push(NUMBERS_BANK[Math.floor(Math.random() * NUMBERS_BANK.length)]);
+        }
+        let word = WORD_BANK[Math.floor(Math.random() * WORD_BANK.length)];
+        // Occasionally wrap with punctuation
+        if (withPunct && i > 0 && Math.random() < 0.2) {
+            const p = PUNCTUATION[Math.floor(Math.random() * PUNCTUATION.length)];
+            // append or prepend
+            word = Math.random() > 0.5 ? word + p : p + word;
+        }
+        arr.push(word);
+    }
+    return arr.join(" ");
+}
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+type TestMode = "time" | "words";
+type CharState = "pending" | "correct" | "incorrect";
+
+interface WordData {
+    word: string;
+    chars: { char: string; state: CharState }[];
+    isComplete: boolean;
+    hasError: boolean;
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 export default function TypingTesterPage() {
-    // --- Core Game State ---
-    const [targetText, setTargetText] = useState("");
-    const [userInput, setUserInput] = useState("");
-    const [startTime, setStartTime] = useState<number | null>(null);
-    const [endTime, setEndTime] = useState<number | null>(null);
-    const [wpm, setWpm] = useState(0);
-    const [accuracy, setAccuracy] = useState(0);
-    const [errors, setErrors] = useState(0);
+    // --- Theme ---
+    const [themeIdx, setThemeIdx] = useState(0);
+    const [themeOpen, setThemeOpen] = useState(false);
+    const T = THEMES[themeIdx];
+
+    // --- Config ---
+    const [testMode, setTestMode] = useState<TestMode>("time");
+    const [timeConfig, setTimeConfig] = useState(30);
+    const [wordConfig, setWordConfig] = useState(25);
+    const [usePunctuation, setUsePunctuation] = useState(false);
+    const [useNumbers, setUseNumbers] = useState(false);
+
+    // --- Game state ---
+    const [words, setWords] = useState<WordData[]>([]);
+    const [currentWordIdx, setCurrentWordIdx] = useState(0);
+    const [currentInput, setCurrentInput] = useState("");
+    const [completedWords, setCompletedWords] = useState<WordData[]>([]);
     const [isActive, setIsActive] = useState(false);
     const [isFinished, setIsFinished] = useState(false);
+    const [startTime, setStartTime] = useState<number | null>(null);
+    const [endTime, setEndTime] = useState<number | null>(null);
+    const [timeLeft, setTimeLeft] = useState(30);
+    const [elapsed, setElapsed] = useState(0);
+
+    // --- Stats ---
+    const [wpm, setWpm] = useState(0);
+    const [rawWpm, setRawWpm] = useState(0);
+    const [accuracy, setAccuracy] = useState(100);
+    const [wpmHistory, setWpmHistory] = useState<{ t: number; wpm: number }[]>([]);
+
+    // --- UI ---
+    const [isFocused, setIsFocused] = useState(false);
     const [visible, setVisible] = useState(false);
+    const [caretPos, setCaretPos] = useState({ top: 0, left: 0 });
 
-    // --- Dual Mode State ---
-    const [mode, setMode] = useState<"solo" | "duel">("solo");
-    const [sessionCode, setSessionCode] = useState("");
-    const [joinCodeInput, setJoinCodeInput] = useState("");
-    const [isConnecting, setIsConnecting] = useState(false);
+    // --- Custom modal ---
+    const [customModalOpen, setCustomModalOpen] = useState(false);
+    const [customInput, setCustomInput] = useState("");
+
+    // --- Duel ---
+    const [duelMode, setDuelMode] = useState(false);
     const [isHost, setIsHost] = useState(false);
-    const [opponentData, setOpponentData] = useState<{ wpm: number; progress: number; name: string } | null>(null);
-    const [duelStatus, setDuelStatus] = useState<"waiting" | "ready" | "racing" | "finished">("waiting");
+    const [sessionCode, setSessionCode] = useState("");
+    const [joinCode, setJoinCode] = useState("");
+    const [opponentProgress, setOpponentProgress] = useState(0);
+    const [opponentWpm, setOpponentWpm] = useState(0);
     const [copiedCode, setCopiedCode] = useState(false);
-    const [copiedLink, setCopiedLink] = useState(false);
-    const [systemStatus, setSystemStatus] = useState<"offline" | "connecting" | "online">("connecting");
-    const [configWarning, setConfigWarning] = useState(false);
-    const [opponentFinished, setOpponentFinished] = useState(false);
-    const [userFinishedFirst, setUserFinishedFirst] = useState<boolean | null>(null);
+    const [supabaseOnline, setSupabaseOnline] = useState(false);
 
-
+    // --- Refs ---
     const inputRef = useRef<HTMLTextAreaElement>(null);
-    const channelRef = useRef<any>(null);
-    const heartbeatIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const wordsRef = useRef<HTMLDivElement>(null);
+    const wrapperRef = useRef<HTMLDivElement>(null);
+    const timerRef = useRef<NodeJS.Timeout | null>(null);
+    const elapsedRef = useRef<NodeJS.Timeout | null>(null);
+    const historyTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const channelRef = useRef<ReturnType<typeof createClient> extends { channel: (...a: any[]) => infer R } ? R : any>(null);
     const supabase = useMemo(() => createClient(), []);
+    // Live refs (avoids stale closures in timer callbacks)
+    const wpmRef = useRef(0);
+    const wordsDataRef = useRef<WordData[]>([]);
+    const currentWordIdxRef = useRef(0);
+    // Punctuation/numbers refs — updated synchronously so buildWords always reads the latest value
+    const punctRef = useRef(false);
+    const numsRef = useRef(false);
 
-    // --- Core Actions ---
+    // ─── Sync live refs ───────────────────────────────────────────────────────
+    useEffect(() => { wordsDataRef.current = words; }, [words]);
+    useEffect(() => { currentWordIdxRef.current = currentWordIdx; }, [currentWordIdx]);
 
-    const pickSentence = useCallback(() => {
-        let nextSentence = targetText;
-        while (nextSentence === targetText || !nextSentence) {
-            nextSentence = SENTENCES[Math.floor(Math.random() * SENTENCES.length)];
-        }
-        return nextSentence;
-    }, [targetText]);
+    // ─── Build word list ──────────────────────────────────────────────────────
+    const buildWords = useCallback((count: number): WordData[] => {
+        // Read from refs (always up-to-date, even mid-render)
+        const raw = generateText(count, punctRef.current, numsRef.current).split(" ");
+        return raw.map(w => ({
+            word: w,
+            chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
+            isComplete: false,
+            hasError: false,
+        }));
+    }, []); // no state deps needed — refs are always current
 
-    const stopHeartbeat = useCallback(() => {
-        if (heartbeatIntervalRef.current) {
-            clearInterval(heartbeatIntervalRef.current);
-            heartbeatIntervalRef.current = null;
-        }
-    }, []);
+    // ─── Reset ────────────────────────────────────────────────────────────────
+    const resetTest = useCallback(() => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (elapsedRef.current) clearInterval(elapsedRef.current);
+        if (historyTimerRef.current) clearInterval(historyTimerRef.current);
 
-    const resetTest = useCallback((isNewTask: boolean = true) => {
-        let nextSentence = targetText;
-        if (isNewTask) {
-            nextSentence = pickSentence();
-            setTargetText(nextSentence);
-        }
+        const count = testMode === "words" ? wordConfig : 80;
+        const newWords = buildWords(count);
 
-        setUserInput("");
-        setStartTime(null);
-        setEndTime(null);
-        setWpm(0);
-        setAccuracy(0);
-        setErrors(0);
+        setWords(newWords);
+        setCurrentWordIdx(0);
+        setCurrentInput("");
+        setCompletedWords([]);
         setIsActive(false);
         setIsFinished(false);
-        setOpponentFinished(false);
-        setUserFinishedFirst(null);
+        setStartTime(null);
+        setEndTime(null);
+        setTimeLeft(testMode === "time" ? timeConfig : 0);
+        setElapsed(0);
+        setWpm(0);
+        setRawWpm(0);
+        setAccuracy(100);
+        setWpmHistory([]);
+        wpmRef.current = 0;
 
-        // Broadcast new task if in duel and we are the host
-        if (mode === "duel" && isHost && channelRef.current && isNewTask) {
-            channelRef.current.send({
-                type: "broadcast",
-                event: "new_match",
-                payload: { sentence: nextSentence }
-            });
-        }
+        if (wordsRef.current) wordsRef.current.style.transform = "translateY(0)";
+        setTimeout(() => inputRef.current?.focus(), 50);
+    }, [testMode, timeConfig, wordConfig, buildWords]);
 
-        const focusInput = () => {
-            if (inputRef.current) inputRef.current.focus();
-        };
-        setTimeout(focusInput, 50);
-        setTimeout(focusInput, 200);
-    }, [targetText, mode, isHost, pickSentence]);
-
-    // --- Hyper-Resilient Handshake (Presence + Broadcast Heartbeat) ---
-
-    const joinChannel = useCallback((code: string, amIHost: boolean, hostSentence?: string) => {
-        stopHeartbeat();
-        if (channelRef.current) {
-            channelRef.current.unsubscribe();
-        }
-
-        const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-        if (!supabaseUrl || supabaseUrl.includes("your-project-id") || supabaseUrl === "") {
-            setSystemStatus("offline");
-            setConfigWarning(true);
-            setIsConnecting(false);
-            return;
-        }
-
-        setSystemStatus("connecting");
-        setConfigWarning(false);
-
-        // Use simpler channel name for better compatibility
-        const channelName = `duel_${code}`;
-        const channel = supabase.channel(channelName, {
-            config: {
-                broadcast: { self: true },
-                presence: { key: amIHost ? "host" : "joiner" }
-            }
-        });
-
-        // 1. Presence Logic
-        channel.on("presence", { event: "sync" }, () => {
-            const state = channel.presenceState();
-            const keys = Object.keys(state);
-            if (keys.includes("host") && keys.includes("joiner")) {
-                setDuelStatus("ready");
-                if (amIHost && hostSentence) {
-                    channel.send({ type: "broadcast", event: "force_sync", payload: { sentence: hostSentence } });
-                }
-            }
-        });
-
-        // 2. Broadcast Signals (Fallback Handshake)
-        channel
-            .on("broadcast", { event: "ping" }, ({ payload }: any) => {
-                if (amIHost && payload.from === "joiner") {
-                    console.log("Duel: Joiner pinged, replying with sentence.");
-                    channel.send({ type: "broadcast", event: "force_sync", payload: { sentence: hostSentence } });
-                    setDuelStatus("ready");
-                }
-            })
-            .on("broadcast", { event: "force_sync" }, ({ payload }: any) => {
-                console.log("Duel: Received forced sync from host.");
-                setTargetText(payload.sentence);
-                setDuelStatus("ready");
-            })
-            .on("broadcast", { event: "new_match" }, ({ payload }: any) => {
-                setTargetText(payload.sentence);
-                setUserInput("");
-                setStartTime(null);
-                setEndTime(null);
-                setWpm(0);
-                setAccuracy(0);
-                setErrors(0);
-                setIsActive(false);
-                setIsFinished(false);
-                setDuelStatus("ready");
-                setTimeout(() => inputRef.current?.focus(), 250);
-            })
-            .on("broadcast", { event: "progress" }, ({ payload }: any) => {
-                setOpponentData({
-                    wpm: payload.wpm,
-                    progress: payload.progress,
-                    name: "Opponent"
-                });
-                if (payload.status === "finished") {
-                    setOpponentFinished(true);
-                    if (userFinishedFirst === null) {
-                        setUserFinishedFirst(false);
-                    }
-                }
-            });
-
-        // 3. Subscription and Heartbeat
-        channel.subscribe(async (status: any) => {
-            console.log(`Duel: Channel ${channelName} status: ${status}`);
-            if (status === "SUBSCRIBED") {
-                setSystemStatus("online");
-                setIsConnecting(false);
-
-                await channel.track({ online_at: new Date().toISOString() });
-
-                // Start Handshake Heartbeat loop (every 1.5s until ready)
-                heartbeatIntervalRef.current = setInterval(() => {
-                    if (duelStatus !== "ready") {
-                        channel.send({
-                            type: "broadcast",
-                            event: "ping",
-                            payload: { from: amIHost ? "host" : "joiner" }
-                        });
-                    } else {
-                        // Once ready, slow down or stop handshake pings
-                        stopHeartbeat();
-                    }
-                }, 1500);
-            } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
-                setSystemStatus("offline");
-                setIsConnecting(false);
-            }
-        });
-
-        channelRef.current = channel;
-    }, [supabase, stopHeartbeat, duelStatus]);
-
-    // Cleanup heartbeat when ready
+    // ─── Init ─────────────────────────────────────────────────────────────────
     useEffect(() => {
-        if (duelStatus === "ready") {
-            stopHeartbeat();
-        }
-    }, [duelStatus, stopHeartbeat]);
-
-    const createDuel = useCallback(async () => {
-        setIsConnecting(true);
-        const code = Math.floor(100000 + Math.random() * 900000).toString();
-        const sentence = pickSentence();
-
-        setTargetText(sentence);
-        setSessionCode(code);
-        setMode("duel");
-        setIsHost(true);
-        setDuelStatus("waiting");
-        setOpponentData(null);
-
-        joinChannel(code, true, sentence);
-    }, [pickSentence, joinChannel]);
-
-    const joinDuel = useCallback(async (codeToJoin?: string) => {
-        const code = codeToJoin || joinCodeInput;
-        if (!code || code.length !== 6) return;
-
-        setIsConnecting(true);
-        setMode("duel");
-        setIsHost(false);
-        setOpponentData(null);
-        setSessionCode(code);
-
-        joinChannel(code, false);
-    }, [joinCodeInput, joinChannel]);
-
-    const leaveDuel = useCallback(() => {
-        stopHeartbeat();
-        if (channelRef.current) {
-            channelRef.current.unsubscribe();
-            channelRef.current = null;
-        }
-        setMode("solo");
-        setIsHost(false);
-        setSessionCode("");
-        setJoinCodeInput("");
-        setOpponentData(null);
-        setDuelStatus("waiting");
-
-        const url = new URL(window.location.href);
-        url.searchParams.delete("join");
-        window.history.replaceState({}, "", url.toString());
-
-        resetTest(true);
-    }, [resetTest, stopHeartbeat]);
-
-    // Initial load and URL handling
-    useEffect(() => {
-        const t = setTimeout(() => setVisible(true), 50);
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get("join");
-
-        if (code && code.length === 6) {
-            setJoinCodeInput(code);
-            joinDuel(code);
-        } else {
-            resetTest(true);
-        }
-
-        return () => {
-            clearTimeout(t);
-            stopHeartbeat();
-            if (channelRef.current) channelRef.current.unsubscribe();
-        };
+        setTimeout(() => setVisible(true), 100);
+        resetTest();
+        if (supabase) setSupabaseOnline(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const calculateStats = useCallback((input: string) => {
-        if (!startTime) return;
+    // Tab → restart
+    useEffect(() => {
+        const handler = (e: KeyboardEvent) => {
+            if (e.key === "Tab") { e.preventDefault(); resetTest(); }
+        };
+        window.addEventListener("keydown", handler);
+        return () => window.removeEventListener("keydown", handler);
+    }, [resetTest]);
 
-        const now = Date.now();
-        const timeElapsedMinutes = (now - startTime) / 60000;
+    // ─── Caret positioning (RAF for smooth, pixel-accurate updates) ──────────
+    const rafRef = useRef<number | null>(null);
 
-        const charactersTyped = input.length;
-        const currentWpm = Math.round((charactersTyped / 5) / (timeElapsedMinutes || 0.0001)) || 0;
-        setWpm(currentWpm);
+    const updateCaret = useCallback(() => {
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+            if (!wordsRef.current || !wrapperRef.current) return;
+            const wordEls = wordsRef.current.querySelectorAll<HTMLSpanElement>(".word-el");
+            const currentWordEl = wordEls[currentWordIdx];
+            if (!currentWordEl) return;
 
-        let currentErrors = 0;
-        const inputChars = input.split("");
-        const targetChars = targetText.split("");
+            const charEls = currentWordEl.querySelectorAll<HTMLSpanElement>(".char-el");
+            const caretCharIdx = currentInput.length;
+            const containerRect = wordsRef.current.getBoundingClientRect();
+            let top = 0, left = 0;
 
-        inputChars.forEach((char: string, i: number) => {
-            if (char !== targetChars[i]) currentErrors++;
+            if (caretCharIdx < charEls.length) {
+                const r = charEls[caretCharIdx].getBoundingClientRect();
+                top = r.top - containerRect.top;
+                left = r.left - containerRect.left;
+            } else if (charEls.length > 0) {
+                const r = charEls[charEls.length - 1].getBoundingClientRect();
+                top = r.top - containerRect.top;
+                left = r.left - containerRect.left + r.width;
+            }
+            setCaretPos({ top, left });
+
+            // Auto-scroll: push words up when current word drifts below visible area
+            const wrapperRect = wrapperRef.current.getBoundingClientRect();
+            const wordTop = currentWordEl.getBoundingClientRect().top - wrapperRect.top;
+            if (wordTop > 80) {
+                const cur = parseInt(wordsRef.current.style.transform.replace(/[^-\d]/g, "") || "0");
+                wordsRef.current.style.transform = `translateY(${cur - wordTop + 35}px)`;
+            }
+        });
+    }, [currentWordIdx, currentInput]);
+
+    useEffect(() => { updateCaret(); }, [currentInput, currentWordIdx, words, updateCaret]);
+
+    // Cleanup RAF on unmount
+    useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
+
+
+    // ─── Stats ────────────────────────────────────────────────────────────────
+    const calcStats = useCallback((allCompleted: WordData[], currentTyped: string, elapsedSec: number) => {
+        if (elapsedSec < 0.1) return;
+        const elapsedMin = elapsedSec / 60;
+        let correctChars = 0, totalChars = 0;
+
+        allCompleted.forEach(w => {
+            w.chars.forEach(c => {
+                totalChars++;
+                if (c.state === "correct") correctChars++;
+            });
         });
 
-        const currentAccuracy = input.length > 0
-            ? Math.round(((input.length - currentErrors) / input.length) * 100)
-            : 0;
+        const currentWord = wordsDataRef.current[currentWordIdxRef.current]?.word || "";
+        currentTyped.split("").forEach((c, i) => {
+            totalChars++;
+            if (c === currentWord[i]) correctChars++;
+        });
 
-        setErrors(currentErrors);
-        setAccuracy(currentAccuracy);
+        const currentWpm = Math.max(0, Math.round((correctChars / 5) / elapsedMin));
+        const currentRaw = Math.max(0, Math.round((totalChars / 5) / elapsedMin));
+        const acc = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
 
-        if (mode === "duel" && channelRef.current && systemStatus === "online") {
-            channelRef.current.send({
-                type: "broadcast",
-                event: "progress",
-                payload: {
-                    wpm: currentWpm,
-                    progress: Math.floor((input.length / (targetText.length || 1)) * 100),
-                    status: input.length === targetText.length ? "finished" : "racing"
-                }
-            });
+        wpmRef.current = currentWpm;
+        setWpm(currentWpm);
+        setRawWpm(currentRaw);
+        setAccuracy(acc);
+    }, []);
+
+    // ─── Finish ───────────────────────────────────────────────────────────────
+    const finishTest = useCallback(() => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (elapsedRef.current) clearInterval(elapsedRef.current);
+        if (historyTimerRef.current) clearInterval(historyTimerRef.current);
+        setEndTime(Date.now());
+        setIsActive(false);
+        setIsFinished(true);
+    }, []);
+
+    // ─── Start timers ─────────────────────────────────────────────────────────
+    const startTimers = useCallback(() => {
+        const start = Date.now();
+        setStartTime(start);
+
+        elapsedRef.current = setInterval(() => {
+            setElapsed((Date.now() - start) / 1000);
+        }, 200);
+
+        // 1s tick for WPM history
+        let tick = 0;
+        historyTimerRef.current = setInterval(() => {
+            tick++;
+            setWpmHistory(prev => [...prev, { t: tick, wpm: wpmRef.current }]);
+        }, 1000);
+
+        if (testMode === "time") {
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (prev <= 1) { finishTest(); return 0; }
+                    return prev - 1;
+                });
+            }, 1000);
         }
-    }, [startTime, targetText, mode, systemStatus]);
+    }, [testMode, finishTest]);
 
-    const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
-        const val = e.target.value;
+    // ─── Input handling ───────────────────────────────────────────────────────
+    const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (isFinished) return;
+        const val = e.target.value;
 
         if (!isActive && val.length > 0) {
             setIsActive(true);
-            setStartTime(Date.now());
+            startTimers();
         }
 
-        if (val.length <= targetText.length) {
-            setUserInput(val);
-            calculateStats(val);
+        if (val.endsWith(" ")) {
+            const typed = val.trimEnd();
+            const wordData = words[currentWordIdx];
+            if (!wordData) return;
+
+            const updatedChars: { char: string; state: CharState }[] = wordData.word.split("").map((c, i) => ({
+                char: c,
+                state: (typed[i] === c ? "correct" : "incorrect") as CharState,
+            }));
+
+            const hasError = typed !== wordData.word;
+            const completedWord: WordData = { ...wordData, chars: updatedChars, isComplete: true, hasError };
+            const newCompleted = [...completedWords, completedWord];
+            setCompletedWords(newCompleted);
+
+            const nextIdx = currentWordIdx + 1;
+            if (testMode === "words" && nextIdx >= words.length) { finishTest(); return; }
+
+            setCurrentWordIdx(nextIdx);
+            setCurrentInput("");
+            calcStats(newCompleted, "", elapsed);
+            return;
         }
 
-        if (val.length === targetText.length && targetText.length > 0) {
-            setEndTime(Date.now());
-            setIsActive(false);
-            setIsFinished(true);
-            if (mode === "duel" && userFinishedFirst === null) {
-                setUserFinishedFirst(true);
+        const currentWord = words[currentWordIdx]?.word || "";
+        if (val.length > currentWord.length + 8) return;
+        setCurrentInput(val);
+        calcStats(completedWords, val, elapsed);
+    }, [isFinished, isActive, words, currentWordIdx, completedWords, testMode, startTimers, finishTest, calcStats, elapsed]);
+
+    const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+        if (e.key === "Backspace" && currentInput === "" && currentWordIdx > 0) {
+            e.preventDefault();
+            const prevCompleted = completedWords.slice(0, -1);
+            const prevWord = completedWords[completedWords.length - 1];
+            if (!prevWord) return;
+            setCurrentWordIdx(prev => prev - 1);
+            setCompletedWords(prevCompleted);
+            setCurrentInput(prevWord.word);
+        }
+    }, [currentInput, currentWordIdx, completedWords]);
+
+    // ─── Display words (live merge of completed + current) ────────────────────
+    const displayWords = useMemo(() => {
+        return words.map((w, idx) => {
+            if (idx < currentWordIdx) return completedWords[idx] ?? w;
+            if (idx === currentWordIdx) {
+                const chars = w.word.split("").map((c, ci) => {
+                    const typed = currentInput[ci];
+                    const state: CharState = typed === undefined ? "pending" : typed === c ? "correct" : "incorrect";
+                    return { char: c, state };
+                });
+                const extraChars = currentInput.slice(w.word.length).split("").map(c => ({
+                    char: c, state: "incorrect" as CharState,
+                }));
+                return { ...w, chars: [...chars, ...extraChars], hasError: currentInput !== w.word.slice(0, currentInput.length) };
             }
-        }
-    };
-
-    const copyCode = () => {
-        navigator.clipboard.writeText(sessionCode || joinCodeInput);
-        setCopiedCode(true);
-        setTimeout(() => setCopiedCode(false), 2000);
-    };
-
-    const copyInviteLink = () => {
-        const code = sessionCode || joinCodeInput;
-        const link = `${window.location.origin}${window.location.pathname}?join=${code}`;
-        navigator.clipboard.writeText(link);
-        setCopiedLink(true);
-        setTimeout(() => setCopiedLink(false), 1500);
-    };
-
-    // --- UI Helpers ---
-
-    const words = useMemo(() => {
-        let globalIdx = 0;
-        if (!targetText) return [];
-        return targetText.split(" ").map((word: string, wordIdx: number, array: string[]) => {
-            const chars = word.split("").map((char: string) => ({ char, index: globalIdx++ }));
-            if (wordIdx !== array.length - 1) chars.push({ char: " ", index: globalIdx++ });
-            return chars;
+            return w;
         });
-    }, [targetText]);
+    }, [words, currentWordIdx, currentInput, completedWords]);
 
-    const renderChar = (char: string, index: number) => {
-        let colorClass = "text-zinc-600";
-        let cursorClass = "";
-
-        if (index < userInput.length) {
-            colorClass = userInput[index] === char ? "text-zinc-100" : "text-red-500 bg-red-400/10 rounded-sm";
-        } else if (index === userInput.length) {
-            cursorClass = "relative after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-sky-500 after:animate-pulse after:rounded-full";
-            colorClass = "text-zinc-300";
-        }
-
-        return (
-            <span key={index} className={`transition-all duration-150 inline-block px-[0.5px] ${colorClass} ${cursorClass}`}>
-                {char === " " ? "\u00A0" : char}
-            </span>
-        );
+    // ─── Duel ─────────────────────────────────────────────────────────────────
+    const createDuel = () => {
+        if (!supabase) return;
+        const code = Math.floor(100000 + Math.random() * 900000).toString();
+        setSessionCode(code);
+        setIsHost(true);
+        setDuelMode(true);
+        const ch = supabase.channel(`duel_${code}`, { config: { broadcast: { self: false } } });
+        ch.on("broadcast", { event: "progress" }, ({ payload }: any) => {
+            setOpponentProgress(payload.progress);
+            setOpponentWpm(payload.wpm);
+        });
+        ch.subscribe();
+        channelRef.current = ch;
     };
 
+    const joinDuel = () => {
+        if (!supabase || !joinCode) return;
+        setSessionCode(joinCode);
+        setIsHost(false);
+        setDuelMode(true);
+        const ch = supabase.channel(`duel_${joinCode}`, { config: { broadcast: { self: false } } });
+        ch.on("broadcast", { event: "progress" }, ({ payload }: any) => {
+            setOpponentProgress(payload.progress);
+            setOpponentWpm(payload.wpm);
+        });
+        ch.subscribe();
+        channelRef.current = ch;
+    };
+
+    const leaveDuel = () => {
+        channelRef.current?.unsubscribe();
+        setDuelMode(false);
+        setSessionCode("");
+        setJoinCode("");
+        setOpponentProgress(0);
+        resetTest();
+    };
+
+    useEffect(() => {
+        if (duelMode && isActive && channelRef.current) {
+            const progress = Math.round((currentWordIdx / words.length) * 100);
+            channelRef.current.send({ type: "broadcast", event: "progress", payload: { progress, wpm } });
+        }
+    }, [currentWordIdx, wpm, duelMode, isActive, words.length]);
+
+    // ─── Final stats ──────────────────────────────────────────────────────────
+    const finalStats = useMemo(() => {
+        const correct = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "correct").length, 0);
+        const incorrect = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "incorrect").length, 0);
+        const total = correct + incorrect;
+        const timeTaken = endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0;
+        const mins = timeTaken > 0 ? timeTaken / 60 : (testMode === "time" ? timeConfig / 60 : 1);
+        const finalWpm = total > 0 ? Math.round((correct / 5) / mins) : 0;
+        const finalRaw = total > 0 ? Math.round((total / 5) / mins) : 0;
+        const finalAcc = total > 0 ? Math.round((correct / total) * 100) : 100;
+        const mm = Math.floor(timeTaken / 60).toString().padStart(2, "0");
+        const ss = (timeTaken % 60).toString().padStart(2, "0");
+        return { correct, incorrect, total, finalWpm, finalRaw, finalAcc, mm, ss };
+    }, [completedWords, endTime, startTime, testMode, timeConfig]);
+
+    const isPresetTime = TIME_OPTIONS.includes(timeConfig);
+    const isPresetWords = WORD_OPTIONS.includes(wordConfig);
+    const activeConfig = testMode === "time" ? timeConfig : wordConfig;
+
+    // ─── Render ───────────────────────────────────────────────────────────────
     return (
-        <div className="relative min-h-screen py-16 px-6 md:px-10 bg-[#09090b] overflow-hidden text-zinc-100">
-            {/* Warning for unconfigured Supabase */}
-            {configWarning && (
-                <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl animate-in fade-in slide-in-from-top-4 duration-500">
-                    <div className="bg-red-500/10 border border-red-500/20 backdrop-blur-xl p-4 rounded-2xl flex items-center gap-4 shadow-2xl">
-                        <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center text-white shrink-0">
-                            <AlertCircle size={20} />
+        <div
+            className="min-h-screen transition-colors duration-300"
+            style={{ background: T.bg, color: T.muted, fontFamily: "'Roboto Mono', 'Fira Code', monospace" }}
+        >
+            <style>{`
+                @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap');
+                @keyframes caretBlink { 0%,100%{opacity:1} 50%{opacity:0} }
+            `}</style>
+
+            {/* ── Header ─────────────────────────────────────────────────────── */}
+            <header className="max-w-5xl mx-auto px-8 pt-10 flex items-center justify-between">
+                <button onClick={resetTest} className="flex items-center gap-3 group">
+                    <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all"
+                        style={{ background: T.accent, boxShadow: `0 0 20px ${T.accentHex}44` }}
+                    >AN</div>
+                    <span className="text-lg font-bold tracking-tight uppercase transition-colors" style={{ color: T.text }}>
+                        Type Test
+                    </span>
+                </button>
+
+                <div className="flex items-center gap-3">
+                    {isActive && (
+                        <div className="text-xs font-bold uppercase tracking-widest" style={{ color: T.muted }}>
+                            {testMode === "time" ? `${timeLeft}s` : `${currentWordIdx}/${wordConfig}`}
                         </div>
-                        <div className="flex-1">
-                            <p className="text-xs font-black uppercase text-red-500 tracking-widest mb-0.5">Configuration Required</p>
-                            <p className="text-[10px] text-zinc-400 font-medium">Please fill in your <code className="text-zinc-100 font-bold bg-zinc-800 px-1.5 py-0.5 rounded">.env</code> keys to enable live duels.</p>
-                        </div>
+                    )}
+                    {/* Theme picker */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setThemeOpen(o => !o)}
+                            className="p-2 rounded-lg transition-colors"
+                            style={{ color: T.muted, background: themeOpen ? T.surface : "transparent" }}
+                            title="Change theme"
+                        >
+                            <Palette size={16} />
+                        </button>
+                        {themeOpen && (
+                            <div
+                                className="absolute right-0 top-10 z-50 rounded-xl p-4 shadow-2xl border"
+                                style={{ background: T.surface, borderColor: T.border, minWidth: 300 }}
+                            >
+                                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: T.muted }}>Theme</div>
+                                <div className="grid grid-cols-5 gap-3">
+                                    {THEMES.map((th, i) => (
+                                        <button
+                                            key={th.name}
+                                            onClick={() => { setThemeIdx(i); setThemeOpen(false); }}
+                                            className="flex flex-col items-center gap-1.5 group"
+                                            title={th.name}
+                                        >
+                                            {/* Color swatch */}
+                                            <div
+                                                className="w-10 h-10 rounded-xl border-2 transition-all duration-200"
+                                                style={{
+                                                    background: th.bg,
+                                                    borderColor: i === themeIdx ? th.accent : th.border,
+                                                    boxShadow: i === themeIdx ? `0 0 12px ${th.accentHex}80` : "none",
+                                                    transform: i === themeIdx ? "scale(1.12)" : "scale(1)",
+                                                }}
+                                            >
+                                                <div className="w-full h-full rounded-lg flex items-end p-1">
+                                                    <div className="w-full h-2 rounded-sm" style={{ background: th.accent }} />
+                                                </div>
+                                            </div>
+                                            <span className="text-[8px] leading-tight font-bold" style={{ color: i === themeIdx ? T.accent : T.muted }}>
+                                                {th.name}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                        )}
                     </div>
                 </div>
-            )}
+            </header>
 
-            {/* Background */}
-            <div className="fixed inset-0 pointer-events-none z-0" style={{
-                backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)`,
-                backgroundSize: "32px 32px",
-                maskImage: "radial-gradient(ellipse 70% 60% at 50% 0%, #000 30%, transparent 100%)",
-            }} />
+            <main className={`max-w-5xl mx-auto px-8 mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
 
-            <div className="max-w-5xl mx-auto relative z-10">
-                {/* Header */}
-                <div className={`transition-all duration-1000 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                    <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-12">
-                        <div className="flex-1">
-                            <div className="flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/60 w-fit mb-4 rounded-full backdrop-blur-md text-sky-400 shadow-[0_4px_12px_rgba(0,0,0,0.5)]">
-                                <Zap size={10} className="fill-sky-400" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Efficiency Tool</span>
+                {/* ── Mode toolbar ───────────────────────────────────────────── */}
+                {!isActive && !isFinished && (
+                    <div className="flex justify-center mb-10">
+                        <div
+                            className="flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-bold uppercase tracking-wider"
+                            style={{ background: T.surface }}
+                        >
+                            {/* Mode toggles */}
+                            <div className="flex items-center gap-1 pr-3" style={{ borderRight: `1px solid ${T.border}` }}>
+                                {(["time", "words"] as TestMode[]).map(m => (
+                                    <button
+                                        key={m}
+                                        onClick={() => { setTestMode(m); setTimeout(resetTest, 0); }}
+                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
+                                        style={{
+                                            color: testMode === m ? T.accent : T.muted,
+                                            background: testMode === m ? `${T.accentHex}18` : "transparent",
+                                        }}
+                                    >
+                                        {m === "time" ? <Timer size={12} /> : <Keyboard size={12} />}
+                                        {m}
+                                    </button>
+                                ))}
                             </div>
-                            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight uppercase leading-[0.9] text-white">
-                                Typing <span className="text-sky-500">Speed Test</span>
-                            </h1>
-                        </div>
 
-                        <div className="flex flex-wrap items-center gap-4 lg:gap-6">
-                            {/* Mode Switchers */}
-                            <div className="flex bg-zinc-900/50 backdrop-blur-xl ring-1 ring-zinc-800 p-1 rounded-2xl shadow-2xl shrink-0">
+                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
+
+                            {/* Punctuation / Numbers toggles */}
+                            <div className="flex items-center gap-1 px-2">
+                                <button
+                                    onClick={() => {
+                                        const next = !usePunctuation;
+                                        punctRef.current = next;   // update ref synchronously FIRST
+                                        setUsePunctuation(next);   // then update state for UI
+                                        resetTest();               // resetTest reads from ref — always correct
+                                    }}
+                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                    style={{
+                                        color: usePunctuation ? T.accent : T.muted,
+                                        background: usePunctuation ? `${T.accentHex}18` : "transparent",
+                                    }}
+                                    title="Toggle punctuation"
+                                >
+                                    <span className="text-sm">@</span>
+                                    <span>punctuation</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const next = !useNumbers;
+                                        numsRef.current = next;    // update ref synchronously FIRST
+                                        setUseNumbers(next);       // then update state for UI
+                                        resetTest();               // resetTest reads from ref — always correct
+                                    }}
+                                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                    style={{
+                                        color: useNumbers ? T.accent : T.muted,
+                                        background: useNumbers ? `${T.accentHex}18` : "transparent",
+                                    }}
+                                    title="Toggle numbers"
+                                >
+                                    <span className="text-sm">#</span>
+                                    <span>numbers</span>
+                                </button>
+                            </div>
+
+                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
+
+                            {/* Config presets */}
+                            <div className="flex items-center gap-1 px-3">
+                                {(testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
+                                    <button
+                                        key={v}
+                                        onClick={() => {
+                                            if (testMode === "time") setTimeConfig(v);
+                                            else setWordConfig(v);
+                                            setTimeout(resetTest, 0);
+                                        }}
+                                        className="px-3 py-1.5 rounded-lg transition-all"
+                                        style={{
+                                            color: activeConfig === v ? T.accent : T.muted,
+                                            background: activeConfig === v ? `${T.accentHex}18` : "transparent",
+                                        }}
+                                    >
+                                        {v}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => { setCustomInput(activeConfig.toString()); setCustomModalOpen(true); }}
+                                    className="px-2 py-1.5 rounded-lg transition-all"
+                                    style={{
+                                        color: (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
+                                    }}
+                                    title="Custom"
+                                >
+                                    <Settings2 size={12} />
+                                </button>
+                            </div>
+
+                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
+
+                            {/* Duel */}
+                            <div className="flex items-center gap-1 pl-3">
                                 <button
                                     onClick={leaveDuel}
-                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === "solo" ? "bg-zinc-800 text-white shadow-xl" : "text-zinc-500 hover:text-zinc-300"}`}
-                                >
-                                    Solo
-                                </button>
+                                    className="px-3 py-1.5 rounded-lg transition-all"
+                                    style={{
+                                        color: !duelMode ? T.accent : T.muted,
+                                        background: !duelMode ? `${T.accentHex}18` : "transparent",
+                                    }}
+                                >solo</button>
                                 <button
-                                    onClick={() => setMode("duel")}
-                                    className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${mode === "duel" ? "bg-sky-500 text-white shadow-xl shadow-sky-500/30" : "text-zinc-500 hover:text-zinc-200"}`}
-                                >
-                                    Dual Duel
-                                </button>
+                                    onClick={() => !duelMode && supabaseOnline && createDuel()}
+                                    className="px-3 py-1.5 rounded-lg transition-all"
+                                    style={{
+                                        color: duelMode ? T.accent : T.muted,
+                                        background: duelMode ? `${T.accentHex}18` : "transparent",
+                                        opacity: !supabaseOnline ? 0.3 : 1,
+                                    }}
+                                >duel</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                {/* --- Dual Mode Setup UI --- */}
-                {mode === "duel" && !channelRef.current && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12 animate-in fade-in slide-in-from-bottom-4 duration-500 ease-out">
-                        <div className="group p-8 bg-zinc-900/40 border border-zinc-800 rounded-[3rem] backdrop-blur-xl hover:border-sky-500/30 transition-all">
-                            <h3 className="text-xl font-black uppercase tracking-tight mb-2">Host Encounter</h3>
-                            <p className="text-zinc-500 text-xs mb-8 font-medium leading-relaxed">Start a live competition. Share your invite link or code with a friend to begin racing.</p>
-                            <button
-                                onClick={createDuel}
-                                disabled={isConnecting}
-                                className="w-full flex items-center justify-center gap-3 py-4 bg-sky-500 text-white font-black text-[11px] uppercase tracking-widest rounded-2xl hover:bg-sky-400 transition-all shadow-xl shadow-sky-500/20 active:scale-[0.98]"
-                            >
-                                {isConnecting ? <RefreshCcw size={16} className="animate-spin" /> : <><UserPlus size={18} /> Generate Lobby</>}
-                            </button>
-                        </div>
-                        <div className="group p-8 bg-zinc-900/40 border border-zinc-800 rounded-[3rem] backdrop-blur-xl hover:border-zinc-600 transition-all">
-                            <h3 className="text-xl font-black uppercase tracking-tight mb-2">Join Lobby</h3>
-                            <p className="text-zinc-500 text-xs mb-8 font-medium leading-relaxed">Have a 6-digit session code? Enter it below to join your friend's arena instantly.</p>
+                {/* ── Duel panel ─────────────────────────────────────────────── */}
+                {duelMode && !isActive && !isFinished && (
+                    <div className="max-w-md mx-auto mb-8 rounded-2xl p-5 border" style={{ background: T.surface, borderColor: T.border }}>
+                        {isHost ? (
+                            <div className="space-y-3">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>Room Code</span>
+                                    <button
+                                        onClick={() => { navigator.clipboard.writeText(sessionCode); setCopiedCode(true); setTimeout(() => setCopiedCode(false), 2000); }}
+                                        className="flex items-center gap-1.5 text-xs font-bold"
+                                        style={{ color: T.accent }}
+                                    >
+                                        {copiedCode ? <><Check size={12} /> copied</> : <><Copy size={12} /> copy</>}
+                                    </button>
+                                </div>
+                                <div className="text-3xl font-black tracking-[0.3em]" style={{ color: T.text }}>{sessionCode}</div>
+                            </div>
+                        ) : (
                             <div className="flex gap-2">
                                 <input
-                                    type="text"
-                                    placeholder="Encounter ID"
-                                    maxLength={6}
-                                    value={joinCodeInput}
-                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setJoinCodeInput(e.target.value.replace(/\D/g, ""))}
-                                    className="flex-1 bg-zinc-950/50 border border-zinc-800 rounded-2xl px-5 py-4 text-sm font-bold tracking-[0.3em] focus:outline-none focus:border-sky-500 transition-colors uppercase placeholder:text-zinc-700 font-mono"
+                                    value={joinCode}
+                                    onChange={e => setJoinCode(e.target.value)}
+                                    placeholder="Enter room code"
+                                    className="flex-1 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none border"
+                                    style={{ background: T.bg, borderColor: T.border, color: T.text }}
                                 />
                                 <button
-                                    onClick={() => joinDuel()}
-                                    disabled={joinCodeInput.length !== 6 || isConnecting}
-                                    className="px-8 bg-zinc-100 text-black font-black text-[11px] uppercase tracking-widest rounded-2xl hover:bg-white active:scale-95 transition-all disabled:opacity-30 shadow-xl"
-                                >
-                                    Login
-                                </button>
+                                    onClick={joinDuel}
+                                    className="px-5 py-2.5 rounded-xl text-xs font-black uppercase text-black"
+                                    style={{ background: T.accent }}
+                                >Join</button>
                             </div>
+                        )}
+                    </div>
+                )}
+
+                {/* ── Live stats (while typing) ──────────────────────────────── */}
+                {isActive && (
+                    <div className="flex items-center gap-8 mb-6">
+                        <div className="text-5xl font-black tabular-nums leading-none" style={{ color: T.accent }}>
+                            {testMode === "time" ? timeLeft : `${elapsed.toFixed(0)}s`}
+                        </div>
+                        <div className="flex gap-6 text-sm">
+                            {[
+                                { label: "wpm", val: wpm },
+                                { label: "acc", val: `${accuracy}%` },
+                                ...(duelMode ? [{ label: "opponent", val: `${opponentWpm} wpm` }] : []),
+                            ].map(({ label, val }) => (
+                                <div key={label}>
+                                    <div className="text-[10px] uppercase tracking-wider mb-0.5" style={{ color: T.muted }}>{label}</div>
+                                    <div className="text-xl font-bold" style={{ color: label === "opponent" ? T.error : T.text }}>{val}</div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 )}
 
-                {/* --- Active Duel Invite Bar --- */}
-                {mode === "duel" && channelRef.current && (
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-6 p-6 bg-gradient-to-r from-sky-500/10 to-transparent border border-sky-500/20 rounded-[2rem] mb-10 backdrop-blur-xl animate-in slide-in-from-top-4 duration-500 ease-out">
-                        <div className="flex items-center gap-5">
-                            <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white shadow-lg transition-colors duration-500 ${systemStatus === "online" ? "bg-emerald-500 shadow-emerald-500/20" : systemStatus === "connecting" ? "bg-sky-500 shadow-sky-500/20" : "bg-red-500 shadow-red-500/20"}`}>
-                                {systemStatus === "online" ? <Wifi size={22} className="animate-pulse" /> : systemStatus === "connecting" ? <RefreshCcw size={22} className="animate-spin" /> : <WifiOff size={22} />}
-                            </div>
-                            <div>
-                                <div className="flex items-center gap-3 mb-1">
-                                    <div className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400">Arena Established</div>
-                                    <div className={`flex items-center gap-2 text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-lg border transition-all ${duelStatus === "ready" ? "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" : "text-amber-400 bg-amber-500/10 border-amber-500/20"}`}>
-                                        {duelStatus === "ready" ? <Check size={10} /> : <Signal size={10} className="animate-pulse" />}
-                                        {duelStatus === "ready" ? "Live Hooked" : "Syncing Presence"}
-                                    </div>
-                                </div>
-                                <div className="text-sm font-bold">
-                                    {systemStatus === "offline" ? "Connection Blocked" : duelStatus === "ready" ? "Combatant connected. Ready to race!" : "Seeking Combatant..."}
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="flex flex-wrap items-center gap-3">
-                            <div className="flex items-center gap-2 bg-black/40 p-1.5 pr-4 rounded-xl border border-zinc-800">
-                                <div className="px-3 py-2 bg-zinc-900 rounded-lg text-sm font-black tracking-[0.2em] font-mono shadow-inner">
-                                    {sessionCode || joinCodeInput}
-                                </div>
-                                <button onClick={copyCode} title="Copy Code" className="p-2 text-zinc-500 hover:text-white transition-all hover:bg-zinc-800 rounded-lg">
-                                    {copiedCode ? <Check size={18} className="text-emerald-400" /> : <Copy size={18} />}
-                                </button>
-                            </div>
-
-                            <button
-                                onClick={copyInviteLink}
-                                className="flex items-center gap-2.5 px-6 py-3.5 bg-zinc-100 text-black font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-white active:scale-95 transition-all shadow-xl"
-                            >
-                                {copiedLink ? <Check size={16} /> : <LinkIcon size={16} />}
-                                {copiedLink ? "Link Copied" : "Copy Invite Link"}
-                            </button>
-                        </div>
+                {/* Opponent bar */}
+                {duelMode && isActive && (
+                    <div className="h-1 w-full rounded-full mb-4 overflow-hidden" style={{ background: T.surface }}>
+                        <div className="h-full transition-all duration-500" style={{ width: `${opponentProgress}%`, background: T.error }} />
                     </div>
                 )}
 
-                {/* --- Stats Display --- */}
-                <div className={`grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 transition-all duration-1000 delay-100 ${visible ? "opacity-100" : "opacity-0"}`}>
-                    <StatCard label="Your Output" value={wpm} unit="WPM" icon={<Zap size={18} />} accentClass="text-sky-400" active={isActive} />
-                    {mode === "duel" && opponentData ? (
-                        <StatCard label="Opponent" value={opponentData.wpm} unit="WPM" icon={<Users size={18} />} accentClass="text-red-400" active={opponentData.progress > 0} />
-                    ) : (
-                        <StatCard label="Precision" value={accuracy} unit="%" icon={<CheckCircle2 size={18} />} accentClass="text-emerald-400" active={isActive} />
-                    )}
-                    <StatCard label="Anomalies" value={errors} unit="err" icon={<XCircle size={18} />} accentClass="text-red-400" active={isActive} />
-                    <StatCard label="Time" value={startTime ? Math.floor(((endTime || Date.now()) - startTime) / 1000) : 0} unit="sec" icon={<Timer size={18} />} accentClass="text-amber-400" active={isActive} />
-                </div>
+                {/* ── Typing arena ────────────────────────────────────────────── */}
+                <div className="relative cursor-text" onClick={() => inputRef.current?.focus()}>
 
-                {/* --- Main Arena --- */}
-                <div className={`relative bg-zinc-900/40 border border-zinc-800/80 rounded-[3rem] p-10 md:p-16 mb-8 backdrop-blur-2xl shadow-2xl transition-all duration-1000 delay-200 ${visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"}`}>
-                    {/* Progress bars for Duel */}
-                    {mode === "duel" && (
-                        <div className="absolute top-0 left-0 right-0 h-1.5 flex opacity-60">
-                            <div className="h-full bg-sky-500 shadow-[0_0_12px_rgba(14,165,233,0.5)] transition-all duration-300 ease-out" style={{ width: `${(userInput.length / (targetText.length || 1)) * 100}%` }} />
-                            {opponentData && <div className="h-full bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.5)] transition-all duration-300 ease-out border-l border-white/20" style={{ width: `${opponentData.progress}%` }} />}
+                    {/* Blur overlay */}
+                    {!isFocused && !isFinished && (
+                        <div
+                            className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
+                            style={{ background: `${T.bg}cc`, backdropFilter: "blur(2px)" }}
+                        >
+                            <div className="flex items-center gap-2" style={{ color: T.accent }}>
+                                <MousePointer2 size={16} />
+                                <span className="text-xs font-bold uppercase tracking-[0.3em]">Click to focus</span>
+                            </div>
                         </div>
                     )}
 
-                    <div className="mb-14 min-h-[160px] text-4xl md:text-5xl font-bold tracking-tight leading-[1.4] font-mono text-center flex flex-wrap justify-center content-center gap-y-3 select-none">
-                        {words.map((wordChars: any[], wordIdx: number) => (
-                            <div key={wordIdx} className="inline-flex whitespace-nowrap">
-                                {wordChars.map(({ char, index }: { char: string, index: number }) => renderChar(char, index))}
-                            </div>
-                        ))}
+                    {/* Words wrapper */}
+                    <div
+                        ref={wrapperRef}
+                        className="h-[160px] overflow-hidden relative"
+                        style={{ maskImage: "linear-gradient(to bottom, black 70%, transparent 100%)" }}
+                    >
+                        <div
+                            ref={wordsRef}
+                            className="flex flex-wrap gap-x-[0.6em] gap-y-[0.75em] relative transition-transform duration-150"
+                            style={{ fontSize: "1.6rem" }}
+                        >
+                            {/* Animated caret */}
+                            <div
+                                className="absolute z-10 w-[2px] rounded-full pointer-events-none"
+                                style={{
+                                    top: caretPos.top,
+                                    left: caretPos.left,
+                                    height: "1.2em",
+                                    background: T.accent,
+                                    boxShadow: `0 0 8px ${T.accentHex}99`,
+                                    transition: "top 80ms ease, left 80ms ease",
+                                    animation: !isActive && isFocused ? "caretBlink 1s ease-in-out infinite" : "none",
+                                    opacity: isFocused ? 1 : 0,
+                                }}
+                            />
+
+                            {displayWords.map((wordData, wIdx) => {
+                                const isCurrent = wIdx === currentWordIdx;
+                                const isPast = wIdx < currentWordIdx;
+
+                                return (
+                                    <span
+                                        key={wIdx}
+                                        className="word-el relative inline-flex"
+                                        style={{
+                                            opacity: isCurrent ? 1 : isPast ? 1 : 0.5,
+                                            textDecorationLine: isCurrent && wordData.hasError ? "underline" : "none",
+                                            textDecorationColor: T.error,
+                                            textUnderlineOffset: "4px",
+                                        }}
+                                    >
+                                        {wordData.chars.map((ch, cIdx) => (
+                                            <span
+                                                key={cIdx}
+                                                className="char-el"
+                                                style={{
+                                                    color: ch.state === "correct"
+                                                        ? T.accent          // ← typed correctly = accent color
+                                                        : ch.state === "incorrect"
+                                                            ? T.error
+                                                            : isCurrent
+                                                                ? "#888"
+                                                                : T.muted,
+                                                    transition: "color 0.08s ease",
+                                                }}
+                                            >
+                                                {ch.char}
+                                            </span>
+                                        ))}
+                                    </span>
+                                );
+                            })}
+                        </div>
                     </div>
 
+                    {/* Hidden input */}
                     <textarea
                         ref={inputRef}
-                        value={userInput}
-                        onChange={handleInputChange}
-                        className="absolute inset-x-0 top-0 bottom-32 w-full opacity-0 cursor-default resize-none overflow-hidden z-0"
+                        value={currentInput}
+                        onChange={handleInput}
+                        onKeyDown={handleKeyDown}
+                        onFocus={() => setIsFocused(true)}
+                        onBlur={() => setIsFocused(false)}
+                        className="absolute opacity-0 w-0 h-0 pointer-events-none"
                         autoFocus
                         spellCheck={false}
                         autoCapitalize="off"
                         autoComplete="off"
+                        autoCorrect="off"
                     />
-
-                    {/* Controls Bar */}
-                    <div className="relative z-20 flex flex-col md:flex-row items-center justify-between gap-6">
-                        <div className="flex flex-wrap items-center justify-center gap-3">
-                            <button
-                                onClick={() => resetTest(false)}
-                                className="group flex items-center gap-2.5 px-8 py-4 bg-zinc-800/80 text-white font-black text-[10px] uppercase tracking-widest hover:bg-zinc-700/80 rounded-2xl border border-zinc-700 transition-all active:scale-95 backdrop-blur-md"
-                            >
-                                <RefreshCcw size={16} className="group-hover:rotate-180 transition-transform duration-700" />
-                                Reset
-                            </button>
-                            <button
-                                onClick={() => resetTest(true)}
-                                className="group flex items-center gap-2.5 px-8 py-4 bg-sky-500 text-white font-black text-[10px] uppercase tracking-[0.2em] hover:bg-sky-400 rounded-2xl active:scale-95 shadow-2xl shadow-sky-500/20 transition-all"
-                            >
-                                Next Task
-                                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-300" />
-                            </button>
-                        </div>
-
-                        {!isActive && !isFinished && (
-                            <div className="flex items-center gap-3 animate-pulse bg-sky-500/5 px-5 py-2.5 rounded-2xl border border-sky-500/20">
-                                <Keyboard size={16} className="text-sky-500" />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-sky-400">Initiate Sequence</span>
-                            </div>
-                        )}
-
-                        {isFinished && (
-                            <div className="flex items-center gap-3 text-emerald-400 bg-emerald-500/10 px-5 py-2.5 rounded-2xl border border-emerald-500/20">
-                                <CheckCircle2 size={18} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.3em]">Success</span>
-                            </div>
-                        )}
-                    </div>
                 </div>
 
-                {/* --- Results Modal --- */}
-                {isFinished && (
-                    <div className="fixed inset-0 z-[500] flex items-center justify-center p-6 bg-black/80 backdrop-blur-xl animate-in fade-in duration-300">
-                        <div className="relative w-full max-w-4xl animate-in slide-in-from-bottom-12 duration-500 fill-mode-both ease-out">
-                            {/* Close Button */}
+                {/* Bottom controls */}
+                <div className="flex items-center justify-center gap-8 mt-8 text-[10px] uppercase font-bold tracking-widest" style={{ color: T.muted }}>
+                    <button
+                        onClick={resetTest}
+                        className="flex items-center gap-2 transition-colors hover:opacity-100"
+                        style={{ color: T.muted }}
+                        onMouseEnter={e => (e.currentTarget.style.color = T.text)}
+                        onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+                    >
+                        <RotateCcw size={14} /> restart
+                    </button>
+                    <span className="flex items-center gap-1.5">
+                        <span className="px-1.5 py-0.5 rounded text-xs border" style={{ borderColor: T.border, background: T.surface }}>tab</span>
+                        to restart
+                    </span>
+                </div>
+            </main>
+
+            {/* ── Results Screen ─────────────────────────────────────────────── */}
+            {isFinished && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center px-8"
+                    style={{ background: T.bg }}
+                >
+                    <div className="w-full max-w-5xl">
+                        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-16 mb-12 items-center">
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="text-base font-black lowercase mb-1" style={{ color: T.muted }}>wpm</div>
+                                    <div className="text-9xl font-black leading-none tracking-tight" style={{ color: T.accent }}>
+                                        {finalStats.finalWpm}
+                                    </div>
+                                </div>
+                                <div>
+                                    <div className="text-base font-black lowercase mb-1" style={{ color: T.muted }}>acc</div>
+                                    <div className="text-6xl font-black leading-none" style={{ color: T.text }}>
+                                        {finalStats.finalAcc}%
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* WPM Chart */}
+                            <div className="h-[220px] w-full relative">
+                                {wpmHistory.length > 1 ? (() => {
+                                    const maxWpm = Math.max(...wpmHistory.map(h => h.wpm), 1);
+                                    const w = wpmHistory.length * 10;
+                                    const pts = wpmHistory.map((h, i) => `${i * 10},${100 - (h.wpm / maxWpm) * 95}`).join(" ");
+                                    return (
+                                        <svg className="w-full h-full" viewBox={`0 0 ${w} 100`} preserveAspectRatio="none">
+                                            <defs>
+                                                <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                                                    <stop offset="0%" stopColor={T.accentHex} stopOpacity="0.3" />
+                                                    <stop offset="100%" stopColor={T.accentHex} stopOpacity="0" />
+                                                </linearGradient>
+                                            </defs>
+                                            {[25, 50, 75].map(y => (
+                                                <line key={y} x1="0" y1={y} x2={w} y2={y} stroke={T.surface} strokeWidth="0.5" />
+                                            ))}
+                                            <polygon
+                                                points={`${pts} ${(wpmHistory.length - 1) * 10},100 0,100`}
+                                                fill="url(#cg)"
+                                            />
+                                            <polyline
+                                                points={pts}
+                                                fill="none"
+                                                stroke={T.accentHex}
+                                                strokeWidth="1.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                                style={{ filter: `drop-shadow(0 0 6px ${T.accentHex}88)` }}
+                                            />
+                                            {wpmHistory.map((h, i) => (
+                                                <circle key={i} cx={i * 10} cy={100 - (h.wpm / maxWpm) * 95} r="1.5" fill={T.accentHex} />
+                                            ))}
+                                        </svg>
+                                    );
+                                })() : (
+                                    <div className="flex items-center justify-center h-full text-xs" style={{ color: T.muted }}>
+                                        Not enough data for chart
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Detail row */}
+                        <div className="flex flex-wrap gap-10 pt-8 border-t" style={{ borderColor: T.surface }}>
+                            {[
+                                { label: "raw", value: finalStats.finalRaw },
+                                { label: "characters", value: `${finalStats.correct}/${finalStats.incorrect}/0/0` },
+                                { label: "time", value: `${finalStats.mm}:${finalStats.ss}` },
+                                { label: "mode", value: `${testMode} ${testMode === "time" ? timeConfig : wordConfig}` },
+                                { label: "theme", value: T.name },
+                            ].map(({ label, value }) => (
+                                <div key={label} className="flex flex-col gap-1 min-w-[80px]">
+                                    <div className="text-[10px] font-black lowercase tracking-wider" style={{ color: T.muted }}>{label}</div>
+                                    <div className="text-2xl font-bold tabular-nums" style={{ color: T.text }}>{value}</div>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex items-center gap-4 mt-10">
                             <button
-                                onClick={() => setIsFinished(false)}
-                                className="absolute -top-4 -right-4 w-12 h-12 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white rounded-full flex items-center justify-center shadow-2xl z-[101] transition-all hover:rotate-90 active:scale-90"
+                                onClick={resetTest}
+                                className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all group"
+                                style={{ background: T.surface, color: T.text }}
                             >
-                                <X size={24} />
+                                <RotateCcw size={16} /> next test
                             </button>
-
-                            <div className="bg-gradient-to-br from-zinc-900/90 to-black/98 border border-zinc-800 rounded-[4rem] p-12 md:p-20 flex flex-col lg:flex-row items-center gap-16 shadow-[0_48px_128px_-24px_rgba(0,0,0,1)] relative overflow-hidden">
-                                <div className="absolute top-0 right-0 w-80 h-80 bg-sky-500/10 blur-[120px] rounded-full -mr-32 -mt-32" />
-                                <div className="absolute bottom-0 left-0 w-80 h-80 bg-emerald-500/5 blur-[120px] rounded-full -ml-32 -mb-32" />
-
-                                <div className="shrink-0 relative group">
-                                    <div className="absolute inset-0 bg-sky-500/30 rounded-full blur-3xl group-hover:blur-[60px] transition-all duration-1000 animate-pulse" />
-                                    <div className="relative w-48 h-48 rounded-full border-2 border-sky-500/30 bg-black flex items-center justify-center shadow-inner">
-                                        <div className="text-center">
-                                            <div className="text-6xl font-black text-white tracking-tighter leading-none">{wpm}</div>
-                                            <div className="text-xs font-black uppercase text-sky-500 tracking-widest mt-2">WPM</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex-1 text-center lg:text-left">
-                                    <div className="flex items-center justify-center lg:justify-start gap-4 mb-6">
-                                        <div className={`p-3 rounded-2xl ${userFinishedFirst ? "bg-amber-500/10 text-amber-500" : "bg-sky-500/10 text-sky-500"}`}>
-                                            <Trophy size={28} />
-                                        </div>
-                                        <h3 className="text-3xl md:text-5xl font-black uppercase tracking-tight text-white leading-tight">
-                                            {mode === "duel"
-                                                ? (userFinishedFirst ? "Mission Complete - Won" : "Mission Complete - Lost")
-                                                : "Mission Complete"}
-                                        </h3>
-                                    </div>
-                                    <p className="text-zinc-500 text-lg mb-10 leading-relaxed max-w-xl font-medium">
-                                        Maintained <span className="text-white font-bold">{accuracy}% precision</span> with {errors} anomalies over {targetText.length} characters in {Math.floor(((endTime || Date.now()) - (startTime || Date.now())) / 1000)} seconds.
-                                        {mode === "duel" && opponentData && (
-                                            <span className="block mt-4 text-zinc-400">
-                                                Opponent finished with <span className="text-sky-400 font-bold">{opponentData.wpm} WPM</span>.
-                                            </span>
-                                        )}
-                                    </p>
-
-                                    <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4">
-                                        <button
-                                            onClick={() => resetTest(true)}
-                                            className="group flex-1 lg:flex-none flex items-center justify-center gap-4 px-12 py-5 bg-sky-500 text-white font-black text-xs uppercase tracking-[0.25em] hover:bg-sky-400 rounded-2xl shadow-2xl shadow-sky-500/40 transition-all active:scale-[0.98]"
-                                        >
-                                            <span>Next Task</span>
-                                            <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform duration-300" />
-                                        </button>
-                                        <button
-                                            onClick={() => resetTest(false)}
-                                            className="group flex-1 lg:flex-none flex items-center justify-center gap-4 px-10 py-5 bg-zinc-800 text-white font-black text-xs uppercase tracking-[0.25em] hover:bg-zinc-700 rounded-2xl border border-zinc-700 transition-all active:scale-[0.98]"
-                                        >
-                                            <RotateCcw size={18} className="group-hover:rotate-180 transition-transform duration-700" />
-                                            <span>Retry</span>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* Supabase Config Instructions Overlay (Only if offline/warning) */}
-            {configWarning && (
-                <div className="mt-10 max-w-2xl mx-auto p-10 bg-zinc-900/60 rounded-[3rem] border border-zinc-800 backdrop-blur-2xl">
-                    <div className="flex items-center gap-4 mb-6">
-                        <Info size={24} className="text-sky-500" />
-                        <h4 className="text-xl font-black uppercase tracking-tight">How to activate Dual Duel</h4>
-                    </div>
-                    <div className="space-y-6 text-sm text-zinc-400 font-medium">
-                        <div className="flex gap-4">
-                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">1</div>
-                            <p>Go to your <span className="text-zinc-100 transition-colors">Supabase Dashboard</span> &gt; Project Settings &gt; API.</p>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">2</div>
-                            <p>Copy the <span className="text-sky-400">Project URL</span> and <span className="text-sky-400">anon public</span> key.</p>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">3</div>
-                            <div>
-                                <p className="mb-3">Paste them into your <code className="text-zinc-100 bg-black px-2 py-1 rounded">.env</code> file:</p>
-                                <pre className="bg-black/60 p-4 rounded-xl text-[10px] font-mono text-zinc-500 leading-relaxed border border-zinc-800">
-                                    NEXT_PUBLIC_SUPABASE_URL="https://xxx.supabase.co"<br />
-                                    NEXT_PUBLIC_SUPABASE_ANON_KEY="your-real-key-here"
-                                </pre>
-                            </div>
-                        </div>
-                        <div className="flex gap-4">
-                            <div className="w-6 h-6 rounded-full bg-zinc-800 flex items-center justify-center text-xs text-zinc-100 shrink-0">4</div>
-                            <p>Restart your server. The <span className="text-emerald-500">Green WiFi</span> will appear!</p>
+                            <button
+                                onClick={resetTest}
+                                className="p-3 rounded-xl transition-all"
+                                style={{ background: T.surface, color: T.muted }}
+                            >
+                                <ArrowRight size={20} />
+                            </button>
                         </div>
                     </div>
                 </div>
             )}
-        </div>
-    );
-}
 
-function StatCard({ label, value, unit, icon, active, accentClass }: {
-    label: string,
-    value: number | string,
-    unit: string,
-    icon: ReactNode,
-    active: boolean,
-    accentClass: string
-}) {
-    return (
-        <div className={`p-8 rounded-[2.5rem] border transition-all duration-700 backdrop-blur-2xl ${active ? "border-zinc-700/50 bg-zinc-900/60 shadow-2xl" : "border-zinc-800/50 bg-zinc-900/10"}`}>
-            <div className="flex items-center justify-between mb-5">
-                <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">{label}</span>
-                <div className={`${active ? accentClass : "text-zinc-700"} transition-colors duration-500`}>{icon}</div>
-            </div>
-            <div className="flex items-baseline gap-2.5">
-                <div className="text-5xl font-black text-zinc-100 tabular-nums tracking-tighter leading-none">{value}</div>
-                <div className="text-[10px] font-black uppercase text-zinc-600 tracking-[0.2em]">{unit}</div>
-            </div>
+            {/* ── Custom Modal ────────────────────────────────────────────────── */}
+            {customModalOpen && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
+                    <div className="rounded-2xl p-8 w-full max-w-sm shadow-2xl border" style={{ background: T.surface, borderColor: T.border }}>
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-black text-lg" style={{ color: T.accent }}>
+                                custom {testMode === "time" ? "time" : "word"} count
+                            </h3>
+                            <button onClick={() => setCustomModalOpen(false)} style={{ color: T.muted }}>
+                                <X size={18} />
+                            </button>
+                        </div>
+                        <input
+                            autoFocus
+                            type="number"
+                            min={1}
+                            value={customInput}
+                            onChange={e => setCustomInput(e.target.value)}
+                            onKeyDown={e => {
+                                if (e.key === "Enter") {
+                                    const v = parseInt(customInput);
+                                    if (!isNaN(v) && v > 0) {
+                                        if (testMode === "time") setTimeConfig(v);
+                                        else setWordConfig(v);
+                                        setCustomModalOpen(false);
+                                        setTimeout(resetTest, 0);
+                                    }
+                                }
+                                if (e.key === "Escape") setCustomModalOpen(false);
+                            }}
+                            className="w-full rounded-xl px-5 py-4 text-2xl font-bold text-center outline-none mb-4 border-2 transition-colors"
+                            style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                        />
+                        <button
+                            onClick={() => {
+                                const v = parseInt(customInput);
+                                if (!isNaN(v) && v > 0) {
+                                    if (testMode === "time") setTimeConfig(v);
+                                    else setWordConfig(v);
+                                    setCustomModalOpen(false);
+                                    setTimeout(resetTest, 0);
+                                }
+                            }}
+                            className="w-full font-black py-3 rounded-xl text-sm uppercase tracking-wider text-black"
+                            style={{ background: T.accent }}
+                        >ok</button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
