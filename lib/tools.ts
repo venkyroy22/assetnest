@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard } from "lucide-react";
 
 export interface Tool {
     id: string;
@@ -41,6 +41,16 @@ export const ALL_TOOLS: Tool[] = [
         icon: Timer,
         tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break"],
         accent: "#f43f5e",   // rose
+    },
+    {
+        id: "typing-tester",
+        name: "Speed Typist",
+        description: "Test and improve your typing speed and accuracy with real-time feedback and detailed stats.",
+        href: "/tools/typing-tester",
+        badge: "Free",
+        icon: Keyboard,
+        tags: ["typing", "speed", "wpm", "accuracy", "practice", "test", "keyboard", "productivity"],
+        accent: "#0ea5e9",   // sky
     },
     {
         id: "billing",

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import {
-    FileImage, QrCode, Timer, Receipt, RefreshCw, ArrowUpRight, ArrowRight,
+    FileImage, QrCode, Timer, Receipt, RefreshCw, ArrowUpRight, ArrowRight, Keyboard,
 } from "lucide-react";
 
 const TOOLS = [
@@ -35,6 +35,15 @@ const TOOLS = [
         tag: "Productivity",
     },
     {
+        id: "typing-tester",
+        name: "Speed Typist",
+        description: "Test and improve your typing speed and accuracy with real-time stats.",
+        href: "/tools/typing-tester",
+        icon: Keyboard,
+        accent: "#0ea5e9",
+        tag: "Productivity",
+    },
+    {
         id: "billing",
         name: "Smart Billing Tool",
         description: "Paperless billing for merchants. Scan barcodes, generate QR receipts.",
@@ -53,6 +62,7 @@ const TOOLS = [
         tag: "Images",
     },
 ];
+
 
 // ── Single tool card ──────────────────────────────────────────────────────────
 function HomeToolCard({ tool, index }: { tool: typeof TOOLS[0]; index: number }) {
@@ -202,7 +212,8 @@ function HomeToolCard({ tool, index }: { tool: typeof TOOLS[0]; index: number })
 export default function HomeToolsGrid() {
     return (
         <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
+
                 {TOOLS.map((tool, i) => (
                     <HomeToolCard key={tool.id} tool={tool} index={i} />
                 ))}
