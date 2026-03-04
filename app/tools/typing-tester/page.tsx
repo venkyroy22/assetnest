@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo, ChangeEvent } from "react";
 import {
     Keyboard,
     RotateCcw,
@@ -218,7 +218,7 @@ export default function TypingTesterPage() {
             });
 
         // 3. Subscription and Heartbeat
-        channel.subscribe(async (status) => {
+        channel.subscribe(async (status: any) => {
             console.log(`Duel: Channel ${channelName} status: ${status}`);
             if (status === "SUBSCRIBED") {
                 setSystemStatus("online");
@@ -338,7 +338,7 @@ export default function TypingTesterPage() {
         const inputChars = input.split("");
         const targetChars = targetText.split("");
 
-        inputChars.forEach((char, i) => {
+        inputChars.forEach((char: string, i: number) => {
             if (char !== targetChars[i]) currentErrors++;
         });
 
@@ -362,7 +362,7 @@ export default function TypingTesterPage() {
         }
     }, [startTime, targetText, mode, systemStatus]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
         const val = e.target.value;
         if (isFinished) return;
 
@@ -402,8 +402,8 @@ export default function TypingTesterPage() {
     const words = useMemo(() => {
         let globalIdx = 0;
         if (!targetText) return [];
-        return targetText.split(" ").map((word, wordIdx, array) => {
-            const chars = word.split("").map(char => ({ char, index: globalIdx++ }));
+        return targetText.split(" ").map((word: string, wordIdx: number, array: string[]) => {
+            const chars = word.split("").map((char: string) => ({ char, index: globalIdx++ }));
             if (wordIdx !== array.length - 1) chars.push({ char: " ", index: globalIdx++ });
             return chars;
         });
@@ -506,7 +506,7 @@ export default function TypingTesterPage() {
                                     placeholder="Encounter ID"
                                     maxLength={6}
                                     value={joinCodeInput}
-                                    onChange={(e) => setJoinCodeInput(e.target.value.replace(/\D/g, ""))}
+                                    onChange={(e: ChangeEvent<HTMLInputElement>) => setJoinCodeInput(e.target.value.replace(/\D/g, ""))}
                                     className="flex-1 bg-zinc-950/50 border border-zinc-800 rounded-2xl px-5 py-4 text-sm font-bold tracking-[0.3em] focus:outline-none focus:border-sky-500 transition-colors uppercase placeholder:text-zinc-700 font-mono"
                                 />
                                 <button
@@ -586,9 +586,9 @@ export default function TypingTesterPage() {
                     )}
 
                     <div className="mb-14 min-h-[160px] text-4xl md:text-5xl font-bold tracking-tight leading-[1.4] font-mono text-center flex flex-wrap justify-center content-center gap-y-3 select-none">
-                        {words.map((wordChars, wordIdx) => (
+                        {words.map((wordChars: any[], wordIdx: number) => (
                             <div key={wordIdx} className="inline-flex whitespace-nowrap">
-                                {wordChars.map(({ char, index }) => renderChar(char, index))}
+                                {wordChars.map(({ char, index }: { char: string, index: number }) => renderChar(char, index))}
                             </div>
                         ))}
                     </div>
