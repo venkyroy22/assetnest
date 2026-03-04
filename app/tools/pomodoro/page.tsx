@@ -250,8 +250,10 @@ export default function PomodoroPage() {
     const [toast, setToast] = useState<Achievement | null>(null);
     const [burst, setBurst] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     const [activeTrack, setActiveTrack] = useState<string | null>(null);
+
     const [musicVolume, setMusicVolume] = useState(0.4);
     const [isMusicPlaying, setIsMusicPlaying] = useState(false);
     const [playerMode, setPlayerMode] = useState<"ambient" | "youtube">("ambient");
@@ -297,6 +299,56 @@ export default function PomodoroPage() {
     useEffect(() => {
         if (musicAudioRef.current) musicAudioRef.current.volume = musicVolume;
     }, [musicVolume]);
+
+    // PERSISTENCE: Save to localStorage on changes
+    useEffect(() => {
+        if (!isLoaded) return;
+        const state = {
+            focusMins, shortMins, longMins,
+            mode, secondsLeft, totalSecs,
+            sessions, pomodoroInCycle, unlocked,
+            lastSaved: Date.now(),
+            running
+        };
+        localStorage.setItem("assetnest_pomodoro_state", JSON.stringify(state));
+    }, [focusMins, shortMins, longMins, mode, secondsLeft, totalSecs, sessions, pomodoroInCycle, unlocked, running, isLoaded]);
+
+    // PERSISTENCE: Load from localStorage on mount
+    useEffect(() => {
+        const saved = localStorage.getItem("assetnest_pomodoro_state");
+        if (saved) {
+            try {
+                const s = JSON.parse(saved);
+                setFocusMins(s.focusMins);
+                setShortMins(s.shortMins);
+                setLongMins(s.longMins);
+                setMode(s.mode);
+                setTotalSecs(s.totalSecs);
+                setSessions(s.sessions);
+                setPomodoroInCycle(s.pomodoroInCycle);
+                setUnlocked(s.unlocked || []);
+
+                if (s.running) {
+                    const elapsed = Math.floor((Date.now() - s.lastSaved) / 1000);
+                    const remaining = Math.max(0, s.secondsLeft - elapsed);
+                    if (remaining > 0) {
+                        setSecondsLeft(remaining);
+                        setRunning(true);
+                    } else {
+                        setSecondsLeft(0);
+                        setRunning(false);
+                    }
+                } else {
+                    setSecondsLeft(s.secondsLeft);
+                    setRunning(false);
+                }
+            } catch (e) {
+                console.error("Failed to load pomodoro state", e);
+            }
+        }
+        setIsLoaded(true);
+    }, []);
+
 
     useEffect(() => {
         const frame = () => {

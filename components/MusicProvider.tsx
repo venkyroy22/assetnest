@@ -31,6 +31,43 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     const [isYTPlaying, setIsYTPlaying] = useState(false);
     const [ytVolume, setYTVolume] = useState(50);
     const [isMiniPlayerVisible, setIsMiniPlayerVisible] = useState(true);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    // PERSISTENCE: Load from localStorage on mount
+    React.useEffect(() => {
+        const savedUrl = localStorage.getItem("assetnest_yt_url");
+        const savedEmbed = localStorage.getItem("assetnest_yt_embed");
+        const savedVolume = localStorage.getItem("assetnest_yt_volume");
+
+        if (savedUrl) setYoutubeUrl(savedUrl);
+        if (savedEmbed) {
+            setCurrentYoutubeEmbed(savedEmbed);
+            setIsYTPlaying(true);
+        }
+        if (savedVolume) setYTVolume(Number(savedVolume));
+
+        setIsLoaded(true);
+    }, []);
+
+    // PERSISTENCE: Save to localStorage on changes
+    React.useEffect(() => {
+        if (!isLoaded) return;
+        if (youtubeUrl) localStorage.setItem("assetnest_yt_url", youtubeUrl);
+        else localStorage.removeItem("assetnest_yt_url");
+    }, [youtubeUrl, isLoaded]);
+
+    React.useEffect(() => {
+        if (!isLoaded) return;
+        if (currentYoutubeEmbed) localStorage.setItem("assetnest_yt_embed", currentYoutubeEmbed);
+        else localStorage.removeItem("assetnest_yt_embed");
+    }, [currentYoutubeEmbed, isLoaded]);
+
+    React.useEffect(() => {
+        if (!isLoaded) return;
+        localStorage.setItem("assetnest_yt_volume", String(ytVolume));
+    }, [ytVolume, isLoaded]);
+
+
     const iframeRef = useRef<HTMLIFrameElement>(null);
 
     const playYoutube = (inputUrl?: string) => {
