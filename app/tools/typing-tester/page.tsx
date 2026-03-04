@@ -259,6 +259,8 @@ export default function TypingTesterPage() {
     const [supabaseOnline, setSupabaseOnline] = useState(false);
     // duelStatus: idle | connecting | connected | error
     const [duelStatus, setDuelStatus] = useState<"idle" | "connecting" | "connected" | "error">("idle");
+    // countdown: null = no countdown, 5..1 = ticking, 0 = GO!
+    const [countdown, setCountdown] = useState<number | null>(null);
 
     // --- Refs ---
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -454,9 +456,22 @@ export default function TypingTesterPage() {
         }
     }, [testMode, finishTest]);
 
+    // ─── Countdown ticker ─────────────────────────────────────────────────────
+    useEffect(() => {
+        if (countdown === null) return;
+        if (countdown <= 0) {
+            // Small delay so user sees "GO!" then it fades
+            const t = setTimeout(() => setCountdown(null), 700);
+            return () => clearTimeout(t);
+        }
+        const t = setTimeout(() => setCountdown(c => (c ?? 1) - 1), 1000);
+        return () => clearTimeout(t);
+    }, [countdown]);
+
     // ─── Input handling ───────────────────────────────────────────────────────
     const handleInput = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (isFinished) return;
+        if (countdown !== null) return;  // Block typing during countdown
         const val = e.target.value;
 
         if (!isActive && val.length > 0) {
@@ -547,6 +562,9 @@ export default function TypingTesterPage() {
             setDuelStatus("connected");
             // Send the shared word list to the joiner
             ch.send({ type: "broadcast", event: "words", payload: { text: sharedWords } });
+            // Start countdown for both players simultaneously
+            ch.send({ type: "broadcast", event: "countdown_start", payload: {} });
+            setCountdown(5);
         });
         ch.subscribe((status: string) => {
             if (status === "SUBSCRIBED") setDuelStatus("connected");
@@ -598,6 +616,10 @@ export default function TypingTesterPage() {
             setIsActive(false);
             setIsFinished(false);
         });
+        // Host signals countdown start
+        ch.on("broadcast", { event: "countdown_start" }, () => {
+            setCountdown(5);
+        });
         ch.subscribe((status: string) => {
             if (status === "SUBSCRIBED") {
                 setSessionCode(joinCode);
@@ -620,6 +642,7 @@ export default function TypingTesterPage() {
         setOpponentFinished(false);
         setOpponentFinishWpm(0);
         setDuelStatus("idle");
+        setCountdown(null);
         resetTest();
     };
 
@@ -857,8 +880,43 @@ export default function TypingTesterPage() {
                     </div>
                 )}
 
+                {/* ── Countdown overlay ──────────────────────────────────────── */}
+                {countdown !== null && (
+                    <div
+                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
+                        style={{ background: `${T.bg}ee`, backdropFilter: "blur(6px)" }}
+                    >
+                        <div
+                            key={countdown}
+                            className="font-black leading-none tabular-nums"
+                            style={{
+                                color: countdown === 0 ? T.accent : T.text,
+                                fontSize: "clamp(6rem, 25vw, 14rem)",
+                                textShadow: countdown === 0
+                                    ? `0 0 60px ${T.accentHex}99`
+                                    : `0 0 40px ${T.accentHex}44`,
+                                animation: "countPop 0.35s cubic-bezier(0.22,1,0.36,1)",
+                            }}
+                        >
+                            {countdown === 0 ? "GO!" : countdown}
+                        </div>
+                        <div
+                            className="mt-6 text-sm font-black uppercase tracking-[0.4em]"
+                            style={{ color: T.muted }}
+                        >
+                            {countdown === 0 ? "Type now!" : "Get ready…"}
+                        </div>
+                        <style>{`
+                            @keyframes countPop {
+                                from { opacity: 0; transform: scale(0.6); }
+                                to   { opacity: 1; transform: scale(1); }
+                            }
+                        `}</style>
+                    </div>
+                )}
+
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
-                {duelMode && !isActive && !isFinished && (
+                {duelMode && !isActive && !isFinished && countdown === null && (
                     <div
                         className="max-w-xl mx-auto mb-8 rounded-2xl border overflow-hidden"
                         style={{ background: T.surface, borderColor: T.border }}
