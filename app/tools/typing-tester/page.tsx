@@ -120,8 +120,8 @@ export default function TypingTesterPage() {
                 type: "broadcast",
                 event: "new_match",
                 payload: { sentence: nextSentence }
-            }).then(({ error }: { error: any }) => {
-                if (error) console.error("Broadcast: Send match error", error);
+            }).then((status) => {
+                if (status === "error") console.error("Broadcast: Send match error");
             });
         }
 
@@ -206,16 +206,16 @@ export default function TypingTesterPage() {
                                 type: "broadcast",
                                 event: "ping_init",
                                 payload: { sentence: hostSentence }
-                            }).then(({ error }: { error: any }) => {
-                                if (error) console.error("Pulse error:", error);
+                            }).then((status) => {
+                                if (status === "error") console.error("Pulse error: init");
                             });
                         } else {
                             channel.send({
                                 type: "broadcast",
                                 event: "ping_joined",
                                 payload: {}
-                            }).then(({ error }: { error: any }) => {
-                                if (error) console.error("Pulse error:", error);
+                            }).then((status) => {
+                                if (status === "error") console.error("Pulse error: joined");
                             });
                         }
                     }, 1000); // 1s frequency for faster locking
