@@ -255,6 +255,8 @@ export default function TypingTesterPage() {
     const [opponentWpm, setOpponentWpm] = useState(0);
     const [copiedCode, setCopiedCode] = useState(false);
     const [supabaseOnline, setSupabaseOnline] = useState(false);
+    // duelStatus: idle | connecting | connected | error
+    const [duelStatus, setDuelStatus] = useState<"idle" | "connecting" | "connected" | "error">("idle");
 
     // --- Refs ---
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -520,27 +522,41 @@ export default function TypingTesterPage() {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         setSessionCode(code);
         setIsHost(true);
-        setDuelMode(true);
+        setDuelStatus("connecting");
         const ch = supabase.channel(`duel_${code}`, { config: { broadcast: { self: false } } });
         ch.on("broadcast", { event: "progress" }, ({ payload }: any) => {
             setOpponentProgress(payload.progress);
             setOpponentWpm(payload.wpm);
         });
-        ch.subscribe();
+        ch.on("broadcast", { event: "joined" }, () => {
+            setDuelStatus("connected");
+        });
+        ch.subscribe((status: string) => {
+            if (status === "SUBSCRIBED") setDuelStatus("connected");
+            else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") setDuelStatus("error");
+        });
         channelRef.current = ch;
     };
 
     const joinDuel = () => {
-        if (!supabase || !joinCode) return;
-        setSessionCode(joinCode);
+        if (!supabase || joinCode.length !== 6) return;
+        setDuelStatus("connecting");
         setIsHost(false);
-        setDuelMode(true);
         const ch = supabase.channel(`duel_${joinCode}`, { config: { broadcast: { self: false } } });
         ch.on("broadcast", { event: "progress" }, ({ payload }: any) => {
             setOpponentProgress(payload.progress);
             setOpponentWpm(payload.wpm);
         });
-        ch.subscribe();
+        ch.subscribe((status: string) => {
+            if (status === "SUBSCRIBED") {
+                setSessionCode(joinCode);
+                setDuelStatus("connected");
+                // Announce to host that a guest joined
+                ch.send({ type: "broadcast", event: "joined", payload: { joined: true } });
+            } else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+                setDuelStatus("error");
+            }
+        });
         channelRef.current = ch;
     };
 
@@ -550,8 +566,10 @@ export default function TypingTesterPage() {
         setSessionCode("");
         setJoinCode("");
         setOpponentProgress(0);
+        setDuelStatus("idle");
         resetTest();
     };
+
 
     useEffect(() => {
         if (duelMode && isActive && channelRef.current) {
@@ -792,14 +810,40 @@ export default function TypingTesterPage() {
                         className="max-w-xl mx-auto mb-8 rounded-2xl border overflow-hidden"
                         style={{ background: T.surface, borderColor: T.border }}
                     >
-                        <div className="grid grid-cols-2 divide-x" style={{ borderColor: T.border }}>
+                        {/* Status bar */}
+                        {duelStatus !== "idle" && (
+                            <div
+                                className="px-5 py-2.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b"
+                                style={{
+                                    borderColor: T.border,
+                                    background: duelStatus === "connected" ? `${T.accentHex}18`
+                                        : duelStatus === "error" ? `${T.error}18`
+                                            : T.dim,
+                                    color: duelStatus === "connected" ? T.accent
+                                        : duelStatus === "error" ? T.error
+                                            : T.muted,
+                                }}
+                            >
+                                {duelStatus === "connecting" && (
+                                    <><span className="animate-spin inline-block">◌</span> Connecting to lobby…</>
+                                )}
+                                {duelStatus === "connected" && (
+                                    <><Check size={12} /> Connected — start typing to begin the race!</>
+                                )}
+                                {duelStatus === "error" && (
+                                    <>✕ Connection failed — check the code and try again</>
+                                )}
+                            </div>
+                        )}
+
+                        <div className="grid grid-cols-2" style={{ borderColor: T.border }}>
 
                             {/* ── Create side ── */}
-                            <div className="p-5 space-y-4">
+                            <div className="p-5 space-y-4 border-r" style={{ borderColor: T.border }}>
                                 <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
                                     Create Room
                                 </div>
-                                {sessionCode ? (
+                                {sessionCode && isHost ? (
                                     <>
                                         <div className="text-3xl font-black tracking-[0.3em]" style={{ color: T.text }}>
                                             {sessionCode}
@@ -815,15 +859,18 @@ export default function TypingTesterPage() {
                                         >
                                             {copiedCode ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Code</>}
                                         </button>
+                                        <p className="text-[10px] leading-relaxed" style={{ color: T.muted }}>
+                                            Share this code with your opponent. The race starts when both players begin typing.
+                                        </p>
                                     </>
                                 ) : (
                                     <button
                                         onClick={createDuel}
-                                        disabled={!supabaseOnline}
-                                        className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-30"
+                                        disabled={!supabaseOnline || duelStatus === "connecting"}
+                                        className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-50"
                                         style={{ background: T.accent }}
                                     >
-                                        {supabaseOnline ? "Generate Code" : "Unavailable"}
+                                        {duelStatus === "connecting" ? "Connecting…" : supabaseOnline ? "Generate Code" : "Unavailable"}
                                     </button>
                                 )}
                             </div>
@@ -837,28 +884,40 @@ export default function TypingTesterPage() {
                                     value={joinCode}
                                     onChange={e => setJoinCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
                                     onKeyDown={e => e.key === "Enter" && joinCode.length === 6 && joinDuel()}
-                                    placeholder="Enter 6-digit code"
+                                    placeholder="6-digit code"
                                     maxLength={6}
-                                    className="w-full rounded-xl px-4 py-3 text-xl font-black tracking-[0.25em] text-center focus:outline-none border-2 transition-colors"
+                                    disabled={duelStatus === "connecting" || duelStatus === "connected"}
+                                    className="w-full rounded-xl px-4 py-3 text-xl font-black tracking-[0.25em] text-center focus:outline-none border-2 transition-colors disabled:opacity-40"
                                     style={{
                                         background: T.bg,
-                                        borderColor: joinCode.length === 6 ? T.accent : T.border,
+                                        borderColor: duelStatus === "connected" && !isHost ? T.accent
+                                            : duelStatus === "error" ? T.error
+                                                : joinCode.length === 6 ? T.accent
+                                                    : T.border,
                                         color: T.text,
                                     }}
                                 />
                                 <button
                                     onClick={joinDuel}
-                                    disabled={!supabaseOnline || joinCode.length !== 6}
-                                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-30"
+                                    disabled={!supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting" || duelStatus === "connected"}
+                                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-50"
                                     style={{ background: T.accent }}
                                 >
-                                    {supabaseOnline ? "Join Game" : "Unavailable"}
+                                    {duelStatus === "connecting" ? "Joining…"
+                                        : duelStatus === "connected" && !isHost ? "✓ Joined!"
+                                            : supabaseOnline ? "Join Game" : "Unavailable"}
                                 </button>
+                                {duelStatus === "error" && (
+                                    <p className="text-[10px]" style={{ color: T.error }}>
+                                        Could not join. Make sure the code is correct and the host is online.
+                                    </p>
+                                )}
                             </div>
 
                         </div>
                     </div>
                 )}
+
 
 
                 {/* ── Live stats (while typing) ──────────────────────────────── */}
