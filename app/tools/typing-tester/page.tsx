@@ -929,19 +929,12 @@ export default function TypingTesterPage() {
                                 className="px-5 py-2.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b"
                                 style={{
                                     borderColor: T.border,
-                                    background: duelStatus === "connected" ? `${T.accentHex}18`
-                                        : duelStatus === "error" ? `${T.error}18`
-                                            : T.dim,
-                                    color: duelStatus === "connected" ? T.accent
-                                        : duelStatus === "error" ? T.error
-                                            : T.muted,
+                                    background: duelStatus === "error" ? `${T.error}18` : T.dim,
+                                    color: duelStatus === "error" ? T.error : T.muted,
                                 }}
                             >
                                 {duelStatus === "connecting" && (
                                     <><span className="animate-spin inline-block">◌</span> Connecting to lobby…</>
-                                )}
-                                {duelStatus === "connected" && (
-                                    <><Check size={12} /> Connected — start typing to begin the race!</>
                                 )}
                                 {duelStatus === "error" && (
                                     <>✕ Connection failed — check the code and try again</>
@@ -999,26 +992,24 @@ export default function TypingTesterPage() {
                                     onKeyDown={e => e.key === "Enter" && joinCode.length === 6 && joinDuel()}
                                     placeholder="6-digit code"
                                     maxLength={6}
-                                    disabled={duelStatus === "connecting" || duelStatus === "connected"}
+                                    disabled={duelStatus === "connecting"}
                                     className="w-full rounded-xl px-4 py-3 text-xl font-black tracking-[0.25em] text-center focus:outline-none border-2 transition-colors disabled:opacity-40"
                                     style={{
                                         background: T.bg,
-                                        borderColor: duelStatus === "connected" && !isHost ? T.accent
-                                            : duelStatus === "error" ? T.error
-                                                : joinCode.length === 6 ? T.accent
-                                                    : T.border,
+                                        borderColor: duelStatus === "error" ? T.error
+                                            : joinCode.length === 6 ? T.accent
+                                                : T.border,
                                         color: T.text,
                                     }}
                                 />
                                 <button
                                     onClick={joinDuel}
-                                    disabled={!supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting" || duelStatus === "connected"}
+                                    disabled={!supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting"}
                                     className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-50"
                                     style={{ background: T.accent }}
                                 >
                                     {duelStatus === "connecting" ? "Joining…"
-                                        : duelStatus === "connected" && !isHost ? "✓ Joined!"
-                                            : supabaseOnline ? "Join Game" : "Unavailable"}
+                                        : supabaseOnline ? "Join Game" : "Unavailable"}
                                 </button>
                                 {duelStatus === "error" && (
                                     <p className="text-[10px]" style={{ color: T.error }}>
@@ -1065,7 +1056,7 @@ export default function TypingTesterPage() {
                 <div className="relative cursor-text" onClick={() => inputRef.current?.focus()}>
 
                     {/* Blur overlay */}
-                    {!isFocused && !isFinished && !countdown && (!duelMode || duelStatus !== "connected") && (
+                    {!isFocused && !isFinished && countdown === null && (!duelMode || duelStatus !== "connected") && (
                         <div
                             className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
                             style={{ background: `${T.bg}cc`, backdropFilter: "blur(2px)" }}
