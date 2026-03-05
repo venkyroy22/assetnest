@@ -334,17 +334,16 @@ export default function TypingTesterPage() {
         if (wordsRef.current) wordsRef.current.style.transform = "translateY(0)";
 
         // If in duel mode, inform the opponent that we've restarted
-        if (channelRef.current && !isFinishedRef.current) {
-            channelRef.current.send({ type: "broadcast", event: "restart_duel" });
-        }
-
         setTimeout(() => inputRef.current?.focus(), 50);
+
+        return newWords; // Return the generated words for potential reuse
     }, [testMode, timeConfig, wordConfig, buildWords]);
 
     // ─── Sync config changes ──────────────────────────────────────────────────
     useEffect(() => {
+        if (duelMode && duelStatus === "connected") return; // Don't reset if syncing with host
         resetTest();
-    }, [testMode, timeConfig, wordConfig, usePunctuation, useNumbers, resetTest]);
+    }, [testMode, timeConfig, wordConfig, usePunctuation, useNumbers, resetTest, duelMode, duelStatus]);
 
     // ─── Init ─────────────────────────────────────────────────────────────────
     useEffect(() => {
@@ -357,7 +356,14 @@ export default function TypingTesterPage() {
     // Tab → restart
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
-            if (e.key === "Tab") { e.preventDefault(); resetTest(); }
+            if (e.key === "Tab") {
+                e.preventDefault();
+                if (duelMode && duelStatus === "connected") {
+                    restartDuel();
+                } else {
+                    resetTest();
+                }
+            }
         };
         window.addEventListener("keydown", handler);
         return () => window.removeEventListener("keydown", handler);
@@ -774,6 +780,52 @@ export default function TypingTesterPage() {
         });
         channelRef.current = ch;
     };
+
+    const restartDuel = useCallback(() => {
+        if (!channelRef.current) return;
+
+        if (!isHost) {
+            // Guest requests restart from host
+            channelRef.current.send({ type: "broadcast", event: "request_restart" });
+            return;
+        }
+
+        // Host handles the restart logic
+        const sharedWords = generateText(testMode === "words" ? wordConfig : 200, punctRef.current, numsRef.current);
+
+        // Broadcast new words and countdown to everyone
+        channelRef.current.send({
+            type: "broadcast",
+            event: "words",
+            payload: {
+                text: sharedWords,
+                mode: testMode,
+                wordConfig,
+                timeConfig
+            }
+        });
+        channelRef.current.send({ type: "broadcast", event: "countdown_start" });
+
+        // Local Host reset
+        resetTest();
+        const wordList = sharedWords.split(" ").map(w => ({
+            word: w,
+            chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
+            isComplete: false, hasError: false,
+        }));
+        setWords(wordList);
+        setCountdown(5);
+    }, [isHost, testMode, wordConfig, timeConfig, resetTest]);
+
+    // Update createDuel listeners to handle restart requests
+    useEffect(() => {
+        if (duelStatus === "connected" && channelRef.current && isHost) {
+            const ch = channelRef.current;
+            ch.on("broadcast", { event: "request_restart" }, () => {
+                restartDuel();
+            });
+        }
+    }, [duelStatus, isHost, restartDuel]);
 
     const leaveDuel = () => {
         channelRef.current?.unsubscribe();
@@ -1324,7 +1376,7 @@ export default function TypingTesterPage() {
                 {/* Bottom controls */}
                 <div className="flex items-center justify-center gap-8 mt-8 text-[10px] uppercase font-bold tracking-widest" style={{ color: T.muted }}>
                     <button
-                        onClick={resetTest}
+                        onClick={duelMode && duelStatus === "connected" ? restartDuel : resetTest}
                         className="flex items-center gap-2 transition-colors hover:opacity-100"
                         style={{ color: T.muted }}
                         onMouseEnter={e => (e.currentTarget.style.color = T.text)}
