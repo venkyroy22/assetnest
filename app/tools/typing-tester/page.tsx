@@ -236,6 +236,7 @@ export default function TypingTesterPage() {
     const [rawWpm, setRawWpm] = useState(0);
     const [accuracy, setAccuracy] = useState(100);
     const [wpmHistory, setWpmHistory] = useState<{ t: number; wpm: number }[]>([]);
+    const [errorHistory, setErrorHistory] = useState<{ t: number; count: number }[]>([]);
 
     // --- UI ---
     const [isFocused, setIsFocused] = useState(false);
@@ -281,12 +282,14 @@ export default function TypingTesterPage() {
     const startTimeRef = useRef<number | null>(null);
     const completedWordsRef = useRef<WordData[]>([]);
     const currentInputRef = useRef("");
+    const isFinishedRef = useRef(false);
 
     // ─── Sync live refs ───────────────────────────────────────────────────────
     useEffect(() => { wordsDataRef.current = words; }, [words]);
     useEffect(() => { currentWordIdxRef.current = currentWordIdx; }, [currentWordIdx]);
     useEffect(() => { completedWordsRef.current = completedWords; }, [completedWords]);
     useEffect(() => { currentInputRef.current = currentInput; }, [currentInput]);
+    useEffect(() => { isFinishedRef.current = isFinished; }, [isFinished]);
 
     // ─── Build word list ──────────────────────────────────────────────────────
     const buildWords = useCallback((count: number): WordData[] => {
@@ -323,11 +326,18 @@ export default function TypingTesterPage() {
         setRawWpm(0);
         setAccuracy(100);
         setWpmHistory([]);
+        setErrorHistory([]);
         wpmRef.current = 0;
         completedWordsRef.current = [];
         currentInputRef.current = "";
 
         if (wordsRef.current) wordsRef.current.style.transform = "translateY(0)";
+
+        // If in duel mode, inform the opponent that we've restarted
+        if (channelRef.current && !isFinishedRef.current) {
+            channelRef.current.send({ type: "broadcast", event: "restart_duel" });
+        }
+
         setTimeout(() => inputRef.current?.focus(), 50);
     }, [testMode, timeConfig, wordConfig, buildWords]);
 
@@ -484,11 +494,27 @@ export default function TypingTesterPage() {
             calcStats(completedWordsRef.current, currentInputRef.current, sec);
         }, 200);
 
-        // 0.5s tick for WPM history (more data for smoother chart)
+        // 0.5s tick for WPM & Error history
         let tick = 0;
+        let lastErrorCount = 0;
         historyTimerRef.current = setInterval(() => {
             tick += 0.5;
+
+            // Calculate current total errors for history
+            let currentTotalErrors = completedWordsRef.current.reduce((acc, w) => acc + w.chars.filter(c => c.state === "incorrect").length, 0);
+            const currentWord = wordsDataRef.current[currentWordIdxRef.current]?.word || "";
+            const currentTyped = currentInputRef.current;
+            currentTyped.split("").forEach((c, i) => {
+                if (c !== currentWord[i]) currentTotalErrors++;
+            });
+
             setWpmHistory(prev => [...prev, { t: tick, wpm: wpmRef.current }]);
+
+            // Only record if errors increased
+            if (currentTotalErrors > lastErrorCount) {
+                setErrorHistory(prev => [...prev, { t: tick, count: currentTotalErrors - lastErrorCount }]);
+                lastErrorCount = currentTotalErrors;
+            }
         }, 500);
 
         if (testMode === "time") {
@@ -537,6 +563,15 @@ export default function TypingTesterPage() {
                 state: (typed[i] === c ? "correct" : "incorrect") as CharState,
             }));
 
+            // Handle extra characters
+            if (typed.length > wordData.word.length) {
+                const extraChars = typed.slice(wordData.word.length).split("").map(c => ({
+                    char: c,
+                    state: "incorrect" as CharState,
+                }));
+                updatedChars.push(...extraChars);
+            }
+
             const hasError = typed !== wordData.word;
             const completedWord: WordData = { ...wordData, chars: updatedChars, isComplete: true, hasError };
             const newCompleted = [...completedWords, completedWord];
@@ -551,7 +586,11 @@ export default function TypingTesterPage() {
                 setWords(prev => [...prev, ...moreWords]);
             }
 
-            if (testMode === "words" && nextIdx >= words.length) { finishTest(); return; }
+            // Check for test completion
+            if (testMode === "words" && nextIdx >= words.length) {
+                finishTest();
+                return;
+            }
 
             setCurrentWordIdx(nextIdx);
             currentWordIdxRef.current = nextIdx;
@@ -568,9 +607,13 @@ export default function TypingTesterPage() {
             const wordData = words[currentWordIdx];
             const updatedChars = wordData.word.split("").map(c => ({ char: c, state: "correct" as CharState }));
             const completedWord = { ...wordData, chars: updatedChars, isComplete: true, hasError: false };
+
+            // Sync refs and call finish
             const newCompleted = [...completedWords, completedWord];
             setCompletedWords(newCompleted);
+            completedWordsRef.current = newCompleted;
             setCurrentInput("");
+            currentInputRef.current = "";
             finishTest();
             return;
         }
@@ -589,7 +632,9 @@ export default function TypingTesterPage() {
             if (!prevWord) return;
             setCurrentWordIdx(prev => prev - 1);
             setCompletedWords(prevCompleted);
-            setCurrentInput(prevWord.word);
+            const typed = prevWord.chars.map(c => c.char).join("");
+            setCurrentInput(typed);
+            currentInputRef.current = typed;
         }
     }, [currentInput, currentWordIdx, completedWords]);
 
@@ -617,7 +662,7 @@ export default function TypingTesterPage() {
         if (!supabase) return;
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         // Pre-generate the shared word list
-        const sharedWords = generateText(testMode === "words" ? wordConfig : 80, punctRef.current, numsRef.current);
+        const sharedWords = generateText(testMode === "words" ? wordConfig : 200, punctRef.current, numsRef.current);
         setSessionCode(code);
         setIsHost(true);
         setDuelStatus("connecting");
@@ -630,12 +675,27 @@ export default function TypingTesterPage() {
             setOpponentFinished(true);
             setOpponentFinishWpm(payload.wpm);
         });
+        ch.on("broadcast", { event: "restart_duel" }, () => {
+            resetTest();
+        });
         ch.on("broadcast", { event: "joined" }, () => {
             setDuelStatus("connected");
-            // Send the shared word list to the joiner
-            ch.send({ type: "broadcast", event: "words", payload: { text: sharedWords } });
-            // Start countdown for both players simultaneously
-            ch.send({ type: "broadcast", event: "countdown_start", payload: {} });
+            // Wait a small beat to ensure the joiner's listeners are fully active
+            setTimeout(() => {
+                // Send the shared word list and CONFIG to the joiner
+                ch.send({
+                    type: "broadcast",
+                    event: "words",
+                    payload: {
+                        text: sharedWords,
+                        mode: testMode,
+                        wordConfig: wordConfig,
+                        timeConfig: timeConfig
+                    }
+                });
+                // Start countdown for both players simultaneously
+                ch.send({ type: "broadcast", event: "countdown_start" });
+            }, 500);
             setCountdown(5);
         });
         ch.subscribe((status: string) => {
@@ -674,8 +734,17 @@ export default function TypingTesterPage() {
             setOpponentFinished(true);
             setOpponentFinishWpm(payload.wpm);
         });
-        // Receive the shared word list from the host
+        ch.on("broadcast", { event: "restart_duel" }, () => {
+            resetTest();
+        });
+        // Receive the shared word list and config from the host
         ch.on("broadcast", { event: "words" }, ({ payload }: any) => {
+            // Apply host's race configuration
+            if (payload.mode) setTestMode(payload.mode);
+            if (payload.wordConfig) setWordConfig(payload.wordConfig);
+            if (payload.timeConfig) setTimeConfig(payload.timeConfig);
+            if (payload.mode === "time" && payload.timeConfig) setTimeLeft(payload.timeConfig);
+
             const wordList = (payload.text as string).split(" ").map((w: string) => ({
                 word: w,
                 chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
@@ -687,6 +756,7 @@ export default function TypingTesterPage() {
             setCompletedWords([]);
             setIsActive(false);
             setIsFinished(false);
+            setElapsed(0);
         });
         // Host signals countdown start
         ch.on("broadcast", { event: "countdown_start" }, () => {
@@ -1035,6 +1105,19 @@ export default function TypingTesterPage() {
                             {/* ── Create side ── */}
                             <div className="p-4 sm:p-5 space-y-4 border-b sm:border-b-0 sm:border-r" style={{ borderColor: T.border }}>
                                 <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
+                                    Race Settings
+                                </div>
+                                <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
+                                    <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: T.accent }}>
+                                        {testMode === "time" ? <Timer size={12} /> : <Keyboard size={12} />}
+                                        {testMode}
+                                    </div>
+                                    <div className="h-3 w-px bg-zinc-800" />
+                                    <div className="text-xs font-bold text-white">
+                                        {testMode === "time" ? `${timeConfig}s` : `${wordConfig} words`}
+                                    </div>
+                                </div>
+                                <div className="text-[10px] font-black uppercase tracking-widest mt-4" style={{ color: T.muted }}>
                                     Create Room
                                 </div>
                                 {sessionCode && isHost ? (
@@ -1146,12 +1229,12 @@ export default function TypingTesterPage() {
                     {/* Blur overlay */}
                     {!isFocused && !isFinished && countdown === null && (!duelMode || duelStatus !== "connected") && (
                         <div
-                            className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl"
+                            className="absolute inset-0 z-40 flex items-center justify-center rounded-2xl pointer-events-none"
                             style={{ background: `${T.bg}cc`, backdropFilter: "blur(2px)" }}
                         >
                             <div className="flex items-center gap-2" style={{ color: T.accent }}>
                                 <MousePointer2 size={16} />
-                                <span className="text-xs font-bold uppercase tracking-[0.3em]">Click to focus</span>
+                                <span className="text-xs font-bold uppercase tracking-[0.3em]">Tap to start</span>
                             </div>
                         </div>
                     )}
@@ -1229,7 +1312,7 @@ export default function TypingTesterPage() {
                         onKeyDown={handleKeyDown}
                         onFocus={() => setIsFocused(true)}
                         onBlur={() => setIsFocused(false)}
-                        className="absolute opacity-0 w-0 h-0 pointer-events-none"
+                        className="absolute inset-0 opacity-0 z-30 resize-none overflow-hidden caret-transparent"
                         autoFocus
                         spellCheck={false}
                         autoCapitalize="off"
@@ -1349,8 +1432,26 @@ export default function TypingTesterPage() {
 
                                     const points = data.map((h, i) => ({
                                         x: (i / (data.length - 1)) * VIEWBOX_W,
-                                        y: VIEWBOX_H - (h.wpm / maxWpm) * 85
+                                        y: VIEWBOX_H - (h.wpm / maxWpm) * 85,
+                                        t: h.t
                                     }));
+
+                                    const errorPoints = errorHistory.map(eh => {
+                                        // Find corresponding X by interpolating time
+                                        const totalTime = data[data.length - 1].t;
+                                        const x = (eh.t / totalTime) * VIEWBOX_W;
+                                        // Find Y by interpolating WPM at that time
+                                        const idx = data.findIndex(h => h.t >= eh.t);
+                                        let y = VIEWBOX_H;
+                                        if (idx > 0) {
+                                            const h1 = data[idx - 1];
+                                            const h2 = data[idx];
+                                            const ratio = (eh.t - h1.t) / (h2.t - h1.t || 0.001);
+                                            const interpolatedWpm = h1.wpm + (h2.wpm - h1.wpm) * ratio;
+                                            y = VIEWBOX_H - (interpolatedWpm / maxWpm) * 85;
+                                        }
+                                        return { x, y };
+                                    });
 
                                     const polylinePoints = points.map(p => `${p.x},${p.y}`).join(" ");
                                     const fillPoints = `${polylinePoints} ${VIEWBOX_W},${VIEWBOX_H} 0,${VIEWBOX_H}`;
@@ -1394,12 +1495,20 @@ export default function TypingTesterPage() {
                                                 <polyline
                                                     points={polylinePoints}
                                                     fill="none"
-                                                    stroke={T.accentHex}
+                                                    stroke={T.accent}
                                                     strokeWidth="2"
                                                     strokeLinecap="round"
                                                     strokeLinejoin="round"
                                                     vectorEffect="non-scaling-stroke"
                                                 />
+
+                                                {/* Error Plots (X marks) */}
+                                                {errorPoints.map((p, i) => (
+                                                    <g key={`err-${i}`} transform={`translate(${p.x},${p.y})`}>
+                                                        <line x1="-3" y1="-3" x2="3" y2="3" stroke={T.error} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                                                        <line x1="3" y1="-3" x2="-3" y2="3" stroke={T.error} strokeWidth="1.5" vectorEffect="non-scaling-stroke" />
+                                                    </g>
+                                                ))}
 
                                                 {/* Dot Plots (using zero-length lines with round caps and non-scaling-stroke for perfect circles) */}
                                                 {points.map((p, i) => (
