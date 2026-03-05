@@ -72,4 +72,14 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "convert", "jpg", "jpeg", "png", "webp", "format", "converter", "batch"],
         accent: "#8b5cf6",   // violet
     },
+    {
+        id: "media-hub",
+        name: "Media Hub",
+        description: "Securely upload and store your images and videos in the cloud. Optimized delivery and easy management.",
+        href: "/tools/media-hub",
+        badge: "Free",
+        icon: FileImage, // Using FileImage for now, could change to something more "hub" like
+        tags: ["media", "storage", "cloud", "upload", "cloudinary", "images", "videos", "assets"],
+        accent: "#ec4899",   // pink
+    },
 ];

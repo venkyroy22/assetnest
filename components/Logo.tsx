@@ -14,7 +14,7 @@ export default function Logo({ className = "", size = 32 }: LogoProps) {
             style={{ width: size, height: size }}
         >
             <Image
-                src="/categories/Logo.png"
+                src="https://res.cloudinary.com/drljj29ua/image/upload/assetnest/logo"
                 alt="AssetNest Logo"
                 fill
                 className="object-contain"

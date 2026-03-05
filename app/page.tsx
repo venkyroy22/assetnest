@@ -43,13 +43,13 @@ export default function Home() {
   };
 
   const categories = [
-    { title: "Pinterest Keywords", count: "Best Keywords", image: "/categories/pinterest-nest.png", href: "/keywords" },
-    { title: "QR Generator", count: "Free Tool", image: "/categories/ai-tools.png", href: "/tools/qr" },
-    { title: "Video Editing Assets", count: "Best Assets", image: "/categories/video-editing.png", href: "/video-editing", isDevelopment: true },
-    { title: "Best Useful Websites", count: "Top Sites", image: "/categories/useful-websites.png", href: "/useful-websites", isDevelopment: true },
-    { title: "Best AI Tools", count: "Smart Tools", image: "/categories/ai-tools.png", href: "/ai-tools", isDevelopment: true },
-    { title: "Wallpapers", count: "Best Wallpapers", image: "/categories/ChatGPT Image Feb 24, 2026, 10_22_23 PM.png", href: "/category/wallpapers", isDevelopment: true },
-    { title: "Sound Effects", count: "Best SFX", image: "/categories/sound-effects.png", href: "/category/sound-effects", isDevelopment: true },
+    { title: "Pinterest Keywords", count: "Best Keywords", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/pinterest-nest", href: "/keywords" },
+    { title: "QR Generator", count: "Free Tool", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/ai-tools", href: "/tools/qr" },
+    { title: "Video Editing Assets", count: "Best Assets", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/video-editing", href: "/video-editing", isDevelopment: true },
+    { title: "Best Useful Websites", count: "Top Sites", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/useful-websites", href: "/useful-websites", isDevelopment: true },
+    { title: "Best AI Tools", count: "Smart Tools", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/ai-tools", href: "/ai-tools", isDevelopment: true },
+    { title: "Wallpapers", count: "Best Wallpapers", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/ChatGPT%20Image%20Feb%2024%2C%202026%2C%2010_22_23%20PM", href: "/category/wallpapers", isDevelopment: true },
+    { title: "Sound Effects", count: "Best SFX", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/sound-effects", href: "/category/sound-effects", isDevelopment: true },
   ];
 
   if (!mounted) return <div className="min-h-screen bg-background" />;
@@ -69,7 +69,7 @@ export default function Home() {
             onEnded={handleForwardEnded}
             className={`absolute inset-0 w-full h-full object-cover ${isPlayingReverse ? 'opacity-0' : 'opacity-100'}`}
           >
-            <source src="/categories/Animate_this_image_1080p_202602241544.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/drljj29ua/video/upload/assetnest/categories/Animate_this_image_1080p_202602241544" type="video/mp4" />
           </video>
 
           {/* Reverse Video */}
@@ -81,7 +81,7 @@ export default function Home() {
             onEnded={handleReverseEnded}
             className={`absolute inset-0 w-full h-full object-cover ${isPlayingReverse ? 'opacity-100' : 'opacity-0'}`}
           >
-            <source src="/categories/0224.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/drljj29ua/video/upload/assetnest/categories/0224" type="video/mp4" />
           </video>
 
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
