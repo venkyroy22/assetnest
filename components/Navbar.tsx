@@ -10,9 +10,11 @@ import { useRouter } from "next/navigation";
 // ── Searchable content index ──────────────────────────────────────────────────
 const SEARCH_INDEX = [
     // Tools
+    { title: "Typing Speed Tester", desc: "Test and improve your typing speed and accuracy with real-time stats", href: "/tools/typing-tester", tag: "Tool" },
     { title: "Image Compressor", desc: "Compress JPEG, PNG & WebP images in your browser", href: "/tools/image-compressor", tag: "Tool" },
     { title: "QR Code Generator", desc: "Generate beautiful customizable QR codes for free", href: "/tools/qr", tag: "Tool" },
     { title: "Pomodoro Timer", desc: "Focus timer with achievements, session tracking and breaks", href: "/tools/pomodoro", tag: "Tool" },
+    { title: "Image Converter", desc: "Convert JPG to PNG, PNG to WebP, or JPG to WebP instantly", href: "/tools/image-converter", tag: "Tool" },
     { title: "Top Tools", desc: "All free tools for creators and designers", href: "/tools", tag: "Tool" },
     // Keywords
     { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },

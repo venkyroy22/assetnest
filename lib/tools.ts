@@ -44,12 +44,12 @@ export const ALL_TOOLS: Tool[] = [
     },
     {
         id: "typing-tester",
-        name: "Speed Typist",
+        name: "Typing Speed Tester",
         description: "Test and improve your typing speed and accuracy with real-time feedback and detailed stats.",
         href: "/tools/typing-tester",
         badge: "Free",
         icon: Keyboard,
-        tags: ["typing", "speed", "wpm", "accuracy", "practice", "test", "keyboard", "productivity"],
+        tags: ["typing", "speed", "test", "tester", "wpm", "accuracy", "practice", "keyboard", "monkeytype", "typist"],
         accent: "#0ea5e9",   // sky
     },
     {

@@ -278,10 +278,15 @@ export default function TypingTesterPage() {
     // Punctuation/numbers refs — updated synchronously so buildWords always reads the latest value
     const punctRef = useRef(false);
     const numsRef = useRef(false);
+    const startTimeRef = useRef<number | null>(null);
+    const completedWordsRef = useRef<WordData[]>([]);
+    const currentInputRef = useRef("");
 
     // ─── Sync live refs ───────────────────────────────────────────────────────
     useEffect(() => { wordsDataRef.current = words; }, [words]);
     useEffect(() => { currentWordIdxRef.current = currentWordIdx; }, [currentWordIdx]);
+    useEffect(() => { completedWordsRef.current = completedWords; }, [completedWords]);
+    useEffect(() => { currentInputRef.current = currentInput; }, [currentInput]);
 
     // ─── Build word list ──────────────────────────────────────────────────────
     const buildWords = useCallback((count: number): WordData[] => {
@@ -319,15 +324,22 @@ export default function TypingTesterPage() {
         setAccuracy(100);
         setWpmHistory([]);
         wpmRef.current = 0;
+        completedWordsRef.current = [];
+        currentInputRef.current = "";
 
         if (wordsRef.current) wordsRef.current.style.transform = "translateY(0)";
         setTimeout(() => inputRef.current?.focus(), 50);
     }, [testMode, timeConfig, wordConfig, buildWords]);
 
+    // ─── Sync config changes ──────────────────────────────────────────────────
+    useEffect(() => {
+        resetTest();
+    }, [testMode, timeConfig, wordConfig, usePunctuation, useNumbers, resetTest]);
+
     // ─── Init ─────────────────────────────────────────────────────────────────
     useEffect(() => {
+        window.scrollTo(0, 0);
         setTimeout(() => setVisible(true), 100);
-        resetTest();
         if (supabase) setSupabaseOnline(true);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
@@ -386,7 +398,12 @@ export default function TypingTesterPage() {
 
     // ─── Stats ────────────────────────────────────────────────────────────────
     const calcStats = useCallback((allCompleted: WordData[], currentTyped: string, elapsedSec: number) => {
-        if (elapsedSec < 0.1) return;
+        if (elapsedSec < 0.1) {
+            setWpm(0);
+            setRawWpm(0);
+            setAccuracy(100);
+            return;
+        }
         const elapsedMin = elapsedSec / 60;
         let correctChars = 0, totalChars = 0;
 
@@ -403,8 +420,9 @@ export default function TypingTesterPage() {
             if (c === currentWord[i]) correctChars++;
         });
 
-        const currentWpm = Math.max(0, Math.round((correctChars / 5) / elapsedMin));
-        const currentRaw = Math.max(0, Math.round((totalChars / 5) / elapsedMin));
+        // Use precise floating point calculation then round at the very end
+        const currentWpm = totalChars > 0 ? Math.max(0, Math.round((correctChars / 5) / elapsedMin)) : 0;
+        const currentRaw = totalChars > 0 ? Math.max(0, Math.round((totalChars / 5) / elapsedMin)) : 0;
         const acc = totalChars > 0 ? Math.round((correctChars / totalChars) * 100) : 100;
 
         wpmRef.current = currentWpm;
@@ -415,17 +433,41 @@ export default function TypingTesterPage() {
 
     // ─── Finish ───────────────────────────────────────────────────────────────
     const finishTest = useCallback(() => {
+        const now = Date.now();
         if (timerRef.current) clearInterval(timerRef.current);
         if (elapsedRef.current) clearInterval(elapsedRef.current);
         if (historyTimerRef.current) clearInterval(historyTimerRef.current);
-        setEndTime(Date.now());
+
+        setEndTime(now);
         setIsActive(false);
         setIsFinished(true);
-        // Broadcast finish to opponent
+
+        // Calculate absolute final stats using REFS to ensure we have the very latest data
+        const start = startTimeRef.current || now;
+        const finalElapsedSec = (now - start) / 1000;
+
+        let correctChars = 0, totalChars = 0;
+        completedWordsRef.current.forEach(w => {
+            w.chars.forEach(c => {
+                totalChars++;
+                if (c.state === "correct") correctChars++;
+            });
+        });
+        const currentInput = currentInputRef.current;
+        const currentWord = wordsDataRef.current[currentWordIdxRef.current]?.word || "";
+        currentInput.split("").forEach((c, i) => {
+            totalChars++;
+            if (c === currentWord[i]) correctChars++;
+        });
+
+        const elapsedMin = Math.max(0.001, finalElapsedSec / 60);
+        const finalWpm = Math.round((correctChars / 5) / elapsedMin);
+        wpmRef.current = finalWpm;
+
         if (channelRef.current) {
             channelRef.current.send({
                 type: "broadcast", event: "finish",
-                payload: { wpm: wpmRef.current },
+                payload: { wpm: finalWpm },
             });
         }
     }, []);
@@ -434,17 +476,20 @@ export default function TypingTesterPage() {
     const startTimers = useCallback(() => {
         const start = Date.now();
         setStartTime(start);
+        startTimeRef.current = start;
 
         elapsedRef.current = setInterval(() => {
-            setElapsed((Date.now() - start) / 1000);
+            const sec = (Date.now() - start) / 1000;
+            setElapsed(sec);
+            calcStats(completedWordsRef.current, currentInputRef.current, sec);
         }, 200);
 
-        // 1s tick for WPM history
+        // 0.5s tick for WPM history (more data for smoother chart)
         let tick = 0;
         historyTimerRef.current = setInterval(() => {
-            tick++;
+            tick += 0.5;
             setWpmHistory(prev => [...prev, { t: tick, wpm: wpmRef.current }]);
-        }, 1000);
+        }, 500);
 
         if (testMode === "time") {
             timerRef.current = setInterval(() => {
@@ -481,8 +526,9 @@ export default function TypingTesterPage() {
             startTimers();
         }
 
-        if (val.endsWith(" ")) {
-            const typed = val.trimEnd();
+        // Allow Space or Enter to complete a word
+        if (val.endsWith(" ") || val.endsWith("\n")) {
+            const typed = val.slice(0, -1);
             const wordData = words[currentWordIdx];
             if (!wordData) return;
 
@@ -495,21 +541,45 @@ export default function TypingTesterPage() {
             const completedWord: WordData = { ...wordData, chars: updatedChars, isComplete: true, hasError };
             const newCompleted = [...completedWords, completedWord];
             setCompletedWords(newCompleted);
+            completedWordsRef.current = newCompleted;
 
             const nextIdx = currentWordIdx + 1;
+
+            // Reposition scroll/words if near end in Time Mode
+            if (testMode === "time" && nextIdx >= words.length - 10) {
+                const moreWords = buildWords(50);
+                setWords(prev => [...prev, ...moreWords]);
+            }
+
             if (testMode === "words" && nextIdx >= words.length) { finishTest(); return; }
 
             setCurrentWordIdx(nextIdx);
+            currentWordIdxRef.current = nextIdx;
             setCurrentInput("");
+            currentInputRef.current = "";
             calcStats(newCompleted, "", elapsed);
             return;
         }
 
         const currentWord = words[currentWordIdx]?.word || "";
+
+        // AUTO-FINISH on last word in "words" mode if typed correctly
+        if (testMode === "words" && currentWordIdx === words.length - 1 && val === currentWord) {
+            const wordData = words[currentWordIdx];
+            const updatedChars = wordData.word.split("").map(c => ({ char: c, state: "correct" as CharState }));
+            const completedWord = { ...wordData, chars: updatedChars, isComplete: true, hasError: false };
+            const newCompleted = [...completedWords, completedWord];
+            setCompletedWords(newCompleted);
+            setCurrentInput("");
+            finishTest();
+            return;
+        }
+
         if (val.length > currentWord.length + 8) return;
         setCurrentInput(val);
+        currentInputRef.current = val;
         calcStats(completedWords, val, elapsed);
-    }, [isFinished, isActive, words, currentWordIdx, completedWords, testMode, startTimers, finishTest, calcStats, elapsed]);
+    }, [isFinished, isActive, words, currentWordIdx, completedWords, testMode, startTimers, finishTest, calcStats, elapsed, buildWords]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (e.key === "Backspace" && currentInput === "" && currentWordIdx > 0) {
@@ -658,18 +728,32 @@ export default function TypingTesterPage() {
 
     // ─── Final stats ──────────────────────────────────────────────────────────
     const finalStats = useMemo(() => {
-        const correct = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "correct").length, 0);
-        const incorrect = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "incorrect").length, 0);
+        let correct = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "correct").length, 0);
+        let incorrect = completedWords.reduce((a, w) => a + w.chars.filter(c => c.state === "incorrect").length, 0);
+
+        if (isFinished && currentInput) {
+            const currentWord = words[currentWordIdx]?.word || "";
+            currentInput.split("").forEach((c, i) => {
+                if (c === currentWord[i]) correct++;
+                else incorrect++;
+            });
+        }
+
         const total = correct + incorrect;
-        const timeTaken = endTime && startTime ? Math.round((endTime - startTime) / 1000) : 0;
-        const mins = timeTaken > 0 ? timeTaken / 60 : (testMode === "time" ? timeConfig / 60 : 1);
-        const finalWpm = total > 0 ? Math.round((correct / 5) / mins) : 0;
-        const finalRaw = total > 0 ? Math.round((total / 5) / mins) : 0;
+        const timeTakenMs = endTime && startTime ? (endTime - startTime) : 0;
+        const mins = timeTakenMs > 0 ? timeTakenMs / 60000 : (testMode === "time" ? timeConfig / 60 : 1);
+
+        // Ensure this logic matches finishTest exactly
+        const finalWpm = total > 0 ? Math.round((correct / 5) / Math.max(0.001, mins)) : 0;
+        const finalRaw = total > 0 ? Math.round((total / 5) / Math.max(0.001, mins)) : 0;
         const finalAcc = total > 0 ? Math.round((correct / total) * 100) : 100;
-        const mm = Math.floor(timeTaken / 60).toString().padStart(2, "0");
-        const ss = (timeTaken % 60).toString().padStart(2, "0");
+
+        const timeTakenSec = Math.round(timeTakenMs / 1000);
+        const mm = Math.floor(timeTakenSec / 60).toString().padStart(2, "0");
+        const ss = (timeTakenSec % 60).toString().padStart(2, "0");
+
         return { correct, incorrect, total, finalWpm, finalRaw, finalAcc, mm, ss };
-    }, [completedWords, endTime, startTime, testMode, timeConfig]);
+    }, [completedWords, endTime, startTime, testMode, timeConfig, isFinished, currentInput, words, currentWordIdx]);
 
     const isPresetTime = TIME_OPTIONS.includes(timeConfig);
     const isPresetWords = WORD_OPTIONS.includes(wordConfig);
@@ -694,7 +778,7 @@ export default function TypingTesterPage() {
                         style={{ background: T.accent, boxShadow: `0 0 20px ${T.accentHex}44` }}
                     >AN</div>
                     <span className="text-base sm:text-lg font-bold tracking-tight uppercase transition-colors" style={{ color: T.text }}>
-                        Type Test
+                        Typing Speed Tester
                     </span>
                 </button>
 
@@ -769,7 +853,7 @@ export default function TypingTesterPage() {
                                 {(["time", "words"] as TestMode[]).map(m => (
                                     <button
                                         key={m}
-                                        onClick={() => { setTestMode(m); setTimeout(resetTest, 0); }}
+                                        onClick={() => setTestMode(m)}
                                         className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
                                         style={{
                                             color: testMode === m ? T.accent : T.muted,
@@ -791,7 +875,6 @@ export default function TypingTesterPage() {
                                         const next = !usePunctuation;
                                         punctRef.current = next;
                                         setUsePunctuation(next);
-                                        resetTest();
                                     }}
                                     className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
                                     style={{
@@ -808,7 +891,6 @@ export default function TypingTesterPage() {
                                         const next = !useNumbers;
                                         numsRef.current = next;
                                         setUseNumbers(next);
-                                        resetTest();
                                     }}
                                     className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
                                     style={{
@@ -832,7 +914,6 @@ export default function TypingTesterPage() {
                                         onClick={() => {
                                             if (testMode === "time") setTimeConfig(v);
                                             else setWordConfig(v);
-                                            setTimeout(resetTest, 0);
                                         }}
                                         className="px-3 py-1.5 rounded-lg transition-all"
                                         style={{
@@ -1253,41 +1334,93 @@ export default function TypingTesterPage() {
 
                             {/* WPM Chart */}
                             <div className="h-[220px] w-full relative">
-                                {wpmHistory.length > 1 ? (() => {
-                                    const maxWpm = Math.max(...wpmHistory.map(h => h.wpm), 1);
-                                    const w = wpmHistory.length * 10;
-                                    const pts = wpmHistory.map((h, i) => `${i * 10},${100 - (h.wpm / maxWpm) * 95}`).join(" ");
+                                {wpmHistory.length > 0 ? (() => {
+                                    // Always start from 0
+                                    const data = [{ t: 0, wpm: 0 }, ...wpmHistory];
+                                    const maxWpmValue = Math.max(...data.map(h => h.wpm));
+                                    const maxWpm = Math.max(maxWpmValue, 40); // Min scale of 40 for stability
+
+                                    // SVG coordinate system: y increases downwards, so we flip it
+                                    // x is based on data index or time. Let's use index for uniform spacing
+                                    // but we'll cap the width so it doesn't stretch too much for 2 points
+                                    // Always use a fixed width coordinate system to keep stroke widths consistent
+                                    const VIEWBOX_W = 1000;
+                                    const VIEWBOX_H = 100;
+
+                                    const points = data.map((h, i) => ({
+                                        x: (i / (data.length - 1)) * VIEWBOX_W,
+                                        y: VIEWBOX_H - (h.wpm / maxWpm) * 85
+                                    }));
+
+                                    const polylinePoints = points.map(p => `${p.x},${p.y}`).join(" ");
+                                    const fillPoints = `${polylinePoints} ${VIEWBOX_W},${VIEWBOX_H} 0,${VIEWBOX_H}`;
+
                                     return (
-                                        <svg className="w-full h-full" viewBox={`0 0 ${w} 100`} preserveAspectRatio="none">
-                                            <defs>
-                                                <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
-                                                    <stop offset="0%" stopColor={T.accentHex} stopOpacity="0.3" />
-                                                    <stop offset="100%" stopColor={T.accentHex} stopOpacity="0" />
-                                                </linearGradient>
-                                            </defs>
-                                            {[25, 50, 75].map(y => (
-                                                <line key={y} x1="0" y1={y} x2={w} y2={y} stroke={T.surface} strokeWidth="0.5" />
-                                            ))}
-                                            <polygon
-                                                points={`${pts} ${(wpmHistory.length - 1) * 10},100 0,100`}
-                                                fill="url(#cg)"
-                                            />
-                                            <polyline
-                                                points={pts}
-                                                fill="none"
-                                                stroke={T.accentHex}
-                                                strokeWidth="1.5"
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                style={{ filter: `drop-shadow(0 0 6px ${T.accentHex}88)` }}
-                                            />
-                                            {wpmHistory.map((h, i) => (
-                                                <circle key={i} cx={i * 10} cy={100 - (h.wpm / maxWpm) * 95} r="1.5" fill={T.accentHex} />
-                                            ))}
-                                        </svg>
+                                        <div className="w-full h-full relative group">
+                                            {/* Y-Axis Labels */}
+                                            <div className="absolute left-0 inset-y-0 flex flex-col justify-between text-[10px] uppercase font-black pointer-events-none opacity-40 py-2 z-10" style={{ color: T.muted }}>
+                                                <span>{maxWpm}</span>
+                                                <span>{Math.round(maxWpm * 0.75)}</span>
+                                                <span>{Math.round(maxWpm * 0.5)}</span>
+                                                <span>{Math.round(maxWpm * 0.25)}</span>
+                                                <span>0</span>
+                                            </div>
+
+                                            <svg className="w-full h-full pl-8" viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`} preserveAspectRatio="none">
+                                                <defs>
+                                                    <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
+                                                        <stop offset="0%" stopColor={T.accentHex} stopOpacity="0.15" />
+                                                        <stop offset="100%" stopColor={T.accentHex} stopOpacity="0" />
+                                                    </linearGradient>
+                                                </defs>
+
+                                                {/* Horizontal Grid Lines */}
+                                                {[0, 25, 50, 75, 100].map(y => (
+                                                    <line key={y} x1="0" y1={y} x2={VIEWBOX_W} y2={y} stroke={T.surface} strokeWidth="1" strokeOpacity="0.2" />
+                                                ))}
+
+                                                {/* Vertical Grid Lines (limit count for clarity) */}
+                                                {points.length <= 20 && points.map((p, i) => (
+                                                    <line key={i} x1={p.x} y1="0" x2={p.x} y2={VIEWBOX_H} stroke={T.surface} strokeWidth="1" strokeOpacity="0.1" />
+                                                ))}
+
+                                                {/* Gradient Fill */}
+                                                <polygon
+                                                    points={fillPoints}
+                                                    fill="url(#chartFill)"
+                                                />
+
+                                                {/* Polyline Path */}
+                                                <polyline
+                                                    points={polylinePoints}
+                                                    fill="none"
+                                                    stroke={T.accentHex}
+                                                    strokeWidth="2"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    vectorEffect="non-scaling-stroke"
+                                                />
+
+                                                {/* Dot Plots (using zero-length lines with round caps and non-scaling-stroke for perfect circles) */}
+                                                {points.map((p, i) => (
+                                                    <line
+                                                        key={i}
+                                                        x1={p.x}
+                                                        y1={p.y}
+                                                        x2={p.x}
+                                                        y2={p.y}
+                                                        stroke={T.accentHex}
+                                                        strokeWidth={points.length > 50 ? "4" : "6"}
+                                                        strokeLinecap="round"
+                                                        vectorEffect="non-scaling-stroke"
+                                                        style={{ filter: `drop-shadow(0 0 4px ${T.accentHex}44)` }}
+                                                    />
+                                                ))}
+                                            </svg>
+                                        </div>
                                     );
                                 })() : (
-                                    <div className="flex items-center justify-center h-full text-xs" style={{ color: T.muted }}>
+                                    <div className="flex items-center justify-center h-full text-xs font-bold uppercase tracking-widest opacity-30" style={{ color: T.muted }}>
                                         Not enough data for chart
                                     </div>
                                 )}
@@ -1355,7 +1488,6 @@ export default function TypingTesterPage() {
                                         if (testMode === "time") setTimeConfig(v);
                                         else setWordConfig(v);
                                         setCustomModalOpen(false);
-                                        setTimeout(resetTest, 0);
                                     }
                                 }
                                 if (e.key === "Escape") setCustomModalOpen(false);
@@ -1370,7 +1502,6 @@ export default function TypingTesterPage() {
                                     if (testMode === "time") setTimeConfig(v);
                                     else setWordConfig(v);
                                     setCustomModalOpen(false);
-                                    setTimeout(resetTest, 0);
                                 }
                             }}
                             className="w-full font-black py-3 rounded-xl text-sm uppercase tracking-wider text-black"

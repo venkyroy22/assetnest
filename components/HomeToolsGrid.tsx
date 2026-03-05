@@ -36,7 +36,7 @@ const TOOLS = [
     },
     {
         id: "typing-tester",
-        name: "Speed Typist",
+        name: "Typing Speed Tester",
         description: "Test and improve your typing speed and accuracy with real-time stats.",
         href: "/tools/typing-tester",
         icon: Keyboard,
