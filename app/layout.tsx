@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import CookieConsent from "@/components/CookieConsent";
-import Script from "next/script";
 
 const siteUrl = "https://assetnest.vercel.app";
 
@@ -96,6 +95,12 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="canonical" href={siteUrl} />
         <meta name="theme-color" content="#000000" />
+        {/* Google AdSense */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
+          crossOrigin="anonymous"
+        />
         {/* JSON-LD Structured Data for Google */}
         <script
           type="application/ld+json"
@@ -120,13 +125,6 @@ export default function RootLayout({
           {children}
         </AppLayout>
         <CookieConsent />
-        {/* Google AdSense */}
-        <Script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
