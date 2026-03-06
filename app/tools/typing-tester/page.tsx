@@ -209,7 +209,6 @@ interface WordData {
 export default function TypingTesterPage() {
     // --- Theme ---
     const [themeIdx, setThemeIdx] = useState(0);
-    const [themeOpen, setThemeOpen] = useState(false);
     const T = THEMES[themeIdx];
 
     // --- Config ---
@@ -243,8 +242,8 @@ export default function TypingTesterPage() {
     const [visible, setVisible] = useState(false);
     const [caretPos, setCaretPos] = useState({ top: 0, left: 0 });
 
-    // --- Custom modal ---
-    const [customModalOpen, setCustomModalOpen] = useState(false);
+    // --- Settings Modal ---
+    const [settingsModalOpen, setSettingsModalOpen] = useState(false);
     const [customInput, setCustomInput] = useState("");
 
     // --- Duel ---
@@ -910,54 +909,15 @@ export default function TypingTesterPage() {
                             {testMode === "time" ? `${timeLeft}s` : `${currentWordIdx}/${wordConfig}`}
                         </div>
                     )}
-                    {/* Theme picker */}
-                    <div className="relative">
-                        <button
-                            onClick={() => setThemeOpen(o => !o)}
-                            className="p-2 rounded-lg transition-colors"
-                            style={{ color: T.muted, background: themeOpen ? T.surface : "transparent" }}
-                            title="Change theme"
-                        >
-                            <Palette size={16} />
-                        </button>
-                        {themeOpen && (
-                            <div
-                                className="absolute right-0 top-10 z-50 rounded-xl p-3 sm:p-4 shadow-2xl border"
-                                style={{ background: T.surface, borderColor: T.border, minWidth: 240, maxWidth: "90vw" }}
-                            >
-                                <div className="text-xs font-black uppercase tracking-widest mb-3" style={{ color: T.muted }}>Theme</div>
-                                <div className="grid grid-cols-5 gap-2 sm:gap-3">
-                                    {THEMES.map((th, i) => (
-                                        <button
-                                            key={th.name}
-                                            onClick={() => { setThemeIdx(i); setThemeOpen(false); }}
-                                            className="flex flex-col items-center gap-1.5 group"
-                                            title={th.name}
-                                        >
-                                            {/* Color swatch */}
-                                            <div
-                                                className="w-10 h-10 rounded-xl border-2 transition-all duration-200"
-                                                style={{
-                                                    background: th.bg,
-                                                    borderColor: i === themeIdx ? th.accent : th.border,
-                                                    boxShadow: i === themeIdx ? `0 0 12px ${th.accentHex}80` : "none",
-                                                    transform: i === themeIdx ? "scale(1.12)" : "scale(1)",
-                                                }}
-                                            >
-                                                <div className="w-full h-full rounded-lg flex items-end p-1">
-                                                    <div className="w-full h-2 rounded-sm" style={{ background: th.accent }} />
-                                                </div>
-                                            </div>
-                                            <span className="text-[8px] leading-tight font-bold" style={{ color: i === themeIdx ? T.accent : T.muted }}>
-                                                {th.name}
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                        )}
-                    </div>
+                    {/* Settings Button */}
+                    <button
+                        onClick={() => { setCustomInput(activeConfig.toString()); setSettingsModalOpen(true); }}
+                        className="p-2 sm:p-2.5 rounded-lg transition-colors"
+                        style={{ color: T.muted, background: settingsModalOpen ? T.surface : "transparent" }}
+                        title="Settings"
+                    >
+                        <Settings2 size={18} />
+                    </button>
                 </div>
             </header>
 
@@ -1047,12 +1007,12 @@ export default function TypingTesterPage() {
                                     </button>
                                 ))}
                                 <button
-                                    onClick={() => { setCustomInput(activeConfig.toString()); setCustomModalOpen(true); }}
+                                    onClick={() => { setCustomInput(activeConfig.toString()); setSettingsModalOpen(true); }}
                                     className="px-2 py-1.5 rounded-lg transition-all"
                                     style={{
                                         color: (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
                                     }}
-                                    title="Custom"
+                                    title="Custom Settings"
                                 >
                                     <Settings2 size={12} />
                                 </button>
@@ -1624,50 +1584,120 @@ export default function TypingTesterPage() {
                 </div>
             )}
 
-            {/* ── Custom Modal ────────────────────────────────────────────────── */}
-            {customModalOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
-                    <div className="rounded-2xl p-8 w-full max-w-sm shadow-2xl border" style={{ background: T.surface, borderColor: T.border }}>
-                        <div className="flex items-center justify-between mb-6">
-                            <h3 className="font-black text-lg" style={{ color: T.accent }}>
-                                custom {testMode === "time" ? "time" : "word"} count
+            {/* ── Settings Modal ────────────────────────────────────────────────── */}
+            {settingsModalOpen && (
+                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(4px)" }}>
+                    <div className="rounded-2xl p-6 sm:p-8 w-full max-w-2xl shadow-2xl border flex flex-col max-h-[90vh] sm:max-h-[85vh] overflow-hidden" style={{ background: T.surface, borderColor: T.border }}>
+
+                        {/* Modal Header */}
+                        <div className="flex items-center justify-between mb-8 shrink-0">
+                            <h3 className="font-black text-xl lg:text-3xl uppercase tracking-widest" style={{ color: T.accent }}>
+                                Settings
                             </h3>
-                            <button onClick={() => setCustomModalOpen(false)} style={{ color: T.muted }}>
-                                <X size={18} />
+                            <button onClick={() => setSettingsModalOpen(false)} style={{ color: T.muted }} className="p-2 hover:opacity-70 transition-opacity">
+                                <X size={24} />
                             </button>
                         </div>
-                        <input
-                            autoFocus
-                            type="number"
-                            min={1}
-                            value={customInput}
-                            onChange={e => setCustomInput(e.target.value)}
-                            onKeyDown={e => {
-                                if (e.key === "Enter") {
-                                    const v = parseInt(customInput);
-                                    if (!isNaN(v) && v > 0) {
-                                        if (testMode === "time") setTimeConfig(v);
-                                        else setWordConfig(v);
-                                        setCustomModalOpen(false);
-                                    }
-                                }
-                                if (e.key === "Escape") setCustomModalOpen(false);
-                            }}
-                            className="w-full rounded-xl px-5 py-4 text-2xl font-bold text-center outline-none mb-4 border-2 transition-colors"
-                            style={{ background: T.bg, borderColor: T.border, color: T.text }}
-                        />
-                        <button
-                            onClick={() => {
-                                const v = parseInt(customInput);
-                                if (!isNaN(v) && v > 0) {
-                                    if (testMode === "time") setTimeConfig(v);
-                                    else setWordConfig(v);
-                                    setCustomModalOpen(false);
-                                }
-                            }}
-                            className="w-full font-black py-3 rounded-xl text-sm uppercase tracking-wider text-black"
-                            style={{ background: T.accent }}
-                        >ok</button>
+
+                        {/* Modal Content container (scrollable) */}
+                        <div className="overflow-y-auto pr-2 sm:pr-4 space-y-12 pb-4 scrollbar-thin overflow-x-hidden">
+
+                            {/* Theme Grid */}
+                            <section>
+                                <div className="flex items-center gap-2 mb-5">
+                                    <Palette size={16} style={{ color: T.accent }} />
+                                    <h4 className="text-xs font-black uppercase tracking-widest" style={{ color: T.text }}>Appearance / Theme</h4>
+                                </div>
+                                <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-y-6 gap-x-4">
+                                    {THEMES.map((th, i) => (
+                                        <button
+                                            key={th.name}
+                                            onClick={() => setThemeIdx(i)}
+                                            className="flex flex-col items-center gap-2.5 group"
+                                            title={th.name}
+                                        >
+                                            <div
+                                                className="w-full aspect-video rounded-xl border-2 transition-all duration-300 relative overflow-hidden flex flex-col"
+                                                style={{
+                                                    background: th.bg,
+                                                    borderColor: i === themeIdx ? th.accent : th.border,
+                                                    boxShadow: i === themeIdx ? `0 0 20px ${th.accentHex}40` : "none",
+                                                    transform: i === themeIdx ? "scale(1.05)" : "scale(1)",
+                                                }}
+                                            >
+                                                {/* Mini UI Mockup */}
+                                                <div className="flex-1 w-full p-2 flex flex-col gap-1.5 justify-center">
+                                                    <div className="flex items-center gap-1">
+                                                        <div className="h-1.5 w-8 rounded-full" style={{ background: th.muted }} />
+                                                    </div>
+                                                    <div className="flex items-center gap-1 leading-none">
+                                                        <span className="text-[10px] sm:text-xs font-bold" style={{ color: th.accent }}>a</span>
+                                                        <span className="text-[10px] sm:text-xs font-bold" style={{ color: th.error }}>x</span>
+                                                    </div>
+                                                </div>
+                                                <div className="w-full h-1 sm:h-1.5" style={{ background: th.accent }} />
+                                            </div>
+                                            <span className="text-[9px] sm:text-[10px] leading-tight font-black uppercase tracking-wider" style={{ color: i === themeIdx ? T.accent : T.muted }}>
+                                                {th.name}
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </section>
+
+                            <hr style={{ borderColor: T.border }} className="opacity-50" />
+
+                            {/* Custom Values */}
+                            <section>
+                                <div className="flex items-center gap-2 mb-5">
+                                    <Settings2 size={16} style={{ color: T.accent }} />
+                                    <h4 className="text-xs font-black uppercase tracking-widest" style={{ color: T.text }}>
+                                        Custom Behavior
+                                    </h4>
+                                </div>
+                                <div className="flex flex-col sm:flex-row gap-4">
+                                    <div className="flex-1">
+                                        <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: T.muted }}>
+                                            Custom {testMode === "time" ? "Time (sec)" : "Word Count"}
+                                        </label>
+                                        <input
+                                            type="number"
+                                            min={1}
+                                            value={customInput}
+                                            onChange={e => setCustomInput(e.target.value)}
+                                            onKeyDown={e => {
+                                                if (e.key === "Enter") {
+                                                    const v = parseInt(customInput);
+                                                    if (!isNaN(v) && v > 0) {
+                                                        if (testMode === "time") setTimeConfig(v);
+                                                        else setWordConfig(v);
+                                                        setSettingsModalOpen(false);
+                                                    }
+                                                }
+                                                if (e.key === "Escape") setSettingsModalOpen(false);
+                                            }}
+                                            className="w-full rounded-xl px-4 py-3 sm:py-4 text-xl sm:text-2xl font-bold max-w-[200px] outline-none border-2 transition-colors"
+                                            style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                                        />
+                                    </div>
+                                    <div className="flex items-end">
+                                        <button
+                                            onClick={() => {
+                                                const v = parseInt(customInput);
+                                                if (!isNaN(v) && v > 0) {
+                                                    if (testMode === "time") setTimeConfig(v);
+                                                    else setWordConfig(v);
+                                                    setSettingsModalOpen(false);
+                                                }
+                                            }}
+                                            className="w-full sm:w-auto px-8 py-3 sm:py-4 font-black rounded-xl text-sm uppercase tracking-wider text-black transition-transform active:scale-95"
+                                            style={{ background: T.accent }}
+                                        >Apply settings</button>
+                                    </div>
+                                </div>
+                            </section>
+
+                        </div>
                     </div>
                 </div>
             )}

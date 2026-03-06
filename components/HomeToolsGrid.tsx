@@ -2,70 +2,12 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
-import {
-    FileImage, QrCode, Timer, Receipt, RefreshCw, ArrowUpRight, ArrowRight, Keyboard,
-} from "lucide-react";
-
-const TOOLS = [
-    {
-        id: "image-compressor",
-        name: "Image Compressor",
-        description: "Compress JPEG, PNG & WebP images instantly. 100% private, no uploads.",
-        href: "/tools/image-compressor",
-        icon: FileImage,
-        accent: "#10b981",
-        tag: "Images",
-    },
-    {
-        id: "qr",
-        name: "QR Code Generator",
-        description: "Generate customizable QR codes. Download as PNG or SVG for free.",
-        href: "/tools/qr",
-        icon: QrCode,
-        accent: "#6366f1",
-        tag: "Generate",
-    },
-    {
-        id: "pomodoro",
-        name: "Pomodoro Timer",
-        description: "Animated focus timer with session tracking and achievement system.",
-        href: "/tools/pomodoro",
-        icon: Timer,
-        accent: "#f43f5e",
-        tag: "Productivity",
-    },
-    {
-        id: "typing-tester",
-        name: "Typing Speed Tester",
-        description: "Test and improve your typing speed and accuracy with real-time stats.",
-        href: "/tools/typing-tester",
-        icon: Keyboard,
-        accent: "#0ea5e9",
-        tag: "Productivity",
-    },
-    {
-        id: "billing",
-        name: "Smart Billing Tool",
-        description: "Paperless billing for merchants. Scan barcodes, generate QR receipts.",
-        href: "/tools/billing",
-        icon: Receipt,
-        accent: "#f59e0b",
-        tag: "Business",
-    },
-    {
-        id: "image-converter",
-        name: "Image Converter",
-        description: "Convert JPG→PNG, PNG→WebP, JPG→WebP with quality control. Batch support.",
-        href: "/tools/image-converter",
-        icon: RefreshCw,
-        accent: "#8b5cf6",
-        tag: "Images",
-    },
-];
+import { ALL_TOOLS, Tool } from "@/lib/tools";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 
 
 // ── Single tool card ──────────────────────────────────────────────────────────
-function HomeToolCard({ tool, index }: { tool: typeof TOOLS[0]; index: number }) {
+function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
     const cardRef = useRef<HTMLDivElement>(null);
     const [mouse, setMouse] = useState({ x: 0, y: 0 });
     const [hovered, setHovered] = useState(false);
@@ -178,7 +120,7 @@ function HomeToolCard({ tool, index }: { tool: typeof TOOLS[0]; index: number })
                                 className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border"
                                 style={{ color: accent, borderColor: `${accent}40`, background: `${accent}12` }}
                             >
-                                {tool.tag}
+                                {tool.category}
                             </span>
                             <ArrowUpRight
                                 size={14}
@@ -214,7 +156,7 @@ export default function HomeToolsGrid() {
         <div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6 gap-4">
 
-                {TOOLS.map((tool, i) => (
+                {ALL_TOOLS.slice(0, 6).map((tool, i) => (
                     <HomeToolCard key={tool.id} tool={tool} index={i} />
                 ))}
             </div>

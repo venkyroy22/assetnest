@@ -15,6 +15,8 @@ const SEARCH_INDEX = [
     { title: "QR Code Generator", desc: "Generate beautiful customizable QR codes for free", href: "/tools/qr", tag: "Tool" },
     { title: "Pomodoro Timer", desc: "Focus timer with achievements, session tracking and breaks", href: "/tools/pomodoro", tag: "Tool" },
     { title: "Image Converter", desc: "Convert JPG to PNG, PNG to WebP, or JPG to WebP instantly", href: "/tools/image-converter", tag: "Tool" },
+    { title: "Instagram Grid Planner", desc: "Plan your Instagram feed visually with drag and drop", href: "/tools/ig-grid", tag: "Tool" },
+    { title: "Advanced Image Cropper", desc: "Crop images precisely with custom ratios and dimensions", href: "/tools/image-cropper", tag: "Tool" },
     { title: "Top Tools", desc: "All free tools for creators and designers", href: "/tools", tag: "Tool" },
     // Keywords
     { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
@@ -114,7 +116,7 @@ const Navbar = () => {
                 </div>
 
                 {/* Main Navbar Content */}
-                <div className="flex-grow h-full pl-20 pr-10">
+                <div className="flex-grow h-full px-6 lg:pl-20 lg:pr-10">
                     <div className="flex justify-between items-center h-full gap-8">
                         {/* Logo */}
                         <div className="flex items-center gap-4">
@@ -127,9 +129,9 @@ const Navbar = () => {
                         </div>
 
                         {/* ── Functional Search Bar ── */}
-                        <div ref={searchRef} className="hidden lg:flex items-center flex-grow max-w-lg relative">
-                            <div className={`flex items-center bg-zinc-900 border px-4 py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
-                                <Search size={16} className="text-zinc-500 mr-3 shrink-0" />
+                        <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg mx-3 lg:mx-0 relative">
+                            <div className={`flex items-center bg-zinc-900 border px-3 lg:px-4 py-2 lg:py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
+                                <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0" />
                                 <input
                                     type="text"
                                     id="global-search"
@@ -137,9 +139,9 @@ const Navbar = () => {
                                     onChange={(e) => setQuery(e.target.value)}
                                     onKeyDown={handleKeyDown}
                                     onFocus={() => query.length >= 2 && setShowResults(true)}
-                                    placeholder="Search tools, keywords, pages…"
+                                    placeholder="Search..."
                                     autoComplete="off"
-                                    className="bg-transparent text-sm w-full focus:outline-none placeholder:text-zinc-600 font-medium"
+                                    className="bg-transparent text-xs lg:text-sm w-full focus:outline-none placeholder:text-zinc-600 font-medium"
                                 />
                                 {query && (
                                     <button onClick={() => { setQuery(""); setShowResults(false); }} className="text-zinc-600 hover:text-white transition-colors ml-2">
@@ -150,7 +152,7 @@ const Navbar = () => {
 
                             {/* Dropdown Results */}
                             {showResults && (
-                                <div className="absolute top-full left-0 right-0 mt-1 bg-zinc-900 border border-zinc-700 shadow-2xl z-[200] overflow-hidden">
+                                <div className="fixed top-20 left-4 right-4 lg:absolute lg:top-full lg:left-0 lg:right-0 lg:mt-1 bg-zinc-900 border border-zinc-700 shadow-2xl z-[200] overflow-y-auto max-h-[70vh] rounded-xl lg:rounded-b-lg">
                                     {results.length > 0 ? (
                                         <>
                                             {results.map((item, i) => (
@@ -160,11 +162,11 @@ const Navbar = () => {
                                                     onClick={() => { setQuery(""); setShowResults(false); }}
                                                     className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0 group"
                                                 >
-                                                    <div className="flex flex-col">
-                                                        <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-white">{item.title}</span>
-                                                        <span className="text-[11px] text-zinc-500 font-medium mt-0.5">{item.desc}</span>
+                                                    <div className="flex flex-col flex-1 min-w-0 pr-4">
+                                                        <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-white truncate">{item.title}</span>
+                                                        <span className="text-[11px] text-zinc-500 font-medium mt-0.5 line-clamp-2">{item.desc}</span>
                                                     </div>
-                                                    <div className="flex items-center gap-2 shrink-0 ml-4">
+                                                    <div className="flex items-center gap-2 shrink-0 ml-auto">
                                                         <span className={`text-[9px] font-black uppercase tracking-widest ${TAG_COLORS[item.tag] || "text-zinc-500"}`}>{item.tag}</span>
                                                         <ArrowRight size={12} className="text-zinc-600 group-hover:text-white transition-colors" />
                                                     </div>
@@ -196,36 +198,6 @@ const Navbar = () => {
                     {/* Mobile Menu Overlay */}
                     <div className={`md:hidden absolute top-full left-0 w-full bg-background border-b border-border shadow-2xl transition-all duration-300 ease-in-out z-[100] ${mobileMenuOpen ? 'max-h-[90vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                         <div className="p-6 space-y-8">
-                            {/* Mobile Search */}
-                            <div className="flex items-center bg-zinc-900 border border-zinc-800 px-4 py-2.5 w-full">
-                                <Search size={16} className="text-zinc-500 mr-3" />
-                                <input
-                                    type="text"
-                                    value={query}
-                                    onChange={(e) => setQuery(e.target.value)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === "Enter" && results.length > 0) {
-                                            router.push(results[0].href);
-                                            setQuery(""); setMobileMenuOpen(false); setShowResults(false);
-                                        }
-                                    }}
-                                    placeholder="Search tools, keywords…"
-                                    className="bg-transparent border-none outline-none text-sm w-full font-medium"
-                                />
-                            </div>
-                            {/* Mobile search results */}
-                            {showResults && results.length > 0 && (
-                                <div className="border border-zinc-800 overflow-hidden -mt-4">
-                                    {results.map((item, i) => (
-                                        <Link key={i} href={item.href} onClick={() => { setQuery(""); setShowResults(false); setMobileMenuOpen(false); }}
-                                            className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800 border-b border-zinc-800/50 last:border-0">
-                                            <span className="text-xs font-black uppercase tracking-widest text-white">{item.title}</span>
-                                            <span className={`text-[9px] font-black uppercase ${TAG_COLORS[item.tag]}`}>{item.tag}</span>
-                                        </Link>
-                                    ))}
-                                </div>
-                            )}
-
                             <div className="space-y-6">
                                 <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40 px-1">Discover</p>
                                 <div className="grid grid-cols-1 gap-2">

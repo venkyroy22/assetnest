@@ -99,7 +99,7 @@ export default function Home() {
                 <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Ultimate Resource Hub</span>
               </div>
               <h1 className="text-4xl md:text-7xl font-black tracking-tight uppercase text-white mx-auto max-w-4xl leading-[0.85] drop-shadow-2xl">
-                EVERYTHING <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">CREATORS</span> NEED.
+                YOUR ULTIMATE <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">ASSET</span> NEST.
               </h1>
               <p className="text-base md:text-xl text-zinc-300 font-medium max-w-xl mx-auto drop-shadow-md">
                 Curated assets, strategic tools, and infinite inspiration for your next big project.

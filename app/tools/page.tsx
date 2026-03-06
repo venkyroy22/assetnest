@@ -377,15 +377,32 @@ export default function ToolsPage() {
                     </div>
                 )}
 
-                {/* ── Tools grid ── */}
+                {/* ── Tools Categories ── */}
                 {filtered.length > 0 && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                        {filtered.map((tool, i) => (
-                            <ToolCard key={tool.id} tool={tool} index={i} />
-                        ))}
+                    <div className="space-y-16 mt-8">
+                        {Array.from(new Set(filtered.map(t => t.category))).map((category) => {
+                            const categoryTools = filtered.filter(t => t.category === category);
 
-                        {/* Coming soon */}
-                        {!query && <ComingSoonCard index={filtered.length} />}
+                            return (
+                                <div key={category} className="space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="h-px bg-zinc-800 flex-1" />
+                                        <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400">
+                                            {category}
+                                        </h2>
+                                        <div className="h-px bg-zinc-800 flex-1" />
+                                    </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                        {categoryTools.map((tool, i) => (
+                                            <ToolCard key={tool.id} tool={tool} index={i} />
+                                        ))}
+
+                                        {/* Coming soon */}
+                                        {!query && <ComingSoonCard index={categoryTools.length} />}
+                                    </div>
+                                </div>
+                            );
+                        })}
                     </div>
                 )}
             </div>
