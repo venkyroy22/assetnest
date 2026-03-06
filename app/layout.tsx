@@ -96,12 +96,21 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/logo.png" />
         <link rel="canonical" href={siteUrl} />
         <meta name="theme-color" content="#000000" />
-        {/* Google AdSense */}
+      </head>
+      <body className="antialiased font-sans flex flex-col min-h-screen">
+        <AppLayout>
+          {children}
+        </AppLayout>
+        <CookieConsent />
+
+        {/* Google AdSense - Loading after interactive to improve TBT */}
         <script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
           crossOrigin="anonymous"
+          defer
         />
+
         {/* JSON-LD Structured Data for Google */}
         <script
           type="application/ld+json"
@@ -120,12 +129,6 @@ export default function RootLayout({
             })
           }}
         />
-      </head>
-      <body className="antialiased font-sans flex flex-col min-h-screen">
-        <AppLayout>
-          {children}
-        </AppLayout>
-        <CookieConsent />
       </body>
     </html>
   );

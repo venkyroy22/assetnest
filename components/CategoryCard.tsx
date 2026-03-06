@@ -9,9 +9,10 @@ interface CategoryCardProps {
     image: string;
     href: string;
     isDevelopment?: boolean;
+    priority?: boolean;
 }
 
-const CategoryCard = ({ title, count, image, href, isDevelopment }: CategoryCardProps) => {
+const CategoryCard = ({ title, count, image, href, isDevelopment, priority }: CategoryCardProps) => {
     return (
         <Link
             href={isDevelopment ? "#" : href}
@@ -40,6 +41,8 @@ const CategoryCard = ({ title, count, image, href, isDevelopment }: CategoryCard
                         src={image}
                         alt={title}
                         fill
+                        priority={priority}
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover rounded-tl-2xl"
                     />
                 </div>

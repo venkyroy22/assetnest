@@ -108,6 +108,7 @@ const Navbar = () => {
                     <button
                         onClick={toggle}
                         className="flex items-center justify-center p-2 rounded-sm border border-transparent hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
+                        aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
                         title={isOpen ? "Close Sidebar" : "Open Sidebar"}
                     >
                         <Menu size={20} />
@@ -187,7 +188,11 @@ const Navbar = () => {
                         </div>
 
                         {/* Mobile Menu Toggle */}
-                        <button className="md:hidden p-2 text-foreground" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                        <button 
+                            className="md:hidden p-2 text-foreground" 
+                            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
+                        >
                             {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
                         </button>
                     </div>
