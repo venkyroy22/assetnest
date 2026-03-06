@@ -71,7 +71,7 @@ export default function Home() {
             poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-0' : 'opacity-100'}`}
           >
-            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/Animate_this_image_1080p_202602241544" type="video/mp4" />
+            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/Animate_this_image_1080p_202602241544.mp4" type="video/mp4" />
           </video>
 
           {/* Reverse Video */}
@@ -79,12 +79,12 @@ export default function Home() {
             ref={reverseVideoRef}
             muted
             playsInline
-            preload="auto"
+            preload="none"
             onEnded={handleReverseEnded}
             poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/0224.jpg"
             className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-100' : 'opacity-0'}`}
           >
-            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/0224" type="video/mp4" />
+            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/0224.mp4" type="video/mp4" />
           </video>
 
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
@@ -126,7 +126,7 @@ export default function Home() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {categories.map((category, index) => (
-              <CategoryCard key={category.title} {...category} priority={index < 4} />
+              <CategoryCard key={category.title} {...category} priority={index < 2} />
             ))}
           </div>
         </div>
