@@ -44,7 +44,7 @@ export default function Home() {
 
   const categories = [
     { title: "Pinterest Keywords", count: "Best Keywords", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/pinterest-nest", href: "/keywords" },
-    { title: "QR Generator", count: "Free Tool", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/ai-tools", href: "/tools/qr" },
+    { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
     { title: "Video Editing Assets", count: "Best Assets", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/video-editing", href: "/video-editing", isDevelopment: true },
     { title: "Best Useful Websites", count: "Top Sites", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/useful-websites", href: "/useful-websites", isDevelopment: true },
     { title: "Best AI Tools", count: "Smart Tools", image: "https://res.cloudinary.com/drljj29ua/image/upload/assetnest/categories/ai-tools", href: "/ai-tools", isDevelopment: true },
