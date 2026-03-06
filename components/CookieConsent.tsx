@@ -55,6 +55,7 @@ export default function CookieConsent() {
                     <button
                         onClick={dismissCookies}
                         className="p-2 text-zinc-500 hover:text-white transition-colors absolute sm:relative top-2 right-2 sm:top-0 sm:right-0"
+                        aria-label="Dismiss"
                         title="Dismiss"
                     >
                         <X size={16} />

@@ -15,9 +15,8 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        const t = setTimeout(() => setVisible(true), 100 + index * 70);
-        return () => clearTimeout(t);
-    }, [index]);
+        setVisible(true);
+    }, []);
 
     const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
         const rect = cardRef.current?.getBoundingClientRect();
@@ -53,6 +52,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
                             ? "transform 0.12s ease-out, box-shadow 0.2s"
                             : "transform 0.45s cubic-bezier(0.23,1,0.32,1), opacity 0.45s, box-shadow 0.3s"
                         : "opacity 0.45s ease, transform 0.45s cubic-bezier(0.23,1,0.32,1)",
+                    transitionDelay: visible ? (hovered ? "0ms" : `${index * 50}ms`) : "0ms",
                     boxShadow: hovered
                         ? `0 20px 50px -10px ${accent}30, 0 0 0 1px ${accent}25`
                         : "0 0 0 1px rgba(63,63,70,0.5)",
