@@ -1,7 +1,8 @@
 import Container from "@/components/Container";
 
 export const metadata = {
-    title: "About Us",
+    title: "About AssetNest – Free Creative Tools & Assets",
+    description: "Learn about AssetNest, the 100% free suite of design tools and curated assets for creators, designers, and developers.",
 };
 
 export default function AboutPage() {
