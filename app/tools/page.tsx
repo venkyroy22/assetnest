@@ -244,35 +244,51 @@ export default function ToolsPage() {
 
     const filtered = useMemo(() => {
         const q = query.trim().toLowerCase();
+        if (!q) return ALL_TOOLS;
 
-        // 1. Filter based on search query
-        let baseList = ALL_TOOLS;
-        if (q) {
-            baseList = ALL_TOOLS.filter(t =>
-                t.name.toLowerCase().includes(q) ||
-                t.description.toLowerCase().includes(q) ||
-                t.tags.some(tag => tag.includes(q))
-            );
+        return ALL_TOOLS.filter(t =>
+            t.name.toLowerCase().includes(q) ||
+            t.description.toLowerCase().includes(q) ||
+            t.tags.some(tag => tag.includes(q))
+        );
+    }, [query]);
+
+    const categoriesList = useMemo(() => {
+        const groups: { name: string; tools: Tool[]; isComingSoonVisible?: boolean }[] = [];
+
+        // 1. Pinned Tools Category
+        const pinnedTools = filtered.filter(t => pinnedToolIds.includes(t.id));
+        if (pinnedTools.length > 0) {
+            // Sort to match pin order
+            const pinOrderMap = new Map<string, number>();
+            pinnedToolIds.forEach((id, index) => pinOrderMap.set(id, index));
+            pinnedTools.sort((a, b) => pinOrderMap.get(a.id)! - pinOrderMap.get(b.id)!);
+
+            groups.push({ name: "Pinned Tools", tools: pinnedTools, isComingSoonVisible: false });
         }
 
-        // 2. Sort pinned items to the top based on pinned order
-        // We create a map of tool ID to its index in the pinnedToolIds array for O(1) lookup
-        const pinOrderMap = new Map<string, number>();
-        pinnedToolIds.forEach((id, index) => pinOrderMap.set(id, index));
+        // 2. Regular Categories
+        const regularCategories = Array.from(new Set(filtered.map(t => t.category)));
 
-        return [...baseList].sort((a, b) => {
-            const aPinnedIndex = pinOrderMap.has(a.id) ? pinOrderMap.get(a.id)! : Infinity;
-            const bPinnedIndex = pinOrderMap.has(b.id) ? pinOrderMap.get(b.id)! : Infinity;
-
-            // If both are pinned, sort by their pin order
-            if (aPinnedIndex !== Infinity && bPinnedIndex !== Infinity) {
-                return aPinnedIndex - bPinnedIndex;
-            }
-
-            // If only one is pinned, it goes to the top
-            return aPinnedIndex - bPinnedIndex;
+        // Sort explicitly so "Productivity" is first, "Images" is second, then alphabetical
+        regularCategories.sort((a, b) => {
+            if (a === "Productivity") return -1;
+            if (b === "Productivity") return 1;
+            if (a === "Images") return -1;
+            if (b === "Images") return 1;
+            return a.localeCompare(b);
         });
-    }, [query, pinnedToolIds]);
+
+        regularCategories.forEach(cat => {
+            groups.push({
+                name: cat,
+                tools: filtered.filter(t => t.category === cat),
+                isComingSoonVisible: true // We can show coming soon on normal categories
+            });
+        });
+
+        return groups;
+    }, [filtered, pinnedToolIds]);
 
     return (
         <>
@@ -380,29 +396,25 @@ export default function ToolsPage() {
                 {/* ── Tools Categories ── */}
                 {filtered.length > 0 && (
                     <div className="space-y-16 mt-8">
-                        {Array.from(new Set(filtered.map(t => t.category))).map((category) => {
-                            const categoryTools = filtered.filter(t => t.category === category);
-
-                            return (
-                                <div key={category} className="space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="h-px bg-zinc-800 flex-1" />
-                                        <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400">
-                                            {category}
-                                        </h2>
-                                        <div className="h-px bg-zinc-800 flex-1" />
-                                    </div>
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                                        {categoryTools.map((tool, i) => (
-                                            <ToolCard key={tool.id} tool={tool} index={i} />
-                                        ))}
-
-                                        {/* Coming soon */}
-                                        {!query && <ComingSoonCard index={categoryTools.length} />}
-                                    </div>
+                        {categoriesList.map((group) => (
+                            <div key={group.name} className="space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="h-px bg-zinc-800 flex-1" />
+                                    <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400">
+                                        {group.name}
+                                    </h2>
+                                    <div className="h-px bg-zinc-800 flex-1" />
                                 </div>
-                            );
-                        })}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                    {group.tools.map((tool, i) => (
+                                        <ToolCard key={tool.id} tool={tool} index={i} />
+                                    ))}
+
+                                    {/* Coming soon */}
+                                    {!query && group.isComingSoonVisible && <ComingSoonCard index={group.tools.length} />}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>

@@ -22,7 +22,6 @@ const SEARCH_INDEX = [
     { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
     { title: "Pinterest Keywords for NFT Creators", desc: "Strategic search terms for NFT and crypto art", href: "/keywords", tag: "Keywords" },
     // Pages
-    { title: "Premium", desc: "Get Pro access to AssetNest", href: "/premium", tag: "Page" },
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
 ];
@@ -184,9 +183,7 @@ const Navbar = () => {
 
                         {/* Desktop Actions */}
                         <div className="hidden md:flex items-center space-x-6">
-                            <Link href="/premium" className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest bg-foreground text-background px-6 py-2.5 hover:opacity-90 active:scale-95 transition-all">
-                                GET PRO
-                            </Link>
+                            {/* Removed Get Pro link */}
                         </div>
 
                         {/* Mobile Menu Toggle */}
@@ -221,14 +218,6 @@ const Navbar = () => {
                                         </Link>
                                     ))}
                                 </div>
-                            </div>
-
-                            <div className="pt-6 border-t border-white/5">
-                                <Link href="/premium"
-                                    className="flex items-center justify-center w-full py-4 bg-white text-black text-[11px] font-black uppercase tracking-widest rounded-xl transition-all active:scale-[0.98]"
-                                    onClick={() => setMobileMenuOpen(false)}>
-                                    Get Pro Access
-                                </Link>
                             </div>
                         </div>
                     </div>

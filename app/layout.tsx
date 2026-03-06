@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
+import CookieConsent from "@/components/CookieConsent";
 
 const siteUrl = "https://assetnest.vercel.app";
 
@@ -117,6 +118,7 @@ export default function RootLayout({
         <AppLayout>
           {children}
         </AppLayout>
+        <CookieConsent />
       </body>
     </html>
   );

@@ -15,7 +15,7 @@ export default function DisclaimerPage() {
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">1. Asset Ownership</h2>
                             <p>
-                                The assets provided on AssetNest are either created by our in-house designers, licensed for redistribution, or curated from public sources with appropriate permissions.
+                                The tools provided on AssetNest are completely free to use. The design assets provided are either created by our in-house designers, licensed for redistribution, or curated from public sources with appropriate permissions.
                                 We do not claim ownership of any third-party brand names, logos, or software mentioned or depicted in our resources.
                             </p>
                         </section>
@@ -23,9 +23,9 @@ export default function DisclaimerPage() {
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">2. Licensing & Usage</h2>
                             <p>
-                                Each asset comes with its own license agreement which is usually included in the download file.
+                                All tools are free to use. Each digital asset comes with its own license agreement which is usually included in the download file or outlined on the asset page.
                                 Users are solely responsible for reviewing and adhering to the specific terms of use for each individual resource.
-                                AssetNest is NOT liable for any legal issues arising from the misuse of downloaded assets.
+                                AssetNest is NOT liable for any legal issues arising from the misuse of downloaded assets or the tools provided.
                             </p>
                         </section>
 
@@ -47,7 +47,7 @@ export default function DisclaimerPage() {
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: February 23, 2026. AssetNest reserves the right to modify this disclaimer at any time.
+                                Last updated: March 6, 2026. AssetNest reserves the right to modify this disclaimer at any time.
                             </p>
                         </div>
                     </div>

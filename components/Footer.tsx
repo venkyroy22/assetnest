@@ -25,13 +25,13 @@ const Footer = () => {
 
                             <li><Link href="/keywords" className="hover:text-foreground">Pinterest Keywords</Link></li>
                             <li><Link href="/tools" className="hover:text-foreground">Tools & Websites</Link></li>
-                            <li><Link href="/premium" className="hover:text-foreground">Premium Packs</Link></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-bold mb-4 uppercase text-sm tracking-widest">Legal</h4>
                         <ul className="space-y-2 text-sm">
+                            <li><Link href="/about" className="hover:text-foreground">About Us</Link></li>
                             <li><Link href="/disclaimer" className="hover:text-foreground">Disclaimer</Link></li>
                             <li><Link href="/privacy" className="hover:text-foreground">Privacy Policy</Link></li>
                             <li><Link href="/terms" className="hover:text-foreground">Terms of Service</Link></li>

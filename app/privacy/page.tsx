@@ -15,14 +15,16 @@ export default function PrivacyPage() {
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">1. Data Collection</h2>
                             <p>
-                                We collect minimal data necessary to provide our services. This includes information you provide during signup (e.g., email address) and anonymous usage data to improve our platform.
+                                We collect the minimal data necessary to maintain platform functionality. Most of our tools run entirely locally in your web browser, meaning your data, images, and files never leave your device.
+                                Any anonymous usage data collected (such as page views or tool usage metrics) is used solely to improve our platform and provide better services.
                             </p>
                         </section>
 
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">2. Use of Information</h2>
                             <p>
-                                Your information is used to personalize your experience, provide access to downloads, and communicate important updates. We do not sell your personal data to third parties.
+                                Any data collected is used strictly to understand website performance and improve the tools we offer.
+                                We do not sell your personal data to third parties. We do not store or process files uploaded to our local tools (like the Image Compressor or QR Code generator) on our servers.
                             </p>
                         </section>
 
@@ -49,7 +51,7 @@ export default function PrivacyPage() {
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: February 24, 2026. AssetNest reserves the right to update this policy as needed.
+                                Last updated: March 6, 2026. AssetNest reserves the right to update this policy as needed.
                             </p>
                         </div>
                     </div>

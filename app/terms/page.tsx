@@ -15,14 +15,14 @@ export default function TermsPage() {
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">1. Acceptance of Terms</h2>
                             <p>
-                                By accessing and using AssetNest, you agree to comply with and be bound by these Terms of Service. If you do not agree, please refrain from using our platform.
+                                By accessing and using AssetNest, you agree to comply with and be bound by these Terms of Service. AssetNest provides completely free tools and resources. If you do not agree to these terms, please refrain from using our platform.
                             </p>
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">2. User Accounts</h2>
+                            <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">2. No Accounts Required</h2>
                             <p>
-                                You are responsible for maintaining the confidentiality of your account information. You agree to provide accurate and complete information when creating an account.
+                                AssetNest is designed to be completely open and accessible. We do not require users to create accounts, sign up, or provide personal information to use any of our core tools or download our free assets.
                             </p>
                         </section>
 
@@ -49,7 +49,7 @@ export default function TermsPage() {
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: February 24, 2026. AssetNest reserves the right to modify these terms at any time.
+                                Last updated: March 6, 2026. AssetNest reserves the right to modify these terms at any time.
                             </p>
                         </div>
                     </div>
