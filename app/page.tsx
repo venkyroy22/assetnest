@@ -12,12 +12,17 @@ import { useState, useEffect, useRef } from "react";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [isPlayingReverse, setIsPlayingReverse] = useState(false);
   const forwardVideoRef = useRef<HTMLVideoElement>(null);
   const reverseVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     setMounted(true);
+    const checkIsDesktop = () => setIsDesktop(window.innerWidth > 768);
+    checkIsDesktop();
+    window.addEventListener("resize", checkIsDesktop);
+    return () => window.removeEventListener("resize", checkIsDesktop);
   }, []);
 
   const handleForwardEnded = () => {
@@ -53,39 +58,50 @@ export default function Home() {
 
   ];
 
-  // if (!mounted) return <div className="min-h-screen bg-background" />;
+  if (!mounted) return <div className="min-h-screen bg-background" />;
 
   return (
     <div className="flex flex-col">
       {/* Search-Centric Editorial Hero */}
       <section className="relative flex items-center justify-center min-h-[500px] py-20 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          {/* Videos */}
-          <video
-            ref={forwardVideoRef}
-            autoPlay
-            muted
-            playsInline
-            preload="auto"
-            onEnded={handleForwardEnded}
-            poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-0' : 'opacity-100'}`}
-          >
-            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/Animate_this_image_1080p_202602241544.mp4" type="video/mp4" />
-          </video>
+        <div className="absolute inset-0 z-0 bg-zinc-950">
+          {/* Static Background for Mobile to avoid 37MB payload */}
+          {!isDesktop && (
+            <div 
+              className="absolute inset-0 bg-cover bg-center opacity-40"
+              style={{ backgroundImage: 'url("https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg")' }}
+            />
+          )}
 
-          {/* Reverse Video */}
-          <video
-            ref={reverseVideoRef}
-            muted
-            playsInline
-            preload="none"
-            onEnded={handleReverseEnded}
-            poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/0224.jpg"
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-100' : 'opacity-0'}`}
-          >
-            <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/0224.mp4" type="video/mp4" />
-          </video>
+          {/* Videos - Desktop Only */}
+          {isDesktop && (
+            <>
+              <video
+                ref={forwardVideoRef}
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                onEnded={handleForwardEnded}
+                poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-0' : 'opacity-100'}`}
+              >
+                <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/Animate_this_image_1080p_202602241544.mp4" type="video/mp4" />
+              </video>
+
+              <video
+                ref={reverseVideoRef}
+                muted
+                playsInline
+                preload="none"
+                onEnded={handleReverseEnded}
+                poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/0224.jpg"
+                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-100' : 'opacity-0'}`}
+              >
+                <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/0224.mp4" type="video/mp4" />
+              </video>
+            </>
+          )}
 
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
 
