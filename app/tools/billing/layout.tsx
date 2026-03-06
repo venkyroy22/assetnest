@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Invoice & Billing Generator | AssetNest",
         description: "Generate professional invoices in seconds. Free, no account needed, download as PDF.",
-        url: "https://assetnest.vercel.app/tools/billing",
+        url: "https://www.assetnest.space/tools/billing",
     },
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools/billing",
+        canonical: "https://www.assetnest.space/tools/billing",
     },
 };
 
@@ -29,7 +29,7 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
         "@type": "SoftwareApplication",
         name: "Invoice & Billing Generator",
         description: "Generate professional invoices and billing documents in seconds. Free, no account needed. Download as PDF.",
-        url: "https://assetnest.vercel.app/tools/billing",
+        url: "https://www.assetnest.space/tools/billing",
         applicationCategory: "WebApplication",
         operatingSystem: "All",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -44,3 +44,4 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
         </>
     );
 }
+

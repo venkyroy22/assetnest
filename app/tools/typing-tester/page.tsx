@@ -1704,3 +1704,4 @@ export default function TypingTesterPage() {
         </div>
     );
 }
+

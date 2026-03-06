@@ -3,7 +3,7 @@ import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import CookieConsent from "@/components/CookieConsent";
 
-const siteUrl = "https://assetnest.vercel.app";
+const siteUrl = "https://www.assetnest.space";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -129,3 +129,4 @@ export default function RootLayout({
     </html>
   );
 }
+

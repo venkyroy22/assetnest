@@ -5,12 +5,12 @@ export const metadata: Metadata = {
     description: "A beautiful Pomodoro timer with animated progress ring, achievement system, and session tracking. Free, no account needed. Stay focused and build deep work habits.",
     keywords: ["pomodoro timer", "focus timer", "productivity timer", "work timer", "pomodoro technique", "free pomodoro", "study timer", "deep work"],
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools/pomodoro",
+        canonical: "https://www.assetnest.space/tools/pomodoro",
     },
     openGraph: {
         title: "Free Pomodoro Timer | AssetNest",
         description: "Beautiful Pomodoro timer with achievements & session tracking. Free, no account needed.",
-        url: "https://assetnest.vercel.app/tools/pomodoro",
+        url: "https://www.assetnest.space/tools/pomodoro",
     },
 };
 
@@ -19,7 +19,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Pomodoro Timer",
     description: "A beautiful Pomodoro timer with animated progress ring, achievement system, and session tracking. Free, no account needed.",
-    url: "https://assetnest.vercel.app/tools/pomodoro",
+    url: "https://www.assetnest.space/tools/pomodoro",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -36,3 +36,4 @@ export default function PomodoroLayout({ children }: { children: React.ReactNode
         </>
     );
 }
+

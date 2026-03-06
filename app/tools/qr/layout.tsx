@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free QR Code Generator | AssetNest",
         description: "Generate QR codes for URLs, text, Wi-Fi, and more in seconds. Free, no account required.",
-        url: "https://assetnest.vercel.app/tools/qr",
+        url: "https://www.assetnest.space/tools/qr",
     },
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools/qr",
+        canonical: "https://www.assetnest.space/tools/qr",
     },
 };
 
@@ -28,7 +28,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "QR Code Generator",
     description: "Generate QR codes for URLs, text, Wi-Fi, and more. Free, no account required. Download as PNG.",
-    url: "https://assetnest.vercel.app/tools/qr",
+    url: "https://www.assetnest.space/tools/qr",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -45,3 +45,4 @@ export default function QRLayout({ children }: { children: React.ReactNode }) {
         </>
     );
 }
+

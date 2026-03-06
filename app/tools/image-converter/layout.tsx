@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Image Converter | AssetNest",
         description: "Convert PNG, JPEG, WebP images in your browser — 100% private, no uploads, free forever.",
-        url: "https://assetnest.vercel.app/tools/image-converter",
+        url: "https://www.assetnest.space/tools/image-converter",
     },
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools/image-converter",
+        canonical: "https://www.assetnest.space/tools/image-converter",
     },
 };
 
@@ -29,7 +29,7 @@ export default function ImageConverterLayout({ children }: { children: React.Rea
         "@type": "SoftwareApplication",
         name: "Image Converter",
         description: "Convert images between PNG, JPEG, WebP, and more formats instantly in your browser. No uploads, 100% private, completely free.",
-        url: "https://assetnest.vercel.app/tools/image-converter",
+        url: "https://www.assetnest.space/tools/image-converter",
         applicationCategory: "WebApplication",
         operatingSystem: "All",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -44,3 +44,4 @@ export default function ImageConverterLayout({ children }: { children: React.Rea
         </>
     );
 }
+

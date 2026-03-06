@@ -5,10 +5,11 @@ export const metadata: Metadata = {
     description: "A growing collection of free tools for creators, designers, and marketers. Image compressor, QR code generator, and more — all free, no sign-up needed.",
     keywords: ["free online tools", "image compressor", "qr code generator", "creator tools", "free design tools"],
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools",
+        canonical: "https://www.assetnest.space/tools",
     },
 };
 
 export default function ToolsLayout({ children }: { children: React.ReactNode }) {
     return <>{children}</>;
 }
+

@@ -15,10 +15,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Media Hub | AssetNest",
         description: "Access and manage your media assets in one place. Free for creators — no account required.",
-        url: "https://assetnest.vercel.app/tools/media-hub",
+        url: "https://www.assetnest.space/tools/media-hub",
     },
     alternates: {
-        canonical: "https://assetnest.vercel.app/tools/media-hub",
+        canonical: "https://www.assetnest.space/tools/media-hub",
     },
 };
 
@@ -28,7 +28,7 @@ export default function MediaHubLayout({ children }: { children: React.ReactNode
         "@type": "SoftwareApplication",
         name: "Media Hub",
         description: "Access and manage your media assets in one place. Free media hub for creators — no account required, completely free.",
-        url: "https://assetnest.vercel.app/tools/media-hub",
+        url: "https://www.assetnest.space/tools/media-hub",
         applicationCategory: "WebApplication",
         operatingSystem: "All",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
@@ -43,3 +43,4 @@ export default function MediaHubLayout({ children }: { children: React.ReactNode
         </>
     );
 }
+
