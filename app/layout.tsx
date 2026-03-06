@@ -42,18 +42,19 @@ export const metadata: Metadata = {
     description: "Free image compressor, QR code generator, Pinterest keywords and more — all in one place for creators and designers.",
     images: [
       {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "AssetNest — Free Tools & Creative Assets",
+        url: `${siteUrl}/logo.png`,
+        width: 512,
+        height: 512,
+        alt: "AssetNest Logo — Free Tools & Creative Assets",
+        type: "image/png",
       },
     ],
   },
   twitter: {
-    card: "summary_large_image",
+    card: "summary",
     title: "AssetNest — Free Tools & Creative Assets for Creators",
     description: "Free image compressor, QR code generator, Pinterest keywords and more.",
-    images: ["/og-image.png"],
+    images: [`${siteUrl}/logo.png`],
     creator: "@assetnest",
   },
   robots: {
