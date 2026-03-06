@@ -7,8 +7,32 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://assetnest.vercel.app/tools/pomodoro",
     },
+    openGraph: {
+        title: "Free Pomodoro Timer | AssetNest",
+        description: "Beautiful Pomodoro timer with achievements & session tracking. Free, no account needed.",
+        url: "https://assetnest.vercel.app/tools/pomodoro",
+    },
+};
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Pomodoro Timer",
+    description: "A beautiful Pomodoro timer with animated progress ring, achievement system, and session tracking. Free, no account needed.",
+    url: "https://assetnest.vercel.app/tools/pomodoro",
+    applicationCategory: "WebApplication",
+    operatingSystem: "All",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
 export default function PomodoroLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            {children}
+        </>
+    );
 }

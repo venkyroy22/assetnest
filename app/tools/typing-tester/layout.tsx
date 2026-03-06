@@ -1,4 +1,4 @@
-import { Metadata } from "next";
+import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Typing Speed Test — Free Online WPM Tester",
@@ -7,8 +7,32 @@ export const metadata: Metadata = {
     alternates: {
         canonical: "https://assetnest.vercel.app/tools/typing-tester",
     },
+    openGraph: {
+        title: "Free Typing Speed Test | AssetNest",
+        description: "Test and improve your WPM typing speed with real-time stats, detailed results, and professional feedback. Free, no account needed.",
+        url: "https://assetnest.vercel.app/tools/typing-tester",
+    },
+};
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Typing Speed Test",
+    description: "Test and improve your typing speed (WPM) and accuracy. Real-time stats, detailed results, free forever.",
+    url: "https://assetnest.vercel.app/tools/typing-tester",
+    applicationCategory: "WebApplication",
+    operatingSystem: "All",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
 
 export default function TypingTesterLayout({ children }: { children: React.ReactNode }) {
-    return <>{children}</>;
+    return (
+        <>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
+            {children}
+        </>
+    );
 }

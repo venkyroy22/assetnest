@@ -1,10 +1,23 @@
 "use client";
 
 import { useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import {
     Upload, Download, ImageIcon, Zap, X, RefreshCw,
     Scissors, AlertTriangle, Info, Maximize2,
 } from "lucide-react";
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Image Compressor",
+    description: "Compress JPEG, PNG, and WebP images instantly in your browser. Reduce image file size with zero quality loss. No uploads, 100% private, completely free.",
+    url: "https://assetnest.vercel.app/tools/image-compressor",
+    applicationCategory: "WebApplication",
+    operatingSystem: "All",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
+
 
 export default function ImageCompressorPage() {
     const [originalFile, setOriginalFile] = useState<File | null>(null);
@@ -157,6 +170,11 @@ export default function ImageCompressorPage() {
 
     return (
         <div className="min-h-[80vh] py-16 px-6 md:px-10 max-w-5xl mx-auto">
+            {/* JSON-LD Structured Data */}
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
 
             {/* Header */}
             <div className="mb-12">
@@ -181,8 +199,8 @@ export default function ImageCompressorPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative flex flex-col items-center justify-center min-h-[360px] border-2 border-dashed cursor-pointer transition-all duration-300 ${isDragging
-                            ? "border-white bg-white/5"
-                            : "border-zinc-700 bg-zinc-950/50 hover:border-zinc-500 hover:bg-zinc-900/50"
+                        ? "border-white bg-white/5"
+                        : "border-zinc-700 bg-zinc-950/50 hover:border-zinc-500 hover:bg-zinc-900/50"
                         }`}
                 >
                     <input
@@ -355,8 +373,8 @@ export default function ImageCompressorPage() {
                                     )}
                                     {hasCompressed && compressedSize > 0 && (
                                         <span className={`text-[10px] font-black uppercase tracking-widest border px-2 py-0.5 ${savings > 0
-                                                ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10"
-                                                : "text-amber-400 border-amber-400/30 bg-amber-400/10"
+                                            ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10"
+                                            : "text-amber-400 border-amber-400/30 bg-amber-400/10"
                                             }`}>
                                             {savings > 0 ? `-${savings}%` : "+size"}
                                         </span>
@@ -421,6 +439,24 @@ export default function ImageCompressorPage() {
                                 <p className="text-xs text-zinc-500 font-medium leading-relaxed">{item.tip}</p>
                             </div>
                         </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Related Tools */}
+            <div className="mt-16 pt-10 border-t border-zinc-800">
+                <h2 className="text-xs font-black uppercase tracking-widest text-zinc-500 mb-6">Related Tools</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {[
+                        { href: "/tools/image-cropper", label: "Image Cropper", desc: "Crop to any aspect ratio, right in your browser." },
+                        { href: "/tools/image-converter", label: "Image Converter", desc: "Convert between PNG, JPEG, WebP and more formats." },
+                        { href: "/tools/qr", label: "QR Code Generator", desc: "Generate free QR codes for any URL or text." },
+                    ].map(t => (
+                        <Link key={t.href} href={t.href}
+                            className="flex flex-col gap-1 p-4 border border-zinc-800 hover:border-zinc-600 transition-colors bg-zinc-950/20">
+                            <span className="text-xs font-black uppercase tracking-widest text-white">{t.label}</span>
+                            <span className="text-[11px] text-zinc-500 font-medium leading-relaxed">{t.desc}</span>
+                        </Link>
                     ))}
                 </div>
             </div>
