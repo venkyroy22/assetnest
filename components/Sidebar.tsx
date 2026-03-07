@@ -21,8 +21,8 @@ const MENU_ITEMS = [
     { name: "Pinterest Keywords", href: "/keywords", icon: PinterestIcon, accent: "#e11d48", dev: false },
     { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#6366f1", dev: false },
     { name: "Video Edit Assets", href: "/video-editing", icon: Video, accent: "#f59e0b", dev: true },
-    { name: "Useful Websites", href: "/useful-websites", icon: Globe, accent: "#06b6d4", dev: true },
-    { name: "AI Tools", href: "/ai-tools", icon: Sparkles, accent: "#a855f7", dev: true },
+    { name: "Useful Websites", href: "/useful-websites", icon: Globe, accent: "#06b6d4", dev: false },
+    { name: "AI Tools", href: "/ai-tools", icon: Sparkles, accent: "#a855f7", dev: false },
     { name: "Wallpapers", href: "/category/wallpapers", icon: ImageIcon, accent: "#ec4899", dev: true },
     { name: "Sound Effects", href: "/category/sound-effects", icon: Volume2, accent: "#16a34a", dev: true },
 ];
