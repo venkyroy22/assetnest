@@ -55,7 +55,7 @@ const TAG_COLORS: Record<string, string> = {
     Website: "text-yellow-400",
 };
 
-const Navbar = () => {
+const Navbar = ({ className = "" }: { className?: string }) => {
     const { isOpen, toggle } = useSidebar();
     const [scrolled, setScrolled] = useState(false);
     const [mounted, setMounted] = useState(false);
@@ -123,7 +123,7 @@ const Navbar = () => {
     }
 
     return (
-        <nav className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md" : "bg-background"}`}>
+        <nav className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md" : "bg-background"} ${className}`}>
             <div className="flex h-full items-center relative">
                 {/* Sidebar Toggle - Fixed stationary position */}
                 <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">

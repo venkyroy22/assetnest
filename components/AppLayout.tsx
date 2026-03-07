@@ -15,6 +15,7 @@ export default function AppLayout({
 }) {
     const pathname = usePathname();
     const isAuthPage = pathname === "/signin" || pathname === "/signup";
+    const isBillingView = pathname === "/tools/billing/view";
 
     if (isAuthPage) {
         return <>{children}</>;
@@ -24,14 +25,15 @@ export default function AppLayout({
         <MusicProvider>
             <SidebarProvider>
                 <PinProvider>
-                    <Navbar />
+                    {!isBillingView && <Navbar />}
                     <div className="flex flex-1">
-                        <Sidebar />
+                        {!isBillingView && <Sidebar />}
                         <main className="flex-grow flex flex-col">
                             <div className="flex-grow">
+                                {isBillingView && <Navbar className="no-print" />}
                                 {children}
                             </div>
-                            <Footer />
+                            {!isBillingView ? <Footer /> : <Footer className="no-print" />}
                         </main>
                     </div>
                 </PinProvider>

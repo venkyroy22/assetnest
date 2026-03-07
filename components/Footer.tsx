@@ -1,9 +1,9 @@
 import Link from "next/link";
 import Logo from "./Logo";
 
-const Footer = () => {
+const Footer = ({ className = "" }: { className?: string }) => {
     return (
-        <footer className="border-t border-border py-16 bg-background">
+        <footer className={`border-t border-border py-16 bg-background ${className}`}>
             <div className="px-10">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                     <div className="md:col-span-2">
