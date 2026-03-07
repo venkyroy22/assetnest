@@ -9,9 +9,12 @@ export const metadata: Metadata = {
         "png to jpg",
         "jpg to png",
         "webp converter",
+        "avif to jpg",
+        "heic to jpg",
         "free image converter",
         "image format converter",
         "online image converter",
+        "convert to webp",
     ],
     openGraph: {
         title: "Free Image Converter | AssetNest",

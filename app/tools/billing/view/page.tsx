@@ -172,8 +172,8 @@ function BillViewer() {
 
     // ── Loading ───────────────────────────────────────────────────────────────
     if (!bill) return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+        <div className="min-h-screen bg-[#fafafc] flex items-center justify-center">
+            <div className="w-12 h-12 border-[4px] border-emerald-500 border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
@@ -202,7 +202,7 @@ function BillViewer() {
                 @media screen { .print-only { display: none !important; } }
             `}} />
 
-            <div className="min-h-screen bg-gradient-to-b from-zinc-950 to-zinc-900 flex flex-col items-center py-6 px-4">
+            <div className="min-h-screen bg-[#fafafc] flex flex-col items-center py-8 px-4 font-sans antialiased text-zinc-900">
 
                 {/* ── Language Switcher (screen only) ── */}
                 <div className="no-print w-full max-w-md mb-5">
@@ -227,8 +227,8 @@ function BillViewer() {
                     </div>
                     {translating && (
                         <div className="flex items-center gap-2 mt-2">
-                            <Loader2 size={12} className="text-emerald-400 animate-spin" />
-                            <span className="text-[10px] text-emerald-400 font-medium">{t.translating}</span>
+                            <Loader2 size={12} className="text-emerald-600 animate-spin" />
+                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{t.translating}</span>
                         </div>
                     )}
                 </div>
@@ -246,25 +246,27 @@ function BillViewer() {
                         <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t.title}</span>
                     </div>
 
-                    <div className="bg-white rounded-3xl overflow-hidden shadow-2xl shadow-black/50">
+                    <div className="bg-white rounded-3xl overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] border border-zinc-200">
                         {/* Shop Header */}
-                        <div className="bg-zinc-950 px-6 py-6 text-center">
-                            <p className="text-xl font-black text-white mb-1 uppercase tracking-wide">{bill.s}</p>
-                            {bill.a && <p className="text-xs text-zinc-400 font-medium leading-relaxed">{bill.a}</p>}
-                            <div className="flex items-center justify-center gap-4 mt-2 flex-wrap">
-                                {bill.p && <p className="text-[11px] text-zinc-500">📞 {bill.p}</p>}
-                                {bill.g && <p className="text-[10px] text-zinc-600 font-mono">GST: {bill.g}</p>}
+                        <div className="bg-white px-8 pt-10 pb-6 text-center border-b border-zinc-100">
+                            <div className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-4">Official Receipt</div>
+                            <p className="text-2xl font-black text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
+                            {bill.a && <p className="text-xs text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">{bill.a}</p>}
+                            <div className="flex items-center justify-center gap-5 mt-4 flex-wrap">
+                                {bill.p && <p className="text-[11px] text-zinc-400 font-bold">📞 {bill.p}</p>}
+                                {bill.g && <p className="text-[10px] text-zinc-400 font-bold tracking-tight bg-zinc-50 px-3 py-1 rounded-lg">GSTIN: {bill.g}</p>}
                             </div>
                         </div>
+
                         {/* Invoice meta */}
-                        <div className="bg-zinc-100 px-6 py-3 flex items-center justify-between">
+                        <div className="bg-zinc-50/50 px-8 py-4 flex items-center justify-between border-b border-zinc-100">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{t.invoiceNo}</p>
-                                <p className="text-xs font-black text-zinc-800 font-mono">{bill.i}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">{t.invoiceNo}</p>
+                                <p className="text-sm font-black text-black font-mono tracking-tighter">{bill.i}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{t.dateTime}</p>
-                                <p className="text-xs font-bold text-zinc-700">{fmtDate(bill.d)}</p>
+                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">{t.dateTime}</p>
+                                <p className="text-[11px] font-black text-zinc-800">{fmtDate(bill.d)}</p>
                             </div>
                         </div>
                         {/* Items */}
@@ -280,10 +282,10 @@ function BillViewer() {
                                     return (
                                         <div key={idx} className="py-2.5 grid grid-cols-[1fr_auto_auto] gap-x-3 items-start">
                                             <div>
-                                                <p className={`text-sm font-bold text-zinc-900 ${translating ? "opacity-50" : ""}`}>
+                                                <p className={`text-[13px] font-bold text-black ${translating ? "opacity-30" : ""}`}>
                                                     {txNames?.[idx] ?? item.n}
                                                 </p>
-                                                <p className="text-[10px] text-zinc-400 font-medium">
+                                                <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
                                                     {fmtINR(item.r)}{item.t > 0 ? ` + ${item.t}% GST` : ""}
                                                 </p>
                                             </div>
@@ -323,23 +325,23 @@ function BillViewer() {
                                 )}
                             </div>
                             {/* Grand Total */}
-                            <div className="bg-zinc-950 rounded-2xl px-5 py-4 flex items-center justify-between">
+                            <div className="bg-black rounded-[1.25rem] px-6 py-5 flex items-center justify-between shadow-xl shadow-black/10 transition-transform active:scale-[0.98]">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t.totalAmount}</p>
-                                    <p className="text-[10px] text-zinc-600">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
+                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-0.5">{t.totalAmount}</p>
+                                    <p className="text-[10px] text-zinc-500 font-bold">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
                                 </div>
                                 <p className="text-3xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
                             </div>
                         </div>
                         {/* Footer */}
-                        <div className="bg-zinc-50 border-t border-zinc-200 px-6 py-4 text-center">
-                            <p className="text-xs font-black text-zinc-800 mb-1">{t.thank}</p>
-                            <p className="text-[10px] text-zinc-400 font-medium mb-3">{t.generated}</p>
-                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-zinc-200 rounded-full">
-                                <div className="w-4 h-4 bg-emerald-500 rounded-sm flex items-center justify-center">
-                                    <span className="text-black text-[8px] font-black">A</span>
+                        <div className="bg-zinc-50/50 border-t border-zinc-100 px-8 py-8 text-center bg-[radial-gradient(ellipse_at_top,rgba(0,0,0,0.02),transparent)]">
+                            <p className="text-xs font-black text-black mb-1.5">{t.thank}</p>
+                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mb-6">{t.generated}</p>
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-2xl shadow-sm">
+                                <div className="w-5 h-5 bg-black rounded-lg flex items-center justify-center">
+                                    <span className="text-emerald-400 text-[9px] font-black">A</span>
                                 </div>
-                                <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">{t.poweredBy}</span>
+                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">{t.poweredBy}</span>
                             </div>
                         </div>
                     </div>
