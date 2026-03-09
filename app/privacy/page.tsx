@@ -29,10 +29,18 @@ export default function PrivacyPage() {
                         </section>
 
                         <section>
-                            <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">3. Cookies & Tracking</h2>
+                            <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">3. Cookies & Advertising</h2>
                             <p>
-                                We use cookies to maintain your session and understand how you interact with our site. You can manage cookie preferences through your browser settings.
+                                We use cookies to maintain your session, understand how you interact with our site, and to serve advertisements through Google AdSense. 
                             </p>
+                            <div className="mt-4 space-y-4 text-secondary">
+                                <p>
+                                    <strong>Google AdSense & DoubleClick Cookie:</strong> Google, as a third-party vendor, uses cookies to serve ads on AssetNest. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet.
+                                </p>
+                                <p>
+                                    <strong>Personalized Advertising:</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Google Ad Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">www.aboutads.info</a>.
+                                </p>
+                            </div>
                         </section>
 
                         <section>
