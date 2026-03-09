@@ -106,7 +106,7 @@ function AIToolCard({ tool, index }: { tool: AITool; index: number }) {
                         : "0 0 0 1px rgba(63,63,70,0.4)",
                     willChange: "transform, opacity",
                 }}
-                className="relative overflow-hidden rounded-2xl bg-zinc-900/60 p-5 cursor-pointer h-full border border-transparent"
+                className="relative overflow-hidden rounded-2xl bg-zinc-900/60 p-4 sm:p-5 cursor-pointer h-full border border-transparent"
             >
                 {/* Spotlight radial */}
                 <div
@@ -135,24 +135,24 @@ function AIToolCard({ tool, index }: { tool: AITool; index: number }) {
                             />
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 shrink-0 max-w-[60%]">
                              <span
-                                className="text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border"
+                                className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.15em] px-2 py-0.5 border truncate"
                                 style={{
                                     color: accent,
                                     borderColor: `${accent}30`,
-                                    background: `${accent}08`,
+                                    background: `${accent}05`,
                                 }}
                             >
                                 {label}
                             </span>
-                            <ExternalLink size={12} className="text-zinc-700" />
+                            <ExternalLink size={10} className="text-zinc-700 shrink-0" />
                         </div>
                     </div>
 
                     <div>
-                        <div className="flex items-center gap-2 mb-1.5">
-                            <span className="text-[9px] font-mono text-zinc-600">#{tool.n}</span>
+                        <div className="flex items-center gap-2 mb-1">
+                            <span className="text-[10px] font-mono text-zinc-600">#{tool.n}</span>
                             <h3
                                 className="text-xs font-black uppercase tracking-widest transition-colors duration-300"
                                 style={{ color: hovered ? accent : "#fff" }}
@@ -160,14 +160,14 @@ function AIToolCard({ tool, index }: { tool: AITool; index: number }) {
                                 {tool.name}
                             </h3>
                         </div>
-                        <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">
+                        <p className="text-xs text-secondary leading-relaxed line-clamp-4 break-words overflow-hidden">
                             {tool.desc}
                         </p>
                     </div>
 
                     <div className="mt-auto pt-2 flex flex-wrap gap-1.5">
                         {tool.tags.map(tag => (
-                            <span key={tag} className="text-[9px] text-zinc-600 bg-zinc-800/30 px-2 py-0.5 rounded-full">
+                            <span key={tag} className="text-[10px] text-zinc-500 bg-zinc-800/50 px-2 py-0.5 rounded-md border border-zinc-800/50">
                                 {tag}
                             </span>
                         ))}
@@ -206,7 +206,7 @@ export default function AIToolsPage() {
     const categories = ["all", ...Object.keys(labelMap)];
 
     return (
-        <div className="relative z-10 min-h-screen py-16 px-6 md:px-10">
+        <div className="relative z-10 min-h-screen py-12 px-4 sm:px-6 md:px-10">
             {/* Background Effects */}
             <div
                 className="fixed inset-0 pointer-events-none -z-10"
@@ -237,9 +237,9 @@ export default function AIToolsPage() {
                         transform: headerVisible ? "translateY(0)" : "translateY(20px)",
                         transition: "all 0.7s cubic-bezier(0.23,1,0.32,1) 0.1s",
                     }}
-                    className="text-4xl md:text-7xl font-black tracking-tight uppercase text-white mb-6 leading-[0.9]"
+                    className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase text-white mb-6 leading-[0.85]"
                 >
-                    Top 100+ <br />
+                    100+ Best <br className="hidden sm:block" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-500">
                         AI Powers
                     </span>
@@ -258,7 +258,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Filters & Search Bar */}
-            <div className="sticky top-24 z-30 mb-12 space-y-4">
+            <div className="sticky top-[80px] md:top-24 z-30 mb-8 space-y-4 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-b border-zinc-900 md:border-none md:bg-transparent md:backdrop-blur-none md:p-0 md:m-0">
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                     {/* Search */}
                     <div className="relative w-full md:max-w-md group">
@@ -269,8 +269,8 @@ export default function AIToolsPage() {
                             type="text"
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
-                            placeholder="Search by tool name or use case..."
-                            className="w-full bg-zinc-900/80 backdrop-blur-md border border-zinc-800 px-12 py-3.5 text-sm rounded-xl focus:outline-none focus:border-purple-500/50 transition-all placeholder:text-zinc-600"
+                            placeholder="Find an AI tool..."
+                            className="w-full bg-zinc-900/90 backdrop-blur-xl border border-zinc-800 px-12 py-4 text-sm rounded-2xl focus:outline-none focus:border-purple-500/50 transition-all placeholder:text-zinc-600 shadow-xl"
                         />
                         {query && (
                             <button 
@@ -283,7 +283,7 @@ export default function AIToolsPage() {
                     </div>
 
                     {/* Result Count */}
-                    <div className="px-4 py-2 bg-zinc-900/40 rounded-lg border border-zinc-800/50">
+                    <div className="hidden md:block px-4 py-2 bg-zinc-900/40 rounded-lg border border-zinc-800/50">
                         <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
                             Showing <span className="text-purple-400">{filteredTools.length}</span> tools
                         </p>
@@ -291,7 +291,7 @@ export default function AIToolsPage() {
                 </div>
 
                 {/* Categories Scrollable */}
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+                <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar -mx-1 px-1">
                     {categories.map(cat => (
                         <button
                             key={cat}
@@ -304,6 +304,12 @@ export default function AIToolsPage() {
                             {cat === "all" ? "All Tools" : labelMap[cat] || cat}
                         </button>
                     ))}
+                </div>
+                {/* Mobile Result Count - Inline */}
+                <div className="md:hidden flex items-center justify-between px-1">
+                    <p className="text-[9px] font-black tracking-[0.2em] text-zinc-600 uppercase">
+                        Current Library: <span className="text-purple-500">{filteredTools.length}</span> results
+                    </p>
                 </div>
             </div>
 

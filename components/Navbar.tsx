@@ -138,21 +138,20 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                 </div>
 
                 {/* Main Navbar Content */}
-                <div className="flex-grow h-full px-6 lg:pl-20 lg:pr-10">
-                    <div className="flex justify-between items-center h-full gap-8">
-                        {/* Logo */}
-                        <div className="flex items-center gap-4">
+                <div className="flex-grow h-full px-4 lg:pl-20 lg:pr-10">
+                    <div className="flex justify-between items-center h-full gap-2 md:gap-8">
+                        <div className="flex items-center gap-2 md:gap-4 shrink-0">
                             <Link href="/" className="group active:scale-95 transition-all">
                                 <div className="relative">
                                     <div className="absolute inset-0 bg-white/5 blur-2xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <Logo size={40} className="relative z-10" />
+                                    <Logo size={32} className="md:w-10 md:h-10 relative z-10" />
                                 </div>
                             </Link>
                         </div>
 
                         {/* ── Functional Search Bar ── */}
-                        <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg mx-3 lg:mx-0 relative">
-                            <div className={`flex items-center bg-zinc-900 border px-3 lg:px-4 py-2 lg:py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
+                        <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg relative">
+                            <div className={`flex items-center bg-zinc-900 border px-2 md:px-4 py-1.5 md:py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
                                 <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0" />
                                 <input
                                     type="text"
@@ -213,11 +212,11 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
                         {/* Mobile Menu Toggle */}
                         <button 
-                            className="md:hidden p-2 text-foreground" 
+                            className="md:hidden p-2 text-foreground shrink-0" 
                             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             aria-label={mobileMenuOpen ? "Close mobile menu" : "Open mobile menu"}
                         >
-                            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                            {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
                     </div>
 
