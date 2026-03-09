@@ -206,7 +206,7 @@ export default function AIToolsPage() {
     const categories = ["all", ...Object.keys(labelMap)];
 
     return (
-        <div className="relative z-10 min-h-screen py-12 px-4 sm:px-6 md:px-10">
+        <div className="relative z-10 min-h-screen py-12 px-4 sm:px-6 md:px-10 overflow-x-hidden">
             {/* Background Effects */}
             <div
                 className="fixed inset-0 pointer-events-none -z-10"
@@ -237,7 +237,7 @@ export default function AIToolsPage() {
                         transform: headerVisible ? "translateY(0)" : "translateY(20px)",
                         transition: "all 0.7s cubic-bezier(0.23,1,0.32,1) 0.1s",
                     }}
-                    className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight uppercase text-white mb-6 leading-[0.85]"
+                    className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter uppercase text-white mb-6 leading-[0.9] sm:leading-[0.85]"
                 >
                     100+ Best <br className="hidden sm:block" />
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-indigo-400 to-violet-500">
@@ -258,7 +258,7 @@ export default function AIToolsPage() {
             </div>
 
             {/* Filters & Search Bar */}
-            <div className="sticky top-[80px] md:top-24 z-30 mb-8 space-y-4 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-b border-zinc-900 md:border-none md:bg-transparent md:backdrop-blur-none md:p-0 md:m-0">
+            <div className="sticky top-[80px] md:top-24 z-30 mb-8 space-y-4 bg-background/80 backdrop-blur-xl py-4 -mx-4 px-4 border-b border-zinc-900 md:border-none md:bg-transparent md:backdrop-blur-none md:p-0 md:m-0 w-[calc(100%+2rem)] sm:w-auto">
                 <div className="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
                     {/* Search */}
                     <div className="relative w-full md:max-w-md group">
