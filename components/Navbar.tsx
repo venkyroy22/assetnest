@@ -123,7 +123,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     }
 
     return (
-        <nav className={`sticky top-0 z-50 w-full transition-all duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md" : "bg-background"} ${className}`}>
+        <nav className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md border-b border-white/5" : "bg-background"} ${className}`}>
             <div className="flex h-full items-center relative">
                 {/* Sidebar Toggle - Fixed stationary position */}
                 <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">
