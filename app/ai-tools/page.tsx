@@ -255,16 +255,6 @@ export default function AIToolsPage() {
                         </p>
                     </div>
 
-                    <div 
-                        style={{
-                            opacity: headerVisible ? 1 : 0,
-                            transform: headerVisible ? "scale(1)" : "scale(0.95)",
-                            transition: "all 0.8s cubic-bezier(0.34,1.56,0.64,1) 0.3s",
-                        }}
-                        className="inline-flex items-center gap-2 bg-white text-black px-4 py-1.5 rounded-lg font-black uppercase text-[10px] tracking-widest shadow-xl -rotate-1"
-                    >
-                        <Zap size={14} /> Side effects: Extreme productivity & digital omnipotence
-                    </div>
                 </header>
 
                 {/* Search & Filters */}

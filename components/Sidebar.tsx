@@ -195,7 +195,7 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] sticky top-20 hidden lg:block bg-zinc-900/50 shrink-0 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-900/50 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                 ${isOpen ? "w-64" : isHome ? "w-0 opacity-0 overflow-hidden" : "w-16"}`}
         >
             {/* Background dot grid */}
