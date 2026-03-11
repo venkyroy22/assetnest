@@ -898,14 +898,14 @@ export default function TypingTesterPage() {
                         className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all"
                         style={{ background: T.accent, boxShadow: `0 0 20px ${T.accentHex}44` }}
                     >AN</div>
-                    <span className="text-base sm:text-lg font-bold tracking-tight uppercase transition-colors" style={{ color: T.text }}>
+                    <span className="text-base sm:text-lg font-bold tracking-tight transition-colors" style={{ color: T.text }}>
                         Typing Speed Tester
                     </span>
                 </button>
 
                 <div className="flex items-center gap-3">
                     {isActive && (
-                        <div className="text-xs font-bold uppercase tracking-widest" style={{ color: T.muted }}>
+                        <div className="text-sm font-semibold tracking-wide" style={{ color: T.muted }}>
                             {testMode === "time" ? `${timeLeft}s` : `${currentWordIdx}/${wordConfig}`}
                         </div>
                     )}
@@ -927,7 +927,7 @@ export default function TypingTesterPage() {
                 {!isActive && !isFinished && (
                     <div className="flex justify-center mb-6 sm:mb-10">
                         <div
-                            className="flex flex-wrap items-center justify-center gap-1 rounded-xl px-2 sm:px-3 py-2 text-xs font-bold uppercase tracking-wider"
+                            className="flex flex-wrap items-center justify-center gap-1 rounded-xl px-2 sm:px-3 py-2 text-sm font-semibold tracking-wide"
                             style={{ background: T.surface }}
                         >
                             {/* Mode toggles */}
@@ -1066,7 +1066,7 @@ export default function TypingTesterPage() {
                             {countdown === 0 ? "GO!" : countdown}
                         </div>
                         <div
-                            className="mt-6 text-sm font-black uppercase tracking-[0.4em]"
+                            className="mt-6 text-sm font-bold tracking-widest"
                             style={{ color: T.muted }}
                         >
                             {countdown === 0 ? "Type now!" : "Get ready…"}
@@ -1089,7 +1089,7 @@ export default function TypingTesterPage() {
                         {/* Status bar */}
                         {duelStatus !== "idle" && (
                             <div
-                                className="px-5 py-2.5 text-xs font-black uppercase tracking-wider flex items-center gap-2 border-b"
+                                className="px-5 py-2.5 text-sm font-semibold tracking-wide flex items-center gap-2 border-b"
                                 style={{
                                     borderColor: T.border,
                                     background: duelStatus === "connected" ? `${T.accentHex}18`
@@ -1116,7 +1116,7 @@ export default function TypingTesterPage() {
 
                             {/* ── Create side ── */}
                             <div className="p-4 sm:p-5 space-y-4 border-b sm:border-b-0 sm:border-r" style={{ borderColor: T.border }}>
-                                <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
+                                <div className="text-xs font-bold tracking-wide" style={{ color: T.muted }}>
                                     Race Settings
                                 </div>
                                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
@@ -1129,7 +1129,7 @@ export default function TypingTesterPage() {
                                         {testMode === "time" ? `${timeConfig}s` : `${wordConfig} words`}
                                     </div>
                                 </div>
-                                <div className="text-[10px] font-black uppercase tracking-widest mt-4" style={{ color: T.muted }}>
+                                <div className="text-xs font-bold tracking-wide mt-4" style={{ color: T.muted }}>
                                     Create Room
                                 </div>
                                 {sessionCode && isHost ? (
@@ -1156,7 +1156,7 @@ export default function TypingTesterPage() {
                                     <button
                                         onClick={createDuel}
                                         disabled={!supabaseOnline || duelStatus === "connecting"}
-                                        className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-50"
+                                        className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-black transition-all disabled:opacity-50"
                                         style={{ background: T.accent }}
                                     >
                                         {duelStatus === "connecting" ? "Connecting…" : supabaseOnline ? "Generate Code" : "Unavailable"}
@@ -1166,7 +1166,7 @@ export default function TypingTesterPage() {
 
                             {/* ── Join side ── */}
                             <div className="p-4 sm:p-5 space-y-4">
-                                <div className="text-[10px] font-black uppercase tracking-widest" style={{ color: T.muted }}>
+                                <div className="text-xs font-bold tracking-wide" style={{ color: T.muted }}>
                                     Join Room
                                 </div>
                                 <input
@@ -1188,7 +1188,7 @@ export default function TypingTesterPage() {
                                 <button
                                     onClick={joinDuel}
                                     disabled={!supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting"}
-                                    className="w-full py-3 rounded-xl text-xs font-black uppercase tracking-wider text-black transition-all disabled:opacity-50"
+                                    className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-black transition-all disabled:opacity-50"
                                     style={{ background: T.accent }}
                                 >
                                     {duelStatus === "connecting" ? "Joining…"
@@ -1220,7 +1220,7 @@ export default function TypingTesterPage() {
                                 ...(duelMode ? [{ label: "opponent", val: `${opponentWpm} wpm` }] : []),
                             ].map(({ label, val }) => (
                                 <div key={label}>
-                                    <div className="text-[10px] uppercase tracking-wider mb-0.5" style={{ color: T.muted }}>{label}</div>
+                                    <div className="text-xs font-semibold tracking-wide mb-0.5 capitalize" style={{ color: T.muted }}>{label}</div>
                                     <div className="text-xl font-bold" style={{ color: label === "opponent" ? T.error : T.text }}>{val}</div>
                                 </div>
                             ))}
@@ -1246,7 +1246,7 @@ export default function TypingTesterPage() {
                         >
                             <div className="flex items-center gap-2" style={{ color: T.accent }}>
                                 <MousePointer2 size={16} />
-                                <span className="text-xs font-bold uppercase tracking-[0.3em]">Tap to start</span>
+                                <span className="text-sm font-semibold tracking-wide">Tap to start</span>
                             </div>
                         </div>
                     )}
@@ -1334,7 +1334,7 @@ export default function TypingTesterPage() {
                 </div>
 
                 {/* Bottom controls */}
-                <div className="flex items-center justify-center gap-8 mt-8 text-[10px] uppercase font-bold tracking-widest" style={{ color: T.muted }}>
+                <div className="flex items-center justify-center gap-8 mt-8 text-xs font-semibold tracking-wide" style={{ color: T.muted }}>
                     <button
                         onClick={duelMode && duelStatus === "connected" ? restartDuel : resetTest}
                         className="flex items-center gap-2 transition-colors hover:opacity-100"
@@ -1376,7 +1376,7 @@ export default function TypingTesterPage() {
                                     >
                                         {finalStats.finalWpm >= opponentFinishWpm ? "🏆 You Won!" : "😔 You Lost"}
                                     </div>
-                                    <div className="text-xs uppercase tracking-widest font-bold" style={{ color: T.muted }}>
+                                    <div className="text-sm tracking-wide font-semibold" style={{ color: T.muted }}>
                                         {finalStats.finalWpm >= opponentFinishWpm
                                             ? `You were faster by ${finalStats.finalWpm - opponentFinishWpm} WPM`
                                             : `Opponent was faster by ${opponentFinishWpm - finalStats.finalWpm} WPM`}
@@ -1384,13 +1384,13 @@ export default function TypingTesterPage() {
                                 </div>
                                 <div className="flex items-center gap-8 text-center">
                                     <div>
-                                        <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color: T.muted }}>You</div>
+                                        <div className="text-xs font-semibold tracking-wide mb-1" style={{ color: T.muted }}>You</div>
                                         <div className="text-4xl font-black" style={{ color: T.accent }}>{finalStats.finalWpm}</div>
                                         <div className="text-[10px]" style={{ color: T.muted }}>wpm</div>
                                     </div>
                                     <div className="text-2xl font-black" style={{ color: T.muted }}>vs</div>
                                     <div>
-                                        <div className="text-[10px] uppercase tracking-widest mb-1" style={{ color: T.muted }}>Opponent</div>
+                                        <div className="text-xs font-semibold tracking-wide mb-1" style={{ color: T.muted }}>Opponent</div>
                                         <div className="text-4xl font-black" style={{ color: T.error }}>{opponentFinishWpm}</div>
                                         <div className="text-[10px]" style={{ color: T.muted }}>wpm</div>
                                     </div>
@@ -1471,7 +1471,7 @@ export default function TypingTesterPage() {
                                     return (
                                         <div className="w-full h-full relative group">
                                             {/* Y-Axis Labels */}
-                                            <div className="absolute left-0 inset-y-0 flex flex-col justify-between text-[10px] uppercase font-black pointer-events-none opacity-40 py-2 z-10" style={{ color: T.muted }}>
+                                            <div className="absolute left-0 inset-y-0 flex flex-col justify-between text-xs font-bold pointer-events-none opacity-40 py-2 z-10" style={{ color: T.muted }}>
                                                 <span>{maxWpm}</span>
                                                 <span>{Math.round(maxWpm * 0.75)}</span>
                                                 <span>{Math.round(maxWpm * 0.5)}</span>
@@ -1541,7 +1541,7 @@ export default function TypingTesterPage() {
                                         </div>
                                     );
                                 })() : (
-                                    <div className="flex items-center justify-center h-full text-xs font-bold uppercase tracking-widest opacity-30" style={{ color: T.muted }}>
+                                    <div className="flex items-center justify-center h-full text-sm font-semibold tracking-wide opacity-30" style={{ color: T.muted }}>
                                         Not enough data for chart
                                     </div>
                                 )}
@@ -1558,7 +1558,7 @@ export default function TypingTesterPage() {
                                 { label: "theme", value: T.name },
                             ].map(({ label, value }) => (
                                 <div key={label} className="flex flex-col gap-1 min-w-[80px]">
-                                    <div className="text-[10px] font-black lowercase tracking-wider" style={{ color: T.muted }}>{label}</div>
+                                    <div className="text-xs font-semibold tracking-wide capitalize" style={{ color: T.muted }}>{label}</div>
                                     <div className="text-lg sm:text-2xl font-bold tabular-nums" style={{ color: T.text }}>{value}</div>
                                 </div>
                             ))}
@@ -1591,7 +1591,7 @@ export default function TypingTesterPage() {
 
                         {/* Modal Header */}
                         <div className="flex items-center justify-between mb-8 shrink-0">
-                            <h3 className="font-black text-xl lg:text-3xl uppercase tracking-widest" style={{ color: T.accent }}>
+                            <h3 className="font-bold text-xl lg:text-3xl tracking-wide" style={{ color: T.accent }}>
                                 Settings
                             </h3>
                             <button onClick={() => setSettingsModalOpen(false)} style={{ color: T.muted }} className="p-2 hover:opacity-70 transition-opacity">
@@ -1606,7 +1606,7 @@ export default function TypingTesterPage() {
                             <section>
                                 <div className="flex items-center gap-2 mb-5">
                                     <Palette size={16} style={{ color: T.accent }} />
-                                    <h4 className="text-xs font-black uppercase tracking-widest" style={{ color: T.text }}>Appearance / Theme</h4>
+                                    <h4 className="text-sm font-semibold tracking-wide" style={{ color: T.text }}>Appearance / Theme</h4>
                                 </div>
                                 <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-y-6 gap-x-4">
                                     {THEMES.map((th, i) => (
@@ -1637,7 +1637,7 @@ export default function TypingTesterPage() {
                                                 </div>
                                                 <div className="w-full h-1 sm:h-1.5" style={{ background: th.accent }} />
                                             </div>
-                                            <span className="text-[9px] sm:text-[10px] leading-tight font-black uppercase tracking-wider" style={{ color: i === themeIdx ? T.accent : T.muted }}>
+                                            <span className="text-[11px] sm:text-xs leading-tight font-semibold tracking-wide" style={{ color: i === themeIdx ? T.accent : T.muted }}>
                                                 {th.name}
                                             </span>
                                         </button>
@@ -1651,13 +1651,13 @@ export default function TypingTesterPage() {
                             <section>
                                 <div className="flex items-center gap-2 mb-5">
                                     <Settings2 size={16} style={{ color: T.accent }} />
-                                    <h4 className="text-xs font-black uppercase tracking-widest" style={{ color: T.text }}>
+                                    <h4 className="text-sm font-semibold tracking-wide" style={{ color: T.text }}>
                                         Custom Behavior
                                     </h4>
                                 </div>
                                 <div className="flex flex-col sm:flex-row gap-4">
                                     <div className="flex-1">
-                                        <label className="block text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: T.muted }}>
+                                        <label className="block text-xs font-semibold tracking-wide mb-2" style={{ color: T.muted }}>
                                             Custom {testMode === "time" ? "Time (sec)" : "Word Count"}
                                         </label>
                                         <input
@@ -1690,7 +1690,7 @@ export default function TypingTesterPage() {
                                                     setSettingsModalOpen(false);
                                                 }
                                             }}
-                                            className="w-full sm:w-auto px-8 py-3 sm:py-4 font-black rounded-xl text-sm uppercase tracking-wider text-black transition-transform active:scale-95"
+                                            className="w-full sm:w-auto px-8 py-4 font-bold rounded-full text-sm tracking-wide text-black transition-transform active:scale-95"
                                             style={{ background: T.accent }}
                                         >Apply settings</button>
                                     </div>

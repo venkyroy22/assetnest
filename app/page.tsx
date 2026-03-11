@@ -61,8 +61,8 @@ export default function Home() {
   return (
     <div className="flex flex-col">
       {/* Search-Centric Editorial Hero */}
-      <section className="relative flex items-center justify-center min-h-[500px] py-20 overflow-hidden">
-        <div className="absolute inset-0 z-0 bg-zinc-950">
+      <section className="relative flex items-center justify-center min-h-[500px] py-20 overflow-hidden bg-black">
+        <div className="absolute inset-0 z-0 bg-black">
           {/* Static Background for Mobile to avoid 37MB payload */}
           {!isDesktop && (
             <div 
@@ -104,21 +104,21 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
 
           {/* Bottom Dissolve Edge (Downward Fade) */}
-          <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-b from-transparent to-background pointer-events-none" />
+          <div className="absolute -bottom-1 left-0 right-0 h-48 bg-gradient-to-t from-[#000000] via-[#000000]/80 to-transparent pointer-events-none" />
         </div>
         <FireParticles />
 
         <div className="relative z-10 w-full max-w-5xl mx-auto text-center px-10">
           <div className="space-y-10">
             <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-foreground/10 border border-foreground/20 backdrop-blur-md mb-4">
-                <Sparkles size={12} className="text-foreground" />
-                <span className="text-[10px] font-black uppercase tracking-widest text-foreground">Ultimate Resource Hub</span>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-4 shadow-[0_4px_24px_rgba(255,255,255,0.02)]">
+                <Sparkles size={12} className="text-zinc-400" />
+                <span className="text-[10px] font-semibold tracking-wider text-zinc-300">Ultimate Resource Hub</span>
               </div>
-              <h1 className="text-4xl md:text-7xl font-black tracking-tight uppercase text-white mx-auto max-w-4xl leading-[0.85] drop-shadow-2xl">
-                YOUR ULTIMATE <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">ASSET</span> NEST.
+              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mx-auto max-w-4xl leading-[0.9] drop-shadow-2xl">
+                Your Ultimate <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">Asset</span> Nest.
               </h1>
-              <p className="text-base md:text-xl text-zinc-300 font-medium max-w-xl mx-auto drop-shadow-md">
+              <p className="text-base md:text-xl text-zinc-400 font-medium max-w-xl mx-auto drop-shadow-md">
                 Curated assets, strategic tools, and infinite inspiration for your next big project.
               </p>
             </div>
@@ -129,10 +129,10 @@ export default function Home() {
       </section>
 
       {/* Categories Grid (Replacing Asset Grid as per design request) */}
-      <section className="py-8 bg-zinc-950/20">
+      <section className="py-8 bg-black">
         <div className="px-10">
           <div className="mb-8">
-            <h2 className="text-xl font-bold tracking-tight text-white flex items-center gap-3">
+            <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
               <TrendingUp className="text-amber-500" size={20} />
               Free assets for any project
             </h2>
@@ -147,24 +147,24 @@ export default function Home() {
       </section>
 
       {/* ── Top Tools Section ── */}
-      <section className="py-16 px-10">
+      <section className="py-16 px-10 bg-black">
 
         {/* Section header */}
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-white/5 border border-zinc-800 flex items-center justify-center">
-              <Wrench size={15} className="text-zinc-400" />
+            <div className="w-10 h-10 rounded-xl bg-zinc-900 shadow-inner border border-zinc-800 flex items-center justify-center">
+              <Wrench size={16} className="text-zinc-400" />
             </div>
             <div>
-              <h2 className="text-base font-black uppercase tracking-widest text-white">Top Tools</h2>
-              <p className="text-xs text-zinc-600 font-medium">Free tools for creators — 100% browser-based</p>
+              <h2 className="text-xl font-bold tracking-tight text-zinc-100">Top Tools</h2>
+              <p className="text-sm text-zinc-500 font-medium mt-0.5">Free tools for creators — 100% browser-based</p>
             </div>
           </div>
           <Link
             href="/tools"
-            className="flex items-center gap-2 px-4 py-2 border border-zinc-700 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
+            className="flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-emerald-500/30 hover:bg-emerald-500/5 hover:text-emerald-400 transition-all custom-shadow"
           >
-            All Tools <ArrowRight size={11} />
+            All Tools <ArrowRight size={14} />
           </Link>
         </div>
 

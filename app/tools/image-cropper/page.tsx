@@ -292,7 +292,7 @@ export default function ImageCropperPage() {
             <header className="max-w-5xl mx-auto px-6 pt-10 pb-6 flex items-center justify-between">
                 <Link
                     href="/tools"
-                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest"
+                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold"
                 >
                     <ArrowLeft size={16} /> back to tools
                 </Link>
@@ -385,7 +385,7 @@ export default function ImageCropperPage() {
                                 </div>
                                 <div>
                                     <h2 className="text-white font-bold text-lg leading-tight">Dimensions</h2>
-                                    <p className="text-[11px] text-zinc-500 uppercase tracking-widest mt-0.5">Crop Settings</p>
+                                    <p className="text-[11px] text-zinc-500 mt-0.5">Crop Settings</p>
                                 </div>
                             </div>
                             <button className="text-zinc-500 group-hover:text-white transition-colors">
@@ -397,7 +397,7 @@ export default function ImageCropperPage() {
                             <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                 {/* Presets */}
                                 <div className="space-y-4">
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                    <label className="text-[10px] font-semibold text-zinc-500">
                                         Aspect Ratios
                                     </label>
                                     <div className="grid grid-cols-3 gap-2">
@@ -423,7 +423,7 @@ export default function ImageCropperPage() {
                                         className="flex items-center justify-between cursor-pointer group"
                                         onClick={() => setExactSizeOpen(!exactSizeOpen)}
                                     >
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 cursor-pointer group-hover:text-white transition-colors">
+                                        <label className="text-[10px] font-semibold text-zinc-500 cursor-pointer group-hover:text-white transition-colors">
                                             Exact Size (px)
                                         </label>
                                         <button className="text-zinc-500 group-hover:text-white transition-colors">
@@ -475,7 +475,7 @@ export default function ImageCropperPage() {
                                         className="flex items-center justify-between cursor-pointer group"
                                         onClick={() => setCustomRatioOpen(!customRatioOpen)}
                                     >
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 cursor-pointer group-hover:text-white transition-colors">
+                                        <label className="text-[10px] font-semibold text-zinc-500 cursor-pointer group-hover:text-white transition-colors">
                                             Custom Ratio
                                         </label>
                                         <button className="text-zinc-500 group-hover:text-white transition-colors">
@@ -534,7 +534,7 @@ export default function ImageCropperPage() {
                                 </div>
                                 <div>
                                     <h2 className="text-white font-bold text-lg leading-tight">Tweaks</h2>
-                                    <p className="text-[11px] text-zinc-500 uppercase tracking-widest mt-0.5">Scale & Rotate</p>
+                                    <p className="text-[11px] text-zinc-500 mt-0.5">Scale &amp; Rotate</p>
                                 </div>
                             </div>
                             <button className="text-zinc-500 group-hover:text-white transition-colors">
@@ -585,7 +585,7 @@ export default function ImageCropperPage() {
                     <button
                         onClick={generatePreview}
                         disabled={!crop || !imgSrc}
-                        className="w-full flex items-center justify-center gap-3 py-4 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 border border-emerald-500"
+                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 border border-emerald-500"
                     >
                         <CropIcon size={18} />
                         Crop Image
@@ -605,7 +605,7 @@ export default function ImageCropperPage() {
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
                     <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-black text-xl uppercase tracking-widest text-emerald-500 flex items-center gap-3">
+                            <h3 className="font-black text-xl text-emerald-500 flex items-center gap-3">
                                 <Check size={24} /> Crop Successful
                             </h3>
                             <button onClick={() => {
@@ -625,7 +625,7 @@ export default function ImageCropperPage() {
 
                             <button
                                 onClick={downloadFinalImage}
-                                className="w-full flex items-center justify-center gap-3 py-4 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all bg-emerald-600 hover:bg-emerald-500 border border-emerald-500"
+                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 shadow-xl"
                             >
                                 <Download size={18} />
                                 Download Final Image

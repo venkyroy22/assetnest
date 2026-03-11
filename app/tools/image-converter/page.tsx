@@ -174,9 +174,9 @@ export default function ImageConverterPage() {
                 <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-4">
                         <FileImage size={11} className="text-zinc-400" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Image Converter</span>
+                        <span className="text-xs font-semibold tracking-wide text-zinc-400">Image Converter</span>
                     </div>
-                    <h1 className="text-4xl font-black tracking-tight uppercase text-white mb-2">
+                    <h1 className="text-4xl font-black tracking-tight text-white mb-2">
                         Convert Images
                     </h1>
                     <p className="text-zinc-400 text-sm font-medium max-w-lg leading-relaxed">
@@ -189,7 +189,7 @@ export default function ImageConverterPage() {
 
                     {/* Mode selector */}
                     <div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-3">Conversion Mode</p>
+                        <p className="text-[10px] font-semibold text-zinc-500 mb-3">Conversion Mode</p>
                         <div className="grid grid-cols-3 gap-2">
                             {MODES.map(m => (
                                 <button
@@ -226,7 +226,7 @@ export default function ImageConverterPage() {
                     {mode !== "jpg-to-png" && (
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                <p className="text-xs font-semibold tracking-wide text-zinc-500">
                                     WebP Quality
                                 </p>
                                 <span className="text-sm font-black text-emerald-400">{quality}%</span>
@@ -282,14 +282,14 @@ export default function ImageConverterPage() {
 
                         {/* Actions bar */}
                         <div className="flex items-center justify-between">
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            <p className="text-xs font-semibold tracking-wide text-zinc-500">
                                 {files.length} file{files.length !== 1 ? "s" : ""} &nbsp;·&nbsp; {doneCount} converted
                             </p>
                             <div className="flex items-center gap-2">
                                 {doneCount > 1 && (
                                     <button
                                         onClick={downloadAll}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-emerald-500/20 transition-all"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-xs font-semibold tracking-wide hover:bg-emerald-500/20 transition-all"
                                     >
                                         <Download size={12} />
                                         Download All
@@ -297,7 +297,7 @@ export default function ImageConverterPage() {
                                 )}
                                 <button
                                     onClick={clearAll}
-                                    className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-700 text-zinc-500 rounded-lg text-[10px] font-black uppercase tracking-wider hover:border-zinc-500 hover:text-zinc-300 transition-all"
+                                    className="flex items-center gap-1.5 px-3 py-1.5 border border-zinc-700 text-zinc-500 rounded-full text-xs font-semibold tracking-wide hover:border-zinc-500 hover:text-zinc-300 transition-all"
                                 >
                                     <Trash2 size={12} />
                                     Clear
@@ -350,7 +350,7 @@ export default function ImageConverterPage() {
                                                 <CheckCircle2 size={16} className="text-emerald-400" />
                                                 <button
                                                     onClick={() => downloadOne(entry)}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-black rounded-lg text-[10px] font-black uppercase tracking-wider hover:bg-emerald-400 transition-all"
+                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 text-black rounded-full text-xs font-semibold tracking-wide hover:bg-emerald-400 transition-all"
                                                 >
                                                     <Download size={12} />
                                                     Save
@@ -378,7 +378,7 @@ export default function ImageConverterPage() {
                         {pendingCount > 0 && (
                             <button
                                 onClick={convertAll}
-                                className="w-full py-4 bg-emerald-500 text-black rounded-2xl font-black text-sm uppercase tracking-widest hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
+                                className="w-full py-4 bg-emerald-500 text-black rounded-full font-bold text-sm tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
                             >
                                 Convert {pendingCount} File{pendingCount !== 1 ? "s" : ""} to {currentMode.to}
                             </button>
@@ -405,7 +405,7 @@ export default function ImageConverterPage() {
                 <div className="border border-zinc-800 bg-zinc-900/30 rounded-2xl p-5">
                     <div className="flex items-center gap-2 mb-3">
                         <ChevronDown size={14} className="text-zinc-500" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">When to use which format?</span>
+                        <span className="text-[10px] font-semibold text-zinc-500">When to use which format?</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs text-zinc-400 font-medium leading-relaxed">
                         <div>

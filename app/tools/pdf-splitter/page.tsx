@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, FileText, Info, X, Scissors } from "lucide-react";
+import { Upload, Download, RefreshCw, Split, Info, X, Scissors, Undo, Redo } from "lucide-react";
+import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
 
@@ -26,7 +27,7 @@ type PageSlot = {
 export default function PdfSplitterPage() {
     const [file, setFile] = useState<File | null>(null);
     const [pageCount, setPageCount] = useState(0);
-    const [pages, setPages] = useState<PageSlot[]>([]);
+    const [pages, setPages, undo, redo, canUndo, canRedo, resetHistory] = useUndoRedo<PageSlot[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [isExporting, setIsExporting] = useState(false);
@@ -43,7 +44,7 @@ export default function PdfSplitterPage() {
         setIsLoading(true);
         setError(null);
         setFile(f);
-        setPages([]);
+        resetHistory([]);
         setRangeInput("");
 
         try {
@@ -51,7 +52,7 @@ export default function PdfSplitterPage() {
             const pdf = await PDFDocument.load(arrayBuffer);
             const count = pdf.getPageCount();
             setPageCount(count);
-            setPages(Array.from({ length: count }, (_, i) => ({ index: i, selected: true })));
+            resetHistory(Array.from({ length: count }, (_, i) => ({ index: i, selected: true })));
         } catch {
             setError("Could not read this PDF. It may be corrupted or password-protected.");
             setFile(null);
@@ -123,7 +124,7 @@ export default function PdfSplitterPage() {
 
     const reset = () => {
         setFile(null);
-        setPages([]);
+        resetHistory([]);
         setPageCount(0);
         setError(null);
         setRangeInput("");
@@ -138,9 +139,9 @@ export default function PdfSplitterPage() {
             <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Scissors size={11} className="text-violet-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">PDF Utility</span>
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
                     PDF <span className="text-violet-500">Splitter</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -171,7 +172,7 @@ export default function PdfSplitterPage() {
                             {isLoading ? <RefreshCw size={24} className="animate-spin text-zinc-500" /> : <Upload size={24} className="text-zinc-500" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-black text-white uppercase tracking-tight">Drop PDF Here</h2>
+                            <h2 className="text-lg font-bold text-white tracking-tight">Drop PDF Here</h2>
                             <p className="text-zinc-500 text-xs font-medium mt-1">Or click to select a file</p>
                         </div>
                     </div>
@@ -182,7 +183,7 @@ export default function PdfSplitterPage() {
                     <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
                         <div className="flex items-center gap-3 shrink-0">
                             <div className="w-9 h-9 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center">
-                                <FileText size={16} className="text-violet-400" />
+                                <Split size={16} className="text-violet-400" />
                             </div>
                             <div>
                                 <p className="text-xs font-black text-white truncate max-w-[200px]">{file.name}</p>
@@ -201,25 +202,31 @@ export default function PdfSplitterPage() {
                                 placeholder="e.g. 1, 3-5, 8"
                                 className="bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-medium text-zinc-200 px-4 py-2.5 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 flex-grow"
                             />
-                            <button onClick={applyRange} disabled={!rangeInput.trim()} className="h-10 px-4 bg-violet-500/10 border border-violet-500/20 text-violet-400 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                            <button onClick={applyRange} disabled={!rangeInput.trim()} className="h-10 px-4 bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold tracking-wide rounded-full hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
                                 Apply Range
                             </button>
                         </div>
 
-                        <div className="flex gap-2 shrink-0">
-                            <button onClick={selectAll} className="h-9 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-white border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors">All</button>
-                            <button onClick={clearAll} className="h-9 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:text-red-400 border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors">None</button>
-                            <button onClick={reset} className="h-9 px-3 text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:text-white border border-zinc-800 rounded-xl hover:bg-zinc-800 transition-colors">✕</button>
+                        <div className="flex gap-2 shrink-0 border-l border-zinc-800 pl-4 ml-2">
+                            <button onClick={selectAll} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-400 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">All</button>
+                            <button onClick={clearAll} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-400 hover:text-red-400 border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">None</button>
+                            <button onClick={reset} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">✕</button>
                         </div>
                     </div>
 
                     {/* Pages Grid */}
                     <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-6">
-                        <div className="flex justify-between items-center mb-5 border-b border-zinc-900 pb-4">
-                            <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                                Select Pages <span className="text-violet-400">({selectedCount} / {pageCount} selected)</span>
-                            </h3>
-                            <span className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold">Click to toggle • Green = included</span>
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-b border-zinc-900 pb-4">
+                            <div>
+                                <h3 className="text-sm font-bold text-white">
+                                    Select Pages <span className="text-violet-400">({selectedCount} / {pageCount} selected)</span>
+                                </h3>
+                                <span className="text-[11px] tracking-wider text-zinc-500 font-semibold block mt-1">Click to toggle • Green = included</span>
+                            </div>
+                            <div className="flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
+                                <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
+                                <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-9 gap-3 max-h-[55vh] overflow-y-auto pr-1 custom-scrollbar">
@@ -256,7 +263,7 @@ export default function PdfSplitterPage() {
                     <button
                         onClick={exportPdf}
                         disabled={selectedCount === 0 || isExporting}
-                        className={`w-full h-14 font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed" : "bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"}`}
+                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"}`}
                     >
                         {isExporting
                             ? <><RefreshCw size={18} className="animate-spin" /> Exporting...</>
@@ -274,7 +281,7 @@ export default function PdfSplitterPage() {
                         { title: "Instant Export", desc: "Your custom PDF is generated and ready to download in seconds." }
                     ].map((f, i) => (
                         <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-violet-500">{f.title}</h4>
+                            <h4 className="text-[10px] font-bold text-violet-500">{f.title}</h4>
                             <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}

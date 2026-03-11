@@ -403,7 +403,7 @@ export default function QRGeneratorPage() {
                         className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6"
                     >
                         <QrCode size={12} className="text-zinc-500" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500">Pro Utilities</span>
+                        <span className="text-xs font-semibold tracking-wide text-zinc-400">Pro Utilities</span>
                     </div>
                     <h1
                         style={{
@@ -411,7 +411,7 @@ export default function QRGeneratorPage() {
                             transform: headerVisible ? "translateY(0)" : "translateY(20px)",
                             transition: "opacity 0.55s ease 0.06s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.06s",
                         }}
-                        className="text-5xl md:text-7xl font-black tracking-tighter uppercase mb-4 text-white leading-none"
+                        className="text-5xl md:text-7xl font-black tracking-tight mb-4 text-white leading-none"
                     >
                         Custom <span className="italic text-zinc-700">QR Engine</span>
                     </h1>
@@ -438,14 +438,14 @@ export default function QRGeneratorPage() {
                     {/* Controls (Spans 7 cols) */}
                     <div className="lg:col-span-7 space-y-4 lg:space-y-6 order-2 lg:order-1 flex-1">
                         <div className="p-5 lg:p-8 bg-zinc-900/50 border border-zinc-800 rounded-[2.5rem] shadow-2xl backdrop-blur-sm">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-500 mb-4 lg:mb-6 flex items-center gap-2">
+                            <h3 className="text-xs font-semibold text-zinc-500 mb-4 lg:mb-6 flex items-center gap-2">
                                 <Wand2 size={12} /> Configuration Options
                             </h3>
 
                             <div className="space-y-5 lg:space-y-8">
                                 {/* Destination URL */}
                                 <div>
-                                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Destination URL</label>
+                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Destination URL</label>
                                     <div className="relative">
                                         <input
                                             type="text"
@@ -487,7 +487,7 @@ export default function QRGeneratorPage() {
                                         <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'pattern' ? 'max-h-[2000px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                                             <div className="space-y-6 pt-4 border-t border-zinc-800/50">
                                                 <div>
-                                                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Pattern Style</label>
+                                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Pattern Style</label>
                                                     <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
                                                         {[
                                                             { id: 'square', label: 'Classic', icon: <div className="w-4 h-4 bg-current" /> },
@@ -510,7 +510,7 @@ export default function QRGeneratorPage() {
                                                     {/* Conditional Inputs */}
                                                     {patternType === 'emoji' && (
                                                         <div className="mt-4 p-4 bg-black rounded-xl border border-zinc-800 flex items-center justify-between sm:justify-start gap-4">
-                                                            <span className="text-xs font-bold text-zinc-500 uppercase">Input Emoji:</span>
+                                                            <span className="text-xs font-bold text-zinc-500">Input Emoji:</span>
                                                             <input
                                                                 type="text"
                                                                 value={emojiChar}
@@ -530,7 +530,7 @@ export default function QRGeneratorPage() {
 
                                                     {patternType === 'logo' && (
                                                         <div className="mt-4 p-4 bg-black rounded-xl border border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                                            <span className="text-xs font-bold text-zinc-500 uppercase">Upload Dots Logo:</span>
+                                                            <span className="text-xs font-bold text-zinc-500">Upload Dots Logo:</span>
                                                             <input
                                                                 type="file"
                                                                 accept="image/*"
@@ -563,12 +563,12 @@ export default function QRGeneratorPage() {
                                                 </div>
 
                                                 <div className="space-y-4 pt-3 lg:pt-4 border-t border-zinc-800/50">
-                                                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Color Palette</label>
+                                                    <label className="block text-xs font-semibold text-zinc-400 mb-2">Color Palette</label>
 
                                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 bg-black border border-zinc-800 p-4 lg:p-5 rounded-[1.5rem]">
                                                         {/* Foreground */}
                                                         <div className="space-y-3 lg:space-y-4">
-                                                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">Foreground Filter</span>
+                                                            <span className="text-[10px] font-medium text-zinc-500 block">Foreground Filter</span>
                                                             <div className="flex flex-wrap gap-2">
                                                                 {FG_PRESETS.map(color => (
                                                                     <button
@@ -600,7 +600,7 @@ export default function QRGeneratorPage() {
 
                                                         {/* Background */}
                                                         <div className="space-y-3 lg:space-y-4 mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
-                                                            <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest block">Background</span>
+                                                            <span className="text-[10px] font-medium text-zinc-500 block">Background</span>
                                                             <div className="flex flex-wrap gap-2">
                                                                 {BG_PRESETS.map(color => (
                                                                     <button
@@ -656,7 +656,7 @@ export default function QRGeneratorPage() {
                                         <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'corners' ? 'max-h-[1000px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                                             <div className="space-y-6 pt-4 border-t border-zinc-800/50">
                                                 <div>
-                                                    <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Frame Style</label>
+                                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Frame Style</label>
                                                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                                                         {[
                                                             { id: 'square', label: 'Classic', icon: <Square size={16} /> },
@@ -698,7 +698,7 @@ export default function QRGeneratorPage() {
 
                                         <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'logo' ? 'max-h-[500px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                                             <div className="space-y-4 pt-4 border-t border-zinc-800/50">
-                                                <label className="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-1">Center Overlay Branding</label>
+                                                <label className="block text-xs font-semibold text-zinc-400 mb-1">Center Overlay Branding</label>
 
                                                 <div className="flex items-center gap-3">
                                                     <input
@@ -710,7 +710,7 @@ export default function QRGeneratorPage() {
                                                     />
                                                     <button
                                                         onClick={() => centerInputRef.current?.click()}
-                                                        className="flex-1 flex items-center justify-center gap-2 bg-black border border-zinc-800 hover:border-zinc-500 text-zinc-300 py-3 lg:py-4 rounded-xl text-[11px] font-bold uppercase tracking-widest transition-all"
+                                                        className="flex-1 flex items-center justify-center gap-2 bg-black border border-zinc-800 hover:border-zinc-500 text-zinc-300 py-3 lg:py-4 rounded-full text-xs font-semibold tracking-wide transition-all"
                                                     >
                                                         <Upload size={16} /> Upload Main Logo
                                                     </button>
@@ -742,7 +742,7 @@ export default function QRGeneratorPage() {
                                     <Sparkles size={16} className="text-zinc-500" />
                                 </div>
                                 <div>
-                                    <h4 className="text-xs font-bold text-white mb-2 uppercase tracking-wide">Scannability Warning</h4>
+                                    <h4 className="text-xs font-bold text-white mb-2">Scannability Warning</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed font-medium">
                                         Using custom emojis, heavy star patterns, or detailed custom logos as the actual QR code dots may trigger scanner failures on older devices. Ensure there is strong contrast. The three corner square Finders are automatically protected for stability.
                                     </p>
@@ -787,7 +787,7 @@ export default function QRGeneratorPage() {
                                     {/* "Tap to view" label — always visible on mobile only */}
                                     <button
                                         onClick={openLightbox}
-                                        className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 bg-zinc-800/80 border border-zinc-700 rounded-full text-[9px] font-black uppercase tracking-widest text-zinc-300 active:scale-95 transition-all"
+                                        className="lg:hidden flex items-center gap-1.5 px-4 py-2 bg-zinc-800/80 border border-zinc-700 rounded-full text-[10px] font-semibold tracking-wide text-zinc-300 active:scale-95 transition-all"
                                     >
                                         <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                                             <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
@@ -797,10 +797,10 @@ export default function QRGeneratorPage() {
                                 </div>
 
                                 <div className="flex-1 lg:w-full lg:mt-10 flex flex-col justify-center">
-                                    <div className="lg:hidden text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Live Preview</div>
+                                    <div className="lg:hidden text-[11px] font-semibold tracking-wider text-zinc-400 mb-2">Live Preview</div>
                                     <button
                                         onClick={() => renderQR(true)}
-                                        className="w-full flex items-center justify-center gap-2 lg:gap-3 bg-white text-black py-2.5 lg:py-4 rounded-lg lg:rounded-xl text-[10px] lg:text-[11px] font-black uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                        className="w-full flex items-center justify-center gap-2 lg:gap-3 bg-white text-black py-2.5 lg:py-4 rounded-full text-xs font-bold tracking-wide hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
                                     >
                                         <Download size={14} className="shrink-0" /> <span className="hidden sm:inline">Export PNG</span><span className="sm:hidden">Export</span>
                                     </button>
@@ -842,7 +842,7 @@ export default function QRGeneratorPage() {
                             />
                         </div>
 
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Tap outside to close</p>
+                        <p className="text-[11px] font-medium tracking-wide text-zinc-500 mt-2">Tap outside to close</p>
 
                         {/* Download in lightbox */}
                         <button
@@ -852,7 +852,7 @@ export default function QRGeneratorPage() {
                                 a.download = "assetnest-custom-qr.png";
                                 a.click();
                             }}
-                            className="w-full flex items-center justify-center gap-2 bg-white text-black py-3.5 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-zinc-200 active:scale-[0.98] transition-all"
+                            className="w-full flex items-center justify-center gap-2 bg-white text-black py-3.5 rounded-full text-sm font-bold tracking-wide hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xl"
                         >
                             <Download size={15} /> Download QR Code
                         </button>

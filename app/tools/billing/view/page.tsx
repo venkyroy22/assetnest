@@ -208,7 +208,7 @@ function BillViewer() {
                 <div className="no-print w-full max-w-md mb-5">
                     <div className="flex items-center gap-2 mb-2">
                         <Globe size={13} className="text-zinc-500" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Language / भाषा</span>
+                        <span className="text-xs font-semibold tracking-wide text-zinc-500">Language / भाषा</span>
                     </div>
                     <div className="flex flex-wrap gap-2">
                         {LANGS.map(l => (
@@ -228,7 +228,7 @@ function BillViewer() {
                     {translating && (
                         <div className="flex items-center gap-2 mt-2">
                             <Loader2 size={12} className="text-emerald-600 animate-spin" />
-                            <span className="text-[10px] text-emerald-600 font-bold uppercase tracking-wider">{t.translating}</span>
+                            <span className="text-xs text-emerald-600 font-semibold tracking-wide">{t.translating}</span>
                         </div>
                     )}
                 </div>
@@ -243,14 +243,14 @@ function BillViewer() {
                         <div className="w-7 h-7 bg-emerald-500 rounded-lg flex items-center justify-center">
                             <span className="text-black text-sm font-black">₹</span>
                         </div>
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{t.title}</span>
+                        <span className="text-xs font-semibold tracking-wide text-zinc-400">{t.title}</span>
                     </div>
 
                     <div className="bg-white rounded-3xl overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] border border-zinc-200">
                         {/* Shop Header */}
                         <div className="bg-white px-8 pt-10 pb-6 text-center border-b border-zinc-100">
-                            <div className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-4">Official Receipt</div>
-                            <p className="text-2xl font-black text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
+                            <div className="inline-block px-3 py-1 bg-emerald-50 text-emerald-700 rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
+                            <p className="text-2xl font-bold text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
                             {bill.a && <p className="text-xs text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">{bill.a}</p>}
                             <div className="flex items-center justify-center gap-5 mt-4 flex-wrap">
                                 {bill.p && <p className="text-[11px] text-zinc-400 font-bold">📞 {bill.p}</p>}
@@ -261,20 +261,20 @@ function BillViewer() {
                         {/* Invoice meta */}
                         <div className="bg-zinc-50/50 px-8 py-4 flex items-center justify-between border-b border-zinc-100">
                             <div>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">{t.invoiceNo}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-400 mb-0.5">{t.invoiceNo}</p>
                                 <p className="text-sm font-black text-black font-mono tracking-tighter">{bill.i}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-0.5">{t.dateTime}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-400 mb-0.5">{t.dateTime}</p>
                                 <p className="text-[11px] font-black text-zinc-800">{fmtDate(bill.d)}</p>
                             </div>
                         </div>
                         {/* Items */}
                         <div className="px-5 py-4">
                             <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 pb-2 border-b-2 border-zinc-200 mb-1">
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500">{t.item}</p>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 text-center">{t.qty}</p>
-                                <p className="text-[9px] font-black uppercase tracking-widest text-zinc-500 text-right">{t.amount}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-500">{t.item}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-500 text-center">{t.qty}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-500 text-right">{t.amount}</p>
                             </div>
                             <div className="divide-y divide-zinc-100">
                                 {bill.l.map((item, idx) => {
@@ -327,7 +327,7 @@ function BillViewer() {
                             {/* Grand Total */}
                             <div className="bg-black rounded-[1.25rem] px-6 py-5 flex items-center justify-between shadow-xl shadow-black/10 transition-transform active:scale-[0.98]">
                                 <div>
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-0.5">{t.totalAmount}</p>
+                                    <p className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-0.5">{t.totalAmount}</p>
                                     <p className="text-[10px] text-zinc-500 font-bold">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
                                 </div>
                                 <p className="text-3xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
@@ -336,12 +336,12 @@ function BillViewer() {
                         {/* Footer */}
                         <div className="bg-zinc-50/50 border-t border-zinc-100 px-8 py-8 text-center bg-[radial-gradient(ellipse_at_top,rgba(0,0,0,0.02),transparent)]">
                             <p className="text-xs font-black text-black mb-1.5">{t.thank}</p>
-                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mb-6">{t.generated}</p>
+                            <p className="text-xs text-zinc-400 font-semibold tracking-wide mb-6">{t.generated}</p>
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-2xl shadow-sm">
                                 <div className="w-5 h-5 bg-black rounded-lg flex items-center justify-center">
                                     <span className="text-emerald-400 text-[9px] font-black">A</span>
                                 </div>
-                                <span className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.2em]">{t.poweredBy}</span>
+                                <span className="text-xs font-semibold text-zinc-600 tracking-wide">{t.poweredBy}</span>
                             </div>
                         </div>
                     </div>
@@ -349,7 +349,7 @@ function BillViewer() {
                     {/* Download button */}
                     <button
                         onClick={() => window.print()}
-                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-emerald-500 text-black py-4 rounded-2xl text-[12px] font-black uppercase tracking-widest hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
+                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-emerald-500 text-black py-4 rounded-full text-sm font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
                     >
                         <Download size={16} />
                         {t.download}
@@ -453,7 +453,7 @@ function BillViewer() {
                             )}
                             {/* Grand Total */}
                             <div style={{ marginTop: "12px", padding: "12px 16px", background: "#ecfdf5", border: "2px solid #10b981", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "10px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.1em", color: "#065f46" }}>{t.totalAmount}</span>
+                                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#065f46" }}>{t.totalAmount}</span>
                                 <span style={{ fontSize: "24px", fontWeight: 900, color: "#059669" }}>{fmtINR(grandTotal)}</span>
                             </div>
                         </div>

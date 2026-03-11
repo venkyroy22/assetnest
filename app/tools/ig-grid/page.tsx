@@ -227,7 +227,7 @@ export default function IGGridPlannerPage() {
             <header className="max-w-5xl mx-auto px-6 pt-10 pb-6 flex items-center justify-between">
                 <Link
                     href="/tools"
-                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold uppercase tracking-widest"
+                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold"
                 >
                     <ArrowLeft size={16} /> back to tools
                 </Link>
@@ -419,7 +419,7 @@ export default function IGGridPlannerPage() {
                         <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-pink-500 hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-zinc-950">
                             <UploadCloud className="text-zinc-600 group-hover:text-pink-500 transition-colors mb-2" size={28} />
                             <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors">Click to upload</span>
-                            <span className="text-[10px] text-zinc-600 mt-1 uppercase tracking-widest">JPG, PNG, HEIC</span>
+                            <span className="text-xs font-semibold text-zinc-600 mt-1 tracking-wide">JPG, PNG, HEIC</span>
                             <input
                                 ref={fileInputRef}
                                 type="file"
@@ -490,7 +490,7 @@ export default function IGGridPlannerPage() {
                     {images.length > 0 && (
                         <button
                             onClick={clearAll}
-                            className="w-full py-4 rounded-xl text-sm font-bold uppercase tracking-widest text-red-500 bg-red-500/10 hover:bg-red-500/20 active:scale-95 transition-all border border-red-500/20"
+                            className="w-full py-4 rounded-full text-sm font-semibold tracking-wide text-red-500 bg-red-500/10 hover:bg-red-500/20 active:scale-95 transition-all border border-red-500/20"
                         >
                             Clear All Images
                         </button>
@@ -504,7 +504,7 @@ export default function IGGridPlannerPage() {
                     <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
 
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-black text-xl uppercase tracking-widest text-purple-500">
+                            <h3 className="font-bold text-xl text-purple-500">
                                 {splitResults.length > 0 ? "Grid Split Successful!" : "Split Giant Image"}
                             </h3>
                             <button onClick={() => {
@@ -541,7 +541,7 @@ export default function IGGridPlannerPage() {
 
                                     <div className="sm:w-64 space-y-6 shrink-0">
                                         <div>
-                                            <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 text-zinc-400">
+                                            <label className="block text-[10px] font-semibold mb-2 text-zinc-400">
                                                 Columns (Width)
                                             </label>
                                             <div className="flex flex-wrap gap-2">
@@ -555,7 +555,7 @@ export default function IGGridPlannerPage() {
                                             </div>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-bold uppercase tracking-widest mb-2 text-zinc-400">
+                                            <label className="block text-[10px] font-semibold mb-2 text-zinc-400">
                                                 Rows (Height)
                                             </label>
                                             <div className="flex flex-wrap gap-2">
@@ -572,7 +572,7 @@ export default function IGGridPlannerPage() {
                                         <button
                                             onClick={confirmSplit}
                                             disabled={isSplitting}
-                                            className="w-full py-4 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
+                                            className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
                                         >
                                             {isSplitting ? "Splitting..." : `Split into ${splitCols * splitRows} Images`}
                                         </button>
@@ -602,7 +602,7 @@ export default function IGGridPlannerPage() {
                                                 <div key={img.id} className="aspect-square relative group">
                                                     <img src={img.url} className="w-full h-full object-cover rounded shadow-md" />
                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
-                                                        <span className="text-[10px] font-bold text-white mb-1 uppercase tracking-widest">Post Order</span>
+                                                        <span className="text-[10px] font-bold text-white mb-1">Post Order</span>
                                                         <span className="w-6 h-6 rounded-full bg-purple-500 text-white font-bold flex items-center justify-center text-xs">
                                                             {splitResults.length - i}
                                                         </span>
@@ -615,7 +615,7 @@ export default function IGGridPlannerPage() {
                                             <button
                                                 onClick={handleDownloadZip}
                                                 disabled={isZipping}
-                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50"
+                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50"
                                             >
                                                 {isZipping ? <span className="animate-spin">◌</span> : <Package size={18} />}
                                                 Download all as .ZIP
@@ -623,12 +623,12 @@ export default function IGGridPlannerPage() {
 
                                             <button
                                                 onClick={addSplitImagesToGrid}
-                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-xl text-sm font-black uppercase tracking-wider text-white transition-all bg-purple-600 hover:bg-purple-500 border border-purple-500"
+                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-purple-600 hover:bg-purple-500 border border-purple-500"
                                             >
                                                 <CheckCircle size={18} />
                                                 Add to Grid Planner
                                             </button>
-                                            <p className="text-[10px] text-zinc-500 uppercase tracking-widest text-center">
+                                            <p className="text-xs font-medium text-zinc-500 tracking-wide text-center">
                                                 Or view them in the mock profile to see how it looks.
                                             </p>
                                         </div>

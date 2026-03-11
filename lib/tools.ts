@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF";
 
@@ -120,7 +120,7 @@ export const ALL_TOOLS: Tool[] = [
         description: "Merge and combine multiple PDF files into one document instantly. Upload PDFs, rearrange pages, and export — 100% private, runs in your browser.",
         href: "/tools/pdf-merger",
         badge: "Free",
-        icon: FileText,
+        icon: Combine,
         tags: [
             "pdf", "merge", "combine", "join", "pdf merger", "merge pdfs",
             "combine pdfs", "join pdf", "merge pdf files", "pdf joiner",
@@ -135,7 +135,7 @@ export const ALL_TOOLS: Tool[] = [
         description: "Compress and reduce PDF file size instantly in your browser. Make your PDF smaller for email, sharing, or uploading — no uploads, 100% private.",
         href: "/tools/pdf-compressor",
         badge: "Free",
-        icon: FileText,
+        icon: Minimize2,
         tags: [
             "pdf", "compress", "reduce", "size", "optimize", "shrink",
             "compress pdf", "reduce pdf size", "pdf compressor", "make pdf smaller",
@@ -151,7 +151,7 @@ export const ALL_TOOLS: Tool[] = [
         description: "Split a PDF into individual pages or extract specific page ranges. Visually select the pages you need and download them as a new PDF — free and private.",
         href: "/tools/pdf-splitter",
         badge: "Free",
-        icon: FileText,
+        icon: Split,
         tags: [
             "pdf", "split", "extract", "pages", "separate", "cut",
             "split pdf", "pdf splitter", "extract pages", "pdf page extractor",
@@ -167,7 +167,7 @@ export const ALL_TOOLS: Tool[] = [
         description: "Convert JPG, PNG, and WebP images into a single PDF instantly. Drag to reorder, set page size, margin and quality — 100% private, in your browser.",
         href: "/tools/image-to-pdf",
         badge: "Free",
-        icon: FileText,
+        icon: ImagePlus,
         tags: [
             "image", "jpg", "png", "webp", "gif", "photo", "picture",
             "image to pdf", "jpg to pdf", "png to pdf", "photos to pdf",

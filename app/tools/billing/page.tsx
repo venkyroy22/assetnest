@@ -298,14 +298,14 @@ export default function BillingPage() {
                             <Receipt size={16} className="text-black" />
                         </div>
                         <div>
-                            <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Smart Billing</p>
+                            <p className="text-xs font-semibold tracking-wide text-zinc-500">Smart Billing</p>
                             <p className="text-xs font-black text-white leading-tight truncate max-w-[160px]">
                                 {shopInfo.name || "Configure Shop" }
                             </p>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-zinc-600 hidden sm:inline">
+                        <span className="text-xs font-semibold tracking-wide text-zinc-600 hidden sm:inline">
                             {invoiceNo}
                         </span>
                         <button
@@ -399,14 +399,14 @@ export default function BillingPage() {
                 <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl p-5 space-y-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Package size={14} className="text-emerald-400" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                        <span className="text-sm font-semibold tracking-wide text-zinc-400">
                             {editId ? "Edit Item" : "Add Item"}
                         </span>
                     </div>
 
                     {/* Barcode field (shows when scanned barcode or typed) */}
                     <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1.5">
+                        <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1.5">
                             Barcode / SKU <span className="text-zinc-700 normal-case font-medium">(optional)</span>
                         </label>
                         <input
@@ -433,7 +433,7 @@ export default function BillingPage() {
 
                     {/* Item Name */}
                     <div>
-                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1.5">
+                        <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1.5">
                             Product Name <span className="text-red-500">*</span>
                         </label>
                         <input
@@ -449,7 +449,7 @@ export default function BillingPage() {
                     {/* Price, Qty, GST */}
                     <div className="grid grid-cols-3 gap-3">
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1.5">
+                            <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1.5">
                                 Price (₹) <span className="text-red-500">*</span>
                             </label>
                             <input
@@ -464,7 +464,7 @@ export default function BillingPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1.5">Qty</label>
+                            <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1.5">Qty</label>
                             <input
                                 type="number"
                                 min="1"
@@ -474,7 +474,7 @@ export default function BillingPage() {
                             />
                         </div>
                         <div>
-                            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1.5">GST %</label>
+                            <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1.5">GST %</label>
                             <select
                                 value={formGst}
                                 onChange={e => setFormGst(Number(e.target.value) as GstRate)}
@@ -489,7 +489,7 @@ export default function BillingPage() {
                         <button
                             onClick={addItem}
                             disabled={!formName.trim() || !formPrice}
-                            className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-400 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                             {editId ? <><Check size={14} /> Update Item</> : <><Plus size={14} /> Add Item</>}
                         </button>
@@ -510,11 +510,11 @@ export default function BillingPage() {
                         <div className="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Receipt size={14} className="text-emerald-400" />
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">
+                                <span className="text-xs font-semibold tracking-wide text-zinc-400">
                                     Bill Items ({items.length})
                                 </span>
                             </div>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-600">
+                            <span className="text-xs font-semibold tracking-wide text-zinc-600">
                                 {invoiceNo}
                             </span>
                         </div>
@@ -580,7 +580,7 @@ export default function BillingPage() {
                             )}
 
                             <div className="flex justify-between pt-2 border-t border-zinc-700">
-                                <span className="text-sm font-black uppercase tracking-widest text-white">Grand Total</span>
+                                <span className="text-sm font-semibold tracking-wide text-white">Grand Total</span>
                                 <span className="text-xl font-black text-emerald-400">{fmtINR(grandTotal)}</span>
                             </div>
                         </div>
@@ -591,7 +591,7 @@ export default function BillingPage() {
                 {items.length > 0 && (
                     <button
                         onClick={generateQR}
-                        className="w-full flex items-center justify-center gap-3 bg-emerald-500 text-black py-5 rounded-2xl text-sm font-black uppercase tracking-[0.1em] hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-2xl shadow-emerald-500/20"
+                        className="w-full flex items-center justify-center gap-3 bg-emerald-500 text-black py-5 rounded-full text-sm font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-2xl shadow-emerald-500/20"
                     >
                         <Smartphone size={20} />
                         Generate Customer QR Code
@@ -604,7 +604,7 @@ export default function BillingPage() {
                         <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <Receipt size={28} className="text-zinc-700" />
                         </div>
-                        <p className="text-sm font-black uppercase tracking-widest text-zinc-600 mb-1">No Items Yet</p>
+                        <p className="text-sm font-semibold tracking-wide text-zinc-600 mb-1">No Items Yet</p>
                         <p className="text-xs text-zinc-700 font-medium">
                             Scan a barcode or add items manually above
                         </p>
@@ -613,7 +613,7 @@ export default function BillingPage() {
             </div>
 
             <footer className="max-w-4xl mx-auto px-6 py-10 text-center">
-                <p className="text-[10px] font-black uppercase tracking-[0.25em] text-zinc-600">
+                <p className="text-xs font-semibold tracking-wide text-zinc-600">
                     Smart Billing System — Safe, Fast, Digital
                 </p>
             </footer>
@@ -627,7 +627,7 @@ export default function BillingPage() {
 
                         <div className="flex items-center justify-between mb-5">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-0.5">Customer Bill QR</p>
+                                <p className="text-xs font-semibold tracking-wide text-emerald-400 mb-0.5">Customer Bill QR</p>
                                 <p className="text-sm font-black text-white">Scan to view digital receipt</p>
                             </div>
                             <button onClick={() => setShowQR(false)}
@@ -645,7 +645,7 @@ export default function BillingPage() {
                         {/* Total reminder */}
                         <div className="flex items-center justify-between mb-5 px-2">
                             <div>
-                                <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
+                                <p className="text-xs font-semibold tracking-wide text-zinc-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
                                 <p className="text-2xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
                             </div>
                             <div className="text-right">
@@ -662,7 +662,7 @@ export default function BillingPage() {
 
                         {/* Copy link */}
                         <button onClick={copyLink}
-                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-emerald-500 hover:text-emerald-400 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all">
+                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-emerald-500 hover:text-emerald-400 rounded-full text-xs font-bold tracking-wide transition-all">
                             {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Bill Link</>}
                         </button>
                     </div>
@@ -693,7 +693,7 @@ export default function BillingPage() {
                                 { label: "Phone", key: "phone", placeholder: "+91 98765 43210" },
                             ].map(f => (
                                 <div key={f.key}>
-                                    <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 block mb-1">{f.label}</label>
+                                    <label className="text-xs font-semibold tracking-wide text-zinc-500 block mb-1">{f.label}</label>
                                     <input
                                         type="text"
                                         value={tmpShop[f.key as keyof ShopInfo]}
@@ -705,7 +705,7 @@ export default function BillingPage() {
                             ))}
                         </div>
                         <button onClick={saveShop}
-                            className="mt-5 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-xl text-[11px] font-black uppercase tracking-widest hover:bg-emerald-400 transition-all">
+                            className="mt-5 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-emerald-400 transition-all">
                             <Check size={13} /> Save Shop Info
                         </button>
                     </div>

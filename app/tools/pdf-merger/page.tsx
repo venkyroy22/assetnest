@@ -2,9 +2,10 @@
 
 import { useState, useRef } from "react";
 import {
-    Upload, Download, X, RefreshCw, FileText,
+    Upload, Download, X, RefreshCw, Combine, Undo, Redo,
     ChevronLeft, ChevronRight, Info, Grid, ArrowLeft
 } from "lucide-react";
+import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
 
@@ -35,8 +36,7 @@ type PageItem = {
 };
 
 export default function PdfMergerPage() {
-    const [files, setFiles] = useState<UploadedFile[]>([]);
-    const [pages, setPages] = useState<PageItem[]>([]);
+    const [{ files, pages }, setHistoryState, undo, redo, canUndo, canRedo, resetHistory] = useUndoRedo<{files: UploadedFile[], pages: PageItem[]}>({ files: [], pages: [] });
     const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
     
     const [isLoading, setIsLoading] = useState(false);
@@ -93,8 +93,10 @@ export default function PdfMergerPage() {
                 }
             }
 
-            setFiles(prev => [...prev, ...addedFiles]);
-            setPages(prev => [...prev, ...addedPages]);
+            setHistoryState(prev => ({
+                files: [...prev.files, ...addedFiles],
+                pages: [...prev.pages, ...addedPages]
+            }));
         } catch (err) {
             console.error(err);
             setError("Failed to parse some of the documents. They might be corrupted or encrypted.");
@@ -105,17 +107,22 @@ export default function PdfMergerPage() {
 
     const removePage = (id: string, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
-        setPages(prev => prev.filter(p => p.id !== id));
+        setHistoryState(prev => ({
+            ...prev,
+            pages: prev.pages.filter(p => p.id !== id)
+        }));
     };
 
     const movePage = (index: number, direction: -1 | 1, e?: React.MouseEvent) => {
         if (e) e.stopPropagation();
         if (index + direction < 0 || index + direction >= pages.length) return;
-        const newArray = [...pages];
-        const temp = newArray[index];
-        newArray[index] = newArray[index + direction];
-        newArray[index + direction] = temp;
-        setPages(newArray);
+        setHistoryState(prev => {
+            const newArray = [...prev.pages];
+            const temp = newArray[index];
+            newArray[index] = newArray[index + direction];
+            newArray[index + direction] = temp;
+            return { ...prev, pages: newArray };
+        });
     };
 
     const onDragStart = (e: React.DragEvent, index: number) => {
@@ -138,11 +145,12 @@ export default function PdfMergerPage() {
             return;
         }
         
-        const newPages = [...pages];
-        const [draggedItem] = newPages.splice(draggedIdx, 1);
-        newPages.splice(targetIdx, 0, draggedItem);
-        
-        setPages(newPages);
+        setHistoryState(prev => {
+            const newPages = [...prev.pages];
+            const [draggedItem] = newPages.splice(draggedIdx, 1);
+            newPages.splice(targetIdx, 0, draggedItem);
+            return { ...prev, pages: newPages };
+        });
         setDraggedIdx(null);
     };
 
@@ -210,8 +218,7 @@ export default function PdfMergerPage() {
 
     const reset = () => {
         if (outputUrl) URL.revokeObjectURL(outputUrl);
-        setFiles([]);
-        setPages([]);
+        resetHistory({ files: [], pages: [] });
         setOutputUrl(null);
         setOutputSize(null);
         setError(null);
@@ -223,10 +230,10 @@ export default function PdfMergerPage() {
 
             <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <FileText size={11} className="text-red-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Secure Document Utility</span>
+                    <Combine size={11} className="text-red-400" />
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">Secure Document Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
                     PDF <span className="text-red-500">Merger</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -259,8 +266,8 @@ export default function PdfMergerPage() {
                                 {isLoading ? <RefreshCw className="animate-spin text-zinc-500" size={20} /> : <Upload size={20} className="text-zinc-500" />}
                             </div>
                             <div>
-                                <h2 className="text-sm font-black text-white uppercase tracking-tight">{isLoading ? "Loading Pages..." : "Add PDFs to Merge"}</h2>
-                                <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest">Drag & Drop or Click Here</p>
+                                <h2 className="text-sm font-bold text-white tracking-tight">{isLoading ? "Loading Pages..." : "Add PDFs to Merge"}</h2>
+                                <p className="text-zinc-500 text-[10px] font-medium">Drag &amp; Drop or Click Here</p>
                             </div>
                         </div>
                     </div>
@@ -273,9 +280,15 @@ export default function PdfMergerPage() {
                                     <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
                                         <Grid size={14} className="text-red-400" />
                                     </div>
-                                    <h3 className="text-sm font-black text-white uppercase tracking-wider">Arrange Pages ({pages.length})</h3>
+                                    <h3 className="text-sm font-bold text-white tracking-tight">Arrange Pages ({pages.length})</h3>
                                 </div>
-                                <span className="text-[10px] font-bold tracking-widest uppercase text-zinc-500">Drag to reorder • Click X to delete</span>
+                                <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1 mr-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
+                                        <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
+                                        <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                                    </div>
+                                    <span className="text-[10px] font-semibold tracking-wider text-zinc-500 hidden sm:inline">Drag to reorder • Click X to delete</span>
+                                </div>
                             </div>
                             
                             {/* Draggable Grid */}
@@ -329,20 +342,20 @@ export default function PdfMergerPage() {
                             </div>
 
                             <div className="mt-6 pt-6 border-t border-zinc-900 flex flex-col md:flex-row gap-4 items-center justify-between">
-                                <span className="text-xs font-black uppercase tracking-widest text-zinc-500">
+                                <span className="text-xs font-semibold tracking-wider text-zinc-400">
                                     {files.length} File{files.length !== 1 ? 's' : ''} • {pages.length} Page{pages.length !== 1 ? 's' : ''} Total
                                 </span>
                                 <div className="flex gap-3 w-full md:w-auto">
                                     <button 
-                                        onClick={() => { setPages([]); setFiles([]); }}
-                                        className="h-14 px-6 font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 transition-all bg-transparent border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                                        onClick={() => resetHistory({ files: [], pages: [] })}
+                                        className="h-14 px-6 font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-transparent border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800"
                                     >
                                         Clear All
                                     </button>
                                     <button 
                                         onClick={mergePdfs}
                                         disabled={pages.length === 0 || isLoading}
-                                        className={`h-14 px-8 font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20"}`}
+                                        className={`h-14 px-8 font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20"}`}
                                     >
                                         {isLoading ? (
                                             <><RefreshCw size={18} className="animate-spin" /> Merging...</>
@@ -360,7 +373,7 @@ export default function PdfMergerPage() {
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Left: Preview */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 shadow-2xl flex flex-col">
-                            <h3 className="text-sm font-black text-white uppercase tracking-wider mb-4 px-2">Merged Preview</h3>
+                            <h3 className="text-sm font-bold text-white mb-4 px-2">Merged Preview</h3>
                             <div className="flex-grow bg-zinc-900 rounded-xl overflow-hidden min-h-[400px]">
                                 <object data={outputUrl} type="application/pdf" className="w-full h-full min-h-[400px]">
                                     <iframe src={outputUrl} className="w-full h-full min-h-[400px] border-none" title="PDF Preview" />
@@ -371,41 +384,41 @@ export default function PdfMergerPage() {
                         {/* Right: Actions */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl flex flex-col justify-center text-center space-y-8">
                             <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto shadow-xl">
-                                <FileText size={32} className="text-red-500" />
+                                <Combine size={32} className="text-red-500" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white uppercase tracking-tight mb-2">Success!</h2>
+                                <h2 className="text-2xl font-black text-white tracking-tight mb-2">Success!</h2>
                                 <p className="text-zinc-400 text-sm font-medium">Your custom PDF has been generated.</p>
                             </div>
                             
                             <div className="flex items-center justify-center gap-4 py-6 border-y border-zinc-900">
                                 <div className="text-center px-4">
                                     <span className="block text-3xl font-black text-white">{pages.length}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">Pages Compiled</span>
+                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500 mt-1">Pages Compiled</span>
                                 </div>
                                 <div className="w-px h-12 bg-zinc-900"></div>
                                 <div className="text-center px-4">
                                     <span className="block text-3xl font-black text-white">{outputSize ? formatSize(outputSize) : "---"}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mt-1">Output Size</span>
+                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500 mt-1">Output Size</span>
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-3 pt-2">
                                 <button 
                                     onClick={handleDownload}
-                                    className="h-14 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
+                                    className="h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
                                 >
                                     <Download size={18} /> Download Custom PDF
                                 </button>
                                 <button 
                                     onClick={() => setOutputUrl(null)}
-                                    className="h-14 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all"
+                                    className="h-14 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all"
                                 >
                                     <ArrowLeft size={16} /> Go Back & Edit Pages
                                 </button>
                                 <button 
                                     onClick={reset}
-                                    className="h-10 text-[10px] bg-transparent text-zinc-500 hover:text-red-400 font-bold uppercase tracking-widest rounded-xl transition-colors mt-2"
+                                    className="h-10 text-xs bg-transparent text-zinc-500 hover:text-red-400 font-semibold tracking-wide rounded-full transition-colors mt-2"
                                 >
                                     Start Fresh (Delete All)
                                 </button>
@@ -423,7 +436,7 @@ export default function PdfMergerPage() {
                         { title: "Remove Clutter", desc: "Delete cover pages, blank spots, or redundant indices with one click." }
                     ].map((f, i) => (
                         <div key={i} className="space-y-4 text-center md:text-left">
-                             <h4 className="text-[10px] font-black uppercase tracking-widest text-red-500">{f.title}</h4>
+                             <h4 className="text-[10px] font-bold text-red-500">{f.title}</h4>
                              <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}

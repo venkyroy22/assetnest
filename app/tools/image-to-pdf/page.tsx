@@ -2,9 +2,10 @@
 
 import { useState, useRef, useCallback } from "react";
 import {
-    Upload, Download, X, RefreshCw, ImageIcon,
-    ChevronLeft, ChevronRight, Trash2, Settings2, FileText
+    Upload, Download, X, RefreshCw, ImageIcon, Undo, Redo,
+    ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus
 } from "lucide-react";
+import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument, PageSizes } from "pdf-lib";
 
 const jsonLd = {
@@ -36,7 +37,7 @@ const PAGE_SIZES: Record<Exclude<PageSize, "FitImage">, [number, number]> = {
 };
 
 export default function ImageToPdfPage() {
-    const [images, setImages] = useState<ImageItem[]>([]);
+    const [images, setImages, undo, redo, canUndo, canRedo, resetHistory] = useUndoRedo<ImageItem[]>([]);
     const [isDragging, setIsDragging] = useState(false);
     const [isConverting, setIsConverting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -243,7 +244,7 @@ export default function ImageToPdfPage() {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
         setOutputSize(null);
-        setImages([]);
+        resetHistory([]);
         setError(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
@@ -261,10 +262,10 @@ export default function ImageToPdfPage() {
             {/* ── Header ── */}
             <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <FileText size={11} className="text-sky-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">PDF Utility</span>
+                    <ImagePlus size={11} className="text-sky-400" />
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
                     Image <span className="text-sky-500">to PDF</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -295,8 +296,8 @@ export default function ImageToPdfPage() {
                         <Upload size={20} className="text-zinc-500" />
                     </div>
                     <div className="text-center">
-                        <h2 className="text-sm font-black text-white uppercase tracking-tight">{images.length > 0 ? "Add More Images" : "Drop Images Here"}</h2>
-                        <p className="text-zinc-500 text-[10px] font-medium uppercase tracking-widest mt-1">JPG · PNG · WebP · GIF</p>
+                        <h2 className="text-sm font-bold text-white tracking-tight">{images.length > 0 ? "Add More Images" : "Drop Images Here"}</h2>
+                        <p className="text-zinc-500 text-[11px] font-semibold tracking-wider mt-1">JPG · PNG · WebP · GIF</p>
                     </div>
                 </div>
 
@@ -305,18 +306,24 @@ export default function ImageToPdfPage() {
                     <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] overflow-hidden animate-in fade-in">
 
                         {/* List header */}
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-900">
-                            <h3 className="text-sm font-black text-white uppercase tracking-wider">
-                                Images <span className="text-sky-400">({images.length})</span>
-                            </h3>
-                            <div className="flex items-center gap-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-zinc-900 gap-4">
+                            <div className="flex items-center gap-4">
+                                <h3 className="text-sm font-bold text-white">
+                                    Images <span className="text-sky-400">({images.length})</span>
+                                </h3>
+                                <div className="flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
+                                    <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
+                                    <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                                </div>
+                            </div>
+                            <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
                                 <button
                                     onClick={() => setShowSettings(s => !s)}
-                                    className={`flex items-center gap-2 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${showSettings ? "border-sky-500/50 bg-sky-500/10 text-sky-400" : "border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-600"}`}
+                                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-all whitespace-nowrap ${showSettings ? "border-sky-500/50 bg-sky-500/10 text-sky-400" : "border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-600"}`}
                                 >
-                                    <Settings2 size={12} /> Settings
+                                    <Settings2 size={14} /> Settings
                                 </button>
-                                <button onClick={() => { images.forEach(i => URL.revokeObjectURL(i.previewUrl)); setImages([]); }} className="px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-500/30 transition-all">
+                                <button onClick={() => { images.forEach(i => URL.revokeObjectURL(i.previewUrl)); resetHistory([]); }} className="px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-500/30 transition-all whitespace-nowrap">
                                     Clear All
                                 </button>
                             </div>
@@ -328,7 +335,7 @@ export default function ImageToPdfPage() {
                                 <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
                                     {/* Page Size */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Page Size</label>
+                                        <label className="text-[10px] font-semibold text-zinc-500">Page Size</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {(["A4", "A3", "Letter", "FitImage"] as PageSize[]).map(s => (
                                                 <button key={s} onClick={() => setPageSize(s)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${pageSize === s ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
@@ -339,7 +346,7 @@ export default function ImageToPdfPage() {
                                     </div>
                                     {/* Orientation */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Orientation</label>
+                                        <label className="text-[10px] font-semibold text-zinc-500">Orientation</label>
                                         <div className="flex gap-1.5">
                                             {(["portrait", "landscape"] as Orientation[]).map(o => (
                                                 <button key={o} onClick={() => setOrientation(o)} disabled={pageSize === "FitImage"} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border capitalize transition-all disabled:opacity-30 ${orientation === o ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
@@ -350,7 +357,7 @@ export default function ImageToPdfPage() {
                                     </div>
                                     {/* Image Fit */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Image Fit</label>
+                                        <label className="text-[10px] font-semibold text-zinc-500">Image Fit</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {([["fit", "Letterbox"], ["fill", "Fill Page"], ["original", "Original Size"]] as [ImageFit, string][]).map(([val, label]) => (
                                                 <button key={val} onClick={() => setImageFit(val)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${imageFit === val ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
@@ -361,7 +368,7 @@ export default function ImageToPdfPage() {
                                     </div>
                                     {/* Margin */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Margin — {margin}pt</label>
+                                        <label className="text-[10px] font-semibold text-zinc-500">Margin — {margin}pt</label>
                                         <input type="range" min={0} max={72} step={4} value={margin} onChange={e => setMargin(+e.target.value)} className="w-full accent-sky-500 cursor-pointer" />
                                         <div className="flex justify-between text-[9px] text-zinc-600 font-bold">
                                             <span>None</span><span>72pt</span>
@@ -369,7 +376,7 @@ export default function ImageToPdfPage() {
                                     </div>
                                     {/* Quality */}
                                     <div className="space-y-2">
-                                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                                        <label className="text-[11px] font-semibold tracking-wider text-zinc-500">
                                             Quality — <span className={quality >= 0.8 ? "text-green-400" : quality >= 0.5 ? "text-yellow-400" : "text-red-400"}>{Math.round(quality * 100)}%</span>
                                         </label>
                                         <input type="range" min={0.1} max={1} step={0.05} value={quality} onChange={e => setQuality(+e.target.value)} className="w-full accent-sky-500 cursor-pointer" />
@@ -438,11 +445,11 @@ export default function ImageToPdfPage() {
                 <button
                     onClick={convert}
                     disabled={images.length === 0 || isConverting}
-                    className={`w-full h-14 font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed" : "bg-sky-500 text-white hover:bg-sky-600 shadow-lg shadow-sky-500/20"}`}
+                    className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-sky-500 text-white hover:bg-sky-600 shadow-lg shadow-sky-500/20"}`}
                 >
                     {isConverting
                         ? <><RefreshCw size={18} className="animate-spin" /> Converting {images.length} image{images.length !== 1 ? "s" : ""}…</>
-                        : <><FileText size={18} /> Preview & Download PDF ({images.length} image{images.length !== 1 ? "s" : ""})</>
+                        : <><ImagePlus size={18} /> Preview & Download PDF ({images.length} image{images.length !== 1 ? "s" : ""})</>
                     }
                 </button>
             </div>
@@ -455,7 +462,7 @@ export default function ImageToPdfPage() {
                         {/* Left: Embedded PDF Viewer */}
                         <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col min-h-[500px] lg:min-h-0">
                             <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 shrink-0">
-                                <span className="text-xs font-black text-white uppercase tracking-wider">PDF Preview</span>
+                                <span className="text-sm font-semibold text-white tracking-wide">PDF Preview</span>
                                 <span className="text-[10px] text-zinc-500 font-medium">{images.length} page{images.length !== 1 ? "s" : ""} · {outputSize ? formatBytes(outputSize) : ""}</span>
                             </div>
                             <div className="flex-grow relative">
@@ -468,40 +475,40 @@ export default function ImageToPdfPage() {
                         {/* Right: Actions */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-6 flex flex-col justify-center gap-6">
                             <div className="w-16 h-16 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mx-auto">
-                                <FileText size={28} className="text-sky-400" />
+                                <ImagePlus size={28} className="text-sky-400" />
                             </div>
                             <div className="text-center">
-                                <h2 className="text-xl font-black text-white uppercase tracking-tight mb-1">Looking Good!</h2>
+                                <h2 className="text-xl font-black text-white tracking-tight mb-1">Looking Good!</h2>
                                 <p className="text-zinc-500 text-xs font-medium">Review your PDF and download when ready.</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-3 py-4 border-y border-zinc-900">
                                 <div className="text-center">
                                     <span className="block text-2xl font-black text-white">{images.length}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Pages</span>
+                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Pages</span>
                                 </div>
                                 <div className="text-center">
                                     <span className="block text-2xl font-black text-sky-400">{outputSize ? formatBytes(outputSize) : "—"}</span>
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">File Size</span>
+                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500">File Size</span>
                                 </div>
                             </div>
 
                             <div className="flex flex-col gap-3">
                                 <button
                                     onClick={handleDownload}
-                                    className="h-12 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
+                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
                                 >
                                     <Download size={16} /> Download PDF
                                 </button>
                                 <button
                                     onClick={() => setPreviewUrl(null)}
-                                    className="h-12 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
+                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
                                     ← Go Back & Edit
                                 </button>
                                 <button
                                     onClick={reset}
-                                    className="h-9 text-[10px] text-zinc-600 hover:text-red-400 font-bold uppercase tracking-widest transition-colors"
+                                    className="h-9 text-xs text-zinc-500 hover:text-red-400 font-semibold tracking-wide transition-colors mt-2"
                                 >
                                     Start Fresh
                                 </button>
@@ -520,7 +527,7 @@ export default function ImageToPdfPage() {
                         { title: "Drag to Reorder", desc: "Drag image cards to arrange pages in exactly the order you need before converting." }
                     ].map((f, i) => (
                         <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-sky-500">{f.title}</h4>
+                            <h4 className="text-[10px] font-bold text-sky-500">{f.title}</h4>
                             <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}

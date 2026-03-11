@@ -57,7 +57,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
                         : "0 0 0 1px rgba(63,63,70,0.5)",
                     willChange: "transform, opacity",
                 }}
-                className="relative overflow-hidden rounded-2xl bg-zinc-900/80 p-5 cursor-pointer h-full"
+                className="relative overflow-hidden rounded-3xl bg-zinc-900/40 border border-white/5 backdrop-blur-md p-5 cursor-pointer h-full"
             >
                 {/* Dot-grid texture */}
                 <div
@@ -81,7 +81,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                 {/* Glowing border ring */}
                 <div
-                    className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
+                    className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-300"
                     style={{
                         opacity: hovered ? 1 : 0,
                         background: hovered
@@ -104,7 +104,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
                 <div className="relative z-10 flex flex-col h-full gap-3">
                     <div className="flex items-start justify-between">
                         <div
-                            className="w-10 h-10 rounded-xl flex items-center justify-center border transition-all duration-300"
+                            className="w-11 h-11 rounded-[14px] flex items-center justify-center border transition-all duration-300"
                             style={{
                                 background: hovered ? `${accent}18` : "rgba(39,39,42,0.8)",
                                 borderColor: hovered ? `${accent}50` : "rgba(63,63,70,0.8)",
@@ -116,7 +116,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                         <div className="flex items-center gap-1.5">
                             <span
-                                className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border"
+                                className="text-[10px] font-semibold tracking-wide px-2 py-0.5 border rounded-full"
                                 style={{ color: accent, borderColor: `${accent}40`, background: `${accent}12` }}
                             >
                                 {tool.category}
@@ -134,7 +134,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                     <div>
                         <h3
-                            className="text-xs font-black uppercase tracking-widest mb-1.5 transition-colors duration-300"
+                            className="text-xs font-bold tracking-normal mb-1.5 transition-colors duration-300"
                             style={{ color: hovered ? accent : "#fff" }}
                         >
                             {tool.name}

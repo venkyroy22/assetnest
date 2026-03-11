@@ -119,9 +119,9 @@ export default function BgRemoverPage() {
             <div className="text-center mb-8">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Sparkles size={11} className="text-purple-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Pure Background Removal</span>
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">Pure Background Removal</span>
                 </div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight uppercase text-white mb-4">
+                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
                     BG <span className="text-purple-500">Remover</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -153,7 +153,7 @@ export default function BgRemoverPage() {
                                     <Upload size={32} className="text-zinc-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black text-white uppercase tracking-tight mb-2">Select an image</h2>
+                                    <h2 className="text-xl font-black text-white tracking-tight mb-2">Select an image</h2>
                                     <p className="text-zinc-500 text-sm font-medium">Drag & drop or click to browse</p>
                                 </div>
                             </div>
@@ -169,7 +169,7 @@ export default function BgRemoverPage() {
                              <div className="absolute top-6 left-6 z-20 flex gap-2">
                                 <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
                                     <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest text-white/90">
+                                    <span className="text-[10px] font-semibold tracking-wide text-white/90">
                                         {isLoading ? `Removing Background ${progress}%` : "Success"}
                                     </span>
                                 </div>
@@ -201,7 +201,7 @@ export default function BgRemoverPage() {
                                             <RefreshCw size={64} className="text-purple-500/20 animate-spin absolute inset-0" />
                                             <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-purple-400 font-bold">{progress}%</div>
                                         </div>
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Subject isolation in progress...</p>
+                                        <p className="text-[11px] font-semibold tracking-wider text-zinc-400">Subject isolation in progress...</p>
                                     </div>
                                 ) : (
                                     <img 
@@ -217,7 +217,7 @@ export default function BgRemoverPage() {
                             <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-6">
                                 <button 
                                     onClick={handleDownload}
-                                    className="group relative h-16 w-full md:w-auto px-8 bg-white text-black text-xs font-black uppercase tracking-widest hover:bg-zinc-200 transition-all rounded-2xl flex items-center justify-center gap-3 overflow-hidden whitespace-nowrap"
+                                    className="group relative h-14 w-full md:w-auto px-8 bg-white text-black text-sm font-bold tracking-wide hover:bg-zinc-200 transition-all rounded-full flex items-center justify-center gap-3 overflow-hidden whitespace-nowrap shadow-xl"
                                 >
                                     <Download size={18} /> Download Transparent PNG
                                 </button>
@@ -241,7 +241,7 @@ export default function BgRemoverPage() {
                         { title: "High Quality", desc: "Export high-resolution PNGs with perfect transparency around hair and edges." }
                     ].map((f, i) => (
                         <div key={i} className="space-y-4">
-                             <h4 className="text-[10px] font-black uppercase tracking-widest text-white">{f.title}</h4>
+                             <h4 className="text-sm font-semibold text-zinc-100">{f.title}</h4>
                              <p className="text-[11px] text-zinc-600 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}

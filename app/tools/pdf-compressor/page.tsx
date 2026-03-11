@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, FileText, Info, X, Minimize2, CheckCircle } from "lucide-react";
+import { Upload, Download, RefreshCw, Info, X, Minimize2, CheckCircle, Undo, Redo } from "lucide-react";
+import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 
 const jsonLd = {
@@ -16,7 +17,7 @@ const jsonLd = {
 };
 
 export default function PdfCompressorPage() {
-    const [file, setFile] = useState<File | null>(null);
+    const [file, setFile, undo, redo, canUndo, canRedo, resetHistory] = useUndoRedo<File | null>(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -95,7 +96,7 @@ export default function PdfCompressorPage() {
 
     const reset = () => {
         if (result) URL.revokeObjectURL(result.url);
-        setFile(null);
+        resetHistory(null);
         setResult(null);
         setError(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
@@ -109,9 +110,9 @@ export default function PdfCompressorPage() {
             <div className="text-center mb-10">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Minimize2 size={11} className="text-orange-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">PDF Utility</span>
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight uppercase text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
                     PDF <span className="text-orange-500">Compressor</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -131,24 +132,39 @@ export default function PdfCompressorPage() {
             {!result ? (
                 <div className="space-y-5">
                     {/* Dropzone */}
+                    {!file && (
+                        <div className="flex items-center gap-1 justify-end mb-2">
+                            <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 bg-zinc-950 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
+                            <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 bg-zinc-950 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                        </div>
+                    )}
                     <div
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        className={`min-h-[260px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-orange-500 bg-orange-500/5" : file ? "border-orange-500/40 bg-zinc-950" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
+                        className={`min-h-[260px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer relative ${isDragging ? "border-orange-500 bg-orange-500/5" : file ? "border-orange-500/40 bg-zinc-950" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
                     >
-                        <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                        {file && (
+                            <div className="absolute top-4 right-4 flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800 z-10" onClick={(e) => e.stopPropagation()}>
+                                <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
+                                <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                            </div>
+                        )}
+                        <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => {
+                            if (e.target.files?.[0]) handleFile(e.target.files[0]);
+                            if (fileInputRef.current) fileInputRef.current.value = "";
+                        }} />
                         {file ? (
                             <div className="text-center px-8 space-y-4">
                                 <div className="w-16 h-16 bg-orange-500/10 border border-orange-500/20 rounded-2xl flex items-center justify-center mx-auto">
-                                    <FileText size={28} className="text-orange-400" />
+                                    <Minimize2 size={28} className="text-orange-400" />
                                 </div>
                                 <div>
                                     <p className="text-sm font-black text-white truncate max-w-xs mx-auto">{file.name}</p>
                                     <p className="text-xs text-zinc-500 mt-1">{formatSize(file.size)}</p>
                                 </div>
-                                <p className="text-[10px] text-zinc-600 uppercase tracking-widest">Click to change file</p>
+                                <p className="text-[11px] text-zinc-500 font-medium tracking-wide">Click to change file</p>
                             </div>
                         ) : (
                             <div className="text-center px-8 space-y-4">
@@ -156,7 +172,7 @@ export default function PdfCompressorPage() {
                                     <Upload size={24} className="text-zinc-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-black text-white uppercase tracking-tight">Drop PDF Here</h2>
+                                    <h2 className="text-lg font-bold text-white tracking-tight">Drop PDF Here</h2>
                                     <p className="text-zinc-500 text-xs font-medium mt-1">Or click to select a file</p>
                                 </div>
                             </div>
@@ -166,7 +182,7 @@ export default function PdfCompressorPage() {
                     <button
                         onClick={compress}
                         disabled={!file || isLoading}
-                        className={`w-full h-14 font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 transition-all ${!file || isLoading ? "bg-zinc-900 text-zinc-600 border border-zinc-800 cursor-not-allowed" : "bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20"}`}
+                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${!file || isLoading ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-orange-500 text-white hover:bg-orange-600 shadow-lg shadow-orange-500/20"}`}
                     >
                         {isLoading ? <><RefreshCw size={18} className="animate-spin" /> Compressing...</> : <>Compress PDF</>}
                     </button>
@@ -180,14 +196,14 @@ export default function PdfCompressorPage() {
                                 <CheckCircle size={20} className="text-green-400" />
                             </div>
                             <div>
-                                <h2 className="text-lg font-black text-white uppercase tracking-tight">Compression Done!</h2>
+                                <h2 className="text-lg font-bold text-white tracking-tight">Compression Done!</h2>
                                 <p className="text-xs text-zinc-500 font-medium">{file?.name}</p>
                             </div>
                         </div>
 
                         {/* Progress bar visual */}
                         <div className="space-y-3 mb-8">
-                            <div className="flex justify-between text-[10px] font-black uppercase tracking-widest text-zinc-500">
+                            <div className="flex justify-between text-[11px] font-semibold tracking-wider text-zinc-400">
                                 <span>Original</span>
                                 <span>Compressed</span>
                             </div>
@@ -208,23 +224,23 @@ export default function PdfCompressorPage() {
                         <div className="grid grid-cols-3 gap-4 mb-8 pb-8 border-b border-zinc-900">
                             <div className="text-center">
                                 <span className="block text-2xl font-black text-white">{formatSize(result.originalSize)}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Original</span>
+                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Original</span>
                             </div>
                             <div className="text-center">
                                 <span className="block text-2xl font-black text-green-400">{savingsPercent}%</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Saved</span>
+                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Saved</span>
                             </div>
                             <div className="text-center">
                                 <span className="block text-2xl font-black text-white">{formatSize(result.compressedSize)}</span>
-                                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">New Size</span>
+                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">New Size</span>
                             </div>
                         </div>
 
                         <div className="flex flex-col gap-3">
-                            <button onClick={download} className="h-14 bg-white text-black font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02]">
+                            <button onClick={download} className="h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl">
                                 <Download size={18} /> Download Compressed PDF
                             </button>
-                            <button onClick={reset} className="h-14 bg-transparent border border-zinc-800 text-zinc-400 hover:text-white font-black uppercase tracking-widest text-xs rounded-2xl flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all">
+                            <button onClick={reset} className="h-14 px-8 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all">
                                 Compress Another PDF
                             </button>
                         </div>
@@ -248,7 +264,7 @@ export default function PdfCompressorPage() {
                         { title: "Lossless", desc: "Document content, text, and vector graphics are fully preserved." }
                     ].map((f, i) => (
                         <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[10px] font-black uppercase tracking-widest text-orange-500">{f.title}</h4>
+                            <h4 className="text-[10px] font-bold text-orange-500">{f.title}</h4>
                             <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}

@@ -162,7 +162,7 @@ function NavItem({
                 >
                     {item.name}
                     {disabled && isOpen && (
-                        <div className="text-[8px] font-black uppercase text-amber-500 mt-0.5 tracking-[0.1em]">Stay Updated</div>
+                        <div className="text-[9px] font-semibold text-amber-500/80 mt-0.5 tracking-wide">Stay Updated</div>
                     )}
                 </span>
             </div>
@@ -193,7 +193,7 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                 ${isOpen ? "w-64" : isHome ? "w-0 opacity-0 overflow-hidden" : "w-16"}`}
         >
             {/* Background dot grid */}
@@ -216,8 +216,8 @@ const Sidebar = () => {
                 <div className="flex-grow overflow-y-auto custom-scrollbar pr-1 -mr-1">
                     {/* Pinned Section */}
                     {pinnedTools.length > 0 && (
-                        <div className="mb-8">
-                            <p className={`text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-4 px-2 flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                        <div className="mb-8 mt-2">
+                            <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                                 ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                                 <Pin size={10} className="text-zinc-500" fill="currentColor" /> Pinned
                             </p>
@@ -242,7 +242,7 @@ const Sidebar = () => {
                     )}
 
                     <div className="mb-6">
-                        <p className={`text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-4 px-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                        <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                             ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
                             Discover
                         </p>

@@ -71,7 +71,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                             : "0 0 0 1px rgba(63,63,70,0.5)",
                     willChange: "transform, opacity",
                 }}
-                className={`relative overflow-hidden rounded-2xl bg-zinc-900/80 p-6 cursor-pointer h-full transition-shadow duration-300`}
+                className={`relative overflow-hidden rounded-3xl bg-zinc-900/40 border border-white/5 backdrop-blur-md p-6 cursor-pointer h-full transition-shadow duration-300`}
             >
                 {/* ── Pin Button ── */}
                 <button
@@ -108,7 +108,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                 {/* ── Glowing border ring (mouse-tracked) ── */}
                 <div
-                    className="absolute inset-0 rounded-2xl pointer-events-none transition-opacity duration-300"
+                    className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-300"
                     style={{
                         opacity: hovered ? 1 : 0,
                         background: hovered
@@ -132,7 +132,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                     <div className="flex items-start justify-between">
                         {/* Icon box */}
                         <div
-                            className="w-11 h-11 rounded-xl flex items-center justify-center border transition-all duration-300"
+                            className="w-12 h-12 rounded-[14px] flex items-center justify-center border transition-all duration-300"
                             style={{
                                 background: hovered ? `${accent}18` : "rgba(39,39,42,0.8)",
                                 borderColor: hovered ? `${accent}50` : "rgba(63,63,70,0.8)",
@@ -148,12 +148,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                         {/* Badge + arrow */}
                         <div className="flex items-center gap-2">
                             {pinned && (
-                                <span className="text-[8px] font-black uppercase tracking-tighter text-zinc-500 mr-1 flex items-center gap-1">
+                                <span className="text-[10px] font-semibold text-zinc-400 flex items-center gap-1">
                                     <Pin size={8} fill="currentColor" /> Pinned
                                 </span>
                             )}
                             <span
-                                className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 border"
+                                className="text-[10px] font-semibold tracking-wide px-2.5 py-0.5 border rounded-full"
                                 style={{
                                     color: accent,
                                     borderColor: `${accent}40`,
@@ -175,7 +175,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                     <div>
                         <h3
-                            className="text-sm font-black uppercase tracking-widest mb-2 transition-colors duration-300"
+                            className="text-sm font-bold tracking-normal mb-2 transition-colors duration-300"
                             style={{ color: hovered ? accent : "#fff" }}
                         >
                             {tool.name}
@@ -219,10 +219,10 @@ function ComingSoonCard({ index }: { index: number }) {
                     <Sparkles size={18} className="text-zinc-700" />
                 </div>
                 <div>
-                    <h3 className="text-sm font-black uppercase tracking-widest text-zinc-600 mb-1">More Coming</h3>
-                    <p className="text-xs text-zinc-700 font-medium leading-relaxed">New tools dropping regularly. Check back soon.</p>
+                    <h3 className="text-base font-bold text-zinc-500 mb-1.5">More Coming</h3>
+                    <p className="text-xs text-zinc-600 font-medium leading-relaxed">New tools dropping regularly. Check back soon.</p>
                 </div>
-                <span className="text-[9px] font-black uppercase tracking-widest text-amber-500 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 w-fit">
+                <span className="text-[10px] font-semibold text-amber-500 border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 w-fit rounded-full">
                     Coming Soon
                 </span>
             </div>
@@ -312,8 +312,8 @@ export default function ToolsPage() {
                         }}
                         className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/60 mb-5 backdrop-blur-sm"
                     >
-                        <Wrench size={11} className="text-zinc-400" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">AssetNest Tools</span>
+                        <Wrench size={14} className="text-zinc-400" />
+                        <span className="text-xs font-semibold tracking-wide text-zinc-300">AssetNest Tools</span>
                     </div>
 
                     <h1
@@ -322,7 +322,7 @@ export default function ToolsPage() {
                             transform: headerVisible ? "translateY(0)" : "translateY(20px)",
                             transition: "opacity 0.55s ease 0.06s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.06s",
                         }}
-                        className="text-4xl md:text-6xl font-black tracking-tight uppercase text-white mb-3"
+                        className="text-5xl md:text-6xl font-bold tracking-tight text-white mb-3"
                     >
                         Top Tools
                     </h1>
@@ -349,7 +349,7 @@ export default function ToolsPage() {
                     }}
                     className="relative mb-12 max-w-lg"
                 >
-                    <div className={`flex items-center bg-zinc-900/80 backdrop-blur-sm border px-4 py-3 w-full transition-all duration-300 hover:border-zinc-600 focus-within:border-emerald-500/50 focus-within:shadow-[0_0_24px_rgba(16,185,129,0.08)] ${query ? "border-zinc-600" : "border-zinc-800"}`}>
+                    <div className={`flex items-center bg-zinc-900/40 backdrop-blur-md rounded-2xl border px-5 py-3 w-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 focus-within:border-emerald-500/50 focus-within:shadow-[0_0_30px_rgba(16,185,129,0.08)] ${query ? "border-zinc-600" : "border-zinc-800"}`}>
                         <Search size={16} className="text-zinc-500 mr-3 shrink-0" />
                         <input
                             type="text"
@@ -367,7 +367,7 @@ export default function ToolsPage() {
                         )}
                     </div>
                     {query && (
-                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mt-2 px-1">
+                        <p className="text-xs font-semibold tracking-wide text-zinc-600 mt-2 px-1">
                             {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
                         </p>
                     )}
@@ -377,13 +377,13 @@ export default function ToolsPage() {
                 {filtered.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-24 border border-dashed border-zinc-800 bg-zinc-950/30 rounded-2xl">
                         <Search size={28} className="text-zinc-700 mb-4" />
-                        <h2 className="text-sm font-black uppercase tracking-widest text-zinc-500 mb-2">No tools found</h2>
-                        <p className="text-xs text-zinc-600 font-medium text-center max-w-xs">
+                        <h2 className="text-base font-semibold text-zinc-400 mb-2">No tools found</h2>
+                        <p className="text-sm text-zinc-500 font-medium text-center max-w-xs">
                             No tools match &ldquo;{query}&rdquo;. Try a different keyword or clear the search.
                         </p>
                         <button
                             onClick={() => setQuery("")}
-                            className="mt-5 px-4 py-2 border border-zinc-700 text-[10px] font-black uppercase tracking-widest text-zinc-400 hover:border-emerald-500/50 hover:text-emerald-400 transition-all"
+                            className="mt-6 px-5 py-2.5 rounded-full border border-zinc-700 text-xs font-semibold text-zinc-300 hover:border-emerald-500/40 hover:bg-emerald-500/10 hover:text-emerald-400 transition-all custom-shadow"
                         >
                             Clear Search
                         </button>
@@ -397,7 +397,7 @@ export default function ToolsPage() {
                             <div key={group.name} className="space-y-6">
                                 <div className="flex items-center gap-3">
                                     <div className="h-px bg-zinc-800 flex-1" />
-                                    <h2 className="text-sm font-black uppercase tracking-widest text-zinc-400">
+                                    <h2 className="text-sm font-semibold text-zinc-300 px-4">
                                         {group.name}
                                     </h2>
                                     <div className="h-px bg-zinc-800 flex-1" />

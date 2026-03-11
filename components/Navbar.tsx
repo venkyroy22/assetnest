@@ -97,7 +97,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
             <nav className="sticky top-0 z-50 w-full bg-background h-20">
                 <div className="px-10 h-full">
                     <div className="flex justify-between items-center h-full">
-                        <div className="text-xl md:text-2xl font-black tracking-tighter shrink-0">ASSETNEST</div>
+                        <div className="text-xl md:text-2xl font-bold tracking-tight shrink-0">AssetNest</div>
                         <div className="w-10 h-10" />
                     </div>
                 </div>
@@ -134,7 +134,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
                         {/* ── Functional Search Bar ── */}
                         <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg relative">
-                            <div className={`flex items-center bg-zinc-900 border px-2 md:px-4 py-1.5 md:py-2.5 w-full transition-all duration-300 hover:border-zinc-600 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.05)] ${showResults ? "border-white" : "border-zinc-800"}`}>
+                            <div className={`flex items-center bg-zinc-900/40 backdrop-blur-md border px-3 md:px-5 py-2 md:py-2.5 w-full rounded-2xl transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.03)] focus-within:border-zinc-500 ${showResults ? "border-zinc-600 rounded-b-none" : "border-zinc-800"}`}>
                                 <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0" />
                                 <input
                                     type="text"
@@ -156,7 +156,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
                             {/* Dropdown Results */}
                             {showResults && (
-                                <div className="fixed top-20 left-4 right-4 lg:absolute lg:top-full lg:left-0 lg:right-0 lg:mt-1 bg-zinc-900 border border-zinc-700 shadow-2xl z-[200] overflow-y-auto max-h-[70vh] rounded-xl lg:rounded-b-lg">
+                                <div className="fixed top-20 left-4 right-4 lg:absolute lg:top-full lg:left-0 lg:right-0 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 shadow-2xl z-[200] overflow-y-auto max-h-[70vh] rounded-2xl lg:rounded-t-none lg:border-t-0 p-1">
                                     {results.length > 0 ? (
                                         <>
                                             {results.map((item, i) => (
@@ -166,14 +166,14 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                                     target={item.href.startsWith("http") ? "_blank" : undefined}
                                                     rel={item.href.startsWith("http") ? "noopener noreferrer" : undefined}
                                                     onClick={() => { setQuery(""); setShowResults(false); }}
-                                                    className="flex items-center justify-between px-4 py-3 hover:bg-zinc-800 transition-colors border-b border-zinc-800/50 last:border-0 group"
+                                                    className="flex items-center justify-between px-3 py-3 rounded-xl hover:bg-white/5 transition-colors group"
                                                 >
                                                     <div className="flex flex-col flex-1 min-w-0 pr-4">
-                                                        <span className="text-xs font-black uppercase tracking-widest text-white group-hover:text-white truncate">{item.title}</span>
+                                                        <span className="text-xs font-semibold tracking-normal text-white group-hover:text-white truncate">{item.title}</span>
                                                         <span className="text-[11px] text-zinc-500 font-medium mt-0.5 line-clamp-2">{item.desc}</span>
                                                     </div>
                                                     <div className="flex items-center gap-2 shrink-0 ml-auto">
-                                                        <span className={`text-[9px] font-black uppercase tracking-widest ${TAG_COLORS[item.tag] || "text-zinc-500"}`}>{item.tag}</span>
+                                                        <span className={`text-[10px] font-semibold tracking-wider px-2 py-0.5 rounded border border-white/5 bg-white/5 ${TAG_COLORS[item.tag] || "text-zinc-500"}`}>{item.tag}</span>
                                                         <ArrowRight size={12} className="text-zinc-600 group-hover:text-white transition-colors" />
                                                     </div>
                                                 </Link>
@@ -181,7 +181,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                         </>
                                     ) : (
                                         <div className="px-4 py-6 text-center">
-                                            <p className="text-xs font-black uppercase tracking-widest text-zinc-500">No results for &ldquo;{query}&rdquo;</p>
+                                            <p className="text-xs font-semibold text-zinc-500">No results for &ldquo;{query}&rdquo;</p>
                                         </div>
                                     )}
                                 </div>
@@ -207,7 +207,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                     <div className={`md:hidden absolute top-full left-0 w-full bg-background border-b border-border shadow-2xl transition-all duration-300 ease-in-out z-[100] ${mobileMenuOpen ? 'max-h-[90vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
                         <div className="p-6 space-y-8">
                             <div className="space-y-6">
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-secondary/40 px-1">Discover</p>
+                                <p className="text-xs font-semibold text-secondary/50 px-2">Discover</p>
                                 <div className="grid grid-cols-1 gap-2">
                                     {[
                                         { name: "Top Tools", href: "/tools" },
@@ -222,7 +222,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                             onClick={(e) => { if (item.isDevelopment) { e.preventDefault(); } else { setMobileMenuOpen(false); } }}
                                         >
                                             <span>{item.name}</span>
-                                            {item.isDevelopment && <span className="text-[9px] font-black uppercase text-amber-500 tracking-[0.1em]">Stay Updated</span>}
+                                            {item.isDevelopment && <span className="text-[10px] font-semibold text-amber-500 px-2 py-0.5 rounded-full bg-amber-500/10">Stay Updated</span>}
                                             {!item.isDevelopment && <ArrowRight size={14} className="opacity-40" />}
                                         </Link>
                                     ))}

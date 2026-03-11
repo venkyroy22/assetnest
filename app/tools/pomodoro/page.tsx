@@ -192,7 +192,7 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSav
         label: string; value: number; onChange: (v: number) => void; min: number; max: number;
     }) => (
         <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-widest text-zinc-400">{label}</label>
+            <label className="text-[10px] font-semibold text-zinc-400">{label}</label>
             <div className="flex items-center gap-2">
                 <button onClick={() => onChange(Math.max(min, value - 1))}
                     className="w-8 h-8 border border-zinc-700 text-white hover:border-white transition-all font-black text-lg flex items-center justify-center">−</button>
@@ -210,7 +210,7 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSav
         <div className="fixed inset-0 z-[400] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
             <div className="bg-zinc-900 border border-zinc-700 p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-sm font-black uppercase tracking-widest text-white">Timer Settings</h2>
+                    <h2 className="text-sm font-bold text-white">Timer Settings</h2>
                     <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors"><X size={18} /></button>
                 </div>
                 <div className="space-y-6">
@@ -219,7 +219,7 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSav
                     <NumInput label="Long Break" value={l} onChange={setL} min={1} max={60} />
                 </div>
                 <button onClick={() => { onSave(f, s, l); onClose(); }}
-                    className="mt-8 w-full py-3 bg-white text-black text-[11px] font-black uppercase tracking-widest hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2">
+                    className="mt-8 w-full py-4 bg-white text-black text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-xl">
                     <Check size={14} /> Save & Apply
                 </button>
             </div>
@@ -455,11 +455,11 @@ export default function PomodoroPage() {
             <div className="max-w-5xl mx-auto mb-10 flex flex-col items-center justify-center gap-6 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 w-fit">
                     <Brain size={11} className="text-zinc-400" />
-                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Productivity Tool</span>
+                    <span className="text-xs font-semibold tracking-wide text-zinc-300">Productivity Tool</span>
                 </div>
 
                 <div className="flex flex-col items-center gap-8">
-                    <h1 className="text-5xl font-black tracking-tighter uppercase text-white">Pomodoro Timer</h1>
+                    <h1 className="text-5xl font-black tracking-tight text-white">Pomodoro Timer</h1>
 
                     <div className="flex flex-col items-center gap-6">
                         {/* Functional Mini Player Bar */}
@@ -472,7 +472,7 @@ export default function PomodoroPage() {
                                             <div className="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center border border-zinc-700/30 group-hover/placeholder:scale-110 transition-transform duration-500">
                                                 <Music size={16} className="text-zinc-500" />
                                             </div>
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-600">Active Viewport</span>
+                                            <span className="text-[10px] font-semibold tracking-wider text-zinc-500">Active Viewport</span>
                                         </div>
                                     </div>
 
@@ -483,7 +483,7 @@ export default function PomodoroPage() {
                                                     <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-20" />
                                                     <div className="relative h-2 w-2 rounded-full bg-red-500" />
                                                 </div>
-                                                <span className="text-[11px] font-black uppercase tracking-[0.2em] text-white">Live</span>
+                                                <span className="text-xs font-bold tracking-wide text-white">Live</span>
                                             </div>
                                             <div className="flex items-center gap-2 group/vol bg-white/5 px-2 py-1 rounded-md border border-zinc-800">
                                                 <Volume2 size={10} className="text-zinc-500" />
@@ -494,15 +494,15 @@ export default function PomodoroPage() {
                                         <div className="flex flex-col gap-2">
                                             <div className="flex items-center gap-1.5">
                                                 <button onClick={() => prevYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Previous Track"><SkipBack size={12} /></button>
-                                                <button onClick={() => toggleYT()} className={`flex-[2] flex items-center justify-center gap-2 text-[10px] font-black uppercase transition-all px-3 py-1.5 rounded-lg border ${isYTPlaying ? "bg-white/5 text-zinc-400 border-zinc-800 hover:text-white" : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"}`} title={isYTPlaying ? "Pause Session" : "Resume Session"}>
+                                                <button onClick={() => toggleYT()} className={`flex-[2] flex items-center justify-center gap-2 text-xs font-bold transition-all px-3 py-1.5 rounded-lg border ${isYTPlaying ? "bg-white/5 text-zinc-400 border-zinc-800 hover:text-white" : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"}`} title={isYTPlaying ? "Pause Session" : "Resume Session"}>
                                                     {isYTPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
                                                     <span>{isYTPlaying ? "Pause" : "Resume"}</span>
                                                 </button>
                                                 <button onClick={() => skipYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Next Track"><SkipForward size={12} /></button>
                                             </div>
                                             <div className="flex items-center gap-1.5">
-                                                <button onClick={() => window.open(youtubeUrl, '_blank')} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase text-zinc-400 hover:text-red-400 transition-all bg-white/5 px-2 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700" title="Open on YouTube"><ExternalLink size={10} className="text-zinc-500" /><span>Source</span></button>
-                                                <button onClick={() => resetPlayer()} className="flex-1 flex items-center justify-center gap-2 text-[10px] font-black uppercase text-red-500/80 hover:text-red-400 transition-all bg-red-500/5 px-2 py-1.5 rounded-lg border border-red-500/10 hover:border-red-500/20" title="Clear URL & Reset"><Trash2 size={10} /><span>Reset</span></button>
+                                                <button onClick={() => window.open(youtubeUrl, '_blank')} className="flex-1 flex items-center justify-center gap-2 text-[11px] font-bold text-zinc-400 hover:text-red-400 transition-all bg-white/5 px-2 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700" title="Open on YouTube"><ExternalLink size={10} className="text-zinc-500" /><span>Source</span></button>
+                                                <button onClick={() => resetPlayer()} className="flex-1 flex items-center justify-center gap-2 text-[11px] font-bold text-red-500 hover:text-red-400 transition-all bg-red-500/5 px-2 py-1.5 rounded-lg border border-red-500/10 hover:border-red-500/20" title="Clear URL & Reset"><Trash2 size={10} /><span>Reset</span></button>
                                             </div>
                                         </div>
                                     </div>
@@ -515,7 +515,7 @@ export default function PomodoroPage() {
                                     <div className="flex flex-col gap-1">
                                         <div className="relative flex items-center gap-3">
                                             <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="PASTE YOUTUBE URL..."
-                                                className="bg-transparent border-none text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 focus:outline-none w-44 placeholder:text-zinc-700" />
+                                                className="bg-transparent border-none text-xs font-semibold tracking-wider text-zinc-400 focus:outline-none w-44 placeholder:text-zinc-700" />
                                             <button onClick={() => playYoutube()} className="p-1.5 bg-red-500 text-white rounded-lg shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all hover:scale-105 active:scale-95" title="Start Playing"><Play size={12} fill="currentColor" /></button>
                                         </div>
                                     </div>
@@ -533,7 +533,7 @@ export default function PomodoroPage() {
                 <div className="flex flex-col gap-6 lg:pt-14">
                     <div className="p-5 border border-zinc-800 bg-zinc-900/30">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Current Cycle</span>
+                            <span className="text-[10px] font-semibold text-zinc-400">Current Cycle</span>
                             <div className="flex items-center gap-1.5">
                                 <Coffee size={12} className="text-zinc-500" />
                                 <span className="text-[9px] font-black text-zinc-500">{4 - pomodoroInCycle} to long break</span>
@@ -552,7 +552,7 @@ export default function PomodoroPage() {
 
                     <div className="p-5 border border-zinc-800 bg-zinc-900/30">
                         <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-400">Total Sessions</span>
+                            <span className="text-[10px] font-semibold text-zinc-400">Total Sessions</span>
                             <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-orange-400" : "text-zinc-600"} /><span className="text-sm font-black text-white">{sessions}</span></div>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
@@ -567,7 +567,7 @@ export default function PomodoroPage() {
                 <div className="flex flex-col items-center max-w-xl mx-auto w-full">
                     <div className="flex gap-2 mb-8">
                         {(["focus", "short", "long"] as Mode[]).map(m => (
-                            <button key={m} onClick={() => switchMode(m)} className={`px-5 py-2 text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ${mode === m ? "border-white bg-white text-black" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"}`}>{LABELS[m]}</button>
+                            <button key={m} onClick={() => switchMode(m)} className={`px-5 py-2 text-xs font-semibold tracking-wide border rounded-full transition-all duration-300 ${mode === m ? "border-white bg-white text-black" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"}`}>{LABELS[m]}</button>
                         ))}
                     </div>
 
@@ -576,7 +576,7 @@ export default function PomodoroPage() {
                         <Particles active={burst} />
                         <div className="relative z-10 flex flex-col items-center gap-1 select-none">
                             <div className="text-7xl font-black tracking-tighter tabular-nums" style={{ color, textShadow: `0 0 24px ${color}44` }}>{mins}:{secs}</div>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em]" style={{ color, opacity: running ? 1 : 0.4 }}>{running ? LABELS[mode] : "Paused"}</span>
+                            <span className="text-xs font-bold tracking-wide" style={{ color, opacity: running ? 1 : 0.4 }}>{running ? LABELS[mode] : "Paused"}</span>
                             <span className="text-[9px] text-zinc-600 font-medium mt-1">{LABELS[mode]} · {mode === "focus" ? focusMins : mode === "short" ? shortMins : longMins} min</span>
                         </div>
                     </div>
@@ -593,15 +593,15 @@ export default function PomodoroPage() {
 
                 {/* ── RIGHT: Achievements ── */}
                 <div className="lg:pt-14">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mb-4">Achievements</p>
+                    <p className="text-[10px] font-semibold text-zinc-500 mb-4">Achievements</p>
                     <div className="grid grid-cols-2 gap-3 mb-5">
                         {ACHIEVEMENTS.map(a => {
                             const done = unlocked.includes(a.id);
                             return (
                                 <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
                                     <div className={done ? "text-amber-400" : "text-zinc-600"}>{a.icon}</div>
-                                    <div><p className="text-[10px] font-black uppercase tracking-widest text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
-                                    {done && <span className="text-[8px] font-black uppercase tracking-widest text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 w-fit">Unlocked</span>}
+                                    <div><p className="text-[10px] font-bold text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
+                                    {done && <span className="text-[10px] font-bold tracking-wide text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
                                 </div>
                             );
                         })}
@@ -614,7 +614,7 @@ export default function PomodoroPage() {
                 {toast && (
                     <div className="flex items-center gap-4 px-6 py-4 bg-zinc-900 border border-amber-500/50 shadow-2xl shadow-amber-500/10 min-w-[300px]">
                         <div className="text-amber-400 shrink-0">{toast.icon}</div>
-                        <div><p className="text-[10px] font-black uppercase tracking-widest text-amber-400 mb-0.5">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
+                        <div><p className="text-[11px] font-bold tracking-wide text-amber-400 mb-1">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
                         <Trophy size={18} className="text-amber-400 shrink-0 ml-2 animate-bounce" />
                     </div>
                 )}
