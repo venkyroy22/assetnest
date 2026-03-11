@@ -59,7 +59,7 @@ export default function PrivacyPage() {
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: March 6, 2026. AssetNest reserves the right to update this policy as needed.
+                                Last updated: March 10, 2026. AssetNest reserves the right to update this policy as needed.
                             </p>
                         </div>
                     </div>

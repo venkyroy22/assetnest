@@ -49,7 +49,7 @@ export default function TermsPage() {
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: March 6, 2026. AssetNest reserves the right to modify these terms at any time.
+                                Last updated: March 10, 2026. AssetNest reserves the right to modify these terms at any time.
                             </p>
                         </div>
                     </div>

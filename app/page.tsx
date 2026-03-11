@@ -51,8 +51,6 @@ export default function Home() {
     { title: "Pinterest Keywords", count: "Best Keywords", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/pinterest-nest", href: "/keywords" },
     { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
     { title: "Video Editing Assets", count: "Best Assets", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/video-editing", href: "/video-editing", isDevelopment: true },
-    { title: "Best Useful Websites", count: "100+ Sites", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/useful-websites", href: "/useful-websites", isDevelopment: false },
-    { title: "Best AI Tools", count: "Smart Tools", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/ai-tools", href: "/ai-tools", isDevelopment: false },
     { title: "Wallpapers", count: "Best Wallpapers", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/ChatGPT%20Image%20Feb%2024%2C%202026%2C%2010_22_23%20PM", href: "/category/wallpapers", isDevelopment: true },
     { title: "Sound Effects", count: "Best SFX", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/sound-effects", href: "/category/sound-effects", isDevelopment: true },
 

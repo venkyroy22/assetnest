@@ -40,14 +40,14 @@ export default function DisclaimerPage() {
                         <section>
                             <h2 className="text-2xl font-bold text-foreground uppercase tracking-tight mb-4">4. External Links</h2>
                             <p>
-                                Our website contains links to external tools and websites (e.g., Google Drive for downloads, external design portals).
+                                Our website may contain links to external tools and resources (e.g., cloud storage for downloads, or strategic partner sites).
                                 We have no control over the content, privacy policies, or practices of these third-party services and cannot be held responsible for them.
                             </p>
                         </section>
 
                         <div className="mt-12 pt-12 border-t border-border">
                             <p className="text-sm italic">
-                                Last updated: March 6, 2026. AssetNest reserves the right to modify this disclaimer at any time.
+                                Last updated: March 10, 2026. AssetNest reserves the right to modify this disclaimer at any time.
                             </p>
                         </div>
                     </div>

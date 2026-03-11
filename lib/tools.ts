@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business";
 
@@ -24,6 +24,17 @@ export const ALL_TOOLS: Tool[] = [
         icon: FileImage,
         tags: ["image", "compress", "jpeg", "png", "webp", "optimize", "resize"],
         accent: "#10b981",   // emerald
+        category: "Images",
+    },
+    {
+        id: "bg-remover",
+        name: "Background Remover",
+        description: "Remove backgrounds from your images instantly and for free. 100% private, processing happens in your browser.",
+        href: "/tools/bg-remover",
+        badge: "Free",
+        icon: Eraser,
+        tags: ["image", "background", "remover", "bg", "ai", "remove", "transparent", "creator"],
+        accent: "#a855f7",   // purple
         category: "Images",
     },
     {

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
             allow: '/',
             disallow: '/private/',
         },
-        sitemap: 'https://assetnest.design/sitemap.xml',
+        sitemap: 'https://www.assetnest.space/sitemap.xml',
     }
 }

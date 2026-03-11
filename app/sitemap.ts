@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.9,
         },
         // Individual tool pages
+        { url: `${baseUrl}/tools/bg-remover`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/billing`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/ig-grid`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/image-compressor`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
@@ -29,9 +30,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: `${baseUrl}/tools/pomodoro`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/qr`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/typing-tester`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-        // New Directories
-        { url: `${baseUrl}/ai-tools`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
-        { url: `${baseUrl}/useful-websites`, lastModified: now, changeFrequency: 'weekly', priority: 0.9 },
         // Keywords page
         {
             url: `${baseUrl}/keywords`,

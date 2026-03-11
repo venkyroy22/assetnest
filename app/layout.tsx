@@ -11,10 +11,8 @@ export const metadata: Metadata = {
     default: "AssetNest — Free Tools & Creative Assets for Creators",
     template: "%s | AssetNest"
   },
-  description: "AssetNest is a free resource hub for creators. Access 100+ AI tools, a directory of useful websites, and free utilities like image compressor, QR code generator, and Pinterest keywords.",
+  description: "AssetNest is a free resource hub for creators. Access powerful free utilities like image compressor, QR code generator, and Pinterest keywords.",
   keywords: [
-    "100+ free ai tools",
-    "useful websites directory",
     "free image compressor",
     "image size reducer",
     "compress image online",
@@ -30,7 +28,7 @@ export const metadata: Metadata = {
     "creative tools online",
     "assetNest",
     "free tools for designers",
-    "best ai tools 2026",
+    "best creative tools 2026",
   ],
   authors: [{ name: "AssetNest", url: siteUrl }],
   creator: "AssetNest",
@@ -42,7 +40,7 @@ export const metadata: Metadata = {
     url: siteUrl,
     siteName: "AssetNest",
     title: "AssetNest — Free Tools & Creative Assets for Creators",
-    description: "Access 100+ free AI tools, a directory of useful websites, and free utilities like image compressor and QR code generator — all in one place.",
+    description: "Access free utilities like image compressor and QR code generator — all in one place.",
     images: [
       {
         url: `${siteUrl}/logo.png`,
@@ -56,7 +54,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary",
     title: "AssetNest — Free Tools & Creative Assets for Creators",
-    description: "Access 100+ free AI tools, useful websites directory, and creative utilities.",
+    description: "Access free utilities and creative resources.",
     images: [`${siteUrl}/logo.png`],
     creator: "@assetnest",
   },

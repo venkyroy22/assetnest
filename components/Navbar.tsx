@@ -4,14 +4,13 @@ import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
 import { Menu, X, Search, ChevronDown, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { aiTools } from "@/data/aiToolsData";
-import { usefulWebsites } from "@/data/usefulWebsitesData";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 
 // ── Searchable content index ──────────────────────────────────────────────────
 const SEARCH_INDEX = [
     // Tools
+    { title: "Background Remover", desc: "Remove image backgrounds instantly for free with local AI", href: "/tools/bg-remover", tag: "Tool" },
     { title: "Typing Speed Tester", desc: "Test and improve your typing speed and accuracy with real-time stats", href: "/tools/typing-tester", tag: "Tool" },
     { title: "Image Compressor", desc: "Compress JPEG, PNG & WebP images in your browser", href: "/tools/image-compressor", tag: "Tool" },
     { title: "QR Code Generator", desc: "Generate beautiful customizable QR codes for free", href: "/tools/qr", tag: "Tool" },
@@ -20,24 +19,6 @@ const SEARCH_INDEX = [
     { title: "Instagram Grid Planner", desc: "Plan your Instagram feed visually with drag and drop", href: "/tools/ig-grid", tag: "Tool" },
     { title: "Advanced Image Cropper", desc: "Crop images precisely with custom ratios and dimensions", href: "/tools/image-cropper", tag: "Tool" },
     { title: "Top Tools", desc: "All free tools for creators and designers", href: "/tools", tag: "Tool" },
-    { title: "Best AI Tools", desc: "Curated list of 100+ free AI tools for creators, writers, and coders", href: "/ai-tools", tag: "Tool" },
-    { title: "Best Websites", desc: "100+ crazy, funny, and wild free websites to explore", href: "/useful-websites", tag: "Tool" },
-
-    // Dynamic AI Tools
-    ...aiTools.map(t => ({
-        title: t.name,
-        desc: t.desc,
-        href: t.url,
-        tag: "AI Tool"
-    })),
-
-    // Dynamic Useful Websites
-    ...usefulWebsites.map(w => ({
-        title: w.name,
-        desc: w.desc,
-        href: w.url,
-        tag: "Website"
-    })),
     // Keywords
     { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
     { title: "Pinterest Keywords for NFT Creators", desc: "Strategic search terms for NFT and crypto art", href: "/keywords", tag: "Keywords" },
@@ -51,8 +32,6 @@ const TAG_COLORS: Record<string, string> = {
     Tool: "text-emerald-400",
     Keywords: "text-red-400",
     Page: "text-zinc-400",
-    "AI Tool": "text-purple-400",
-    Website: "text-yellow-400",
 };
 
 const Navbar = ({ className = "" }: { className?: string }) => {
@@ -231,8 +210,6 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                         { name: "Pinterest Keywords", href: "/keywords" },
                                         { name: "QR Generator", href: "/tools/qr" },
                                         { name: "Video Edit Assets", href: "/video-editing", isDevelopment: true },
-                                        { name: "Useful Websites", href: "/useful-websites", isDevelopment: false },
-                                        { name: "AI Tools", href: "/ai-tools" },
                                         { name: "Wallpapers", href: "/category/wallpapers", isDevelopment: true },
                                         { name: "Sound Effects", href: "/category/sound-effects", isDevelopment: true },
                                     ].map((item) => (

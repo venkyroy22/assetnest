@@ -60,7 +60,7 @@ export interface Tool {
   id: string;
   name: string;
   description: string;
-  category: "Design" | "Video Editing" | "AI Tools" | "Resources";
+  category: "Design" | "Video Editing" | "Resources";
   link: string;
 }
 
@@ -78,13 +78,6 @@ export const tools: Tool[] = [
     description: "Industry-leading video editing software.",
     category: "Video Editing",
     link: "https://adobe.com/products/premiere",
-  },
-  {
-    id: "t3",
-    name: "Midjourney",
-    description: "Powerful AI image generation tool.",
-    category: "AI Tools",
-    link: "https://midjourney.com",
   },
   {
     id: "t4",
