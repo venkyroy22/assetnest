@@ -1,6 +1,6 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText } from "lucide-react";
 
-export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business";
+export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF";
 
 export interface Tool {
     id: string;
@@ -113,5 +113,68 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "crop", "cropper", "resize", "aspect", "ratio", "dimensions"],
         accent: "#3b82f6",   // blue
         category: "Images",
+    },
+    {
+        id: "pdf-merger",
+        name: "PDF Merger",
+        description: "Merge and combine multiple PDF files into one document instantly. Upload PDFs, rearrange pages, and export — 100% private, runs in your browser.",
+        href: "/tools/pdf-merger",
+        badge: "Free",
+        icon: FileText,
+        tags: [
+            "pdf", "merge", "combine", "join", "pdf merger", "merge pdfs",
+            "combine pdfs", "join pdf", "merge pdf files", "pdf joiner",
+            "merge pdf online", "combine pdf files", "document", "merge documents"
+        ],
+        accent: "#ef4444",
+        category: "PDF",
+    },
+    {
+        id: "pdf-compressor",
+        name: "PDF Compressor",
+        description: "Compress and reduce PDF file size instantly in your browser. Make your PDF smaller for email, sharing, or uploading — no uploads, 100% private.",
+        href: "/tools/pdf-compressor",
+        badge: "Free",
+        icon: FileText,
+        tags: [
+            "pdf", "compress", "reduce", "size", "optimize", "shrink",
+            "compress pdf", "reduce pdf size", "pdf compressor", "make pdf smaller",
+            "pdf file size", "shrink pdf", "pdf optimizer", "smaller pdf",
+            "compress pdf online", "pdf size reducer"
+        ],
+        accent: "#f97316",
+        category: "PDF",
+    },
+    {
+        id: "pdf-splitter",
+        name: "PDF Splitter",
+        description: "Split a PDF into individual pages or extract specific page ranges. Visually select the pages you need and download them as a new PDF — free and private.",
+        href: "/tools/pdf-splitter",
+        badge: "Free",
+        icon: FileText,
+        tags: [
+            "pdf", "split", "extract", "pages", "separate", "cut",
+            "split pdf", "pdf splitter", "extract pages", "pdf page extractor",
+            "split pdf into pages", "separate pdf pages", "remove pages from pdf",
+            "pdf cutter", "pdf page selector", "extract pdf pages"
+        ],
+        accent: "#8b5cf6",
+        category: "PDF",
+    },
+    {
+        id: "image-to-pdf",
+        name: "Image to PDF",
+        description: "Convert JPG, PNG, and WebP images into a single PDF instantly. Drag to reorder, set page size, margin and quality — 100% private, in your browser.",
+        href: "/tools/image-to-pdf",
+        badge: "Free",
+        icon: FileText,
+        tags: [
+            "image", "jpg", "png", "webp", "gif", "photo", "picture",
+            "image to pdf", "jpg to pdf", "png to pdf", "photos to pdf",
+            "convert image to pdf", "picture to pdf", "convert jpg to pdf",
+            "images to pdf", "photo to pdf", "webp to pdf", "pdf from images"
+        ],
+        accent: "#0ea5e9",
+        category: "PDF",
     },
 ];

@@ -2,27 +2,30 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ChevronDown, ArrowRight } from "lucide-react";
+import { Menu, X, Search, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
+import { ALL_TOOLS } from "@/lib/tools";
 
 // ── Searchable content index ──────────────────────────────────────────────────
-const SEARCH_INDEX = [
-    // Tools
-    { title: "Background Remover", desc: "Remove image backgrounds instantly for free with local AI", href: "/tools/bg-remover", tag: "Tool" },
-    { title: "Typing Speed Tester", desc: "Test and improve your typing speed and accuracy with real-time stats", href: "/tools/typing-tester", tag: "Tool" },
-    { title: "Image Compressor", desc: "Compress JPEG, PNG & WebP images in your browser", href: "/tools/image-compressor", tag: "Tool" },
-    { title: "QR Code Generator", desc: "Generate beautiful customizable QR codes for free", href: "/tools/qr", tag: "Tool" },
-    { title: "Pomodoro Timer", desc: "Focus timer with achievements, session tracking and breaks", href: "/tools/pomodoro", tag: "Tool" },
-    { title: "Image Converter", desc: "Convert JPG to PNG, PNG to WebP, or JPG to WebP instantly", href: "/tools/image-converter", tag: "Tool" },
-    { title: "Instagram Grid Planner", desc: "Plan your Instagram feed visually with drag and drop", href: "/tools/ig-grid", tag: "Tool" },
-    { title: "Advanced Image Cropper", desc: "Crop images precisely with custom ratios and dimensions", href: "/tools/image-cropper", tag: "Tool" },
-    { title: "Top Tools", desc: "All free tools for creators and designers", href: "/tools", tag: "Tool" },
-    // Keywords
+// Dynamically built from ALL_TOOLS so new tools are automatically searchable.
+type SearchItem = { title: string; desc: string; href: string; tag: string; keywords?: string[] };
+
+const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
+    title: t.name,
+    desc: t.description,
+    href: t.href,
+    tag: "Tool",
+    keywords: t.tags,
+}));
+
+const SEARCH_INDEX: SearchItem[] = [
+    ...TOOL_ENTRIES,
+    // Keywords pages
     { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
     { title: "Pinterest Keywords for NFT Creators", desc: "Strategic search terms for NFT and crypto art", href: "/keywords", tag: "Keywords" },
-    // Pages
+    // Static pages
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
 ];
@@ -53,8 +56,9 @@ const Navbar = ({ className = "" }: { className?: string }) => {
             (item) =>
                 item.title.toLowerCase().includes(q) ||
                 item.desc.toLowerCase().includes(q) ||
-                item.tag.toLowerCase().includes(q)
-        ).slice(0, 6);
+                item.tag.toLowerCase().includes(q) ||
+                item.keywords?.some(k => k.toLowerCase().includes(q))
+        ).slice(0, 8);
         setResults(found);
         setShowResults(true);
     }, [query]);
@@ -219,7 +223,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                         >
                                             <span>{item.name}</span>
                                             {item.isDevelopment && <span className="text-[9px] font-black uppercase text-amber-500 tracking-[0.1em]">Stay Updated</span>}
-                                            {!item.isDevelopment && <ChevronDown size={14} className="-rotate-90 opacity-40" />}
+                                            {!item.isDevelopment && <ArrowRight size={14} className="opacity-40" />}
                                         </Link>
                                     ))}
                                 </div>

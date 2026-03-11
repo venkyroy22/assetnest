@@ -272,11 +272,8 @@ export default function ToolsPage() {
 
         // Sort explicitly so "Productivity" is first, "Images" is second, then alphabetical
         regularCategories.sort((a, b) => {
-            if (a === "Productivity") return -1;
-            if (b === "Productivity") return 1;
-            if (a === "Images") return -1;
-            if (b === "Images") return 1;
-            return a.localeCompare(b);
+            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4 };
+            return (order[a] ?? 99) - (order[b] ?? 99);
         });
 
         regularCategories.forEach(cat => {
