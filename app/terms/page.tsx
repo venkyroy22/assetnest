@@ -25,36 +25,36 @@ export default function TermsPage() {
                             <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">1. Acceptance of Terms</h2>
                                 <p>
-                                    By accessing and using AssetNest, you agree to comply with and be bound by these Terms of Service. AssetNest provides completely free tools and resources. If you do not agree to these terms, please refrain from using our platform.
+                                    By accessing and using AssetNest, you agree to be bound by these Terms of Service. AssetNest provides a suite of free web-based utilities and creative resources. If you do not agree with any of these terms, you are prohibited from using or accessing this site.
                                 </p>
                             </section>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
                                 <section>
-                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">2. No Accounts Required</h2>
+                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">2. Use License</h2>
                                     <p>
-                                        AssetNest is designed to be completely open and accessible. We do not require users to create accounts, sign up, or provide personal information to use any of our core tools or download our free assets.
+                                        Permission is granted to use AssetNest's tools for personal or commercial creative projects. This is the grant of a license, not a transfer of title. You may not attempt to decompile or reverse engineer any software contained on the AssetNest website.
                                     </p>
                                 </section>
 
                                 <section>
-                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">3. Intellectual Property</h2>
+                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">3. Local Execution</h2>
                                     <p>
-                                        All content on AssetNest, including logos, text, and graphics, is the property of AssetNest or its licensors and is protected by intellectual property laws.
+                                        Most AssetNest tools process data directly in your browser. While we strive for 100% accuracy, we are not responsible for any data loss, file corruption, or formatting errors that occur during local processing.
                                     </p>
                                 </section>
 
                                 <section>
-                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Prohibited Conduct</h2>
+                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Disclaimers</h2>
                                     <p>
-                                        Users are prohibited from using the platform for any unlawful purpose, attempting to gain unauthorized access, or interfering with the site's functionality.
+                                        The materials on AssetNest are provided on an 'as is' basis. AssetNest makes no warranties, expressed or implied, and hereby disclaims and negates all other warranties including, without limitation, implied warranties of merchantability.
                                     </p>
                                 </section>
 
                                 <section>
-                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">5. Limitation of Liability</h2>
+                                    <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">5. Limitations</h2>
                                     <p>
-                                        AssetNest shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our services or assets.
+                                        In no event shall AssetNest or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the tools on AssetNest.
                                     </p>
                                 </section>
                             </div>

@@ -22,35 +22,30 @@ export default function DisclaimerPage() {
 
                         <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px]">
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">1. Asset Ownership</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">1. Tool Reliability</h2>
                                 <p className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-zinc-400">
-                                    The tools provided on AssetNest are completely free to use. The design assets provided are either created by our in-house designers, licensed for redistribution, or curated from public sources with appropriate permissions.
-                                    We do not claim ownership of any third-party brand names, logos, or software mentioned or depicted in our resources.
+                                    The utilities provided on AssetNest (Image Compressor, PDF Tools, QR Generator, etc.) are provided for convenience and are intended to assist in creative workflows. While we strive for high precision, we do not guarantee that the results will be 100% error-free or suitable for every professional requirement. Users should always verify important files (such as legal PDF merges or critical image conversions) after processing.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">2. Licensing & Usage</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">2. Intellectual Property</h2>
                                 <p className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-zinc-400">
-                                    All tools are free to use. Each digital asset comes with its own license agreement which is usually included in the download file or outlined on the asset page.
-                                    Users are solely responsible for reviewing and adhering to the specific terms of use for each individual resource.
-                                    AssetNest is NOT liable for any legal issues arising from the misuse of downloaded assets or the tools provided.
+                                    AssetNest provides tools and curated prompts. We do not claim ownership of the images you process or the content you generate using our tools. Any logos, brand names, or third-party trademarks mentioned on the site are the property of their respective owners and are used here for descriptive or illustrative purposes only.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">3. No Warranties</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">3. No Professional Advice</h2>
                                 <p className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-zinc-400">
-                                    All resources and tools are provided &quot;as-is&quot; without any warranties of any kind, whether express or implied.
-                                    While we strive for high quality, we do not guarantee that every asset will be error-free or compatible with all versions of creative software.
+                                    The information and tools on AssetNest do not constitute professional, legal, or financial advice. We are not liable for any business decisions, legal complications, or financial losses resulting from the use of our browser-based utilities.
                                 </p>
                             </section>
 
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. External Links</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. External Services</h2>
                                 <p className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-zinc-400">
-                                    Our website may contain links to external tools and resources (e.g., cloud storage for downloads, or strategic partner sites).
-                                    We have no control over the content, privacy policies, or practices of these third-party services and cannot be held responsible for them.
+                                    Our platform may link to external tools or hosting services. AssetNest exercises no control over the privacy policies or operational integrity of these third-party platforms. Use of such links is at your own risk.
                                 </p>
                             </section>
 

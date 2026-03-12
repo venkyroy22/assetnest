@@ -26,13 +26,16 @@ export default function sitemap(): MetadataRoute.Sitemap {
         { url: `${baseUrl}/tools/image-compressor`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/image-converter`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/image-cropper`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-        { url: `${baseUrl}/tools/media-hub`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${baseUrl}/tools/pdf-merger`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${baseUrl}/tools/pdf-splitter`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${baseUrl}/tools/pdf-compressor`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
+        { url: `${baseUrl}/tools/image-to-pdf`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/pomodoro`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/qr`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
         { url: `${baseUrl}/tools/typing-tester`, lastModified: now, changeFrequency: 'monthly', priority: 0.8 },
-        // Keywords page
+        // Prompts page
         {
-            url: `${baseUrl}/keywords`,
+            url: `${baseUrl}/prompts`,
             lastModified: now,
             changeFrequency: 'weekly',
             priority: 0.8,

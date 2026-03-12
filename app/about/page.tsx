@@ -2,8 +2,8 @@ import Container from "@/components/Container";
 import { Info } from "lucide-react";
 
 export const metadata = {
-    title: "About AssetNest – Free Creative Tools & Assets",
-    description: "Learn about AssetNest, the 100% free suite of design tools and curated assets for creators, designers, and developers.",
+    title: "About AssetNest – Free Creative Tools & Resources",
+    description: "Learn about AssetNest, the 100% free suite of design tools and curated resources for creators, designers, and developers.",
 };
 
 export default function AboutPage() {
@@ -25,17 +25,17 @@ export default function AboutPage() {
                             <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">Our Mission</h2>
                                 <p>
-                                    At AssetNest, we believe that creativity shouldn't be gated by expensive subscriptions or complex tools. Our mission is to provide creators, designers, and developers with a powerful, completely free suite of online tools and high-quality resources to accelerate their workflows.
+                                    At AssetNest, we believe that high-quality creative tools should be accessible to everyone without cost. Our mission is to provide a curated suite of powerful, browser-based utilities that help designers, marketers, and developers streamline their workflows without the need for complex software or monthly subscriptions.
                                 </p>
                             </section>
 
                             <section>
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">What We Do</h2>
                                 <p className="mb-4">
-                                    We meticulously build and curate tools that solve real problems. From advanced image cropping and compression to productivity timers and typing speed testers, every tool on AssetNest is designed with performance, privacy, and ease-of-use in mind. No paywalls, no hidden fees, just pure utility.
+                                    We build precision tools for modern creators. From our advanced PDF suite and image optimization utilities to our premium AI prompting gallery, every feature on AssetNest is engineered for speed and privacy. We focus on "Local Processing"—meaning your sensitive files never leave your computer.
                                 </p>
                                 <p>
-                                    In addition to our tools, we curate high-quality assets, templates, and guides designed specifically to help modern creatives thrive in an increasingly competitive digital landscape.
+                                    Whether you're compressing images for a website, merging PDFs for a client, or looking for cinematic AI inspiration, AssetNest is built to be your reliable, lightweight creative companion.
                                 </p>
                             </section>
 
@@ -43,27 +43,27 @@ export default function AboutPage() {
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Why AssetNest?</h2>
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
-                                        <div className="text-white font-bold mb-2">100% Free</div>
-                                        <div className="text-[14px] sm:text-[15px]">No premium tiers, no paywalls. Everything is accessible.</div>
+                                        <div className="text-white font-bold mb-2">Browser-Only</div>
+                                        <div className="text-[14px] sm:text-[15px]">No apps to install. Our tools run directly in your favorite web browser.</div>
                                     </div>
                                     <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
                                         <div className="text-white font-bold mb-2">Privacy First</div>
-                                        <div className="text-[14px] sm:text-[15px]">Our tools primarily run perfectly in your browser, meaning your files never even hit a server.</div>
+                                        <div className="text-[14px] sm:text-[15px]">Since processing happens locally, your data stays under your control at all times.</div>
                                     </div>
                                     <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
-                                        <div className="text-white font-bold mb-2">Constantly Growing</div>
-                                        <div className="text-[14px] sm:text-[15px]">We are continuously adding new tools and resources based on what creators actually need.</div>
+                                        <div className="text-white font-bold mb-2">Free Forever</div>
+                                        <div className="text-[14px] sm:text-[15px]">We provide essential utilities at no cost to help the creator community thrive.</div>
                                     </div>
                                     <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
-                                        <div className="text-white font-bold mb-2">Zero Clutter</div>
-                                        <div className="text-[14px] sm:text-[15px]">Minimal, aesthetic interfaces focused purely on getting the job done fast.</div>
+                                        <div className="text-white font-bold mb-2">Clean UI</div>
+                                        <div className="text-[14px] sm:text-[15px]">Zero clutter. Minimalist designs focused purely on getting the job done fast.</div>
                                     </div>
                                 </div>
                             </section>
 
                             <div className="mt-12 pt-8 border-t border-zinc-900">
                                 <p className="text-sm italic text-zinc-500">
-                                    Stay inspired and keep creating. Welcome to your ultimate asset nest.
+                                    Efficiency. Privacy. Creativity. Welcome to AssetNest.
                                 </p>
                             </div>
                         </div>

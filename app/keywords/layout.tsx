@@ -1,18 +1,9 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Pinterest Keywords for Creators — Free Tool | AssetNest",
-    description: "Skyrocket your Pinterest growth with our free Pinterest keyword research tool. Find the best keywords for designers, photographers, and video editors to boost your pins' reach.",
-    keywords: [
-        "pinterest keywords",
-        "pinterest seo tool",
-        "pinterest growth",
-        "keywords for designers",
-        "pinterest tags",
-        "increase pinterest reach",
-        "free pinterest tool",
-        "pinterest marketing",
-    ],
+    title: "Creator Tools & Resources — AssetNest",
+    description: "Discover a suite of powerful free tools and resources for creators, designers, and marketers.",
+    keywords: ["creator tools", "design tools", "free online tools", "productivity tools"],
 };
 
 export default function KeywordsLayout({

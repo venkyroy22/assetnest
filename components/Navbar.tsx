@@ -23,17 +23,18 @@ const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
 const SEARCH_INDEX: SearchItem[] = [
     ...TOOL_ENTRIES,
     // Keywords pages
-    { title: "Pinterest Keywords", desc: "Best Pinterest keywords for designers and creators", href: "/keywords", tag: "Keywords" },
-    { title: "Pinterest Keywords for NFT Creators", desc: "Strategic search terms for NFT and crypto art", href: "/keywords", tag: "Keywords" },
+    { title: "AI Image Prompts", desc: "Curated prompt lists for Midjourney, ChatGPT, and more", href: "/prompts", tag: "Prompts" },
     // Static pages
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
+    { title: "About AssetNest", desc: "Learn about our mission", href: "/about", tag: "Page" },
+    { title: "Contact Us", desc: "Get in touch for support", href: "/contact", tag: "Page" },
 ];
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TAG_COLORS: Record<string, string> = {
     Tool: "text-emerald-400",
-    Keywords: "text-red-400",
+    Prompts: "text-purple-400",
     Page: "text-zinc-400",
 };
 
@@ -211,19 +212,15 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 <div className="grid grid-cols-1 gap-2">
                                     {[
                                         { name: "Top Tools", href: "/tools" },
-                                        { name: "Pinterest Keywords", href: "/keywords" },
+                                        { name: "AI Image Prompts", href: "/prompts" },
                                         { name: "QR Generator", href: "/tools/qr" },
-                                        { name: "Video Edit Assets", href: "/video-editing", isDevelopment: true },
-                                        { name: "Wallpapers", href: "/category/wallpapers", isDevelopment: true },
-                                        { name: "Sound Effects", href: "/category/sound-effects", isDevelopment: true },
                                     ].map((item) => (
-                                        <Link key={item.href} href={item.isDevelopment ? "#" : item.href}
-                                            className={`flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all ${item.isDevelopment ? "text-zinc-600 cursor-not-allowed opacity-50" : "text-white/70 hover:text-white hover:bg-zinc-800/50"}`}
-                                            onClick={(e) => { if (item.isDevelopment) { e.preventDefault(); } else { setMobileMenuOpen(false); } }}
+                                        <Link key={item.href} href={item.href}
+                                            className="flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all text-white/70 hover:text-white hover:bg-zinc-800/50"
+                                            onClick={() => setMobileMenuOpen(false)}
                                         >
                                             <span>{item.name}</span>
-                                            {item.isDevelopment && <span className="text-[10px] font-semibold text-amber-500 px-2 py-0.5 rounded-full bg-amber-500/10">Stay Updated</span>}
-                                            {!item.isDevelopment && <ArrowRight size={14} className="opacity-40" />}
+                                            <ArrowRight size={14} className="opacity-40" />
                                         </Link>
                                     ))}
                                 </div>

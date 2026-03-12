@@ -407,8 +407,7 @@ export default function ToolsPage() {
                                         <ToolCard key={tool.id} tool={tool} index={i} />
                                     ))}
 
-                                    {/* Coming soon */}
-                                    {!query && group.isComingSoonVisible && <ComingSoonCard index={group.tools.length} />}
+                                    {/* Coming soon cards removed for AdSense compliance */}
                                 </div>
                             </div>
                         ))}

@@ -2,8 +2,6 @@
 
 import Link from "next/link";
 import Container from "@/components/Container";
-import { assets } from "@/data/mockData";
-import AssetCard from "@/components/AssetCard";
 import CategoryCard from "@/components/CategoryCard";
 import FireParticles from "@/components/FireParticles";
 import { TrendingUp, Sparkles, Wrench, ArrowRight } from "lucide-react";
@@ -48,12 +46,8 @@ export default function Home() {
   };
 
   const categories = [
-    { title: "Pinterest Keywords", count: "Best Keywords", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/pinterest-nest", href: "/keywords" },
+    { title: "AI Image Prompts", count: "Best Prompts", image: "/promptsimg/Gemini_Generated_Image_l454rnl454rnl454.png", href: "/prompts" },
     { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
-    { title: "Video Editing Assets", count: "Best Assets", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/video-editing", href: "/video-editing", isDevelopment: true },
-    { title: "Wallpapers", count: "Best Wallpapers", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/ChatGPT%20Image%20Feb%2024%2C%202026%2C%2010_22_23%20PM", href: "/category/wallpapers", isDevelopment: true },
-    { title: "Sound Effects", count: "Best SFX", image: "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/categories/sound-effects", href: "/category/sound-effects", isDevelopment: true },
-
   ];
 
   if (!mounted) return <div className="min-h-screen bg-background" />;
@@ -116,10 +110,10 @@ export default function Home() {
                 <span className="text-[10px] font-semibold tracking-wider text-zinc-300">Ultimate Resource Hub</span>
               </div>
               <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mx-auto max-w-4xl leading-[0.9] drop-shadow-2xl">
-                Your Ultimate <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">Asset</span> Nest.
+                Your Ultimate <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">Power</span> Nest.
               </h1>
               <p className="text-base md:text-xl text-zinc-400 font-medium max-w-xl mx-auto drop-shadow-md">
-                Curated assets, strategic tools, and infinite inspiration for your next big project.
+                Precision utilities, professional AI prompts, and essential tools for your next big project.
               </p>
             </div>
 
@@ -134,7 +128,7 @@ export default function Home() {
           <div className="mb-8">
             <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
               <TrendingUp className="text-amber-500" size={20} />
-              Free assets for any project
+              Powerful Tools for Creators
             </h2>
           </div>
 

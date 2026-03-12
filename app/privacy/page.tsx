@@ -22,40 +22,41 @@ export default function PrivacyPage() {
 
                         <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px]">
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">1. Data Collection</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">1. Local Processing & Data Collection</h2>
                                 <p className="leading-relaxed">
-                                    We collect the minimal data necessary to maintain platform functionality. Most of our tools run entirely locally in your web browser, meaning your data, images, and files never leave your device.
-                                    Any anonymous usage data collected (such as page views or tool usage metrics) is used solely to improve our platform and provide better services.
+                                    Our primary design philosophy is **Privacy by Default**. Most of our tools (including PDF Merger, Image Compressor, and QR Generator) run entirely in your local web browser using client-side technologies. This means your images, PDF documents, and personal files **never leave your device** and are never uploaded to our servers.
+                                </p>
+                                <p className="mt-4 leading-relaxed">
+                                    We do not collect personal identification information unless you voluntarily contact us via email. Any anonymous technical data (e.g., browser type, page views) is collected to ensure site stability and performance.
                                 </p>
                             </section>
 
                             <section>
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">2. Use of Information</h2>
                                 <p className="leading-relaxed">
-                                    Any data collected is used strictly to understand website performance and improve the tools we offer.
-                                    We do not sell your personal data to third parties. We do not store or process files uploaded to our local tools (like the Image Compressor or QR Code generator) on our servers.
+                                    Any anonymous data collected is used strictly to optimize the user experience and maintain the health of our platform. We do not sell, trade, or rent user data to third parties.
                                 </p>
                             </section>
 
                             <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">3. Cookies & Advertising</h2>
                                 <p className="mb-6 leading-relaxed">
-                                    We use cookies to maintain your session, understand how you interact with our site, and to serve advertisements through Google AdSense. 
+                                    We use cookies to understand site traffic and to serve advertisements through Google AdSense. 
                                 </p>
                                 <div className="space-y-6 text-[14px] sm:text-[15px] bg-black/40 p-6 rounded-2xl border border-zinc-800/30">
                                     <p className="leading-relaxed">
-                                        <strong className="text-white block mb-2 text-base">Google AdSense & DoubleClick Cookie</strong> Google, as a third-party vendor, uses cookies to serve ads on AssetNest. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet.
+                                        <strong className="text-white block mb-2 text-base">Google AdSense</strong> Google, as a third-party vendor, uses cookies to serve ads on AssetNest. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet.
                                     </p>
                                     <p className="leading-relaxed">
-                                        <strong className="text-white block mb-2 text-base">Personalized Advertising</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline transition-all">Google Ad Settings</a>. Alternatively, you can opt out of a third-party vendor's use of cookies for personalized advertising by visiting <a href="https://www.aboutads.info" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline transition-all">www.aboutads.info</a>.
+                                        <strong className="text-white block mb-2 text-base">Opt-Out</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline transition-all">Google Ad Settings</a>.
                                     </p>
                                 </div>
                             </section>
 
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Data Security</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Third-Party Links</h2>
                                 <p className="leading-relaxed">
-                                    We implement industry-standard security measures to protect your information. However, no method of transmission over the internet is 100% secure, and we cannot guarantee absolute security.
+                                    Our site may contain links to external web tools or resources. We are not responsible for the privacy practices or content of these third-party sites.
                                 </p>
                             </section>
 

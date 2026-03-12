@@ -15,24 +15,22 @@ const siteUrl = "https://www.assetnest.space";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "AssetNest — Free Tools & Creative Assets for Creators",
+    default: "AssetNest — Free Tools & AI Image Prompts for Creators",
     template: "%s | AssetNest"
   },
-  description: "AssetNest is a free resource hub for creators. Access powerful free utilities like image compressor, QR code generator, and Pinterest keywords.",
+  description: "AssetNest is a professional resource hub for creators. Access powerful, 100% private tools like PDF Merger, Image Compressor, QR Generator, and Premium AI Image Prompts.",
   keywords: [
+    "PDF Merger online",
     "free image compressor",
     "image size reducer",
     "compress image online",
     "QR code generator",
-    "pinterest keywords",
-    "free design tools",
+    "AI image prompts",
+    "midjourney prompts",
     "free creator tools",
-    "design assets",
+    "design utilities",
     "video editing resources",
-    "free overlays",
-    "ui kits",
-    "luts",
-    "creative tools online",
+    "productivity tools",
     "assetNest",
     "free tools for designers",
     "best creative tools 2026",
@@ -46,21 +44,21 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "AssetNest",
-    title: "AssetNest — Free Tools & Creative Assets for Creators",
-    description: "Access free utilities like image compressor and QR code generator — all in one place.",
+    title: "AssetNest — Free Tools & AI Image Prompts for Creators",
+    description: "Access powerful free utilities like PDF Merger, Image Compressor and QR code generator — all in one place.",
     images: [
       {
         url: `${siteUrl}/logo.png`,
         width: 512,
         height: 512,
-        alt: "AssetNest Logo — Free Tools & Creative Assets",
+        alt: "AssetNest Logo — Free Tools & AI Prompts",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "AssetNest — Free Tools & Creative Assets for Creators",
+    title: "AssetNest — Free Tools & AI Image Prompts for Creators",
     description: "Access free utilities and creative resources.",
     images: [`${siteUrl}/logo.png`],
     creator: "@assetnest",
@@ -141,4 +139,3 @@ export default function RootLayout({
     </html>
   );
 }
-

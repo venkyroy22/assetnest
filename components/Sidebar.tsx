@@ -3,26 +3,18 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin } from "lucide-react";
+import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin, Info, Mail } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
 import { usePins } from "./PinProvider";
 import { ALL_TOOLS } from "@/lib/tools";
 
-// ── Pinterest icon ────────────────────────────────────────────────────────────
-const PinterestIcon = ({ size = 16 }: { size?: number }) => (
-    <svg width={size} height={size} viewBox="3 3 18 18" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-        <path d="M12.017 4.5c-4.138 0-7.5 3.362-7.5 7.5 0 3.174 1.974 5.886 4.761 6.976-.065-.593-.124-1.502.026-2.15l.879-3.729s-.224-.45-.224-1.114c0-1.043.604-1.821 1.357-1.821.64 0 .949.48.949 1.056 0 .643-.409 1.605-.621 2.497-.177.746.374 1.356 1.111 1.356 1.333 0 2.357-1.405 2.357-3.434 0-1.795-1.29-3.051-3.132-3.051-2.134 0-3.386 1.6-3.386 3.255 0 .644.248 1.336.558 1.711.061.074.07.14.052.216l-.208.85c-.033.138-.109.167-.251.101-.937-.436-1.523-1.805-1.523-2.906 0-2.365 1.719-4.538 4.956-4.538 2.601 0 4.624 1.854 4.624 4.332 0 2.585-1.63 4.665-3.892 4.665-.76 0-1.474-.394-1.719-.861l-.467 1.783c-.169.652-.626 1.469-.933 1.966.702.217 1.448.334 2.221.334 4.138 0 7.5-3.362 7.5-7.5s-3.362-7.5-7.5-7.5z" />
-    </svg>
-);
-
 // ── Menu config ───────────────────────────────────────────────────────────────
 const MENU_ITEMS = [
     { name: "Top Tools", href: "/tools", icon: Wrench, accent: "#10b981", dev: false },
-    { name: "Pinterest Keywords", href: "/keywords", icon: PinterestIcon, accent: "#e11d48", dev: false },
+    { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, accent: "#a855f7", dev: false },
     { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#6366f1", dev: false },
-    { name: "Video Edit Assets", href: "/video-editing", icon: Video, accent: "#f59e0b", dev: true },
-    { name: "Wallpapers", href: "/category/wallpapers", icon: ImageIcon, accent: "#ec4899", dev: true },
-    { name: "Sound Effects", href: "/category/sound-effects", icon: Volume2, accent: "#16a34a", dev: true },
+    { name: "About", href: "/about", icon: Info, accent: "#94a3b8", dev: false },
+    { name: "Contact", href: "/contact", icon: Mail, accent: "#94a3b8", dev: false },
 ];
 
 // ── Nav item ──────────────────────────────────────────────────────────────────
