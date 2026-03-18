@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       const uploadStream = cloudinary.uploader.upload_stream(
         { 
           folder: "assetnest_temp_shares", 
-          resource_type: "raw", 
+          resource_type: "auto", 
           public_id: publicId 
         },
         (error, result) => {
@@ -40,15 +40,9 @@ export async function POST(req: Request) {
       uploadStream.end(buffer);
     });
 
-    // For 'raw' resources, fl_attachment can be injected to force download if required,
-    // but typically mobile browsers will correctly download a raw URL that ends in .docx or .pdf.
-    let finalUrl = (uploadResult as any).secure_url;
-    
-    // Inject fl_attachment to ensure it triggers a "Save to Files" / download dialog
-    // instead of accidentally opening the PDF inline inside the mobile browser window.
-    if (finalUrl.includes('/upload/')) {
-        finalUrl = finalUrl.replace('/upload/', '/upload/fl_attachment/');
-    }
+    // Provide the clean, direct secure_url from Cloudinary
+    // Mobile browsers and native OS handlers will correctly offer to open/save PDFs and DOCX files.
+    const finalUrl = (uploadResult as any).secure_url;
     
     return NextResponse.json({ url: finalUrl });
   } catch (error) {
