@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, FileText, Info, X, FileEdit, Share2 } from "lucide-react";
+import { Upload, Download, RefreshCw, FileText, Info, X, FileEdit } from "lucide-react";
 import { Document, Packer, Paragraph, TextRun } from "docx";
 import dynamic from "next/dynamic";
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
-import ShareModal from "@/components/ShareModal";
+
 
 export default function PdfTextExtractorPage() {
     const [file, setFile] = useState<File | null>(null);
@@ -15,7 +15,7 @@ export default function PdfTextExtractorPage() {
     const [progress, setProgress] = useState(0);
     const [outputUrl, setOutputUrl] = useState<string | null>(null);
     const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
-    const [isSharing, setIsSharing] = useState(false);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFile = async (f: File) => {
@@ -311,12 +311,7 @@ export default function PdfTextExtractorPage() {
                                         >
                                             <Download size={16} /> Download DOCX
                                         </button>
-                                        <button
-                                            onClick={() => setIsSharing(true)}
-                                            className="h-12 px-6 sm:px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98]"
-                                        >
-                                            <Share2 size={16} className="text-blue-400" /> Share to Mobile
-                                        </button>
+
                                     </div>
                                 </div>
                             )}
@@ -350,12 +345,7 @@ export default function PdfTextExtractorPage() {
                 </div>
             )}
             
-            <ShareModal 
-                isOpen={isSharing} 
-                onClose={() => setIsSharing(false)} 
-                file={outputBlob} 
-                fileName={file ? file.name.replace(/\.[^/.]+$/, "") + "_Text.docx" : "extracted_text.docx"} 
-            />
+
         </div>
     );
 }
