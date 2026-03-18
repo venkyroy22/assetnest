@@ -1,23 +1,140 @@
 "use client";
 
-import { aiPrompts } from "@/data/mockData";
-import { Copy, Check, Terminal, Sparkles, ZoomIn } from "lucide-react";
-import { useState, useEffect } from "react";
+import { aiPrompts, PromptItem } from "@/data/mockData";
+import { Copy, Check, Terminal, Sparkles, ZoomIn, ChevronLeft, ChevronRight, Heart } from "lucide-react";
+import { useState, useEffect, useMemo } from "react";
 import Container from "@/components/Container";
+import Tooltip from "@/components/Tooltip";
+
+// --- Sub-component for auto-sliding carousel images ---
+function CarouselImage({ images, title }: { images: string[], title: string }) {
+    const [currentIndex, setCurrentIndex] = useState(0);
+
+    useEffect(() => {
+        if (images.length <= 1) return;
+        
+        const interval = setInterval(() => {
+            setCurrentIndex((prev) => (prev + 1) % images.length);
+        }, 4000);
+
+        return () => clearInterval(interval);
+    }, [images]);
+
+    return (
+        <div className="absolute inset-0 w-full h-full overflow-hidden">
+            {/* Sliding Container */}
+            <div 
+                className="flex w-full h-full transition-transform duration-1000 ease-[cubic-bezier(0.23,1,0.32,1)]"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+            >
+                {images.map((img, idx) => (
+                    <div key={img} className="min-w-full h-full relative overflow-hidden">
+                        <img
+                            src={img}
+                            alt={`${title} - version ${idx + 1}`}
+                            className="w-full h-full object-cover transition-transform duration-[2000ms] group-hover:scale-110 brightness-[1.1] contrast-[1.05]"
+                            onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop';
+                            }}
+                        />
+                    </div>
+                ))}
+            </div>
+            
+            {/* Visual indicators for multiple images */}
+            {images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-30">
+                    {images.map((_, idx) => (
+                        <div 
+                            key={idx}
+                            className={`h-1 rounded-full transition-all duration-500 ${idx === currentIndex ? 'w-4 bg-white' : 'w-1 bg-white/30'}`}
+                        />
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
 
 export default function PromptsPage() {
     const [headerVisible, setHeaderVisible] = useState(false);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+    const [likesMap, setLikesMap] = useState<Record<string, number>>({});
+    const [userLikedSlugs, setUserLikedSlugs] = useState<string[]>([]);
 
     useEffect(() => {
         const t = setTimeout(() => setHeaderVisible(true), 100);
+        
+        // Fetch global likes
+        fetch('/api/likes')
+            .then(res => res.json())
+            .then(data => {
+                if (Array.isArray(data)) {
+                    const map: Record<string, number> = {};
+                    data.forEach((item: any) => { map[item.slug] = item.likes; });
+                    setLikesMap(map);
+                }
+            })
+            .catch(err => console.error("Likes fetch error:", err));
+
+        // Load local user likes
+        const saved = localStorage.getItem('user_prompt_likes');
+        if (saved) {
+            try {
+                setUserLikedSlugs(JSON.parse(saved));
+            } catch(e) { /* ignore */ }
+        }
+
         return () => clearTimeout(t);
     }, []);
+
+    // Sort prompts by likes
+    const sortedPrompts = useMemo(() => {
+        return [...aiPrompts].sort((a, b) => {
+            const likesA = likesMap[a.slug] || 0;
+            const likesB = likesMap[b.slug] || 0;
+            if (likesA === likesB) return 0;
+            return likesB - likesA;
+        });
+    }, [likesMap]);
 
     const copyToClipboard = (text: string, index: number) => {
         navigator.clipboard.writeText(text);
         setCopiedIndex(index);
         setTimeout(() => setCopiedIndex(null), 2000);
+    };
+
+    const handleLike = async (slug: string) => {
+        const isLiked = userLikedSlugs.includes(slug);
+        const currentLikes = likesMap[slug] || 0;
+        
+        // Optimistic UI update
+        if (isLiked) {
+            // UNLIKE
+            setLikesMap(prev => ({ ...prev, [slug]: Math.max(0, currentLikes - 1) }));
+            const newLikes = userLikedSlugs.filter(s => s !== slug);
+            setUserLikedSlugs(newLikes);
+            localStorage.setItem('user_prompt_likes', JSON.stringify(newLikes));
+        } else {
+            // LIKE
+            setLikesMap(prev => ({ ...prev, [slug]: currentLikes + 1 }));
+            const newLikes = [...userLikedSlugs, slug];
+            setUserLikedSlugs(newLikes);
+            localStorage.setItem('user_prompt_likes', JSON.stringify(newLikes));
+        }
+
+        try {
+            await fetch('/api/likes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ 
+                    slug, 
+                    increment: isLiked ? -1 : 1 
+                })
+            });
+        } catch (err) {
+            console.error("Failed to sync like toggle:", err);
+        }
     };
 
     return (
@@ -44,50 +161,68 @@ export default function PromptsPage() {
 
                 {/* ── Compact Grid ── */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-8">
-                    {aiPrompts.map((item, idx) => (
+                    {sortedPrompts.map((item, idx) => {
+                        const isLiked = userLikedSlugs.includes(item.slug);
+                        const likesCount = likesMap[item.slug] || 0;
+                        
+                        return (
                         <div key={item.slug} className="group relative">
                             
                             {/* The Compact Poster Container */}
                             <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden border border-zinc-900 shadow-2xl transition-all duration-500 hover:border-zinc-500 hover:scale-[1.02] bg-zinc-950">
                                 
-                                {/* Base Image */}
-                                <img
-                                    src={item.image}
-                                    alt={item.title}
-                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 brightness-[1.1] contrast-[1.05]"
-                                    onError={(e) => {
-                                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964&auto=format&fit=crop';
-                                    }}
-                                />
+                                {/* Carousel Images */}
+                                <CarouselImage images={item.images} title={item.title} />
 
                                 {/* Overlays (Lightened for brightness) */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
                                 
                                 {/* Labels (Condensed) */}
                                 <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
-                                    <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">#{idx + 1} Made with {item.author}</span>
-                                    
-                                    <div className="relative">
-                                        {/* Tooltip Bubble */}
-                                        <div className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-4 py-2 bg-white text-black text-[9px] font-black uppercase tracking-widest rounded-xl opacity-0 translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500 whitespace-nowrap shadow-[0_10px_30px_rgba(0,0,0,0.3)] pointer-events-none">
-                                            Copy the prompt
-                                            <div className="absolute top-1/2 -translate-y-1/2 right-[-4px] w-2 h-2 bg-white rotate-45" />
+                                    <div className="flex flex-col gap-1 items-start">
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">#{idx + 1} Made with {item.author}</span>
+                                            {idx === 0 && likesCount > 0 && (
+                                                <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 bg-amber-500 text-black rounded-full shadow-[0_0_15px_rgba(245,158,11,0.3)]">Most Popular</span>
+                                            )}
                                         </div>
+                                        {likesCount > 0 && (
+                                            <div className="flex items-center gap-1 px-2 py-0.5 bg-white/5 border border-white/5 rounded-full backdrop-blur-md">
+                                                <Heart size={8} className="text-rose-500 fill-rose-500" />
+                                                <span className="text-[8px] font-black text-white/60">{likesCount} Liked</span>
+                                            </div>
+                                        )}
+                                    </div>
+                                    
+                                    <div className="flex flex-col gap-3">
+                                        <Tooltip content={copiedIndex === idx ? "Copied!" : "Copy Prompt"} position="left">
+                                            <button 
+                                                onClick={() => copyToClipboard(item.sections.map(s => `${s.label.toUpperCase()}:\n${s.content}`).join('\n\n'), idx)}
+                                                className="p-3 bg-white/10 backdrop-blur-2xl border border-white/10 text-white rounded-xl hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 active:scale-90 shadow-2xl relative overflow-hidden group/btn"
+                                            >
+                                                {copiedIndex === idx ? <Check size={16} /> : <Copy size={16} />}
+                                                {/* Pulse effect */}
+                                                <div className="absolute inset-0 bg-white/20 animate-ping opacity-0 group-hover:opacity-100 duration-1000" />
+                                            </button>
+                                        </Tooltip>
 
-                                        <button 
-                                            onClick={() => copyToClipboard(item.sections.map(s => `${s.label.toUpperCase()}:\n${s.content}`).join('\n\n'), idx)}
-                                            className="p-3 bg-white/10 backdrop-blur-2xl border border-white/10 text-white rounded-xl hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 active:scale-90 shadow-2xl relative overflow-hidden group/btn"
-                                            title="Copy Prompt"
-                                        >
-                                            {copiedIndex === idx ? <Check size={16} /> : <Copy size={16} />}
-                                            {/* Pulse effect */}
-                                            <div className="absolute inset-0 bg-white/20 animate-ping opacity-0 group-hover:opacity-100 duration-1000" />
-                                        </button>
+                                        <Tooltip content={isLiked ? "Unlike" : "Like this prompt"} position="left">
+                                            <button 
+                                                onClick={() => handleLike(item.slug)}
+                                                className={`p-3 backdrop-blur-2xl border transition-all duration-300 active:scale-90 rounded-xl flex items-center justify-center hover:scale-110 ${
+                                                    isLiked 
+                                                    ? "bg-rose-500/20 border-rose-500/40 text-rose-500" 
+                                                    : "bg-white/10 border-white/10 text-white hover:bg-rose-500 hover:text-white hover:border-rose-500"
+                                                }`}
+                                            >
+                                                <Heart size={16} className={isLiked ? "fill-current" : ""} />
+                                            </button>
+                                        </Tooltip>
                                     </div>
                                 </div>
 
                                 {/* Prompt Text (Scaled Down) */}
-                                <div className="absolute bottom-6 left-6 right-6">
+                                <div className="absolute bottom-6 left-6 right-6 pointer-events-none">
                                     <div className="space-y-4">
                                         {/* Prompt Sections (Max 3 seen in preview) */}
                                         <div className={`grid ${item.sections.length > 1 ? 'grid-cols-2' : 'grid-cols-1'} gap-4`}>
@@ -115,7 +250,8 @@ export default function PromptsPage() {
                                 </div>
                             </div>
                         </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* --- SEO & HIGH VALUE CONTENT SECTION --- */}

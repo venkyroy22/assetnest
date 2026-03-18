@@ -7,10 +7,11 @@ import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCo
 import { useSidebar } from "./SidebarProvider";
 import { usePins } from "./PinProvider";
 import { ALL_TOOLS } from "@/lib/tools";
+import Tooltip from "./Tooltip";
 
 // ── Menu config ───────────────────────────────────────────────────────────────
 const MENU_ITEMS = [
-    { name: "Top Tools", href: "/tools", icon: Wrench, accent: "#10b981", dev: false },
+    { name: "Smart Tools", href: "/tools", icon: Wrench, accent: "#10b981", dev: false },
     { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, accent: "#a855f7", dev: false },
     { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#6366f1", dev: false },
     { name: "About", href: "/about", icon: Info, accent: "#94a3b8", dev: false },
@@ -48,14 +49,13 @@ function NavItem({
     const accent = item.accent;
     const disabled = item.dev;
 
-    return (
+    const linkContent = (
         <Link
             ref={rowRef}
             href={disabled ? "#" : item.href}
             onMouseMove={handleMouseMove}
             onMouseEnter={() => !disabled && setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            title={!isOpen ? `${item.name}${disabled ? " (Coming Soon)" : ""}` : ""}
             style={{
                 opacity: visible ? (disabled ? 0.4 : 1) : 0,
                 transform: visible ? "translateX(0)" : "translateX(-12px)",
@@ -172,6 +172,16 @@ function NavItem({
             )}
         </Link>
     );
+
+    if (!isOpen) {
+        return (
+            <Tooltip content={`${item.name}${disabled ? " (Coming Soon)" : ""}`} position="right">
+                {linkContent}
+            </Tooltip>
+        );
+    }
+
+    return linkContent;
 }
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────

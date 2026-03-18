@@ -1,9 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, Info, X, Minimize2, CheckCircle, Undo, Redo } from "lucide-react";
+import { Upload, Download, RefreshCw, Info, X, Minimize2, CheckCircle, Undo, Redo, Share2 } from "lucide-react";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
+import ShareModal from "@/components/ShareModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -22,6 +23,8 @@ export default function PdfCompressorPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [result, setResult] = useState<{ url: string; originalSize: number; compressedSize: number } | null>(null);
+    const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
+    const [isSharing, setIsSharing] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const formatSize = (bytes: number) => {
@@ -43,6 +46,7 @@ export default function PdfCompressorPage() {
         }
         setFile(f);
         setResult(null);
+        setOutputBlob(null);
         setError(null);
     };
 
@@ -78,6 +82,7 @@ export default function PdfCompressorPage() {
                 originalSize: file.size,
                 compressedSize: blob.size,
             });
+            setOutputBlob(blob);
         } catch (err) {
             console.error(err);
             setError("Could not compress this PDF. It may be password-protected or corrupted.");
@@ -98,6 +103,7 @@ export default function PdfCompressorPage() {
         if (result) URL.revokeObjectURL(result.url);
         resetHistory(null);
         setResult(null);
+        setOutputBlob(null);
         setError(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
     };
@@ -236,14 +242,20 @@ export default function PdfCompressorPage() {
                             </div>
                         </div>
 
-                        <div className="flex flex-col gap-3">
-                            <button onClick={download} className="h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl">
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <button onClick={download} className="flex-1 h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl">
                                 <Download size={18} /> Download Compressed PDF
                             </button>
-                            <button onClick={reset} className="h-14 px-8 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all">
-                                Compress Another PDF
+                            <button 
+                                onClick={() => setIsSharing(true)} 
+                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 transition-all active:scale-[0.98] shadow-xl"
+                            >
+                                <Share2 size={18} className="text-orange-400" /> Share to Mobile
                             </button>
                         </div>
+                        <button onClick={reset} className="w-full h-14 px-8 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all">
+                            Compress Another PDF
+                        </button>
                     </div>
 
                     {savingsPercent < 5 && (
@@ -270,6 +282,13 @@ export default function PdfCompressorPage() {
                     ))}
                 </div>
             )}
+
+            <ShareModal 
+                isOpen={isSharing} 
+                onClose={() => setIsSharing(false)} 
+                file={outputBlob} 
+                fileName={`Compressed_${file?.name ?? "document.pdf"}`} 
+            />
         </div>
     );
 }

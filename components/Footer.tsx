@@ -24,7 +24,7 @@ const Footer = ({ className = "" }: { className?: string }) => {
                         <ul className="space-y-3 text-sm text-zinc-500">
 
                             <li><Link href="/prompts" className="hover:text-white transition-colors">AI Image Prompts</Link></li>
-                            <li><Link href="/tools" className="hover:text-white transition-colors">Top Tools</Link></li>
+                            <li><Link href="/tools" className="hover:text-white transition-colors">Smart Tools</Link></li>
                         </ul>
                     </div>
 

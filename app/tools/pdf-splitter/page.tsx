@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, Split, Info, X, Scissors, Undo, Redo } from "lucide-react";
+import { Upload, Download, RefreshCw, Split, Info, X, Scissors, Undo, Redo, Share2 } from "lucide-react";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
 
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
+import ShareModal from "@/components/ShareModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -33,6 +34,9 @@ export default function PdfSplitterPage() {
     const [isExporting, setIsExporting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [rangeInput, setRangeInput] = useState("");
+    const [outputUrl, setOutputUrl] = useState<string | null>(null);
+    const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
+    const [isSharing, setIsSharing] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,6 +50,8 @@ export default function PdfSplitterPage() {
         setFile(f);
         resetHistory([]);
         setRangeInput("");
+        setOutputUrl(null);
+        setOutputBlob(null);
 
         try {
             const arrayBuffer = await f.arrayBuffer();
@@ -109,11 +115,8 @@ export default function PdfSplitterPage() {
             const bytes = await newPdf.save();
             const blob = new Blob([bytes as any], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = `Split_${selectedCount}pages_${file.name}`;
-            a.click();
-            URL.revokeObjectURL(url);
+            setOutputBlob(blob);
+            setOutputUrl(url);
         } catch (err) {
             console.error(err);
             setError("Export failed. Please try again.");
@@ -128,7 +131,17 @@ export default function PdfSplitterPage() {
         setPageCount(0);
         setError(null);
         setRangeInput("");
+        setOutputUrl(null);
+        setOutputBlob(null);
         if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const downloadPdf = () => {
+        if (!outputUrl || !file) return;
+        const a = document.createElement("a");
+        a.href = outputUrl;
+        a.download = `Split_${selectedCount}pages_${file.name}`;
+        a.click();
     };
 
     return (
@@ -259,17 +272,34 @@ export default function PdfSplitterPage() {
                         </div>
                     </div>
 
-                    {/* Export button */}
-                    <button
-                        onClick={exportPdf}
-                        disabled={selectedCount === 0 || isExporting}
-                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"}`}
-                    >
-                        {isExporting
-                            ? <><RefreshCw size={18} className="animate-spin" /> Exporting...</>
-                            : <><Download size={18} /> Export {selectedCount} Page{selectedCount !== 1 ? "s" : ""} as PDF</>
-                        }
-                    </button>
+                    {/* Export / Actions button */}
+                    {!outputUrl ? (
+                        <button
+                            onClick={exportPdf}
+                            disabled={selectedCount === 0 || isExporting}
+                            className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"}`}
+                        >
+                            {isExporting
+                                ? <><RefreshCw size={18} className="animate-spin" /> Exporting...</>
+                                : <><Download size={18} /> Export {selectedCount} Page{selectedCount !== 1 ? "s" : ""} as PDF</>
+                            }
+                        </button>
+                    ) : (
+                        <div className="flex flex-col sm:flex-row gap-3 w-full">
+                            <button
+                                onClick={downloadPdf}
+                                className="flex-1 h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"
+                            >
+                                <Download size={18} /> Download Split PDF
+                            </button>
+                            <button
+                                onClick={() => setIsSharing(true)}
+                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98]"
+                            >
+                                <Share2 size={18} className="text-violet-400" /> Share to Mobile
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
 
@@ -287,6 +317,13 @@ export default function PdfSplitterPage() {
                     ))}
                 </div>
             )}
+
+            <ShareModal 
+                isOpen={isSharing} 
+                onClose={() => setIsSharing(false)} 
+                file={outputBlob} 
+                fileName={file ? `Split_${selectedCount}pages_${file.name}` : "split_document.pdf"} 
+            />
         </div>
     );
 }

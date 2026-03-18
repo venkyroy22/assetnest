@@ -74,9 +74,6 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  alternates: {
-    canonical: siteUrl,
-  },
   icons: {
     icon: [
       { url: "/logo.png", type: "image/png" },
@@ -100,9 +97,9 @@ export default function RootLayout({
         <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
-        <link rel="canonical" href={siteUrl} />
         <meta name="theme-color" content="#000000" />
       </head>
+
       <body className="antialiased font-sans flex flex-col min-h-screen">
         <AppLayout>
           {children}

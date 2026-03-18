@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS } from "@/lib/tools";
+import Tooltip from "./Tooltip";
 
 // ── Searchable content index ──────────────────────────────────────────────────
 // Dynamically built from ALL_TOOLS so new tools are automatically searchable.
@@ -111,14 +112,15 @@ const Navbar = ({ className = "" }: { className?: string }) => {
             <div className="flex h-full items-center relative">
                 {/* Sidebar Toggle - Fixed stationary position */}
                 <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">
-                    <button
-                        onClick={toggle}
-                        className="flex items-center justify-center p-2 rounded-sm border border-transparent hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
-                        aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
-                        title={isOpen ? "Close Sidebar" : "Open Sidebar"}
-                    >
-                        <Menu size={20} />
-                    </button>
+                    <Tooltip content={isOpen ? "Close Sidebar" : "Open Sidebar"} position="right">
+                        <button
+                            onClick={toggle}
+                            className="flex items-center justify-center p-2 rounded-sm border border-transparent hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
+                            aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
+                        >
+                            <Menu size={20} />
+                        </button>
+                    </Tooltip>
                 </div>
 
                 {/* Main Navbar Content */}
@@ -211,7 +213,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 <p className="text-xs font-semibold text-secondary/50 px-2">Discover</p>
                                 <div className="grid grid-cols-1 gap-2">
                                     {[
-                                        { name: "Top Tools", href: "/tools" },
+                                        { name: "Smart Tools", href: "/tools" },
                                         { name: "AI Image Prompts", href: "/prompts" },
                                         { name: "QR Generator", href: "/tools/qr" },
                                     ].map((item) => (

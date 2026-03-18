@@ -1,6 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import Footer from "@/components/Footer";
@@ -12,6 +13,12 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
     const { isOpen } = useSidebar();
     const pathname = usePathname();
     const isHome = pathname === "/";
+
+    useEffect(() => {
+        // Enforce scroll-to-top on navigation to prevent the layout from preserving
+        // scroll state and accidentally hiding top portions of pages under the fixed Navbar.
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }, [pathname]);
 
     return (
         <div className="flex flex-1 flex-col min-h-screen">

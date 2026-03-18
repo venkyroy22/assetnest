@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Play, Pause, RotateCcw, SkipForward, SkipBack, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check, Music, Volume2, VolumeX, CloudRain, Trees, Wind, Moon, Search, Link as LinkIcon, ArrowLeft, ExternalLink, RefreshCw, Trash2 } from "lucide-react";
+import { Play, Pause, RotateCcw, SkipForward, SkipBack, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check, Music, Volume2, VolumeX, CloudRain, Trees, Wind, Moon, Search, Link as LinkIcon, ArrowLeft, ExternalLink, RefreshCw, Trash2, Droplets, Gamepad2 } from "lucide-react";
 import { useMusic } from "@/components/MusicProvider";
+import { MiniGames } from "./games";
 
 type Mode = "focus" | "short" | "long";
 interface Achievement { id: string; title: string; desc: string; icon: React.ReactNode; sessions: number; }
@@ -177,15 +178,214 @@ function Particles({ active }: { active: boolean }) {
     );
 }
 
-function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSave }: {
+function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClose: () => void }) {
+    const [isHydrating, setIsHydrating] = useState(false);
+
+    useEffect(() => {
+        if (visible) {
+            setIsHydrating(false);
+            // Play gentle droplet appear sound
+            try {
+                const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+                const ctx = new AudioContext();
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.connect(gain); gain.connect(ctx.destination);
+                const now = ctx.currentTime;
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(1000, now + 0.1);
+                gain.gain.setValueAtTime(0, now);
+                gain.gain.linearRampToValueAtTime(0.2, now + 0.02);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now); osc.stop(now + 0.3);
+            } catch (e) {}
+        }
+    }, [visible]);
+
+    if (!visible) return null;
+
+    const handleHydrated = () => {
+        setIsHydrating(true);
+        
+        // Play sipping / draining sound
+        try {
+            const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
+            const ctx = new AudioContext();
+            
+            // Pouring/swoosh (lowpass noise)
+            const bufferSize = ctx.sampleRate * 1.5;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+            
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, ctx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 1.2);
+            
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0, ctx.currentTime);
+            gain.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.2);
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.3);
+            
+            noise.connect(filter); filter.connect(gain); gain.connect(ctx.destination);
+            noise.start();
+            
+            // Glugging bubbles
+            for(let i=0; i<6; i++) {
+                const osc = ctx.createOscillator();
+                const oscGain = ctx.createGain();
+                osc.type = 'sine';
+                osc.connect(oscGain); oscGain.connect(ctx.destination);
+                
+                const startStr = ctx.currentTime + (i * 0.2) + 0.1;
+                osc.frequency.setValueAtTime(250 + Math.random()*150, startStr);
+                osc.frequency.exponentialRampToValueAtTime(450 + Math.random()*200, startStr + 0.1);
+                
+                oscGain.gain.setValueAtTime(0, startStr);
+                oscGain.gain.linearRampToValueAtTime(0.15, startStr + 0.02);
+                oscGain.gain.exponentialRampToValueAtTime(0.01, startStr + 0.1);
+                
+                osc.start(startStr); osc.stop(startStr + 0.15);
+            }
+        } catch (e) {}
+
+        setTimeout(() => {
+            onClose();
+        }, 1600); // Wait for water-empty animation to finish
+    };
+
+    return (
+        <div className={`fixed inset-0 z-[500] flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-blue-950/80 to-zinc-950/90 backdrop-blur-xl transition-opacity duration-1000 ${isHydrating ? 'opacity-0 delay-500' : 'animate-in fade-in duration-700'}`}>
+            <div className={`relative w-full max-w-lg mx-auto flex flex-col items-center transition-transform duration-1000 ${isHydrating ? 'scale-95' : ''}`}>
+                {/* Magic Aura */}
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/20 blur-[100px] rounded-full animate-pulse z-0 transition-opacity duration-1000 ${isHydrating ? 'opacity-0' : 'opacity-100'}`} style={{ animationDuration: '4s' }} />
+
+                {/* Floating Ambient Droplets */}
+                <div className={`fixed inset-0 overflow-hidden pointer-events-none z-0 transition-opacity duration-1000 ${isHydrating ? 'opacity-0' : 'opacity-100'}`}>
+                    {[...Array(15)].map((_, i) => (
+                        <Droplets 
+                            key={i} 
+                            className="absolute text-blue-400/20 animate-float-up" 
+                            size={12 + Math.random() * 24}
+                            style={{
+                                left: `${Math.random() * 100}%`,
+                                bottom: '-10%',
+                                animationDelay: `${Math.random() * 5}s`,
+                                animationDuration: `${5 + Math.random() * 5}s`
+                            }}
+                        />
+                    ))}
+                </div>
+
+                {/* Glass visualization */}
+                <div className={`relative z-10 ${isHydrating ? '' : 'animate-in slide-in-from-bottom-10 fade-in duration-1000 ease-out delay-150 fill-mode-both'} mt-8`}>
+                    <div className="w-36 h-48 bg-white/[0.02] border-x-[3px] border-b-[4px] border-t border-white/20 rounded-b-[40px] rounded-t-sm shadow-2xl relative overflow-hidden backdrop-blur-md">
+                        
+                        {/* Highlight/Reflections on glass */}
+                        <div className="absolute inset-y-2 left-2 w-3 bg-gradient-to-b from-white/30 to-transparent rounded-full opacity-60 backdrop-blur-sm z-20" />
+                        <div className="absolute inset-y-4 right-1.5 w-1 bg-gradient-to-b from-white/20 to-transparent rounded-full opacity-40 z-20" />
+
+                        {/* Water Container */}
+                        <div className={`absolute bottom-0 w-full origin-bottom rounded-b-[36px] overflow-hidden`} style={{ height: '75%', animation: isHydrating ? 'water-empty 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'water-fill 2s ease-out forwards' }}>
+                            <div className="absolute inset-0 bg-gradient-to-t from-blue-700 via-blue-500 to-blue-400" />
+                            
+                            {/* Waves - properly positioned above water */}
+                            <div className="absolute top-0 w-[200%] h-6 bg-blue-300/40 rounded-[100%] animate-wave-front opacity-90 -translate-x-1/4 -translate-y-1/2" />
+                            <div className="absolute top-0 w-[200%] h-8 bg-blue-400/50 rounded-[100%] animate-wave-back -translate-x-1/2 -translate-y-1/2" />
+                            
+                            {/* Bubbles in water */}
+                            {[...Array(8)].map((_, i) => (
+                                <div key={`b-${i}`} className="absolute bg-white/50 rounded-full animate-bubble" 
+                                     style={{ 
+                                         width: Math.random() * 5 + 3 + 'px', 
+                                         height: Math.random() * 5 + 3 + 'px',
+                                         left: Math.random() * 80 + 10 + '%',
+                                         bottom: '-20px',
+                                         animationDelay: Math.random() * 2 + 's',
+                                         animationDuration: Math.random() * 2 + 1.5 + 's'
+                                     }} 
+                                />
+                            ))}
+                        </div>
+                    </div>
+                    {/* Base shadow */}
+                    <div className={`w-24 h-4 bg-blue-900/50 blur-[10px] rounded-[100%] mx-auto mt-4 transition-opacity duration-1000 ${isHydrating ? 'opacity-20' : 'opacity-100'}`} />
+                </div>
+
+                {/* Text and Button */}
+                <div className={`mt-12 text-center space-y-5 relative z-10 transition-all duration-700 ${isHydrating ? 'opacity-0 translate-y-8 pointer-events-none' : 'animate-in slide-in-from-bottom-8 fade-in duration-1000 ease-out delay-300 fill-mode-both'}`}>
+                    <h2 className="text-4xl sm:text-5xl font-black tracking-widest uppercase bg-gradient-to-r from-blue-200 via-white to-blue-200 bg-clip-text text-transparent drop-shadow-sm">
+                        Hydration Time
+                    </h2>
+                    <p className="text-blue-200/80 font-semibold tracking-wider text-sm sm:text-base">
+                        Take a quick sip and recharge your focus.
+                    </p>
+                    
+                    <button 
+                        onClick={handleHydrated}
+                        disabled={isHydrating}
+                        className="mt-8 px-10 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-sm font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_-10px_rgba(59,130,246,0.6)] border border-blue-400/50 flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[200px]"
+                    >
+                        <Check size={18} strokeWidth={3} />
+                        <span>I'M HYDRATED</span>
+                    </button>
+                </div>
+
+                <style jsx>{`
+                    @keyframes water-fill {
+                        0% { transform: scaleY(0); }
+                        100% { transform: scaleY(1); }
+                    }
+                    @keyframes water-empty {
+                        0% { transform: scaleY(1); }
+                        100% { transform: scaleY(0); }
+                    }
+                    @keyframes wave-front {
+                        0%, 100% { transform: translateX(-25%) translateY(-50%) scaleX(1); }
+                        50% { transform: translateX(-25%) translateY(-40%) scaleX(0.95); }
+                    }
+                    @keyframes wave-back {
+                        0%, 100% { transform: translateX(-40%) translateY(-50%) scaleX(1); }
+                        50% { transform: translateX(-35%) translateY(-60%) scaleX(0.9); }
+                    }
+                    @keyframes bubble {
+                        0% { transform: translateY(0) scale(0.5); opacity: 0; }
+                        50% { opacity: 1; }
+                        100% { transform: translateY(-120px) scale(1.5); opacity: 0; }
+                    }
+                    @keyframes float-up {
+                        0% { transform: translateY(0) rotate(0deg) scale(0.8); opacity: 0; }
+                        20% { opacity: 0.8; }
+                        80% { opacity: 0.6; }
+                        100% { transform: translateY(-100vh) rotate(180deg) scale(1.2); opacity: 0; }
+                    }
+                `}</style>
+            </div>
+        </div>
+    );
+}
+
+function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, waterReminder, waterInterval, onSave }: {
     visible: boolean; onClose: () => void;
     focusMins: number; shortMins: number; longMins: number;
-    onSave: (f: number, s: number, l: number) => void;
+    waterReminder: boolean; waterInterval: number;
+    onSave: (f: number, s: number, l: number, wr: boolean, wi: number) => void;
 }) {
     const [f, setF] = useState(focusMins);
     const [s, setS] = useState(shortMins);
     const [l, setL] = useState(longMins);
-    useEffect(() => { setF(focusMins); setS(shortMins); setL(longMins); }, [focusMins, shortMins, longMins]);
+    const [wr, setWr] = useState(waterReminder);
+    const [wi, setWi] = useState(waterInterval);
+
+    useEffect(() => { 
+        setF(focusMins); setS(shortMins); setL(longMins); 
+        setWr(waterReminder); setWi(waterInterval);
+    }, [focusMins, shortMins, longMins, waterReminder, waterInterval]);
     if (!visible) return null;
 
     const NumInput = ({ label, value, onChange, min, max }: {
@@ -217,11 +417,65 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, onSav
                     <NumInput label="Focus Duration" value={f} onChange={setF} min={1} max={120} />
                     <NumInput label="Short Break" value={s} onChange={setS} min={1} max={60} />
                     <NumInput label="Long Break" value={l} onChange={setL} min={1} max={60} />
+                    
+                    <div className="pt-4 border-t border-zinc-800 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <div className="flex flex-col gap-0.5">
+                                <span className="text-xs font-bold text-white">Drink Water Reminder</span>
+                                <span className="text-[10px] text-zinc-500">Get notified to stay hydrated</span>
+                            </div>
+                            <button 
+                                onClick={() => setWr(!wr)}
+                                className={`w-10 h-5 rounded-full transition-colors relative ${wr ? 'bg-blue-500' : 'bg-zinc-700'}`}
+                            >
+                                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${wr ? 'left-6' : 'left-1'}`} />
+                            </button>
+                        </div>
+                        {wr && (
+                            <NumInput label="Reminder Every" value={wi} onChange={setWi} min={1} max={120} />
+                        )}
+                    </div>
                 </div>
-                <button onClick={() => { onSave(f, s, l); onClose(); }}
+                <button onClick={() => { onSave(f, s, l, wr, wi); onClose(); }}
                     className="mt-8 w-full py-4 bg-white text-black text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-xl">
                     <Check size={14} /> Save & Apply
                 </button>
+            </div>
+        </div>
+    );
+}
+
+// ─── Break Recommendation Dialog ───────────────────────────────────────────
+function BreakDialog({ isOpen, onClose, onOpenGames }: { isOpen: boolean; onClose: () => void; onOpenGames: () => void }) {
+    if (!isOpen) return null;
+    return (
+        <div className="fixed inset-0 z-[550] flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose} />
+            <div className="relative w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 text-center overflow-hidden">
+                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 blur-[80px]" />
+                 <div className="relative z-10">
+                    <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center text-emerald-400 mx-auto mb-8 shadow-inner group">
+                        <Gamepad2 size={36} className="group-hover:scale-110 transition-transform duration-500" />
+                    </div>
+                    <h2 className="text-2xl font-black text-white mb-3 uppercase tracking-tighter">Time for a Break!</h2>
+                    <p className="text-xs text-zinc-500 font-medium leading-relaxed mb-10 px-4">
+                        Great work. Your mind needs a quick recharge. How about a mini-game to stay sharp?
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        <button 
+                            onClick={() => { onOpenGames(); onClose(); }}
+                            className="w-full py-4 bg-white text-black text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 active:scale-95 transition-all shadow-xl"
+                        >
+                            Play Mini Games
+                        </button>
+                        <button 
+                            onClick={onClose}
+                            className="w-full py-3 text-zinc-600 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all"
+                        >
+                            Maybe Later
+                        </button>
+                    </div>
+                 </div>
             </div>
         </div>
     );
@@ -231,6 +485,8 @@ export default function PomodoroPage() {
     const [focusMins, setFocusMins] = useState(25);
     const [shortMins, setShortMins] = useState(5);
     const [longMins, setLongMins] = useState(15);
+    const [waterReminder, setWaterReminder] = useState(false);
+    const [waterInterval, setWaterInterval] = useState(30);
     const durations = { focus: focusMins * 60, short: shortMins * 60, long: longMins * 60 };
 
     const COLORS: Record<Mode, string> = { focus: "#ffffff", short: "#34d399", long: "#818cf8" };
@@ -251,6 +507,10 @@ export default function PomodoroPage() {
     const [burst, setBurst] = useState(false);
     const [settingsOpen, setSettingsOpen] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [showWaterReminder, setShowWaterReminder] = useState(false);
+    const [lastWaterTime, setLastWaterTime] = useState(Date.now());
+    const [gamesOpen, setGamesOpen] = useState(false);
+    const [showBreakDialog, setShowBreakDialog] = useState(false);
 
     const [activeTrack, setActiveTrack] = useState<string | null>(null);
 
@@ -307,11 +567,12 @@ export default function PomodoroPage() {
             focusMins, shortMins, longMins,
             mode, secondsLeft, totalSecs,
             sessions, pomodoroInCycle, unlocked,
+            waterReminder, waterInterval, lastWaterTime,
             lastSaved: Date.now(),
             running
         };
         localStorage.setItem("assetnest_pomodoro_state", JSON.stringify(state));
-    }, [focusMins, shortMins, longMins, mode, secondsLeft, totalSecs, sessions, pomodoroInCycle, unlocked, running, isLoaded]);
+    }, [focusMins, shortMins, longMins, mode, secondsLeft, totalSecs, sessions, pomodoroInCycle, unlocked, running, isLoaded, waterReminder, waterInterval, lastWaterTime]);
 
     // PERSISTENCE: Load from localStorage on mount
     useEffect(() => {
@@ -327,6 +588,17 @@ export default function PomodoroPage() {
                 setSessions(s.sessions);
                 setPomodoroInCycle(s.pomodoroInCycle);
                 setUnlocked(s.unlocked || []);
+                setWaterReminder(s.waterReminder || false);
+                setWaterInterval(s.waterInterval || 30);
+                
+                // Don't trigger water instantly if the user has been away for a long time
+                const loadedWaterTime = s.lastWaterTime || Date.now();
+                const minsSinceLastWater = (Date.now() - loadedWaterTime) / (1000 * 60);
+                if (minsSinceLastWater >= (s.waterInterval || 30)) {
+                    setLastWaterTime(Date.now());
+                } else {
+                    setLastWaterTime(loadedWaterTime);
+                }
 
                 if (s.running) {
                     const elapsed = Math.floor((Date.now() - s.lastSaved) / 1000);
@@ -401,7 +673,12 @@ export default function PomodoroPage() {
             setSessions(next); setPomodoroInCycle(cycleNext);
             tryUnlock(next);
             const nextMode: Mode = cycleNext === 0 ? "long" : "short";
-            setTimeout(() => { setMode(nextMode); setSecondsLeft(durations[nextMode]); setTotalSecs(durations[nextMode]); }, 500);
+            setTimeout(() => { 
+                setMode(nextMode); 
+                setSecondsLeft(durations[nextMode]); 
+                setTotalSecs(durations[nextMode]); 
+                setShowBreakDialog(true);
+            }, 500);
         } else {
             setTimeout(() => { setMode("focus"); setSecondsLeft(durations.focus); setTotalSecs(durations.focus); }, 500);
         }
@@ -430,6 +707,30 @@ export default function PomodoroPage() {
         return () => clearInterval(intervalRef.current!);
     }, [running, onComplete, secondsLeft]);
 
+    // Water Reminder Logic
+    useEffect(() => {
+        if (!waterReminder) {
+            setShowWaterReminder(false);
+            return;
+        }
+
+        const checkInterval = setInterval(() => {
+            const now = Date.now();
+            const elapsedMins = (now - lastWaterTime) / (1000 * 60);
+            
+            if (elapsedMins >= waterInterval) {
+                setShowWaterReminder(true);
+            }
+        }, 10000);
+
+        return () => clearInterval(checkInterval);
+    }, [waterReminder, waterInterval, lastWaterTime]);
+
+    const handleWaterDone = () => {
+        setShowWaterReminder(false);
+        setLastWaterTime(Date.now());
+    };
+
     const switchMode = (m: Mode) => {
         setRunning(false); setMode(m);
         setSecondsLeft(durations[m]); setTotalSecs(durations[m]);
@@ -438,9 +739,11 @@ export default function PomodoroPage() {
     const skip = () => {
         const next: Mode = mode === "focus" ? ((pomodoroInCycle + 1) % 4 === 0 ? "long" : "short") : "focus";
         switchMode(next);
+        if (next !== "focus") setShowBreakDialog(true);
     };
-    const saveSettings = (f: number, s: number, l: number) => {
+    const saveSettings = (f: number, s: number, l: number, wr: boolean, wi: number) => {
         setFocusMins(f); setShortMins(s); setLongMins(l);
+        setWaterReminder(wr); setWaterInterval(wi);
         setRunning(false);
         const newSecs = mode === "focus" ? f * 60 : mode === "short" ? s * 60 : l * 60;
         setSecondsLeft(newSecs); setTotalSecs(newSecs);
@@ -592,19 +895,39 @@ export default function PomodoroPage() {
                 </div>
 
                 {/* ── RIGHT: Achievements ── */}
-                <div className="lg:pt-14">
-                    <p className="text-[10px] font-semibold text-zinc-500 mb-4">Achievements</p>
-                    <div className="grid grid-cols-2 gap-3 mb-5">
-                        {ACHIEVEMENTS.map(a => {
-                            const done = unlocked.includes(a.id);
-                            return (
-                                <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
-                                    <div className={done ? "text-amber-400" : "text-zinc-600"}>{a.icon}</div>
-                                    <div><p className="text-[10px] font-bold text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
-                                    {done && <span className="text-[10px] font-bold tracking-wide text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
-                                </div>
-                            );
-                        })}
+                <div className="lg:pt-14 space-y-8">
+                    <div>
+                        <p className="text-[10px] font-semibold text-zinc-500 mb-4">Achievements</p>
+                        <div className="grid grid-cols-2 gap-3">
+                            {ACHIEVEMENTS.map(a => {
+                                const done = unlocked.includes(a.id);
+                                return (
+                                    <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
+                                        <div className={done ? "text-amber-400" : "text-zinc-600"}>{a.icon}</div>
+                                        <div><p className="text-[10px] font-bold text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
+                                        {done && <span className="text-[10px] font-bold tracking-wide text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
+                    
+                    {/* Game Break Suggestion */}
+                    <div className={`p-6 bg-zinc-900/40 border border-zinc-800 rounded-2xl flex flex-col items-center text-center gap-4 transition-all duration-700 ${mode !== 'focus' ? 'opacity-100 scale-100' : 'opacity-40 grayscale shadow-inner'}`}>
+                        <div className="w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
+                             <Gamepad2 size={24} />
+                        </div>
+                        <div>
+                             <h3 className="text-xs font-bold text-white mb-1 uppercase tracking-widest">Gamer Break</h3>
+                             <p className="text-[10px] text-zinc-500 font-medium">Relax your mind with a quick game during your break.</p>
+                        </div>
+                        <button 
+                            onClick={() => setGamesOpen(true)}
+                            disabled={mode === 'focus'}
+                            className="w-full py-3 bg-white text-black text-[10px] font-black uppercase rounded-xl hover:bg-zinc-200 active:scale-95 transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                        >
+                            Open Game Mini
+                        </button>
                     </div>
                 </div>
             </div>
@@ -620,7 +943,32 @@ export default function PomodoroPage() {
                 )}
             </div>
 
-            <SettingsPanel visible={settingsOpen} onClose={() => setSettingsOpen(false)} focusMins={focusMins} shortMins={shortMins} longMins={longMins} onSave={saveSettings} />
+            <SettingsPanel 
+                visible={settingsOpen} 
+                onClose={() => setSettingsOpen(false)} 
+                focusMins={focusMins} 
+                shortMins={shortMins} 
+                longMins={longMins} 
+                waterReminder={waterReminder} 
+                waterInterval={waterInterval} 
+                onSave={saveSettings} 
+            />
+
+            <WaterReminderAnimation 
+                visible={showWaterReminder} 
+                onClose={handleWaterDone} 
+            />
+
+            <MiniGames 
+                isOpen={gamesOpen}
+                onClose={() => setGamesOpen(false)}
+            />
+
+            <BreakDialog 
+                isOpen={showBreakDialog}
+                onClose={() => setShowBreakDialog(false)}
+                onOpenGames={() => setGamesOpen(true)}
+            />
         </div>
     );
 }

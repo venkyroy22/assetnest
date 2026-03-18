@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { X, Cookie } from "lucide-react";
 import Link from "next/link";
+import Tooltip from "./Tooltip";
 
 export default function CookieConsent() {
     const [isVisible, setIsVisible] = useState(false);
@@ -52,14 +53,15 @@ export default function CookieConsent() {
                     </div>
                 </div>
                 <div className="flex items-center gap-3 shrink-0 self-end sm:self-auto w-full sm:w-auto mt-2 sm:mt-0">
-                    <button
-                        onClick={dismissCookies}
-                        className="p-2 text-zinc-500 hover:text-white transition-colors absolute sm:relative top-2 right-2 sm:top-0 sm:right-0"
-                        aria-label="Dismiss"
-                        title="Dismiss"
-                    >
-                        <X size={16} />
-                    </button>
+                    <Tooltip content="Dismiss" position="top">
+                        <button
+                            onClick={dismissCookies}
+                            className="p-2 text-zinc-500 hover:text-white transition-colors absolute sm:relative top-2 right-2 sm:top-0 sm:right-0"
+                            aria-label="Dismiss"
+                        >
+                            <X size={16} />
+                        </button>
+                    </Tooltip>
                     <button
                         onClick={acceptCookies}
                         className="bg-white hover:bg-zinc-200 text-black text-[11px] font-black uppercase tracking-widest px-6 py-3 rounded-xl transition-all active:scale-95 w-full sm:w-auto"

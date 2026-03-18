@@ -3,8 +3,9 @@
 import { useState, useRef, useCallback } from "react";
 import {
     Upload, Download, X, RefreshCw, ImageIcon, Undo, Redo,
-    ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus
+    ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus, Share2
 } from "lucide-react";
+import ShareModal from "@/components/ShareModal";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument, PageSizes } from "pdf-lib";
 
@@ -43,7 +44,9 @@ export default function ImageToPdfPage() {
     const [error, setError] = useState<string | null>(null);
     const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
     const [outputSize, setOutputSize] = useState<number | null>(null);
+    const [isSharing, setIsSharing] = useState(false);
 
     // Settings
     const [pageSize, setPageSize] = useState<PageSize>("A4");
@@ -223,6 +226,7 @@ export default function ImageToPdfPage() {
             const blob = new Blob([bytes as any], { type: "application/pdf" });
             const url = URL.createObjectURL(blob);
             setPreviewUrl(url);
+            setOutputBlob(blob);
             setOutputSize(blob.size);
         } catch (err) {
             console.error(err);
@@ -243,6 +247,7 @@ export default function ImageToPdfPage() {
     const reset = () => {
         if (previewUrl) URL.revokeObjectURL(previewUrl);
         setPreviewUrl(null);
+        setOutputBlob(null);
         setOutputSize(null);
         resetHistory([]);
         setError(null);
@@ -501,6 +506,12 @@ export default function ImageToPdfPage() {
                                     <Download size={16} /> Download PDF
                                 </button>
                                 <button
+                                    onClick={() => setIsSharing(true)}
+                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all hover:-translate-y-0.5"
+                                >
+                                    <Share2 size={16} className="text-sky-400" /> Share to Mobile
+                                </button>
+                                <button
                                     onClick={() => setPreviewUrl(null)}
                                     className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
@@ -533,6 +544,13 @@ export default function ImageToPdfPage() {
                     ))}
                 </div>
             )}
+            
+            <ShareModal 
+                isOpen={isSharing} 
+                onClose={() => setIsSharing(false)} 
+                file={outputBlob} 
+                fileName={`Images_to_PDF_${Date.now()}.pdf`} 
+            />
         </div>
     );
 }

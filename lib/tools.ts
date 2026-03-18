@@ -1,6 +1,6 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator } from "lucide-react";
 
-export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF";
+export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
 
 export interface Tool {
     id: string;
@@ -55,7 +55,7 @@ export const ALL_TOOLS: Tool[] = [
         href: "/tools/pomodoro",
         badge: "Free",
         icon: Timer,
-        tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break"],
+        tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break", "water reminder", "hydration", "drink water"],
         accent: "#f43f5e",   // rose
         category: "Productivity",
     },
@@ -115,6 +115,17 @@ export const ALL_TOOLS: Tool[] = [
         category: "Images",
     },
     {
+        id: "image-to-text",
+        name: "Image to Text",
+        description: "Extract text from images using high-precision OCR. Convert screenshots, photos, and scanned documents into editable text instantly.",
+        href: "/tools/image-to-text",
+        badge: "Free",
+        icon: FileText,
+        tags: ["image", "ocr", "text", "extract", "scanner", "image to text", "photo to text"],
+        accent: "#f59e0b",   // amber
+        category: "Images",
+    },
+    {
         id: "pdf-merger",
         name: "PDF Merger",
         description: "Merge and combine multiple PDF files into one document instantly. Upload PDFs, rearrange pages, and export — 100% private, runs in your browser.",
@@ -162,6 +173,32 @@ export const ALL_TOOLS: Tool[] = [
         category: "PDF",
     },
     {
+        id: "pdf-text-extractor",
+        name: "PDF Text Extractor",
+        description: "Instantly extract paragraphs and raw text from any PDF into an editable Word Document (DOCX). Perfect for essays and text files. Processed locally for 100% privacy.",
+        href: "/tools/pdf-text-extractor",
+        badge: "Free",
+        icon: FileText,
+        tags: [
+            "pdf", "word", "docx", "convert", "extract", "text",
+            "pdf to word", "pdf to docx", "convert pdf", "pdf to document",
+            "free pdf text extractor", "pdf converter", "pdf text extractor"
+        ],
+        accent: "#3b82f6", // blue
+        category: "PDF",
+    },
+    {
+        id: "notes",
+        name: "Smart Notes",
+        description: "A beautiful, versatile workspace for capturing thoughts, drafting articles, and organizing your notes securely in your browser.",
+        href: "/tools/notes",
+        badge: "Free",
+        icon: NotebookPen,
+        tags: ["notes", "workspace", "editor", "markdown", "write", "draft", "document", "text"],
+        accent: "#f43f5e",   // rose
+        category: "Productivity",
+    },
+    {
         id: "image-to-pdf",
         name: "Image to PDF",
         description: "Convert JPG, PNG, and WebP images into a single PDF instantly. Drag to reorder, set page size, margin and quality — 100% private, in your browser.",
@@ -176,5 +213,60 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#0ea5e9",
         category: "PDF",
+    },
+    {
+        id: "game-2048",
+        name: "2048 Game",
+        description: "The classic sliding tile puzzle. Swipe to merge numbers and reach the 2048 tile in this addictive, brain-teasing game.",
+        href: "/tools/2048",
+        badge: "Free",
+        icon: Hash,
+        tags: ["game", "puzzle", "2048", "logic", "sliding", "numbers", "brain", "fun"],
+        accent: "#f59e0b",
+        category: "Games",
+    },
+    {
+        id: "game-sudoku",
+        name: "Sudoku Pro",
+        description: "Sharpen your mind with daily Sudoku. Multiple difficulty levels, clean interface, and real-time error checking.",
+        href: "/tools/sudoku",
+        badge: "Free",
+        icon: Table,
+        tags: ["game", "sudoku", "logic", "puzzle", "numbers", "brain", "intelligence"],
+        accent: "#3b82f6",
+        category: "Games",
+    },
+    {
+        id: "game-wordle",
+        name: "Wordle Clone",
+        description: "Guess the hidden 5-letter word in 6 tries. A daily viral word game to challenge your vocabulary.",
+        href: "/tools/wordle",
+        badge: "Free",
+        icon: WholeWord,
+        tags: ["game", "wordle", "word", "puzzle", "vocabulary", "daily", "guess"],
+        accent: "#10b981",
+        category: "Games",
+    },
+    {
+        id: "game-dino",
+        name: "Dino Run",
+        description: "An infinite runner adventure. Jump over obstacles, survive as long as possible, and set new high scores.",
+        href: "/tools/dino",
+        badge: "Free",
+        icon: Gamepad2,
+        tags: ["game", "dino", "runner", "infinite", "arcade", "avoid", "jump", "pixel"],
+        accent: "#ef4444",
+        category: "Games",
+    },
+    {
+        id: "game-math",
+        name: "Quick Math",
+        description: "Test your mental arithmetic speed. Solve as many math problems as possible in 60 seconds and climb the ranks.",
+        href: "/tools/math",
+        badge: "Free",
+        icon: Calculator,
+        tags: ["game", "math", "arithmetic", "speed", "test", "brain", "training", "logic"],
+        accent: "#8b5cf6",
+        category: "Games",
     },
 ];

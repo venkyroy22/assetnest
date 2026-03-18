@@ -1,5 +1,6 @@
+import Link from "next/link";
 import Container from "@/components/Container";
-import { Mail, MessageCircle, Send } from "lucide-react";
+import { Mail } from "lucide-react";
 
 export const metadata = {
     title: "Contact Us – AssetNest",
@@ -47,7 +48,11 @@ export default function ContactPage() {
 
                         <div className="mt-16 pt-8 border-t border-zinc-900/50 text-center">
                             <p className="text-xs text-zinc-600 max-w-lg mx-auto leading-relaxed">
-                                We typically respond within 24-48 hours. By contacting us, you agree to our privacy policy regarding communication.
+                                We typically respond within 24-48 hours. By contacting us, you agree to our{" "}
+                                <Link href="/privacy" className="underline underline-offset-2 hover:text-zinc-400 transition-colors">
+                                    privacy policy
+                                </Link>{" "}
+                                regarding communication.
                             </p>
                         </div>
                     </div>

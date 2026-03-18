@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
     Wrench, Search, X, Sparkles,
-    ArrowUpRight, Pin
+    ArrowUpRight, Pin, ArrowUp
 } from "lucide-react";
 import Link from "next/link";
 import { ALL_TOOLS, Tool } from "@/lib/tools";
@@ -234,6 +234,19 @@ function ComingSoonCard({ index }: { index: number }) {
 export default function ToolsPage() {
     const [query, setQuery] = useState("");
     const [headerVisible, setHeaderVisible] = useState(false);
+    const [showScrollTop, setShowScrollTop] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 400);
+        };
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
     useEffect(() => {
         const t = setTimeout(() => setHeaderVisible(true), 30);
@@ -272,7 +285,7 @@ export default function ToolsPage() {
 
         // Sort explicitly so "Productivity" is first, "Images" is second, then alphabetical
         regularCategories.sort((a, b) => {
-            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4 };
+            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4, "Games": 5 };
             return (order[a] ?? 99) - (order[b] ?? 99);
         });
 
@@ -324,7 +337,7 @@ export default function ToolsPage() {
                         }}
                         className="text-5xl md:text-6xl font-bold tracking-tight text-white mb-3"
                     >
-                        Top Tools
+                        Smart Tools
                     </h1>
 
                     <p
@@ -335,29 +348,29 @@ export default function ToolsPage() {
                         }}
                         className="text-zinc-400 max-w-lg text-sm font-medium leading-relaxed"
                     >
-                        A growing collection of powerful, free tools built for creators, designers, and marketers.
-                        New tools launching regularly.
+                        No installs, no sign-up — runs entirely in your browser.
+                        New tools dropping regularly.
                     </p>
                 </div>
 
-                {/* ── Search ── */}
+                {/* ── Search (Sticky) ── */}
                 <div
                     style={{
                         opacity: headerVisible ? 1 : 0,
                         transform: headerVisible ? "translateY(0)" : "translateY(14px)",
                         transition: "opacity 0.55s ease 0.18s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.18s",
                     }}
-                    className="relative mb-12 max-w-lg"
+                    className="sticky top-24 z-40 mb-12 -mx-2 px-2"
                 >
-                    <div className={`flex items-center bg-zinc-900/40 backdrop-blur-md rounded-2xl border px-5 py-3 w-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 focus-within:border-emerald-500/50 focus-within:shadow-[0_0_30px_rgba(16,185,129,0.08)] ${query ? "border-zinc-600" : "border-zinc-800"}`}>
+                    <div className={`flex items-center bg-zinc-950/80 backdrop-blur-xl rounded-2xl border px-5 py-3.5 w-full transition-all duration-300 hover:border-zinc-700 focus-within:border-emerald-500/50 shadow-2xl ${query ? "border-zinc-600" : "border-zinc-800"}`}>
                         <Search size={16} className="text-zinc-500 mr-3 shrink-0" />
                         <input
                             type="text"
                             id="tools-search"
                             value={query}
                             onChange={e => setQuery(e.target.value)}
-                            placeholder="Search tools… (e.g. image, QR, compress)"
-                            className="bg-transparent text-sm w-full focus:outline-none placeholder:text-zinc-600 font-medium"
+                            placeholder="Search tools… (e.g. image, QR, 2048)"
+                            className="bg-transparent text-sm w-full focus:outline-none placeholder:text-zinc-600 font-medium text-white"
                             autoComplete="off"
                         />
                         {query && (
@@ -366,11 +379,6 @@ export default function ToolsPage() {
                             </button>
                         )}
                     </div>
-                    {query && (
-                        <p className="text-xs font-semibold tracking-wide text-zinc-600 mt-2 px-1">
-                            {filtered.length} result{filtered.length !== 1 ? "s" : ""} for &ldquo;{query}&rdquo;
-                        </p>
-                    )}
                 </div>
 
                 {/* ── No results ── */}
@@ -413,6 +421,16 @@ export default function ToolsPage() {
                         ))}
                     </div>
                 )}
+                {/* ── Back to Top ── */}
+                <button
+                    onClick={scrollToTop}
+                    className={`fixed bottom-10 right-10 z-[100] w-14 h-14 flex items-center justify-center rounded-full bg-zinc-950/80 backdrop-blur-xl border border-zinc-800 text-white shadow-2xl transition-all duration-500 active:scale-95 group hover:border-emerald-500/50 hover:bg-zinc-900
+                        ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}
+                    aria-label="Back to Top"
+                >
+                    <div className="absolute inset-0 rounded-full bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <ArrowUp size={22} className="relative z-10 group-hover:-translate-y-1 transition-transform duration-300" />
+                </button>
             </div>
         </>
     );

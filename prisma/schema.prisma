@@ -60,3 +60,9 @@ model VerificationToken {
 
   @@unique([identifier, token])
 }
+
+model PromptLike {
+  slug      String   @id
+  likes     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}

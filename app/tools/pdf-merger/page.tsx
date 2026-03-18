@@ -3,13 +3,15 @@
 import { useState, useRef } from "react";
 import {
     Upload, Download, X, RefreshCw, Combine, Undo, Redo,
-    ChevronLeft, ChevronRight, Info, Grid, ArrowLeft
+    ChevronLeft, ChevronRight, Info, Grid, ArrowLeft, Share2
 } from "lucide-react";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
 
 const PdfPageThumbnail = dynamic(() => import("./PdfPreviewThumbnail"), { ssr: false });
+import ShareModal from "@/components/ShareModal";
+import Tooltip from "@/components/Tooltip";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -43,7 +45,9 @@ export default function PdfMergerPage() {
     const [isDragging, setIsDragging] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [outputUrl, setOutputUrl] = useState<string | null>(null);
+    const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
     const [outputSize, setOutputSize] = useState<number | null>(null);
+    const [isSharing, setIsSharing] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -163,6 +167,7 @@ export default function PdfMergerPage() {
         setIsLoading(true);
         setError(null);
         setOutputUrl(null);
+        setOutputBlob(null);
 
         try {
             const mergedPdf = await PDFDocument.create();
@@ -191,6 +196,7 @@ export default function PdfMergerPage() {
             const url = URL.createObjectURL(blob);
             
             setOutputUrl(url);
+            setOutputBlob(blob);
             setOutputSize(blob.size);
         } catch (err) {
             console.error(err);
@@ -220,6 +226,7 @@ export default function PdfMergerPage() {
         if (outputUrl) URL.revokeObjectURL(outputUrl);
         resetHistory({ files: [], pages: [] });
         setOutputUrl(null);
+        setOutputBlob(null);
         setOutputSize(null);
         setError(null);
     };
@@ -284,8 +291,12 @@ export default function PdfMergerPage() {
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <div className="flex items-center gap-1 mr-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
-                                        <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
-                                        <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                                        <Tooltip content="Undo (Ctrl+Z)">
+                                            <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Undo size={14} /></button>
+                                        </Tooltip>
+                                        <Tooltip content="Redo (Ctrl+Y)">
+                                            <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Redo size={14} /></button>
+                                        </Tooltip>
                                     </div>
                                     <span className="text-[10px] font-semibold tracking-wider text-zinc-500 hidden sm:inline">Drag to reorder • Click X to delete</span>
                                 </div>
@@ -411,6 +422,12 @@ export default function PdfMergerPage() {
                                     <Download size={18} /> Download Custom PDF
                                 </button>
                                 <button 
+                                    onClick={() => setIsSharing(true)}
+                                    className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 transition-all hover:-translate-y-0.5"
+                                >
+                                    <Share2 size={16} className="text-red-400" /> Share to Mobile
+                                </button>
+                                <button 
                                     onClick={() => setOutputUrl(null)}
                                     className="h-14 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all"
                                 >
@@ -442,6 +459,13 @@ export default function PdfMergerPage() {
                     ))}
                 </div>
             )}
+            
+            <ShareModal 
+                isOpen={isSharing} 
+                onClose={() => setIsSharing(false)} 
+                file={outputBlob} 
+                fileName={`Merged_Document_${Date.now()}.pdf`} 
+            />
         </div>
     );
 }

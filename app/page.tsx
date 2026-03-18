@@ -128,7 +128,7 @@ export default function Home() {
           <div className="mb-8">
             <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
               <TrendingUp className="text-amber-500" size={20} />
-              Powerful Tools for Creators
+              Assets
             </h2>
           </div>
 
@@ -150,8 +150,8 @@ export default function Home() {
               <Wrench size={16} className="text-zinc-400" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight text-zinc-100">Top Tools</h2>
-              <p className="text-sm text-zinc-500 font-medium mt-0.5">Free tools for creators — 100% browser-based</p>
+              <h2 className="text-xl font-bold tracking-tight text-zinc-100">Smart Tools</h2>
+              <p className="text-sm text-zinc-500 font-medium mt-0.5">No installs, no sign-up — runs entirely in your browser.</p>
             </div>
           </div>
           <Link
