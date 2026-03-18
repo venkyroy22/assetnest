@@ -29,7 +29,7 @@ export async function POST(req: Request) {
       const uploadStream = cloudinary.uploader.upload_stream(
         { 
           folder: "assetnest_temp_shares", 
-          resource_type: "auto", 
+          resource_type: "raw", 
           public_id: publicId 
         },
         (error, result) => {
