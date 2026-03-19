@@ -11,11 +11,11 @@ import Tooltip from "./Tooltip";
 
 // ── Menu config ───────────────────────────────────────────────────────────────
 const MENU_ITEMS = [
-    { name: "Smart Tools", href: "/tools", icon: Wrench, accent: "#10b981", dev: false },
-    { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, accent: "#a855f7", dev: false },
-    { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#6366f1", dev: false },
-    { name: "About", href: "/about", icon: Info, accent: "#94a3b8", dev: false },
-    { name: "Contact", href: "/contact", icon: Mail, accent: "#94a3b8", dev: false },
+    { name: "Smart Tools", href: "/tools", icon: Wrench, accent: "#d4d4d8", dev: false },
+    { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, accent: "#d4d4d8", dev: false },
+    { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#d4d4d8", dev: false },
+    { name: "About", href: "/about", icon: Info, accent: "#d4d4d8", dev: false },
+    { name: "Contact", href: "/contact", icon: Mail, accent: "#d4d4d8", dev: false },
 ];
 
 // ── Nav item ──────────────────────────────────────────────────────────────────

@@ -22,10 +22,10 @@ export default function Tooltip({
     const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const showTooltip = () => {
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = setTimeout(() => {
             setIsRendered(true);
-            // Slight delay to ensure animation triggers after render
-            setTimeout(() => setIsVisible(true), 10);
+            requestAnimationFrame(() => setIsVisible(true));
         }, delay);
     };
 
@@ -33,7 +33,9 @@ export default function Tooltip({
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         setIsVisible(false);
         // Wait for animation to finish before unrendering
-        setTimeout(() => setIsRendered(false), 200);
+        timeoutRef.current = setTimeout(() => {
+            setIsRendered(false);
+        }, 200);
     };
 
     // Cleanup on unmount
@@ -80,6 +82,7 @@ export default function Tooltip({
             onMouseLeave={hideTooltip}
             onFocus={showTooltip}
             onBlur={hideTooltip}
+            onClick={hideTooltip}
         >
             {children}
             {isRendered && (

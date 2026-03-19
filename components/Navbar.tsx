@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ArrowRight } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { Menu, X, Search, ArrowRight, Wrench, Sparkles } from "lucide-react";
+import { useRouter, usePathname } from "next/navigation";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS } from "@/lib/tools";
@@ -39,6 +39,11 @@ const TAG_COLORS: Record<string, string> = {
     Page: "text-zinc-400",
 };
 
+const NAV_LINKS = [
+    { name: "Tools", href: "/tools", icon: Wrench },
+    { name: "AI Prompts", href: "/prompts", icon: Sparkles },
+];
+
 const Navbar = ({ className = "" }: { className?: string }) => {
     const { isOpen, toggle } = useSidebar();
     const [scrolled, setScrolled] = useState(false);
@@ -49,6 +54,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
+    const pathname = usePathname();
 
     // Filter results as user types
     useEffect(() => {
@@ -64,6 +70,8 @@ const Navbar = ({ className = "" }: { className?: string }) => {
         setResults(found);
         setShowResults(true);
     }, [query]);
+
+
 
     // Close dropdown when clicking outside
     useEffect(() => {
@@ -108,14 +116,14 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     }
 
     return (
-        <nav className={`fixed top-0 left-0 w-full z-50 transition-colors duration-300 h-20 ${scrolled ? "bg-background/95 backdrop-blur-md border-b border-white/5" : "bg-background"} ${className}`}>
+        <nav className={`fixed top-0 left-0 w-full z-50 transition-[background-color,border-color,backdrop-filter] duration-500 h-20 transform-gpu ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-zinc-800/50" : "bg-transparent border-b border-transparent"} ${className}`}>
             <div className="flex h-full items-center relative">
                 {/* Sidebar Toggle - Fixed stationary position */}
                 <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">
-                    <Tooltip content={isOpen ? "Close Sidebar" : "Open Sidebar"} position="right">
+                    <Tooltip content={isOpen ? "Close Sidebar" : "Open Sidebar"} position="bottom" delay={500}>
                         <button
                             onClick={toggle}
-                            className="flex items-center justify-center p-2 rounded-sm border border-transparent hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
+                            className="flex items-center justify-center p-2 rounded-sm border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
                             aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
                         >
                             <Menu size={20} />
@@ -191,9 +199,25 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             )}
                         </div>
 
-                        {/* Desktop Actions */}
-                        <div className="hidden md:flex items-center space-x-6">
-                            {/* Removed Get Pro link */}
+                        {/* Desktop Nav Links */}
+                        <div className="hidden md:flex items-center gap-1">
+                            {NAV_LINKS.map((link) => {
+                                const Icon = link.icon;
+                                const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                                return (
+                                    <Link
+                                        key={link.href}
+                                        href={link.href}
+                                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-200
+                                            ${isActive
+                                                ? "bg-white/8 text-white border border-white/10"
+                                                : "text-zinc-400 hover:text-white hover:bg-white/5 border border-transparent"}`}
+                                    >
+                                        <Icon size={13} />
+                                        {link.name}
+                                    </Link>
+                                );
+                            })}
                         </div>
 
                         {/* Mobile Menu Toggle */}

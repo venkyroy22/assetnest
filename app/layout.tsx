@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import CookieConsent from "@/components/CookieConsent";
+import SmoothScroll from "@/components/SmoothScroll";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -101,9 +102,11 @@ export default function RootLayout({
       </head>
 
       <body className="antialiased font-sans flex flex-col min-h-screen">
-        <AppLayout>
-          {children}
-        </AppLayout>
+        <SmoothScroll>
+          <AppLayout>
+            {children}
+          </AppLayout>
+        </SmoothScroll>
         <CookieConsent />
 
         {/* Google AdSense - Loading after interactive to improve TBT */}

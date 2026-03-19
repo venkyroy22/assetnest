@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
 
@@ -49,6 +49,17 @@ export const ALL_TOOLS: Tool[] = [
         category: "Generate",
     },
     {
+        id: "e-signature",
+        name: "E-Signature Creator",
+        description: "Draw your signature smoothly online using your mouse or touch screen. Download instantly as a transparent PNG or SVG.",
+        href: "/tools/e-signature",
+        badge: "Free",
+        icon: PenTool,
+        tags: ["signature", "esign", "sign", "digital signature", "draw", "transparent", "png", "svg"],
+        accent: "#10b981",
+        category: "Generate",
+    },
+    {
         id: "pomodoro",
         name: "Pomodoro Timer",
         description: "Boost your productivity with an animated focus timer, session tracking, and achievement system.",
@@ -79,6 +90,17 @@ export const ALL_TOOLS: Tool[] = [
         icon: Receipt,
         tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
         accent: "#f59e0b",   // amber
+        category: "Business",
+    },
+    {
+        id: "business-card",
+        name: "Business Card Maker",
+        description: "Design professional business cards online in minutes. Add your details, adjust colors, and export high-res PNGs.",
+        href: "/tools/business-card",
+        badge: "Free",
+        icon: CreditCard,
+        tags: ["business card", "maker", "generator", "design", "corporate", "card", "branding"],
+        accent: "#6366f1",
         category: "Business",
     },
     {
@@ -211,7 +233,7 @@ export const ALL_TOOLS: Tool[] = [
             "convert image to pdf", "picture to pdf", "convert jpg to pdf",
             "images to pdf", "photo to pdf", "webp to pdf", "pdf from images"
         ],
-        accent: "#0ea5e9",
+        accent: "#10b981",
         category: "PDF",
     },
     {
@@ -233,7 +255,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Table,
         tags: ["game", "sudoku", "logic", "puzzle", "numbers", "brain", "intelligence"],
-        accent: "#3b82f6",
+        accent: "#6366f1",
         category: "Games",
     },
     {
@@ -255,7 +277,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Gamepad2,
         tags: ["game", "dino", "runner", "infinite", "arcade", "avoid", "jump", "pixel"],
-        accent: "#ef4444",
+        accent: "#3b82f6",
         category: "Games",
     },
     {
@@ -266,7 +288,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Calculator,
         tags: ["game", "math", "arithmetic", "speed", "test", "brain", "training", "logic"],
-        accent: "#8b5cf6",
+        accent: "#ef4444",
         category: "Games",
     },
 ];

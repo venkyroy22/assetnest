@@ -1,172 +1,496 @@
 "use client";
 
 import Link from "next/link";
-import Container from "@/components/Container";
 import CategoryCard from "@/components/CategoryCard";
-import FireParticles from "@/components/FireParticles";
-import { TrendingUp, Sparkles, Wrench, ArrowRight } from "lucide-react";
+import {
+  TrendingUp, Sparkles, Wrench, ArrowRight, Shield, Zap,
+  Lock, Globe, Star, CheckCircle, ArrowUpRight, Move,
+} from "lucide-react";
 import HomeToolsGrid from "@/components/HomeToolsGrid";
 import { useState, useEffect, useRef } from "react";
+import FadeReveal from "@/components/FadeReveal";
 
+// ── Animated counter hook ─────────────────────────────────────────────────────
+function useCountUp(target: number, duration = 2000, shouldStart = false) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (!shouldStart) return;
+
+    let startTime: number | null = null;
+    let animationFrameId: number;
+
+    const animate = (currentTime: number) => {
+      if (!startTime) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      
+      // Easing function: outExpo
+      const easedProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      
+      setCount(Math.floor(easedProgress * target));
+
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(animate);
+      } else {
+        setCount(target);
+      }
+    };
+
+    animationFrameId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [target, duration, shouldStart]);
+
+  return count;
+}
+
+// ── Intersection Hook ─────────────────────────────────────────────────────────
+function useInView(threshold = 0.01) {
+  const [isInView, setIsInView] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setIsInView(true);
+        if (ref.current) observer.unobserve(ref.current);
+      }
+    }, { 
+      threshold,
+      rootMargin: "0px 0px 100px 0px" // Trigger 100px before it fits
+    });
+
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [threshold]);
+
+  return { ref, isInView };
+}
+
+// ── Stat Card ─────────────────────────────────────────────────────────────────
+function StatCard({ value, suffix, label, delay }: {
+  value: number; suffix: string; label: string; delay: number;
+}) {
+  const { ref, isInView } = useInView(0.1);
+  const count = useCountUp(value, 2000, isInView);
+  
+  return (
+    <div
+      ref={ref}
+      className="flex flex-col items-center gap-1 px-8 py-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="text-3xl font-black tracking-tight text-white stat-number">
+        {count.toLocaleString()}<span className="text-zinc-100">{suffix}</span>
+      </div>
+      <div className="text-[11px] font-semibold text-zinc-500 tracking-wide uppercase">{label}</div>
+    </div>
+  );
+}
+
+// ── Feature pill ──────────────────────────────────────────────────────────────
+function FeaturePill({ icon: Icon, label }: { icon: any; label: string }) {
+  return (
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/8 bg-white/[0.03] backdrop-blur-md hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all duration-300 cursor-default group">
+      <Icon size={13} className="text-zinc-100 group-hover:text-emerald-400 group-hover:scale-110 transition-all duration-300" />
+      <span className="text-xs font-semibold text-zinc-300">{label}</span>
+    </div>
+  );
+}
+
+// ── Why card ──────────────────────────────────────────────────────────────────
+function WhyCard({ icon: Icon, title, desc, accent, index }: {
+  icon: any; title: string; desc: string; accent: string; index: number;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setVisible(true), 100 + index * 100);
+    return () => clearTimeout(t);
+  }, [index]);
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? "translateY(0)" : "translateY(20px)",
+        transition: `opacity 0.5s ease ${index * 80}ms, transform 0.5s cubic-bezier(0.23,1,0.32,1) ${index * 80}ms`,
+        boxShadow: hovered ? `0 16px 40px -8px ${accent}20, 0 0 0 1px ${accent}20` : "0 0 0 1px rgba(63,63,70,0.4)",
+      }}
+      className="relative overflow-hidden rounded-2xl bg-zinc-900/30 backdrop-blur-md border border-white/5 p-6 transition-all duration-300 w-full"
+    >
+      <div
+        className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none transition-opacity duration-500"
+        style={{ background: accent, opacity: hovered ? 0.15 : 0.04 }}
+      />
+      <div className="relative z-10">
+        <div
+          className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-4 border transition-all duration-300"
+          style={{
+            background: hovered ? `${accent}18` : "rgba(39,39,42,0.8)",
+            borderColor: hovered ? `${accent}40` : "rgba(63,63,70,0.8)",
+          }}
+        >
+          <Icon size={18} style={{ color: hovered ? accent : "#71717a", transition: "color 0.3s" }} />
+        </div>
+        <h3 className="text-sm font-bold text-white mb-2 tracking-tight">{title}</h3>
+        <p className="text-xs text-zinc-500 leading-relaxed font-medium">{desc}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Floating orb ──────────────────────────────────────────────────────────────
+function FloatingOrb({
+  size, color, x, y, duration, delay,
+}: {
+  size: number; color: string; x: string; y: string; duration: number; delay: number;
+}) {
+  return (
+    <div
+      className="absolute rounded-full pointer-events-none"
+      style={{
+        width: size,
+        height: size,
+        left: x,
+        top: y,
+        background: color,
+        filter: `blur(${size * 0.6}px)`,
+        animation: `heroFloat ${duration}s ease-in-out ${delay}s infinite`,
+        opacity: 0.55,
+      }}
+    />
+  );
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 export default function Home() {
   const [mounted, setMounted] = useState(false);
-  const [isDesktop, setIsDesktop] = useState(false);
-  const [isPlayingReverse, setIsPlayingReverse] = useState(false);
-  const forwardVideoRef = useRef<HTMLVideoElement>(null);
-  const reverseVideoRef = useRef<HTMLVideoElement>(null);
+  const [heroVisible, setHeroVisible] = useState(false);
+
+  const [scrollY, setScrollY] = useState(0);
+  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const dragStart = useRef({ x: 0, y: 0 });
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    setIsDragging(true);
+    dragStart.current = { x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent) => {
+    if (!isDragging) return;
+    setDragOffset({
+      x: e.clientX - dragStart.current.x,
+      y: e.clientY - dragStart.current.y
+    });
+  };
+
+  const handlePointerUp = () => {
+    setIsDragging(false);
+  };
+
+  useEffect(() => {
+    if (!isDragging) {
+      // Small delay before truly snapping back might feel better
+      const t = setTimeout(() => setDragOffset({ x: 0, y: 0 }), 50);
+      return () => clearTimeout(t);
+    }
+  }, [isDragging]);
 
   useEffect(() => {
     setMounted(true);
-    const checkIsDesktop = () => setIsDesktop(window.innerWidth > 768);
-    checkIsDesktop();
-    window.addEventListener("resize", checkIsDesktop);
-    return () => window.removeEventListener("resize", checkIsDesktop);
+    const handleScroll = () => setScrollY(window.scrollY);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    
+    const t = setTimeout(() => setHeroVisible(true), 80);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      clearTimeout(t);
+    };
   }, []);
 
-  const handleForwardEnded = () => {
-    if (reverseVideoRef.current) {
-      reverseVideoRef.current.currentTime = 0;
-      reverseVideoRef.current.play().then(() => {
-        setIsPlayingReverse(true);
-      }).catch(() => {
-        setIsPlayingReverse(true);
-      });
-    }
-  };
-
-  const handleReverseEnded = () => {
-    if (forwardVideoRef.current) {
-      forwardVideoRef.current.currentTime = 0;
-      forwardVideoRef.current.play().then(() => {
-        setIsPlayingReverse(false);
-      }).catch(() => {
-        setIsPlayingReverse(false);
-      });
-    }
-  };
+  const scrollProgress = Math.min(Math.max(scrollY / 500, 0), 1);
 
   const categories = [
     { title: "AI Image Prompts", count: "Best Prompts", image: "/promptsimg/Gemini_Generated_Image_l454rnl454rnl454.png", href: "/prompts" },
     { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
   ];
 
+  const whyCards = [
+    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#10b981" },
+    { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#f59e0b" },
+    { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#6366f1" },
+    { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#a855f7" },
+    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ec4899" },
+  ];
+
   if (!mounted) return <div className="min-h-screen bg-background" />;
 
   return (
     <div className="flex flex-col">
-      {/* Search-Centric Editorial Hero */}
-      <section className="relative flex items-center justify-center min-h-[500px] py-20 overflow-hidden bg-black">
-        <div className="absolute inset-0 z-0 bg-black">
-          {/* Static Background for Mobile to avoid 37MB payload */}
-          {!isDesktop && (
-            <div 
-              className="absolute inset-0 bg-cover bg-center opacity-40"
-              style={{ backgroundImage: 'url("https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg")' }}
-            />
-          )}
 
-          {/* Videos - Desktop Only */}
-          {isDesktop && (
-            <>
-              <video
-                ref={forwardVideoRef}
-                autoPlay
-                muted
-                playsInline
-                preload="auto"
-                onEnded={handleForwardEnded}
-                poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/Animate_this_image_1080p_202602241544.jpg"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-0' : 'opacity-100'}`}
-              >
-                <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/Animate_this_image_1080p_202602241544.mp4" type="video/mp4" />
-              </video>
+      {/* ══════════════════════════ HERO ══════════════════════════ */}
+      <section className="relative flex items-center justify-center min-h-[600px] pt-12 pb-24 lg:pt-8 overflow-hidden bg-black">
 
-              <video
-                ref={reverseVideoRef}
-                muted
-                playsInline
-                preload="none"
-                onEnded={handleReverseEnded}
-                poster="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto,so_0/assetnest/categories/0224.jpg"
-                className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${isPlayingReverse ? 'opacity-100' : 'opacity-0'}`}
-              >
-                <source src="https://res.cloudinary.com/drljj29ua/video/upload/f_auto,q_auto/assetnest/categories/0224.mp4" type="video/mp4" />
-              </video>
-            </>
-          )}
-
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px]" />
-
-          {/* Bottom Dissolve Edge (Downward Fade) */}
-          <div className="absolute -bottom-1 left-0 right-0 h-48 bg-gradient-to-t from-[#000000] via-[#000000]/80 to-transparent pointer-events-none" />
+        {/* ── Animated orbs in the background ── */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <FloatingOrb size={500} color="rgba(255,255,255,0.12)"   x="-10%"  y="-20%" duration={12} delay={0}   />
+          <FloatingOrb size={420} color="rgba(99,102,241,0.18)"   x="68%"   y="-10%" duration={15} delay={2}   />
+          <FloatingOrb size={360} color="rgba(168,85,247,0.15)"   x="50%"   y="50%"  duration={10} delay={4}   />
+          <FloatingOrb size={300} color="rgba(14,165,233,0.14)"   x="-6%"   y="60%"  duration={13} delay={1}   />
+          <FloatingOrb size={220} color="rgba(245,158,11,0.12)"   x="38%"   y="15%"  duration={18} delay={6}   />
         </div>
-        <FireParticles />
 
-        <div className="relative z-10 w-full max-w-5xl mx-auto text-center px-10">
-          <div className="space-y-10">
-            <div className="space-y-4">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-4 shadow-[0_4px_24px_rgba(255,255,255,0.02)]">
-                <Sparkles size={12} className="text-zinc-400" />
-                <span className="text-[10px] font-semibold tracking-wider text-zinc-300">Ultimate Resource Hub</span>
+        {/* ── Grid dot pattern ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px)",
+            backgroundSize: "32px 32px",
+            maskImage: "radial-gradient(ellipse 90% 85% at 50% 50%, #000 35%, transparent 100%)",
+            WebkitMaskImage: "radial-gradient(ellipse 90% 85% at 50% 50%, #000 35%, transparent 100%)",
+          }}
+        />
+
+        {/* ── Subtle radial vignette ── */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse 80% 75% at 50% 50%, transparent 20%, rgba(0,0,0,0.55) 100%)",
+          }}
+        />
+
+        {/* ── Bottom fade to black ── */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
+
+        {/* ── Main Content Container ── */}
+        <div className="relative z-10 w-full max-w-[1500px] min-h-[750px] flex flex-col items-center justify-center px-6 md:px-16 overflow-hidden">
+          
+          {/* ── Giant Main Headline Layer (Behind Mask, then moves Front) ── */}
+          <div 
+            className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none overflow-visible"
+            style={{
+              opacity: heroVisible ? 0.60 + (scrollProgress * 0.40) : 0,
+              transform: `translateY(-55%) scale(${1 + scrollProgress * 0.1})`,
+              zIndex: scrollProgress > 0.5 ? 20 : 0,
+              transition: heroVisible ? "opacity 1s ease, z-index 0s" : "none",
+            }}
+          >
+            <h1 
+              className="text-[17vw] lg:text-[15vw] font-black tracking-[-0.08em] leading-none uppercase select-none drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-75"
+              style={{
+                color: "transparent",
+                backgroundImage: isDragging 
+                  ? `radial-gradient(circle at calc(50% + ${dragOffset.x * 0.5}px) calc(50% + ${dragOffset.y * 0.5}px), #fff 0%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0.1) 50%)`
+                  : "linear-gradient(to bottom, #fff, #fff)",
+                WebkitBackgroundClip: "text",
+                backgroundClip: "text",
+                WebkitTextFillColor: "transparent"
+              }}
+            >
+              AssetNest
+            </h1>
+          </div>
+
+          {/* ── Focal Mask Layer (Foreground, then moves Behind) ── */}
+          <div 
+            className={`relative w-full max-w-[650px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto z-10 group`}
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerUp}
+            onPointerCancel={handlePointerUp}
+            style={{
+              opacity: heroVisible ? 1 - (scrollProgress * 0.4) : 0,
+              transform: `translate3d(${dragOffset.x}px, ${-20 + scrollProgress * 150 + dragOffset.y}px, 0) scale(${1.1 - scrollProgress * 0.3})`,
+              zIndex: scrollProgress > 0.5 ? 0 : 30,
+              transition: isDragging ? "none" : (heroVisible ? "opacity 0.8s ease-out, transform 0.6s cubic-bezier(0.23,1,0.32,1)" : "none"),
+              touchAction: "none"
+            }}
+          >
+            {/* Drag Indicator Tooltip - Only on Hover */}
+            <div className={`absolute top-1/4 right-[10%] lg:right-[15%] z-[100] transition-opacity duration-300 opacity-0 group-hover:opacity-100`}
+                 style={{ transform: "translateY(-50%)" }}>
+                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl">
+                    <Move size={11} className="text-zinc-400" />
+                    <span className="text-[10px] font-black tracking-[0.2em] text-zinc-300 uppercase">Drag</span>
+                 </div>
+            </div>
+
+            <div className="relative w-full h-full">
+              {/* Layered Glows radiating from behind the mask */}
+              <div className="absolute inset-0 bg-emerald-500/20 blur-[130px] rounded-full scale-50 animate-pulse" />
+              <div className="absolute inset-0 bg-blue-500/10 blur-[160px] rounded-full scale-75" />
+              
+              <img 
+                src="/hero-mask.png" 
+                alt="AssetNest Interface" 
+                className="w-full h-full object-contain relative z-20 drop-shadow-[0_50px_100px_rgba(0,0,0,1)] brightness-[1.12] select-none pointer-events-none"
+                style={{ animation: isDragging ? "none" : "heroFloat 18s ease-in-out infinite" }}
+              />
+            </div>
+          </div>
+
+          {/* ── Actions & Subtext Layer (In Front) ── */}
+          <div 
+            className="relative z-20 flex flex-col items-center text-center gap-10 -mt-10 lg:-mt-20 px-6 max-w-2xl"
+            style={{
+              opacity: heroVisible ? 1 : 0,
+              transform: heroVisible ? "translateY(0)" : "translateY(20px)",
+              transition: "opacity 0.8s ease 0.5s, transform 0.8s cubic-bezier(0.23,1,0.32,1) 0.5s",
+            }}
+          >
+            {/* Subtitle */}
+            <p className="text-xs md:text-sm text-zinc-400 font-black tracking-[0.4em] uppercase leading-relaxed max-w-sm drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+               The Hub for Intelligent creation
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="flex flex-wrap items-center justify-center gap-5">
+              <Link
+                href="/tools"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl shadow-2xl shadow-emerald-500/5 group"
+                style={{ "--btn-bg": "#000" } as React.CSSProperties}
+              >
+                <span className="flex items-center gap-3">
+                  Explore Tools <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </span>
+              </Link>
+              <Link
+                href="/prompts"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl border border-white/10 backdrop-blur-xl"
+                style={{ "--btn-bg": "#000" } as React.CSSProperties}
+              >
+                <span className="flex items-center gap-3">
+                  AI Prompts <Sparkles size={14} />
+                </span>
+              </Link>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      {/* ══════════════════════════ STATS STRIP ══════════════════════════ */}
+      <FadeReveal threshold={0.1}>
+        <section className="py-10 bg-black border-y border-white/5 relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none" style={{
+            backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.03) 1px, transparent 1px)",
+            backgroundSize: "24px 24px",
+          }} />
+          <div className="px-6 md:px-10 relative z-10">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 max-w-5xl mx-auto">
+              <StatCard value={23}  suffix="+"    label="Free Tools"       delay={0} />
+              <StatCard value={100} suffix="%"    label="Browser-Based"    delay={100} />
+              <StatCard value={6}   suffix=" Cats" label="Tool Categories" delay={200} />
+            </div>
+          </div>
+        </section>
+      </FadeReveal>
+
+      {/* ══════════════════════════ ASSETS / CATEGORIES ══════════════════════════ */}
+      <FadeReveal distance={40}>
+        <section className="py-12 bg-black">
+          <div className="px-6 md:px-10">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
+                <TrendingUp className="text-amber-500" size={20} />
+                Assets
+              </h2>
+              <Link
+                href="/prompts"
+                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-white transition-colors"
+              >
+                View All <ArrowUpRight size={12} />
+              </Link>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              {categories.map((category, index) => (
+                <CategoryCard key={category.title} {...category} priority={index < 2} />
+              ))}
+            </div>
+          </div>
+        </section>
+      </FadeReveal>
+
+      {/* ══════════════════════════ SMART TOOLS ══════════════════════════ */}
+      <FadeReveal distance={50} threshold={0.05}>
+        <section className="py-16 px-6 md:px-10 bg-black">
+          <div className="flex items-center justify-between mb-10">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-zinc-900 shadow-inner border border-zinc-800 flex items-center justify-center">
+                <Wrench size={16} className="text-zinc-400" />
               </div>
-              <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-white mx-auto max-w-4xl leading-[0.9] drop-shadow-2xl">
-                Your Ultimate <span className="bg-[linear-gradient(to_right,#757F9A,#D7DDE8,#757F9A,#D7DDE8,#757F9A)] bg-clip-text text-transparent">Power</span> Nest.
-              </h1>
-              <p className="text-base md:text-xl text-zinc-400 font-medium max-w-xl mx-auto drop-shadow-md">
-                Precision utilities, professional AI prompts, and essential tools for your next big project.
+              <div>
+                <h2 className="text-xl font-bold tracking-tight text-zinc-100">Smart Tools</h2>
+                <p className="text-sm text-zinc-500 font-medium mt-0.5">No installs, no sign-up — runs entirely in your browser.</p>
+              </div>
+            </div>
+            <Link
+              href="/tools"
+              className="btn-pan px-4 py-2 rounded-full border border-zinc-800 text-xs font-semibold"
+              style={{ "--btn-bg": "transparent" } as React.CSSProperties}
+            >
+              <span className="flex items-center gap-2">
+                All Tools <ArrowRight size={14} />
+              </span>
+            </Link>
+          </div>
+          <HomeToolsGrid />
+        </section>
+      </FadeReveal>
+
+      {/* ══════════════════════════ WHY ASSETNEST ══════════════════════════ */}
+      <FadeReveal distance={60}>
+        <section className="py-20 px-6 md:px-10 bg-black relative overflow-hidden">
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full border border-white/[0.03]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full border border-white/[0.03]" />
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent" />
+          </div>
+
+          <div className="relative z-10 max-w-5xl mx-auto">
+            <div className="text-center mb-14">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-5">
+                <Star size={11} className="text-amber-400" />
+                <span className="text-[10px] font-bold tracking-widest text-zinc-300 uppercase">Why AssetNest</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
+                Built different.{" "}
+                <span className="gradient-text-silver">Designed for you.</span>
+              </h2>
+              <p className="text-zinc-400 text-sm md:text-base max-w-lg mx-auto font-medium leading-relaxed">
+                We believe powerful tools should be accessible, private, and beautiful — all at the same time.
               </p>
             </div>
 
-
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Grid (Replacing Asset Grid as per design request) */}
-      <section className="py-8 bg-black">
-        <div className="px-10">
-          <div className="mb-8">
-            <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-              <TrendingUp className="text-amber-500" size={20} />
-              Assets
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {categories.map((category, index) => (
-              <CategoryCard key={category.title} {...category} priority={index < 2} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Top Tools Section ── */}
-      <section className="py-16 px-10 bg-black">
-
-        {/* Section header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-zinc-900 shadow-inner border border-zinc-800 flex items-center justify-center">
-              <Wrench size={16} className="text-zinc-400" />
+            <div className="flex flex-wrap justify-center gap-4">
+              {whyCards.map((card, i) => (
+                <div key={card.title} className="w-full sm:w-[calc(50%-8px)] lg:w-[calc(33.33%-11px)] flex">
+                  <WhyCard {...card} index={i} />
+                </div>
+              ))}
             </div>
-            <div>
-              <h2 className="text-xl font-bold tracking-tight text-zinc-100">Smart Tools</h2>
-              <p className="text-sm text-zinc-500 font-medium mt-0.5">No installs, no sign-up — runs entirely in your browser.</p>
+
+            <div className="mt-14 flex flex-col items-center gap-4">
+              <p className="text-xs font-semibold text-zinc-600 tracking-widest uppercase">Ready to start?</p>
+              <Link
+                href="/tools"
+                className="btn-pan px-8 py-4 text-sm font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all duration-200 shadow-2xl shadow-white/10"
+                style={{ "--btn-bg": "#000" } as React.CSSProperties}
+              >
+                <span className="flex items-center gap-3">
+                  Explore All Tools <ArrowRight size={16} />
+                </span>
+              </Link>
             </div>
           </div>
-          <Link
-            href="/tools"
-            className="flex items-center gap-2 px-4 py-2 rounded-full border border-zinc-800 text-xs font-semibold text-zinc-400 hover:border-emerald-500/30 hover:bg-emerald-500/5 hover:text-emerald-400 transition-all custom-shadow"
-          >
-            All Tools <ArrowRight size={14} />
-          </Link>
-        </div>
-
-        {/* Tool cards grid */}
-        <HomeToolsGrid />
-      </section>
-
+        </section>
+      </FadeReveal>
     </div>
   );
 }
-
