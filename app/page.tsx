@@ -215,9 +215,11 @@ export default function Home() {
 
   const scrollProgress = Math.min(Math.max(scrollY / 500, 0), 1);
 
+  const CLOUDINARY_BASE = "https://res.cloudinary.com/drljj29ua/image/upload/f_auto,q_auto/assetnest/";
+
   const categories = [
-    { title: "AI Image Prompts", count: "Best Prompts", image: "/promptsimg/Gemini_Generated_Image_l454rnl454rnl454.png", href: "/prompts" },
-    { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
+    { title: "AI Image Prompts", count: "Best Prompts", image: `${CLOUDINARY_BASE}promptsimg/Gemini_Generated_Image_l454rnl454rnl454.png`, href: "/prompts" },
+    { title: "QR Generator", count: "Free Tool", image: `${CLOUDINARY_BASE}qr-generator-cover`, href: "/tools/qr" },
   ];
 
   const whyCards = [
@@ -326,7 +328,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-blue-500/10 blur-[160px] rounded-full scale-75" />
               
               <img 
-                src="/hero-mask.png" 
+                src={`${CLOUDINARY_BASE}hero-mask`} 
                 alt="AssetNest Interface" 
                 className="w-full h-full object-contain relative z-20 drop-shadow-[0_50px_100px_rgba(0,0,0,1)] brightness-[1.12] select-none pointer-events-none"
                 style={{ animation: isDragging ? "none" : "heroFloat 18s ease-in-out infinite" }}
