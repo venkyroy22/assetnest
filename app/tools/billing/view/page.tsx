@@ -173,7 +173,7 @@ function BillViewer() {
     // ── Loading ───────────────────────────────────────────────────────────────
     if (!bill) return (
         <div className="min-h-screen bg-[#fafafc] flex items-center justify-center">
-            <div className="w-12 h-12 border-[4px] border-emerald-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-12 h-12 border-[4px] border-black border-t-transparent rounded-full animate-spin" />
         </div>
     );
 
@@ -217,7 +217,7 @@ function BillViewer() {
                                 onClick={() => setLang(l.code)}
                                 className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${
                                     lang === l.code
-                                        ? "bg-emerald-500 border-emerald-500 text-black"
+                                        ? "bg-white border-white text-black"
                                         : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
                                 }`}
                             >
@@ -227,8 +227,8 @@ function BillViewer() {
                     </div>
                     {translating && (
                         <div className="flex items-center gap-2 mt-2">
-                            <Loader2 size={12} className="text-emerald-600 animate-spin" />
-                            <span className="text-xs text-emerald-600 font-semibold tracking-wide">{t.translating}</span>
+                            <Loader2 size={12} className="text-zinc-600 animate-spin" />
+                            <span className="text-xs text-zinc-600 font-semibold tracking-wide">{t.translating}</span>
                         </div>
                     )}
                 </div>
@@ -240,8 +240,8 @@ function BillViewer() {
 
                     {/* Badge */}
                     <div className="no-print flex items-center justify-center gap-2 mb-5">
-                        <div className="w-7 h-7 bg-emerald-500 rounded-lg flex items-center justify-center">
-                            <span className="text-black text-sm font-black">₹</span>
+                        <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center border border-white/10">
+                            <span className="text-white text-sm font-black">₹</span>
                         </div>
                         <span className="text-xs font-semibold tracking-wide text-zinc-400">{t.title}</span>
                     </div>
@@ -330,7 +330,7 @@ function BillViewer() {
                                     <p className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-0.5">{t.totalAmount}</p>
                                     <p className="text-[10px] text-zinc-500 font-bold">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
                                 </div>
-                                <p className="text-3xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
+                                <p className="text-3xl font-black text-white">{fmtINR(grandTotal)}</p>
                             </div>
                         </div>
                         {/* Footer */}
@@ -339,7 +339,7 @@ function BillViewer() {
                             <p className="text-xs text-zinc-400 font-semibold tracking-wide mb-6">{t.generated}</p>
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-2xl shadow-sm">
                                 <div className="w-5 h-5 bg-black rounded-lg flex items-center justify-center">
-                                    <span className="text-emerald-400 text-[9px] font-black">A</span>
+                                    <span className="text-white text-[9px] font-black">A</span>
                                 </div>
                                 <span className="text-xs font-semibold text-zinc-600 tracking-wide">{t.poweredBy}</span>
                             </div>
@@ -349,7 +349,7 @@ function BillViewer() {
                     {/* Download button */}
                     <button
                         onClick={() => window.print()}
-                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-emerald-500 text-black py-4 rounded-full text-sm font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-lg shadow-emerald-500/20"
+                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-black text-white py-4 rounded-full text-sm font-bold tracking-wide hover:bg-zinc-900 active:scale-[0.98] transition-all shadow-lg shadow-black/20"
                     >
                         <Download size={16} />
                         {t.download}
@@ -367,9 +367,9 @@ function BillViewer() {
                 <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", color: "#09090b", border: "1px solid #d4d4d8", width: "100%" }}>
 
                     {/* Title bar */}
-                    <div style={{ background: "#10b981", padding: "10px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <div style={{ background: "#000", padding: "10px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span style={{ color: "#fff", fontSize: "18px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>Tax Invoice</span>
-                        <span style={{ color: "#d1fae5", fontSize: "11px", fontWeight: 600 }}>Powered by AssetNest</span>
+                        <span style={{ color: "#71717a", fontSize: "11px", fontWeight: 600 }}>Powered by AssetNest</span>
                     </div>
 
                     {/* Two-column header */}
@@ -452,9 +452,9 @@ function BillViewer() {
                                 </div>
                             )}
                             {/* Grand Total */}
-                            <div style={{ marginTop: "12px", padding: "12px 16px", background: "#ecfdf5", border: "2px solid #10b981", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#065f46" }}>{t.totalAmount}</span>
-                                <span style={{ fontSize: "24px", fontWeight: 900, color: "#059669" }}>{fmtINR(grandTotal)}</span>
+                            <div style={{ marginTop: "12px", padding: "12px 16px", background: "#f8f8f8", border: "2px solid #000", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#000" }}>{t.totalAmount}</span>
+                                <span style={{ fontSize: "24px", fontWeight: 900, color: "#000" }}>{fmtINR(grandTotal)}</span>
                             </div>
                         </div>
                     </div>
@@ -466,7 +466,7 @@ function BillViewer() {
                             <p style={{ margin: "3px 0 0", fontSize: "10px", color: "#a1a1aa" }}>{t.generated}</p>
                         </div>
                         <div style={{ textAlign: "right", fontSize: "9px", color: "#a1a1aa", textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: "1.6" }}>
-                            Powered by<br /><strong style={{ color: "#10b981", fontSize: "11px" }}>AssetNest</strong>
+                            Powered by<br /><strong style={{ color: "#000", fontSize: "11px" }}>AssetNest</strong>
                         </div>
                     </div>
                 </div>

@@ -169,9 +169,9 @@ body {
 }
 
 @keyframes border-glow {
-  0% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
-  50% { box-shadow: 0 0 20px 4px rgba(16,185,129,0.15); }
-  100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+  0% { box-shadow: 0 0 0 0 rgba(160, 160, 160, 0); }
+  50% { box-shadow: 0 0 20px 4px rgba(255, 255, 255, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(160, 160, 160, 0); }
 }
 
 @keyframes gradient-x {
@@ -254,9 +254,21 @@ body {
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
   display: inline-flex;
   align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px -10px rgba(255, 255, 255, 0.3);
+  background: #fdfdfd;
+}
+
+.cta-button:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /* ── Codrops Pan Hover Effect ── */
@@ -293,17 +305,28 @@ body {
 }
 
 .btn-pan:hover::before {
-  color: #fff;
+  transform: translateX(101%);
+}
+
+.btn-pan:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.btn-pan:active {
+  transform: translateY(-1px) scale(0.96);
 }
 
 
 
 /* ── Gradient Text Utilities ── */
 .gradient-text-silver {
-  background: linear-gradient(135deg, #e4e4e7, #34d399, #6ee7b7);
+  background: linear-gradient(to right, #757F9A, #D7DDE8, #c8cfd9, #D7DDE8, #757F9A);
+  background-size: 200% auto;
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
 }
 
 .gradient-text-aurora {
@@ -313,15 +336,6 @@ body {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   animation: aurora 6s ease infinite;
-}
-
-.gradient-text-silver {
-  background: linear-gradient(to right, #757F9A, #D7DDE8, #c8cfd9, #D7DDE8, #757F9A);
-  background-size: 200% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmer 4s linear infinite;
 }
 
 /* ── Glass Card ── */
@@ -340,15 +354,15 @@ body {
 
 /* ── Glow border on hover ── */
 .glow-border-white:hover {
-  box-shadow: 0 0 0 1px rgba(16,185,129,0.3), 0 0 24px rgba(16,185,129,0.1);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.2), 0 0 24px rgba(255,255,255,0.05);
 }
 
 /* ── Mesh gradient overlay ── */
 .mesh-gradient {
   background-image:
-    radial-gradient(at 20% 20%, rgba(16,185,129,0.08) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, rgba(99,102,241,0.06) 0px, transparent 50%),
-    radial-gradient(at 0% 80%, rgba(168,85,247,0.05) 0px, transparent 50%);
+    radial-gradient(at 20% 20%, rgba(255,255,255,0.05) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(99,102,241,0.04) 0px, transparent 50%),
+    radial-gradient(at 0% 80%, rgba(168,85,247,0.03) 0px, transparent 50%);
 }
 
 /* ── Stats number animation ── */
@@ -364,7 +378,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(16,185,129,0.6), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
   animation: line-scan 3s ease-in-out infinite;
 }
 
@@ -387,7 +401,7 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, rgba(16,185,129,0.4), rgba(99,102,241,0.2), rgba(168,85,247,0.3));
+  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(255,255,255,0.1), rgba(255,255,255,0.2));
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);

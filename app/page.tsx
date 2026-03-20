@@ -221,7 +221,7 @@ export default function Home() {
   ];
 
   const whyCards = [
-    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#10b981" },
+    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#a1a1aa" },
     { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#f59e0b" },
     { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#6366f1" },
     { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#a855f7" },
@@ -361,11 +361,11 @@ export default function Home() {
               </Link>
               <Link
                 href="/prompts"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl border border-white/10 backdrop-blur-xl"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl border border-white/10 backdrop-blur-xl group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
-                  AI Prompts <Sparkles size={14} />
+                  AI Prompts <Sparkles size={14} className="group-hover:scale-110 transition-transform" />
                 </span>
               </Link>
             </div>
@@ -480,11 +480,11 @@ export default function Home() {
               <p className="text-xs font-semibold text-zinc-600 tracking-widest uppercase">Ready to start?</p>
               <Link
                 href="/tools"
-                className="btn-pan px-8 py-4 text-sm font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all duration-200 shadow-2xl shadow-white/10"
+                className="btn-pan px-8 py-4 text-sm font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all duration-200 shadow-2xl shadow-white/10 group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
-                  Explore All Tools <ArrowRight size={16} />
+                  Explore All Tools <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
             </div>

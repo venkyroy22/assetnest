@@ -234,13 +234,13 @@ export default function BusinessCardPage() {
                     <div className="h-6 w-px bg-white/10 mx-2" />
                     
                     <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-emerald-500/10 rounded-xl text-emerald-500 shadow-[0_0_20px_rgba(16,185,129,0.2)] border border-emerald-500/20">
+                        <div className="p-2.5 bg-white/5 rounded-xl text-white shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-white/10">
                             <CreditCard size={18} />
                         </div>
                         <div className="flex flex-col">
                             <span className="text-xs font-black tracking-[0.2em] text-white uppercase leading-none">StudioMaster</span>
                             <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-tight mt-1.5 flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" /> AssetNest // Professional
+                                <div className="w-1 h-1 rounded-full bg-white animate-pulse" /> AssetNest // Professional
                             </span>
                         </div>
                     </div>
@@ -259,14 +259,14 @@ export default function BusinessCardPage() {
 
                 <div className="flex items-center gap-4">
                      <div className="hidden md:flex items-center gap-4">
-                         <button onClick={() => addElement("text", "New Layer")} className="btn-pan px-6 py-3 rounded-xl border border-white/10" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
+                         <button onClick={() => addElement("text", "New Layer")} className="btn-pan px-6 py-3 rounded-xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
                             <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                                <Plus size={14} className="text-emerald-500"/> Element
+                                <Plus size={14} className="text-white group-hover:scale-125 transition-transform"/> Element
                             </span>
                         </button>
-                        <label className="btn-pan px-6 py-3 rounded-xl border border-white/10 cursor-pointer" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
+                        <label className="btn-pan px-6 py-3 rounded-xl border border-white/10 cursor-pointer group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
                             <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                                <Upload size={14} className="text-emerald-500" /> Image
+                                <Upload size={14} className="text-white group-hover:-translate-y-0.5 transition-transform" /> Image
                             </span>
                             <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, "logo")} />
                         </label>
@@ -539,9 +539,9 @@ export default function BusinessCardPage() {
                     height: 16px;
                     width: 16px;
                     border-radius: 50%;
-                    background: #10b981;
+                    background: #fff;
                     cursor: pointer;
-                    box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
                     border: 2px solid #000;
                     transition: all 0.2s ease;
                 }

@@ -23,7 +23,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: FileImage,
         tags: ["image", "compress", "jpeg", "png", "webp", "optimize", "resize"],
-        accent: "#10b981",   // emerald
+        accent: "#e4e4e7",   // emerald
         category: "Images",
     },
     {
@@ -56,7 +56,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: PenTool,
         tags: ["signature", "esign", "sign", "digital signature", "draw", "transparent", "png", "svg"],
-        accent: "#10b981",
+        accent: "#e4e4e7",
         category: "Generate",
     },
     {
@@ -233,7 +233,7 @@ export const ALL_TOOLS: Tool[] = [
             "convert image to pdf", "picture to pdf", "convert jpg to pdf",
             "images to pdf", "photo to pdf", "webp to pdf", "pdf from images"
         ],
-        accent: "#10b981",
+        accent: "#e4e4e7",
         category: "PDF",
     },
     {
@@ -266,7 +266,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: WholeWord,
         tags: ["game", "wordle", "word", "puzzle", "vocabulary", "daily", "guess"],
-        accent: "#10b981",
+        accent: "#e4e4e7",
         category: "Games",
     },
     {
