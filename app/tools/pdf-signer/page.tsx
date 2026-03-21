@@ -11,6 +11,9 @@ import dynamic from "next/dynamic";
 import SignaturePad from "@/components/SignaturePad";
 import ShareModal from "@/components/ShareModal";
 import { Signature } from "@/app/tools/pdf-signer/types";
+import { useEffect, useCallback } from "react";
+import Link from "next/link";
+import { MonitorSmartphone } from "lucide-react";
 
 const PdfViewer = dynamic<any>(
     () => import("@/app/tools/pdf-signer/PdfViewer").then(m => m.default),
@@ -56,9 +59,16 @@ export default function PdfSignerPage() {
     const [isSharing,   setIsSharing]   = useState(false);
     const [signatures,  setSignatures]  = useState<Signature[]>([]);
     const [activeBox,   setActiveBox]   = useState<{ pageIndex: number; x: number; y: number; w: number; h: number } | null>(null);
-    const [isPadOpen,   setIsPadOpen]   = useState(false);
     const [isDragging,  setIsDragging]  = useState(false);
+    const [isMobile,    setIsMobile]    = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
+    }, []);
 
     const handleFile = async (f: File) => {
         if (f.type !== "application/pdf") { setError("Please upload a valid PDF file."); return; }
@@ -146,6 +156,35 @@ export default function PdfSignerPage() {
     };
 
     /* ── Render ── */
+    if (isMobile) {
+        return (
+            <div className="min-h-[80vh] flex flex-col items-center justify-center p-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="w-24 h-24 rounded-full bg-zinc-950/50 border border-zinc-800 flex items-center justify-center mb-8 relative shadow-2xl">
+                    <div className="absolute inset-0 bg-emerald-500/10 rounded-full animate-pulse" />
+                    <MonitorSmartphone size={32} className="text-zinc-500 relative z-10" />
+                    <div className="absolute -bottom-2 -right-2 w-8 h-8 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                        <X size={14} className="text-red-400" />
+                    </div>
+                </div>
+                
+                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-4 leading-tight">
+                    Desktop Required
+                </h2>
+                
+                <p className="text-zinc-400 text-sm md:text-base max-w-sm mb-10 leading-relaxed font-medium">
+                    The Smart PDF Signer handles complex vector documents natively in your device's memory for absolute privacy. For a stable, high-performance experience, please access this tool on a Desktop or Laptop computer.
+                </p>
+                
+                <Link 
+                    href="/tools" 
+                    className="inline-flex items-center gap-2 px-8 py-3.5 bg-white text-black hover:bg-zinc-200 transition-all text-xs font-black uppercase tracking-[0.15em] rounded-full shadow-[0_0_40px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(255,255,255,0.4)] hover:scale-105 active:scale-95"
+                >
+                    Explore Other Tools
+                </Link>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-[70vh] py-8 px-4 max-w-5xl mx-auto overflow-x-hidden">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
