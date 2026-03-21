@@ -99,6 +99,12 @@ export default function RootLayout({
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
         <meta name="theme-color" content="#000000" />
+        {/* Google AdSense - Loading in head for better verification */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
+          crossOrigin="anonymous"
+        />
       </head>
 
       <body className="antialiased font-sans flex flex-col min-h-screen">
@@ -109,13 +115,6 @@ export default function RootLayout({
         </SmoothScroll>
         <CookieConsent />
 
-        {/* Google AdSense - Loading after interactive to improve TBT */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
-          crossOrigin="anonymous"
-          defer
-        />
 
         {/* JSON-LD Structured Data for Google */}
         <script
