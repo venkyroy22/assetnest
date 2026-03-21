@@ -8,6 +8,19 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.vers
 
 import { Signature } from "@/app/tools/pdf-signer/types";
 
+// Critical polyfill for pdfjs-dist v4+ on mobile WebViews (Chrome <119)
+if (typeof (Promise as any).withResolvers === "undefined") {
+    (Promise as any).withResolvers = function <T>() {
+        let resolve!: (value: T | PromiseLike<T>) => void;
+        let reject!: (reason?: any) => void;
+        const promise = new Promise<T>((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+        return { promise, resolve, reject };
+    };
+}
+
 interface PdfViewerProps {
     file: File;
     signatures: Signature[];
@@ -33,7 +46,12 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
                 // to fetch main-thread blob: URLs, which instantly triggers a silent blank screen.
                 const buf = await file.arrayBuffer();
                 const data = new Uint8Array(buf);
-                const loaded = await pdfjsLib.getDocument({ data }).promise;
+                const loaded = await pdfjsLib.getDocument({ 
+                    data,
+                    cMapUrl: `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
+                    cMapPacked: true,
+                    standardFontDataUrl: `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
+                }).promise;
                 setPdf(loaded);
                 setPageCount(loaded.numPages);
                 if (onLoadSuccess) onLoadSuccess(loaded.numPages);
@@ -95,31 +113,39 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
     const [activeSigId,    setActiveSigId]    = useState<string | null>(null);
     const intentLocked     = useRef<"select" | "scroll" | null>(null); // touch intent
 
-    /* ── Measure wrapper width ── */
+    const [renderError,    setRenderError]    = useState<string | null>(null);
+
+    /* ── Measure wrapper width safely to avoid infinite layout loops ── */
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
-        let lastW = 0;
-        const ro = new ResizeObserver(entries => {
-            const w = entries[0].contentRect.width;
-            // Only update width if significantly changed (prevents Android sub-pixel infinite resizing loops!)
-            if (w > 0 && Math.abs(w - lastW) > 2) {
-                lastW = w;
+
+        const measure = () => {
+            const w = el.clientWidth;
+            if (w > 0 && Math.abs(w - containerWidth) > 10) {
                 setContainerWidth(w);
             }
-        });
-        ro.observe(el);
-        return () => ro.disconnect();
-    }, []);
+        };
+
+        // Measure immediately and on resize, bypassing unstable ResizeObservers
+        measure();
+        let timeout: any;
+        const handleResize = () => {
+            clearTimeout(timeout);
+            timeout = setTimeout(measure, 150);
+        };
+        
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, [containerWidth]);
 
     /* ── Render PDF page — always scaled to fit container width ── */
     useEffect(() => {
         if (!pdf || !canvasRef.current || containerWidth === 0) return;
+        setRenderError(null);
+        let isMounted = true;
 
         const render = async () => {
-            if (renderTaskRef.current) {
-                try { renderTaskRef.current.cancel(); } catch {}
-            }
             try {
                 const page          = await pdf.getPage(index + 1);
                 const naturalVp     = page.getViewport({ scale: 1.0 });
@@ -144,16 +170,21 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
                 setDimensions({ w: displayW, h: displayH });
 
                 // Render at display fidelity, NOT 'print' (print crashes mobile canvas RAM limits)
+                // We deliberately do NOT cancel the previous task cleanly, as task.cancel() often 
+                // deadlocks the PDF.js web worker on Android leading to infinite permanent blank screens!
                 const task = page.render({ canvasContext: ctx, viewport });
-                renderTaskRef.current = task;
                 await task.promise;
             } catch (err: any) {
-                if (err?.name !== "RenderingCancelledException") console.error("PDF render:", err);
+                if (err?.name !== "RenderingCancelledException" && isMounted) {
+                    console.error("PDF render:", err);
+                    setRenderError(err.toString());
+                }
             }
         };
 
-        const t = setTimeout(render, 40);
-        return () => { clearTimeout(t); renderTaskRef.current?.cancel(); };
+        render();
+
+        return () => { isMounted = false; };
     }, [pdf, index, containerWidth]);
 
     /* ── Selection logic ── */
@@ -268,6 +299,15 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
                 >
                     {/* PDF canvas — always fills full container width */}
                     <canvas ref={canvasRef} className="block w-full" />
+                    
+                    {/* Render error fallback overlay */}
+                    {renderError && (
+                        <div className="absolute inset-0 flex items-center justify-center p-4 bg-zinc-900/80 overflow-auto z-50">
+                            <p className="text-red-400 font-mono text-xs whitespace-pre-wrap text-center font-bold">
+                                Failed to render page {index + 1}:<br/>{renderError}
+                            </p>
+                        </div>
+                    )}
 
                     {/* Overlays */}
                     <div className="absolute inset-0 pointer-events-none">
