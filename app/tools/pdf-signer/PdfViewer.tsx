@@ -19,18 +19,32 @@ interface PdfViewerProps {
 export default function PdfViewer({ file, signatures, setSignatures, onBoxSelected, applyToAllPages }: PdfViewerProps) {
     const [pageCount, setPageCount] = useState(0);
     const [pdf, setPdf] = useState<any>(null);
+    const [loadError, setLoadError] = useState<string | null>(null);
 
     useEffect(() => {
+        if (!file) return;
+        setLoadError(null);
+        let objectUrl: string | null = null;
+        
         (async () => {
             try {
-                const buf  = await file.arrayBuffer();
-                const loaded = await pdfjsLib.getDocument({ data: buf }).promise;
+                objectUrl = URL.createObjectURL(file);
+                // Use URL string rather than arrayBuffer to stream the PDF efficiently
+                // and avoid hitting mobile Safari RAM limits with huge files.
+                const loaded = await pdfjsLib.getDocument(objectUrl).promise;
                 setPdf(loaded);
                 setPageCount(loaded.numPages);
-            } catch (err) {
+            } catch (err: any) {
                 console.error("PDF load error:", err);
+                setLoadError(err?.message?.includes("password") || err?.name === "PasswordException" 
+                    ? "This PDF requires a password to open. Please unlock it first." 
+                    : "This PDF couldn't be loaded. It might be corrupted or unsupported.");
             }
         })();
+
+        return () => {
+            if (objectUrl) URL.revokeObjectURL(objectUrl);
+        };
     }, [file]);
 
     return (
@@ -38,6 +52,14 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
             className="flex flex-col gap-8 p-3 sm:p-6 md:p-10 max-h-[85vh] overflow-y-auto overscroll-contain custom-scrollbar-wide bg-zinc-950/40 rounded-[2rem] sm:rounded-[3rem] border border-zinc-900 backdrop-blur-md"
             style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
         >
+            {loadError && (
+                <div className="flex flex-col items-center justify-center p-10 text-center gap-4 py-20">
+                    <div className="w-16 h-16 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20">
+                        <X size={24} />
+                    </div>
+                    <p className="text-zinc-300 font-semibold">{loadError}</p>
+                </div>
+            )}
             {Array.from({ length: pageCount }, (_, i) => (
                 <PdfPage
                     key={`${file.name}-${i}`}

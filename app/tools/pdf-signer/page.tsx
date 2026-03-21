@@ -60,18 +60,12 @@ export default function PdfSignerPage() {
     const [isDragging,  setIsDragging]  = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
-    /* ── File handling ── */
     const handleFile = async (f: File) => {
         if (f.type !== "application/pdf") { setError("Please upload a valid PDF file."); return; }
+        // We delay PDF parsing to the viewer/export stages to prevent strict 
+        // pdf-lib parsing errors and mobile memory limit crashes on raw upload.
         setIsLoading(true); setError(null); setFile(f); setSignatures([]); setOutputUrl(null); setOutputBlob(null);
-        try {
-            const buf = await f.arrayBuffer();
-            const pdf = await PDFDocument.load(buf);
-            setPageCount(pdf.getPageCount());
-        } catch {
-            setError("Could not read this PDF. It may be corrupted or password-protected.");
-            setFile(null);
-        } finally { setIsLoading(false); }
+        setIsLoading(false);
     };
 
     const onDrop = (e: React.DragEvent) => {
@@ -114,7 +108,7 @@ export default function PdfSignerPage() {
         setIsExporting(true);
         try {
             const buf    = await file.arrayBuffer();
-            const pdfDoc = await PDFDocument.load(buf);
+            const pdfDoc = await PDFDocument.load(buf, { ignoreEncryption: true });
             const pages  = pdfDoc.getPages();
 
             for (const sig of signatures) {
