@@ -59,6 +59,7 @@ export default function PdfSignerPage() {
     const [isSharing,   setIsSharing]   = useState(false);
     const [signatures,  setSignatures]  = useState<Signature[]>([]);
     const [activeBox,   setActiveBox]   = useState<{ pageIndex: number; x: number; y: number; w: number; h: number } | null>(null);
+    const [isPadOpen,   setIsPadOpen]   = useState(false);
     const [isDragging,  setIsDragging]  = useState(false);
     const [isMobile,    setIsMobile]    = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
