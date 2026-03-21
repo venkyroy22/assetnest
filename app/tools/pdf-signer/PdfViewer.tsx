@@ -4,9 +4,22 @@ import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
 import { Plus, X, Maximize2 } from "lucide-react";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.js`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 import { Signature } from "@/app/tools/pdf-signer/types";
+
+// Critical polyfill for pdfjs-dist v4+ on legacy Android WebViews (Chrome < 119)
+if (typeof (Promise as any).withResolvers === "undefined") {
+    (Promise as any).withResolvers = function <T>() {
+        let resolve!: (value: T | PromiseLike<T>) => void;
+        let reject!: (reason?: any) => void;
+        const promise = new Promise<T>((res, rej) => {
+            resolve = res;
+            reject = rej;
+        });
+        return { promise, resolve, reject };
+    };
+}
 
 interface PdfViewerProps {
     file: File;
