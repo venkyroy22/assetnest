@@ -99,9 +99,14 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
     useEffect(() => {
         const el = wrapperRef.current;
         if (!el) return;
+        let lastW = 0;
         const ro = new ResizeObserver(entries => {
             const w = entries[0].contentRect.width;
-            if (w > 0) setContainerWidth(w);
+            // Only update width if significantly changed (prevents Android sub-pixel infinite resizing loops!)
+            if (w > 0 && Math.abs(w - lastW) > 2) {
+                lastW = w;
+                setContainerWidth(w);
+            }
         });
         ro.observe(el);
         return () => ro.disconnect();
@@ -127,13 +132,13 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
                 const viewport      = page.getViewport({ scale: renderScale });
 
                 const canvas        = canvasRef.current!;
-                const ctx           = canvas.getContext("2d")!;
+                const ctx           = canvas.getContext("2d", { alpha: false, willReadFrequently: true })!;
                 canvas.width        = viewport.width;
                 canvas.height       = viewport.height;
 
                 // CSS display size = container fill
-                const displayW      = containerWidth;
-                const displayH      = (naturalVp.height * fitScale);
+                const displayW      = Math.round(containerWidth);
+                const displayH      = Math.round(naturalVp.height * fitScale);
                 canvas.style.width  = `${displayW}px`;
                 canvas.style.height = `${displayH}px`;
                 setDimensions({ w: displayW, h: displayH });
