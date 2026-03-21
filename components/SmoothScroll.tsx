@@ -20,6 +20,8 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         });
 
         lenisRef.current = lenis;
+        // Expose lenis to window for global access (e.g., back-to-top button)
+        (window as any).lenis = lenis;
 
         // Lenis requires a requestAnimationFrame loop to work
         function raf(time: number) {

@@ -146,8 +146,45 @@ export default function Game2048Page() {
             else if (e.key === 'ArrowLeft') move('left');
             else if (e.key === 'ArrowRight') move('right');
         };
+
+        let touchStartX = 0;
+        let touchStartY = 0;
+
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStartX = e.changedTouches[0].screenX;
+            touchStartY = e.changedTouches[0].screenY;
+        };
+
+        const handleTouchEnd = (e: TouchEvent) => {
+            const touchEndX = e.changedTouches[0].screenX;
+            const touchEndY = e.changedTouches[0].screenY;
+            
+            const dx = touchEndX - touchStartX;
+            const dy = touchEndY - touchStartY;
+            
+            // Check if it's a significant swipe
+            if (Math.abs(dx) > 30 || Math.abs(dy) > 30) {
+                if (Math.abs(dx) > Math.abs(dy)) {
+                    // Horizontal
+                    if (dx > 0) move('right');
+                    else move('left');
+                } else {
+                    // Vertical
+                    if (dy > 0) move('down');
+                    else move('up');
+                }
+            }
+        };
+
         window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
+        window.addEventListener('touchstart', handleTouchStart, { passive: true });
+        window.addEventListener('touchend', handleTouchEnd, { passive: true });
+        
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+            window.removeEventListener('touchstart', handleTouchStart);
+            window.removeEventListener('touchend', handleTouchEnd);
+        };
     }, [move]);
 
     const reset = () => {
@@ -210,7 +247,7 @@ export default function Game2048Page() {
             </div>
 
             {/* Game Board */}
-            <div className="relative p-3 bg-zinc-950 border-4 border-zinc-900 rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)]">
+            <div className="relative p-3 bg-zinc-950 border-4 border-zinc-900 rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)] touch-action-none" style={{ touchAction: 'none' }}>
                 <div className="grid grid-cols-4 gap-3">
                     {board.map((row, r) => (
                         row.map((cell, c) => (

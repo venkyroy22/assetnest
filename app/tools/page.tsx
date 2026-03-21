@@ -234,19 +234,11 @@ function ComingSoonCard({ index }: { index: number }) {
 export default function ToolsPage() {
     const [query, setQuery] = useState("");
     const [headerVisible, setHeaderVisible] = useState(false);
-    const [showScrollTop, setShowScrollTop] = useState(false);
 
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowScrollTop(window.scrollY > 400);
-        };
-        window.addEventListener("scroll", handleScroll, { passive: true });
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
 
-    const scrollToTop = () => {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    };
+
+
+
 
     useEffect(() => {
         const t = setTimeout(() => setHeaderVisible(true), 30);
@@ -421,16 +413,6 @@ export default function ToolsPage() {
                         ))}
                     </div>
                 )}
-                {/* ── Back to Top ── */}
-                <button
-                    onClick={scrollToTop}
-                    className={`fixed bottom-10 right-10 z-[100] w-14 h-14 flex items-center justify-center rounded-full bg-zinc-950/80 backdrop-blur-xl border border-zinc-800 text-white shadow-2xl transition-all duration-500 active:scale-95 group hover:border-emerald-500/50 hover:bg-zinc-900
-                        ${showScrollTop ? 'translate-y-0 opacity-100' : 'translate-y-20 opacity-0 pointer-events-none'}`}
-                    aria-label="Back to Top"
-                >
-                    <div className="absolute inset-0 rounded-full bg-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                    <ArrowUp size={22} className="relative z-10 group-hover:-translate-y-1 transition-transform duration-300" />
-                </button>
             </div>
         </>
     );
