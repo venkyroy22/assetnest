@@ -14,9 +14,10 @@ interface PdfViewerProps {
     setSignatures: (sigs: Signature[]) => void;
     onBoxSelected: (box: { pageIndex: number; x: number; y: number; w: number; h: number }) => void;
     applyToAllPages: (sig: Signature) => void;
+    onLoadSuccess?: (numPages: number) => void;
 }
 
-export default function PdfViewer({ file, signatures, setSignatures, onBoxSelected, applyToAllPages }: PdfViewerProps) {
+export default function PdfViewer({ file, signatures, setSignatures, onBoxSelected, applyToAllPages, onLoadSuccess }: PdfViewerProps) {
     const [pageCount, setPageCount] = useState(0);
     const [pdf, setPdf] = useState<any>(null);
     const [loadError, setLoadError] = useState<string | null>(null);
@@ -24,16 +25,18 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
     useEffect(() => {
         if (!file) return;
         setLoadError(null);
-        let objectUrl: string | null = null;
         
         (async () => {
             try {
-                objectUrl = URL.createObjectURL(file);
-                // Use URL string rather than arrayBuffer to stream the PDF efficiently
-                // and avoid hitting mobile Safari RAM limits with huge files.
-                const loaded = await pdfjsLib.getDocument(objectUrl).promise;
+                // We MUST use ArrayBuffer/Uint8Array instead of ObjectURL. 
+                // Cross-origin CDN workers (unpkg) on Android WebViews cannot securely bypass CORs 
+                // to fetch main-thread blob: URLs, which instantly triggers a silent blank screen.
+                const buf = await file.arrayBuffer();
+                const data = new Uint8Array(buf);
+                const loaded = await pdfjsLib.getDocument({ data }).promise;
                 setPdf(loaded);
                 setPageCount(loaded.numPages);
+                if (onLoadSuccess) onLoadSuccess(loaded.numPages);
             } catch (err: any) {
                 console.error("PDF load error:", err);
                 setLoadError(err?.message?.includes("password") || err?.name === "PasswordException" 
@@ -41,11 +44,7 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
                     : "This PDF couldn't be loaded. It might be corrupted or unsupported.");
             }
         })();
-
-        return () => {
-            if (objectUrl) URL.revokeObjectURL(objectUrl);
-        };
-    }, [file]);
+    }, [file, onLoadSuccess]);
 
     return (
         <div

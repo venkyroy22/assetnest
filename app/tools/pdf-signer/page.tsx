@@ -363,6 +363,7 @@ export default function PdfSignerPage() {
                                 setSignatures={setSignatures}
                                 onBoxSelected={handleBoxSelected}
                                 applyToAllPages={(sig: any) => toggleAllPages(sig.id)}
+                                onLoadSuccess={setPageCount}
                             />
                         </div>
                     )}
