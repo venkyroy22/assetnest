@@ -167,7 +167,7 @@ export default function HomeToolsGrid() {
                 <div className="h-px flex-1 bg-gradient-to-r from-transparent via-zinc-800/70 to-transparent max-w-[120px]" />
                 <Link
                     href="/tools"
-                    className="btn-pan px-8 py-4 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl shadow-2xl shadow-white/5 group"
+                    className="btn-pan px-8 py-4 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-white/5 group"
                     style={{ "--btn-bg": "#000" } as React.CSSProperties}
                 >
                     <span className="flex items-center gap-3">

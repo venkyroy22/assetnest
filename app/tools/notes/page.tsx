@@ -81,6 +81,7 @@ export default function SmartNotesPage() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [mobileView, setMobileView] = useState<"sidebar" | "editor">("sidebar"); // mobile nav
     const [isLoaded, setIsLoaded] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -149,6 +150,7 @@ export default function SmartNotesPage() {
         };
         setNotes(prev => [newNote, ...prev]);
         setActiveId(newNote.id);
+        setMobileView("editor"); // go to editor on mobile after creating
         setSearchQuery("");
         setShowTemplates(false);
         setTimeout(() => { if (contentRef.current) contentRef.current.innerHTML = newNote.content; titleRef.current?.focus(); }, 100);
@@ -350,13 +352,33 @@ export default function SmartNotesPage() {
     return (
         <div className={`flex h-[calc(100vh-64px)] bg-[#09090b] text-zinc-200 overflow-hidden font-sans transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-[1000] h-screen bg-[#09090b]' : ''}`}>
             
-            {/* SIDEBAR */}
-            <div className={`flex flex-col border-r border-[#1d1d20] bg-[#0c0c0e]/80 backdrop-blur-3xl transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] ${isSidebarOpen ? 'w-80 opacity-100 translate-x-0' : 'w-0 opacity-0 -translate-x-10 absolute pointer-events-none'}`}>
-                <div className="p-6 flex items-center justify-between shrink-0">
+            {/* SIDEBAR — full-screen drawer on mobile, collapsible panel on desktop */}
+            <div className={[
+                "flex flex-col border-r border-[#1d1d20] bg-[#0c0c0e]/95 backdrop-blur-3xl",
+                "transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden",
+                // Mobile: fixed full-screen overlay
+                "fixed inset-y-0 left-0 z-50 w-screen",
+                // Desktop: part of the flex row
+                "sm:relative sm:inset-auto sm:z-auto sm:h-full",
+                // Mobile slide: open = visible, closed = slid off left
+                mobileView === "sidebar" ? "translate-x-0" : "-translate-x-full",
+                // Desktop collapse — STATIC strings so Tailwind JIT includes them
+                isSidebarOpen
+                    ? "sm:w-80 sm:translate-x-0 sm:opacity-100 sm:pointer-events-auto"
+                    : "sm:w-0 sm:translate-x-0 sm:opacity-0 sm:pointer-events-none",
+            ].join(" ")}>
+                <div className="p-4 sm:p-6 flex items-center justify-between shrink-0">
                     <div className="flex items-center gap-2.5 font-bold text-white tracking-tight">
                         <div className="w-6 h-6 rounded bg-gradient-to-br from-zinc-400 to-zinc-700 flex items-center justify-center text-[10px] text-black">AN</div>
                         <span className="text-sm">Workspace</span>
                     </div>
+                    {/* Mobile close button */}
+                    <button
+                        onClick={() => setMobileView("editor")}
+                        className="sm:hidden p-2 rounded-xl text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+                    >
+                        <X size={18} />
+                    </button>
                 </div>
 
                 <div className="px-4 mb-4 shrink-0 space-y-3">
@@ -395,13 +417,19 @@ export default function SmartNotesPage() {
                         <>
                             <div className="px-4 py-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em] flex items-center gap-1.5"><Pin size={9} /> Pinned</div>
                             {pinnedNotes.map(note => (
-                                <NoteItem key={note.id} note={note} activeId={activeId} setActiveId={setActiveId} deleteNote={deleteNote} updateNote={(id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n))} />
+                                <NoteItem key={note.id} note={note} activeId={activeId}
+                                    setActiveId={(id) => { setActiveId(id); setMobileView("editor"); }}
+                                    deleteNote={deleteNote}
+                                    updateNote={(id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n))} />
                             ))}
                             <div className="px-4 py-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em] mt-2">Pages</div>
                         </>
                     )}
                     {unpinnedNotes.map(note => (
-                        <NoteItem key={note.id} note={note} activeId={activeId} setActiveId={setActiveId} deleteNote={deleteNote} updateNote={(id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n))} />
+                        <NoteItem key={note.id} note={note} activeId={activeId}
+                            setActiveId={(id) => { setActiveId(id); setMobileView("editor"); }}
+                            deleteNote={deleteNote}
+                            updateNote={(id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n))} />
                     ))}
                     {filteredNotes.length === 0 && (
                         <div className="px-8 py-10 text-center flex flex-col items-center gap-3">
@@ -415,24 +443,32 @@ export default function SmartNotesPage() {
             {/* MAIN EDITOR AREA */}
             <div className="flex-1 flex flex-col min-w-0 bg-[#09090b] relative h-full">
                 {/* TOOLBAR */}
-                <div className="h-14 flex items-center justify-between px-6 z-40 border-b border-white/[0.02]">
-                    <div className="flex items-center gap-4">
+                <div className="h-14 flex items-center justify-between px-3 sm:px-6 z-40 border-b border-white/[0.02]">
+                    <div className="flex items-center gap-2 sm:gap-4">
+                        {/* Mobile: back to sidebar button */}
+                        <button
+                            onClick={() => setMobileView("sidebar")}
+                            className="sm:hidden p-2 hover:bg-white/[0.05] rounded-lg transition-all text-zinc-400"
+                        >
+                            <Menu size={18} />
+                        </button>
+                        {/* Desktop: sidebar toggle */}
                         <button 
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className={`p-2 hover:bg-white/[0.05] rounded-lg transition-all ${isSidebarOpen ? 'text-zinc-500' : 'text-white bg-white/5'}`}
+                            className={`hidden sm:flex p-2 hover:bg-white/[0.05] rounded-lg transition-all ${isSidebarOpen ? 'text-zinc-500' : 'text-white bg-white/5'}`}
                         >
                             {isSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
                         </button>
-                        <div className="h-4 w-[1px] bg-white/10" />
+                        <div className="hidden sm:block h-4 w-[1px] bg-white/10" />
                         <div className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase">
-                             <span className="text-zinc-600">Workspace</span>
-                             <span className="text-zinc-800">/</span>
-                             <span className="text-white truncate max-w-[150px]">{activeNote?.title || 'Untitled'}</span>
+                             <span className="text-zinc-600 hidden sm:inline">Workspace</span>
+                             <span className="text-zinc-800 hidden sm:inline">/</span>
+                             <span className="text-white truncate max-w-[130px] sm:max-w-[200px]">{activeNote?.title || 'Untitled'}</span>
                         </div>
                     </div>
                     
-                    <div className="flex items-center gap-2">
-                        <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-500 ${isSaving ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-500'}`}>
+                    <div className="flex items-center gap-1.5 sm:gap-2">
+                        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-500 ${isSaving ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-500'}`}>
                             <div className={`w-1 h-1 rounded-full bg-current ${isSaving ? 'animate-pulse' : ''}`} />
                             <span className="text-[10px] font-bold uppercase tracking-widest">{isSaving ? 'Syncing' : 'Saved'}</span>
                         </div>
@@ -450,8 +486,8 @@ export default function SmartNotesPage() {
                                 </div>
                             </div>
                         )}
-                        <button onClick={() => setShowShortcuts(true)} className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"><Keyboard size={15} /></button>
-                        <button onClick={() => setIsFullscreen(!isFullscreen)} className="p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
+                        <button onClick={() => setShowShortcuts(true)} className="hidden sm:flex p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-all"><Keyboard size={15} /></button>
+                        <button onClick={() => setIsFullscreen(!isFullscreen)} className="hidden sm:flex p-2 text-zinc-500 hover:text-white hover:bg-white/5 rounded-lg transition-all">
                             {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
                         </button>
                     </div>
@@ -509,17 +545,17 @@ export default function SmartNotesPage() {
                         </div>
 
                         {/* DOCUMENT CONTENT */}
-                        <div className="max-w-4xl mx-auto px-8 md:px-16 lg:px-24">
+                        <div className="max-w-4xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24">
                             
                             {/* ICON */}
-                            <div className="relative group -mt-16 md:-mt-20 mb-10 z-20">
+                            <div className="relative group -mt-12 sm:-mt-16 md:-mt-20 mb-8 sm:mb-10 z-20">
                                 <div className="relative inline-block">
                                     <button 
                                         onClick={() => setShowIconPicker(!showIconPicker)}
-                                        className="bg-[#0f0f11] border-[3px] border-[#09090b] text-white rounded-3xl w-28 h-28 md:w-36 md:h-36 flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:bg-[#161618] hover:border-white/10 transition-all overflow-hidden group/btn"
+                                        className="bg-[#0f0f11] border-[3px] border-[#09090b] text-white rounded-3xl w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:bg-[#161618] hover:border-white/10 transition-all overflow-hidden group/btn"
                                     >
                                         <span className="transition-transform duration-300 group-hover/btn:scale-110 text-zinc-300">
-                                            <NoteIcon name={activeNote.icon} size={52} />
+                                            <NoteIcon name={activeNote.icon} size={38} />
                                         </span>
                                     </button>
                                     
@@ -565,10 +601,10 @@ export default function SmartNotesPage() {
                                     value={activeNote.title}
                                     onChange={handleTitleInput}
                                     placeholder="Page Title"
-                                    className="w-full bg-transparent text-5xl md:text-6xl font-black text-white placeholder:text-zinc-800 resize-none focus:outline-none overflow-hidden block py-3 leading-[1.1] tracking-tight transition-all"
+                                    className="w-full bg-transparent text-3xl sm:text-5xl md:text-6xl font-black text-white placeholder:text-zinc-800 resize-none focus:outline-none overflow-hidden block py-3 leading-[1.1] tracking-tight transition-all"
                                     rows={1}
                                 />
-                                <div className="flex items-center gap-6 mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-widest border-t border-white/[0.03] pt-4">
+                                <div className="flex items-center gap-3 sm:gap-6 mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-widest border-t border-white/[0.03] pt-4 flex-wrap">
                                     <span className="flex items-center gap-1.5"><BrainCircuit size={12} /> {stats.words} Words</span>
                                     <span className="flex items-center gap-1.5"><Timer size={12} /> {stats.readTime} Min Read</span>
                                     <button 
@@ -744,10 +780,10 @@ function HomeDashboard({ notes, setActiveId, setShowTemplates, createNote }: { n
     const recents = [...notes].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4);
     
     return (
-        <div className="flex-1 overflow-y-auto px-8 py-16 custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-transparent to-transparent">
-            <div className="max-w-5xl mx-auto space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="text-center space-y-3 mt-10">
-                    <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-white">{greeting}</h1>
+        <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-10 sm:py-16 custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-transparent to-transparent">
+            <div className="max-w-5xl mx-auto space-y-10 sm:space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="text-center space-y-3 mt-4 sm:mt-10">
+                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">{greeting}</h1>
                 </div>
                 
                 {recents.length > 0 && (

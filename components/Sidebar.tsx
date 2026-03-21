@@ -7,7 +7,6 @@ import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCo
 import { useSidebar } from "./SidebarProvider";
 import { usePins } from "./PinProvider";
 import { ALL_TOOLS } from "@/lib/tools";
-import Tooltip from "./Tooltip";
 
 // ── Menu config ───────────────────────────────────────────────────────────────
 const MENU_ITEMS = [
@@ -145,8 +144,8 @@ function NavItem({
                 </div>
 
                 <span
-                    className={`text-[13px] font-bold tracking-tight leading-tight transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-                        ${isOpen ? "opacity-100 w-auto" : "opacity-0 w-0 h-0 overflow-hidden"}`}
+                    className={`text-[13px] font-bold tracking-tight leading-tight whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                        ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0 m-0"}`}
                     style={{
                         color: isActive ? "inherit" : hovered ? accent : undefined,
                         transition: "color 0.25s",
@@ -173,14 +172,6 @@ function NavItem({
         </Link>
     );
 
-    if (!isOpen) {
-        return (
-            <Tooltip content={`${item.name}${disabled ? " (Coming Soon)" : ""}`} position="right">
-                {linkContent}
-            </Tooltip>
-        );
-    }
-
     return linkContent;
 }
 
@@ -195,8 +186,8 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-                ${isOpen ? "w-64" : isHome ? "w-0 opacity-0 overflow-hidden" : "w-16"}`}
+            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-x-hidden
+                ${isOpen ? "w-64" : isHome ? "w-0 opacity-0" : "w-16"}`}
         >
             {/* Background dot grid */}
             <div
@@ -214,14 +205,14 @@ const Sidebar = () => {
             />
 
             {/* Content */}
-            <div className={`relative z-10 flex flex-col h-full transition-all duration-300 ${isOpen ? "p-6" : "p-2"}`}>
+            <div className={`relative z-10 flex flex-col h-full transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] ${isOpen ? "p-6" : "p-2"}`}>
                 <div className="flex-grow overflow-y-auto custom-scrollbar pr-1 -mr-1">
                     {/* Pinned Section */}
                     {pinnedTools.length > 0 && (
                         <div className="mb-8 mt-2">
-                            <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 flex items-center gap-2 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-                                ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
-                                <Pin size={10} className="text-zinc-500" fill="currentColor" /> Pinned
+                            <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 flex items-center gap-2 whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                                ${isOpen ? "opacity-100 max-h-[20px]" : "opacity-0 max-h-0 m-0"}`}>
+                                <Pin size={10} className="text-zinc-500 shrink-0" fill="currentColor" /> Pinned
                             </p>
                             <nav className={`flex flex-col ${isOpen ? "gap-0.5" : "gap-1.5"}`}>
                                 {pinnedTools.map((tool, i) => (
@@ -244,8 +235,8 @@ const Sidebar = () => {
                     )}
 
                     <div className="mb-6">
-                        <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-                            ${isOpen ? "opacity-100 h-auto" : "opacity-0 h-0 overflow-hidden"}`}>
+                        <p className={`text-[10px] font-semibold tracking-wider text-zinc-500 mb-3 px-3 whitespace-nowrap overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                            ${isOpen ? "opacity-100 max-h-[20px]" : "opacity-0 max-h-0 m-0"}`}>
                             Discover
                         </p>
 

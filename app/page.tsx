@@ -352,7 +352,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-5">
               <Link
                 href="/tools"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl shadow-2xl shadow-emerald-500/5 group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-emerald-500/5 group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
@@ -361,7 +361,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/prompts"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-xl border border-white/10 backdrop-blur-xl group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full border border-white/10 backdrop-blur-xl group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
@@ -480,7 +480,7 @@ export default function Home() {
               <p className="text-xs font-semibold text-zinc-600 tracking-widest uppercase">Ready to start?</p>
               <Link
                 href="/tools"
-                className="btn-pan px-8 py-4 text-sm font-black uppercase tracking-widest rounded-2xl active:scale-95 transition-all duration-200 shadow-2xl shadow-white/10 group"
+                className="btn-pan px-8 py-4 text-sm font-black uppercase tracking-widest rounded-full active:scale-95 transition-all duration-200 shadow-2xl shadow-white/10 group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">

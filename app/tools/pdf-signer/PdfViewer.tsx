@@ -2,9 +2,8 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import * as pdfjsLib from "pdfjs-dist";
-import { Plus, Globe, ArrowRight, X, Loader2, Maximize2 } from "lucide-react";
+import { Plus, X, Maximize2 } from "lucide-react";
 
-// Setup worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
 
 import { Signature } from "@/app/tools/pdf-signer/types";
@@ -22,149 +21,186 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
     const [pdf, setPdf] = useState<any>(null);
 
     useEffect(() => {
-        const loadPdf = async () => {
+        (async () => {
             try {
-                const arrayBuffer = await file.arrayBuffer();
-                const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-                const loadedPdf = await loadingTask.promise;
-                setPdf(loadedPdf);
-                setPageCount(loadedPdf.numPages);
+                const buf  = await file.arrayBuffer();
+                const loaded = await pdfjsLib.getDocument({ data: buf }).promise;
+                setPdf(loaded);
+                setPageCount(loaded.numPages);
             } catch (err) {
-                console.error("Error loading PDF for viewer:", err);
+                console.error("PDF load error:", err);
             }
-        };
-        loadPdf();
+        })();
     }, [file]);
 
     return (
-        <div className="flex flex-col gap-16 p-12 max-h-[85vh] overflow-y-auto custom-scrollbar-wide bg-zinc-950/40 rounded-[3rem] border border-zinc-900 shadow-2xl backdrop-blur-md">
+        <div
+            className="flex flex-col gap-8 p-3 sm:p-6 md:p-10 max-h-[85vh] overflow-y-auto overscroll-contain custom-scrollbar-wide bg-zinc-950/40 rounded-[2rem] sm:rounded-[3rem] border border-zinc-900 backdrop-blur-md"
+            style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+        >
             {Array.from({ length: pageCount }, (_, i) => (
-                <PdfPage 
-                    key={`${file.name}-${i}`} 
-                    pdf={pdf} 
-                    index={i} 
-                    signatures={signatures} 
+                <PdfPage
+                    key={`${file.name}-${i}`}
+                    pdf={pdf}
+                    index={i}
+                    signatures={signatures}
                     setSignatures={setSignatures}
                     onBoxSelected={onBoxSelected}
                     applyToAllPages={applyToAllPages}
                 />
             ))}
-            
-            {/* Final workspace padding */}
-            <div className="h-10" />
+            <div className="h-4" />
+            <style jsx global>{`
+                .custom-scrollbar-wide::-webkit-scrollbar { width: 3px; }
+                .custom-scrollbar-wide::-webkit-scrollbar-track { background: transparent; }
+                .custom-scrollbar-wide::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.06); border-radius: 99px; }
+            `}</style>
         </div>
     );
 }
 
-// Memoized Background with Paper Texture & Elite Rendering
-const PdfBackground = React.memo(({ pdf, index, onDimensions }: { pdf: any; index: number; onDimensions: (d: {w: number, h: number}) => void }) => {
-    const canvasRef = useRef<HTMLCanvasElement>(null);
+/* ─── Single page ─── */
+function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyToAllPages }: any) {
+    const wrapperRef    = useRef<HTMLDivElement>(null); // the measured width container
+    const containerRef  = useRef<HTMLDivElement>(null); // the actual clickable page div
+    const canvasRef     = useRef<HTMLCanvasElement>(null);
     const renderTaskRef = useRef<any>(null);
 
+    const [containerWidth, setContainerWidth] = useState(0);
+    const [dimensions,     setDimensions]     = useState({ w: 0, h: 0 });
+    const [isSelecting,    setIsSelecting]    = useState(false);
+    const [startPos,       setStartPos]       = useState({ x: 0, y: 0 });
+    const [currentRect,    setCurrentRect]    = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+    const [activeSigId,    setActiveSigId]    = useState<string | null>(null);
+    const intentLocked     = useRef<"select" | "scroll" | null>(null); // touch intent
+
+    /* ── Measure wrapper width ── */
     useEffect(() => {
-        if (!pdf || !canvasRef.current) return;
+        const el = wrapperRef.current;
+        if (!el) return;
+        const ro = new ResizeObserver(entries => {
+            const w = entries[0].contentRect.width;
+            if (w > 0) setContainerWidth(w);
+        });
+        ro.observe(el);
+        return () => ro.disconnect();
+    }, []);
+
+    /* ── Render PDF page — always scaled to fit container width ── */
+    useEffect(() => {
+        if (!pdf || !canvasRef.current || containerWidth === 0) return;
 
         const render = async () => {
             if (renderTaskRef.current) {
-                try { renderTaskRef.current.cancel(); } catch (e) {}
+                try { renderTaskRef.current.cancel(); } catch {}
             }
-
             try {
-                const page = await pdf.getPage(index + 1);
-                const viewport = page.getViewport({ scale: 2.0 }); // Higher scale for sharp text on high-res displays
-                
-                const canvas = canvasRef.current;
-                if (!canvas) return;
-                const context = canvas.getContext("2d");
-                if (!context) return;
+                const page          = await pdf.getPage(index + 1);
+                const naturalVp     = page.getViewport({ scale: 1.0 });
+                const dpr           = window.devicePixelRatio || 1;
 
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                
-                // Set CSS display size for crispness
-                canvas.style.width = `${viewport.width / 2}px`;
-                canvas.style.height = `${viewport.height / 2}px`;
-                onDimensions({ w: viewport.width / 2, h: viewport.height / 2 });
+                // Scale so the PDF fits exactly in containerWidth
+                const fitScale      = containerWidth / naturalVp.width;
+                const renderScale   = fitScale * dpr;           // higher res for crispness
+                const viewport      = page.getViewport({ scale: renderScale });
 
-                const renderContext = { 
-                    canvasContext: context, 
-                    viewport: viewport,
-                    enableWebGL: true,
-                    intent: 'print' // Professional print-quality rendering
-                };
-                const task = page.render(renderContext);
+                const canvas        = canvasRef.current!;
+                const ctx           = canvas.getContext("2d")!;
+                canvas.width        = viewport.width;
+                canvas.height       = viewport.height;
+
+                // CSS display size = container fill
+                const displayW      = containerWidth;
+                const displayH      = (naturalVp.height * fitScale);
+                canvas.style.width  = `${displayW}px`;
+                canvas.style.height = `${displayH}px`;
+                setDimensions({ w: displayW, h: displayH });
+
+                const task = page.render({ canvasContext: ctx, viewport, intent: "print" });
                 renderTaskRef.current = task;
                 await task.promise;
             } catch (err: any) {
-                if (err?.name !== 'RenderingCancelledException') {
-                    console.error('PDF Render error:', err);
-                }
+                if (err?.name !== "RenderingCancelledException") console.error("PDF render:", err);
             }
         };
 
-        const timer = setTimeout(render, 50);
-        return () => {
-            clearTimeout(timer);
-            if (renderTaskRef.current) renderTaskRef.current.cancel();
-        };
-    }, [pdf, index]);
+        const t = setTimeout(render, 40);
+        return () => { clearTimeout(t); renderTaskRef.current?.cancel(); };
+    }, [pdf, index, containerWidth]);
 
-    return (
-        <canvas 
-            key={`${index}-${pdf?.numPages}`} 
-            ref={canvasRef} 
-            className="block opacity-95 transition-opacity hover:opacity-100 duration-500" 
-        />
-    );
-}, (prev, next) => prev.pdf === next.pdf && prev.index === next.index);
-
-PdfBackground.displayName = "PdfBackground";
-
-function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyToAllPages }: any) {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const [dimensions, setDimensions] = useState({ w: 0, h: 0 });
-    const [isSelecting, setIsSelecting] = useState(false);
-    const [startPos, setStartPos] = useState({ x: 0, y: 0 });
-    const [currentRect, setCurrentRect] = useState<{ x: number; y: number; w: number; h: number } | null>(null);
+    /* ── Selection logic ── */
+    const getPos = (e: React.PointerEvent) => {
+        const rect = containerRef.current!.getBoundingClientRect();
+        return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    };
 
     const handlePointerDown = (e: React.PointerEvent) => {
-        if (!containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
+        if ((e.target as HTMLElement).closest("[data-sig]")) return;
+        setActiveSigId(null);
+        intentLocked.current = null;
+
+        // On touch, don't immediately capture — wait to see direction
+        if (e.pointerType === "touch") {
+            const pos = getPos(e);
+            setStartPos(pos);
+            setCurrentRect(null);
+            // Don't setPointerCapture yet — let the scroll container handle vertical swipes
+            return;
+        }
+
+        // Mouse: start selection immediately
         setIsSelecting(true);
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        setStartPos({ x, y });
-        setCurrentRect({ x, y, w: 0, h: 0 });
+        const pos = getPos(e);
+        setStartPos(pos);
+        setCurrentRect({ x: pos.x, y: pos.y, w: 0, h: 0 });
         (e.target as HTMLElement).setPointerCapture(e.pointerId);
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
-        if (!isSelecting || !startPos || !containerRef.current) return;
-        const rect = containerRef.current.getBoundingClientRect();
-        const x = e.clientX - rect.left;
-        const y = e.clientY - rect.top;
-        
-        const newW = x - startPos.x;
-        const newH = y - startPos.y;
-        
+        const pos = getPos(e);
+
+        // Touch: determine intent on first significant movement
+        if (e.pointerType === "touch" && intentLocked.current === null) {
+            const dx = Math.abs(pos.x - startPos.x);
+            const dy = Math.abs(pos.y - startPos.y);
+            if (dx < 6 && dy < 6) return; // not enough movement yet
+
+            if (dy > dx * 1.5) {
+                // Predominantly vertical — this is a scroll, let it pass through
+                intentLocked.current = "scroll";
+                return;
+            } else {
+                // Horizontal/diagonal — this is a selection drag
+                intentLocked.current = "select";
+                setIsSelecting(true);
+                setCurrentRect({ x: startPos.x, y: startPos.y, w: 0, h: 0 });
+                try { (e.target as HTMLElement).setPointerCapture(e.pointerId); } catch {}
+            }
+        }
+
+        if (intentLocked.current === "scroll" || (!isSelecting && e.pointerType === "touch")) return;
+        if (!isSelecting) return;
+
+        const dw = pos.x - startPos.x;
+        const dh = pos.y - startPos.y;
         setCurrentRect({
-            x: newW > 0 ? startPos.x : x,
-            y: newH > 0 ? startPos.y : y,
-            w: Math.abs(newW),
-            h: Math.abs(newH)
+            x: dw > 0 ? startPos.x : pos.x,
+            y: dh > 0 ? startPos.y : pos.y,
+            w: Math.abs(dw), h: Math.abs(dh),
         });
     };
 
     const handlePointerUp = () => {
-        if (!isSelecting || !currentRect) return;
+        intentLocked.current = null;
+        if (!isSelecting || !currentRect) { setIsSelecting(false); return; }
         setIsSelecting(false);
-        if (currentRect.w > 15 && currentRect.h > 15) {
+        if (currentRect.w > 12 && currentRect.h > 12 && dimensions.w > 0) {
             onBoxSelected({
                 pageIndex: index,
                 x: currentRect.x / dimensions.w,
                 y: currentRect.y / dimensions.h,
                 w: currentRect.w / dimensions.w,
-                h: currentRect.h / dimensions.h
+                h: currentRect.h / dimensions.h,
             });
         }
         setCurrentRect(null);
@@ -173,160 +209,165 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
     const pageSignatures = signatures.filter((s: Signature) => s.pageIndex === index || s.allPages);
 
     return (
-        <div className="flex flex-col items-center gap-6 group scale-[1.001]">
-            {/* Page Header Indicator */}
-            <div className="flex items-center justify-between w-full max-w-2xl px-2">
-                 <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black text-emerald-400">
-                        {index + 1}
-                    </span>
-                    <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">DOCUMENT PAGE</span>
-                 </div>
-                 <div className="h-px bg-gradient-to-r from-zinc-900/0 via-zinc-800 to-zinc-900/0 flex-1 mx-6" />
-                 <div className="flex items-center gap-2 text-[9px] font-bold text-zinc-600 opacity-60 group-hover:opacity-100 transition-all uppercase tracking-widest bg-zinc-900/20 px-3 py-1 rounded-full border border-transparent group-hover:border-zinc-800">
-                    <Maximize2 size={10} /> Drag to Select Area
-                 </div>
+        <div className="flex flex-col items-stretch gap-3">
+            {/* Page header */}
+            <div className="flex items-center gap-2 px-1">
+                <span className="w-7 h-7 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black text-emerald-400 shrink-0">
+                    {index + 1}
+                </span>
+                <span className="text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em]">Page</span>
+                <div className="h-px bg-gradient-to-r from-zinc-900/0 via-zinc-800 to-zinc-900/0 flex-1" />
+                <span className="text-[9px] font-bold text-zinc-600 flex items-center gap-1 bg-zinc-900/30 px-2 py-1 rounded-full border border-zinc-800/50">
+                    <Maximize2 size={9} /> Drag to sign
+                </span>
             </div>
-            
-            <div 
-                ref={containerRef}
-                className="relative bg-white border border-zinc-200/5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8),0_5px_20px_-5px_rgba(0,0,0,0.3)] rounded-sm select-none cursor-crosshair transform-gpu transition-all duration-500 group-hover:shadow-[0_30px_80px_-20px_rgba(0,0,0,0.9),0_10px_30px_-10px_rgba(0,0,0,0.4)] p-0"
-                onPointerDown={handlePointerDown}
-                onPointerMove={handlePointerMove}
-                onPointerUp={handlePointerUp}
-                style={{ width: dimensions.w ? dimensions.w : 'auto', height: dimensions.h ? dimensions.h : 'auto', minHeight: '400px' }}
-            >
-                {/* STATIC BACKGROUND (Memoized) */}
-                <PdfBackground 
-                    pdf={pdf} 
-                    index={index} 
-                    onDimensions={setDimensions} 
-                />
-                
-                {/* INTERACTION OVERLAYS (Dynamic) */}
-                <div className="absolute inset-0 pointer-events-none">
-                    {pageSignatures.map((sig: Signature) => (
-                        <div 
-                            key={sig.id}
-                            className="absolute pointer-events-auto border-2 border-dashed border-emerald-400 group/sig hover:border-emerald-500 hover:bg-emerald-500/5 transition-colors cursor-move"
-                            style={{
-                                left: `${sig.x * 100}%`,
-                                top: `${sig.y * 100}%`,
-                                width: `${sig.width * 100}%`,
-                                height: `${sig.height * 100}%`
-                            }}
-                            onPointerDown={(e) => {
-                                // Drag Move Logic
-                                e.stopPropagation();
-                                const startPos = { x: e.clientX, y: e.clientY };
-                                const startSig = { ...sig };
-                                
-                                const onMove = (me: PointerEvent) => {
-                                    const dx = (me.clientX - startPos.x) / dimensions.w;
-                                    const dy = (me.clientY - startPos.y) / dimensions.h;
-                                    setSignatures(signatures.map((s: Signature) => s.id === sig.id ? {
-                                        ...s,
-                                        x: startSig.x + dx,
-                                        y: startSig.y + dy
-                                    } : s));
-                                };
-                                const onUp = () => {
-                                    window.removeEventListener('pointermove', onMove);
-                                    window.removeEventListener('pointerup', onUp);
-                                };
-                                window.addEventListener('pointermove', onMove);
-                                window.addEventListener('pointerup', onUp);
-                            }}
-                        >
-                            <img src={sig.dataUrl} alt="signature" className="w-full h-full object-contain opacity-90 pointer-events-none select-none" />
-                            
-                            {/* Actions Overlay - Smart Positioned */}
-                            <div className={`absolute ${sig.y < 0.15 ? '-bottom-16 top-auto' : '-top-14'} left-1/2 -translate-x-1/2 opacity-0 group-hover/sig:opacity-100 transition-all scale-75 group-hover/sig:scale-100 transform z-50 flex items-center gap-2 pointer-events-auto`}>
-                                <div className="bg-emerald-500 text-black px-4 py-2 rounded-full shadow-2xl flex items-center gap-3">
-                                    <span className="text-[10px] font-black uppercase tracking-tighter">
-                                        {sig.allPages ? "Global Signature" : "Single Page"}
-                                    </span>
-                                    
-                                    {!sig.allPages && (
-                                        <button 
-                                            onClick={(e) => { e.stopPropagation(); applyToAllPages(sig); }}
-                                            className="px-3 py-1 bg-black text-white rounded-full text-[9px] font-black uppercase tracking-widest hover:bg-zinc-800 transition-colors"
-                                        >
-                                            Apply to All
-                                        </button>
-                                    )}
-                                    
-                                    <button
-                                        onClick={(e) => { e.stopPropagation(); setSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); }}
-                                        className="p-1 hover:text-red-900 transition-colors"
-                                    >
-                                        <X size={14} strokeWidth={3} />
-                                    </button>
-                                </div>
-                            </div>
 
-                            {/* Resize Handle */}
-                            <div 
-                                className="absolute -bottom-2 -right-2 w-6 h-6 bg-white border-2 border-emerald-500 rounded-full cursor-nwse-resize shadow-xl flex items-center justify-center z-[60] opacity-0 group-hover/sig:opacity-100 transition-opacity"
-                                onPointerDown={(e) => {
-                                    e.stopPropagation();
-                                    const startPos = { x: e.clientX, y: e.clientY };
-                                    const startSize = { w: sig.width, h: sig.height };
-                                    
-                                    const onResizeMove = (me: PointerEvent) => {
-                                        const dw = (me.clientX - startPos.x) / dimensions.w;
-                                        const dh = (me.clientY - startPos.y) / dimensions.h;
-                                        setSignatures(signatures.map((s: Signature) => s.id === sig.id ? {
-                                            ...s,
-                                            width: startSize.w + dw,
-                                            height: startSize.h + dh
-                                        } : s));
-                                    };
-                                    const onResizeUp = () => {
-                                        window.removeEventListener('pointermove', onResizeMove);
-                                        window.removeEventListener('pointerup', onResizeUp);
-                                    };
-                                    window.addEventListener('pointermove', onResizeMove);
-                                    window.addEventListener('pointerup', onResizeUp);
-                                }}
+            {/* Full-width measured wrapper */}
+            <div ref={wrapperRef} className="w-full">
+                <div
+                    ref={containerRef}
+                    className="relative bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] select-none cursor-crosshair"
+                    style={{
+                        width: "100%",
+                        height: dimensions.h || "auto",
+                        minHeight: 200,
+                        // Allow vertical scroll to pass through when not in selection mode
+                        touchAction: isSelecting ? "none" : "pan-y",
+                    }}
+                    onPointerDown={handlePointerDown}
+                    onPointerMove={handlePointerMove}
+                    onPointerUp={handlePointerUp}
+                >
+                    {/* PDF canvas — always fills full container width */}
+                    <canvas ref={canvasRef} className="block w-full" />
+
+                    {/* Overlays */}
+                    <div className="absolute inset-0 pointer-events-none">
+                        {pageSignatures.map((sig: Signature) => (
+                            <SigOverlay
+                                key={sig.id}
+                                sig={sig}
+                                dimensions={dimensions}
+                                signatures={signatures}
+                                setSignatures={setSignatures}
+                                applyToAllPages={applyToAllPages}
+                                activeSigId={activeSigId}
+                                setActiveSigId={setActiveSigId}
+                            />
+                        ))}
+
+                        {isSelecting && <div className="absolute inset-0 bg-black/15" />}
+
+                        {currentRect && currentRect.w > 4 && (
+                            <div
+                                className="absolute border-2 border-emerald-500 bg-emerald-500/10 pointer-events-none flex items-center justify-center"
+                                style={{ left: currentRect.x, top: currentRect.y, width: currentRect.w, height: currentRect.h }}
                             >
-                                <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+                                {currentRect.w > 60 && currentRect.h > 30 && (
+                                    <div className="bg-emerald-500 text-black px-2 py-0.5 rounded-full flex items-center gap-1">
+                                        <Plus size={10} strokeWidth={3} />
+                                        <span className="text-[9px] font-black uppercase">Sign Here</span>
+                                    </div>
+                                )}
                             </div>
-                        </div>
-                    ))}
-                    
-                    {isSelecting && <div className="absolute inset-0 bg-black/20" />}
+                        )}
+                    </div>
 
-                    {currentRect && (
-                        <div 
-                            className="absolute border-2 border-emerald-500 bg-emerald-500/10 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] pointer-events-none"
-                            style={{
-                                left: currentRect.x,
-                                top: currentRect.y,
-                                width: currentRect.w,
-                                height: currentRect.h
-                            }}
-                        >
-                             <div className="bg-emerald-500 text-black px-2 py-1 rounded-full flex items-center gap-1 scale-75 whitespace-nowrap">
-                                <Plus size={12} strokeWidth={4} />
-                                <span className="text-[10px] font-black uppercase tracking-tighter">Sign Here</span>
-                             </div>
+                    {/* Loading */}
+                    {!dimensions.h && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white">
+                            <div className="w-7 h-7 border-2 border-zinc-300 border-t-emerald-500 rounded-full animate-spin" />
                         </div>
                     )}
                 </div>
-
-                {!dimensions.w && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm">
-                        <div className="w-8 h-8 border-2 border-zinc-500 border-t-emerald-500 rounded-full animate-spin" />
-                    </div>
-                )}
             </div>
-            
-            <style jsx global>{`
-                .custom-scrollbar-wide::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar-wide::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 99px; }
-                .custom-scrollbar-wide::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 99px; }
-                `}</style>
+        </div>
+    );
+}
+
+/* ─── Signature overlay ─── */
+function SigOverlay({ sig, dimensions, signatures, setSignatures, applyToAllPages, activeSigId, setActiveSigId }: {
+    sig: Signature; dimensions: { w: number; h: number };
+    signatures: Signature[]; setSignatures: (s: Signature[]) => void;
+    applyToAllPages: (s: Signature) => void;
+    activeSigId: string | null; setActiveSigId: (id: string | null) => void;
+}) {
+    const isActive = activeSigId === sig.id;
+
+    const startDrag = (e: React.PointerEvent) => {
+        e.stopPropagation();
+        if (e.pointerType === "touch") setActiveSigId(sig.id);
+        const sp = { x: e.clientX, y: e.clientY };
+        const ss = { x: sig.x, y: sig.y };
+        const onMove = (me: PointerEvent) => {
+            setSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
+                ...s,
+                x: ss.x + (me.clientX - sp.x) / dimensions.w,
+                y: ss.y + (me.clientY - sp.y) / dimensions.h,
+            }));
+        };
+        const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
+    };
+
+    const startResize = (e: React.PointerEvent) => {
+        e.stopPropagation();
+        const sp = { x: e.clientX, y: e.clientY };
+        const ss = { w: sig.width, h: sig.height };
+        const onMove = (me: PointerEvent) => {
+            setSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
+                ...s,
+                width:  Math.max(0.05, ss.w + (me.clientX - sp.x) / dimensions.w),
+                height: Math.max(0.05, ss.h + (me.clientY - sp.y) / dimensions.h),
+            }));
+        };
+        const onUp = () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+        window.addEventListener("pointermove", onMove);
+        window.addEventListener("pointerup", onUp);
+    };
+
+    return (
+        <div
+            data-sig="true"
+            className="absolute pointer-events-auto group/sig border-2 border-dashed border-emerald-500 hover:bg-emerald-500/5 transition-colors cursor-move"
+            style={{ left: `${sig.x * 100}%`, top: `${sig.y * 100}%`, width: `${sig.width * 100}%`, height: `${sig.height * 100}%` }}
+            onPointerDown={startDrag}
+        >
+            <img src={sig.dataUrl} alt="sig" className="w-full h-full object-contain opacity-90 pointer-events-none select-none" />
+
+            {/* Action bar */}
+            <div className={`
+                absolute ${sig.y < 0.15 ? "-bottom-11 top-auto" : "-top-10"} left-1/2 -translate-x-1/2 z-50
+                flex items-center gap-1.5 pointer-events-auto whitespace-nowrap
+                transition-all duration-200
+                ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-90 group-hover/sig:opacity-100 group-hover/sig:scale-100"}
+            `}>
+                <div className="bg-emerald-500 text-black px-2.5 py-1.5 rounded-full shadow-xl flex items-center gap-2">
+                    <span className="text-[9px] font-black uppercase tracking-tight">
+                        {sig.allPages ? "All Pages" : `Pg ${sig.pageIndex + 1}`}
+                    </span>
+                    {!sig.allPages && (
+                        <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }}
+                            className="px-2 py-0.5 bg-black/30 hover:bg-black/50 text-white rounded-full text-[8px] font-black uppercase transition-colors">
+                            All Pages
+                        </button>
+                    )}
+                    <button onClick={e => { e.stopPropagation(); setSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); setActiveSigId(null); }}
+                        className="hover:text-red-900 transition-colors">
+                        <X size={12} strokeWidth={3} />
+                    </button>
+                </div>
+            </div>
+
+            {/* Resize handle */}
+            <div
+                className={`absolute -bottom-3 -right-3 w-6 h-6 bg-white border-2 border-emerald-500 rounded-full cursor-nwse-resize shadow-lg flex items-center justify-center z-[60] transition-opacity
+                    ${isActive ? "opacity-100" : "opacity-0 group-hover/sig:opacity-100"}`}
+                onPointerDown={startResize}
+            >
+                <div className="w-2 h-2 bg-emerald-500 rounded-full" />
+            </div>
         </div>
     );
 }

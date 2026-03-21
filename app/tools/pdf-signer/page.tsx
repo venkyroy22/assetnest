@@ -153,20 +153,20 @@ export default function PdfSignerPage() {
 
     /* ── Render ── */
     return (
-        <div className="min-h-[70vh] py-10 px-4 md:px-8 max-w-5xl mx-auto">
+        <div className="min-h-[70vh] py-8 px-4 max-w-5xl mx-auto overflow-x-hidden">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             {/* ══ HERO ══ */}
-            <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 border border-emerald-500/20 bg-emerald-500/5 mb-6 rounded-full">
-                    <Sparkles size={11} className="text-emerald-400" />
-                    <span className="text-[10px] font-black tracking-[0.25em] uppercase text-emerald-400">100% Browser-Based · Private</span>
+            <div className="text-center mb-8 px-2">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-emerald-500/20 bg-emerald-500/5 mb-5 rounded-full max-w-full overflow-hidden">
+                    <Sparkles size={11} className="text-emerald-400 shrink-0" />
+                    <span className="text-[9px] sm:text-[10px] font-black tracking-[0.12em] sm:tracking-[0.15em] uppercase text-emerald-400 truncate">100% Browser-Based · Private</span>
                 </div>
-                <h1 className="text-5xl md:text-7xl font-black tracking-tighter text-white mb-4 leading-none">
+                <h1 className="text-3xl sm:text-5xl md:text-7xl font-black tracking-tighter text-white mb-3 leading-none">
                     Smart PDF <span className="text-emerald-500">Signer</span>
                 </h1>
-                <p className="text-zinc-500 text-[11px] font-bold uppercase tracking-[0.22em] max-w-md mx-auto leading-relaxed">
-                    Draw · Place · Sign · Export — all without leaving your browser
+                <p className="text-zinc-500 text-[11px] font-medium max-w-[260px] sm:max-w-sm mx-auto leading-relaxed">
+                    Draw · Place · Sign · Export — all in your browser
                 </p>
             </div>
 
@@ -189,7 +189,7 @@ export default function PdfSignerPage() {
                     onDrop={onDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`
-                        relative min-h-[420px] border-2 border-dashed rounded-[3rem] flex flex-col items-center justify-center cursor-pointer
+                        relative min-h-[280px] sm:min-h-[420px] border-2 border-dashed rounded-[2rem] sm:rounded-[3rem] flex flex-col items-center justify-center cursor-pointer
                         transition-all duration-500 group overflow-hidden
                         ${isDragging
                             ? "border-emerald-500 bg-emerald-500/5 scale-[1.01]"
@@ -225,19 +225,13 @@ export default function PdfSignerPage() {
                         </div>
 
                         {!isLoading && (
-                            <div className="flex items-center gap-3 justify-center pt-2">
-                                <div className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900/60 border border-zinc-800 rounded-full">
-                                    <FileText size={11} className="text-emerald-400" />
-                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">PDF</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900/60 border border-zinc-800 rounded-full">
-                                    <Zap size={11} className="text-emerald-400" />
-                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Instant</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-4 py-2 bg-zinc-900/60 border border-zinc-800 rounded-full">
-                                    <Check size={11} className="text-emerald-400" />
-                                    <span className="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Private</span>
-                                </div>
+                            <div className="flex items-center gap-2 justify-center pt-2 flex-wrap">
+                                {[{icon: FileText, label: "PDF"}, {icon: Zap, label: "Instant"}, {icon: Check, label: "Private"}].map(b => (
+                                    <div key={b.label} className="flex items-center gap-1.5 px-3 py-1.5 bg-zinc-900/60 border border-zinc-800 rounded-full">
+                                        <b.icon size={11} className="text-emerald-400" />
+                                        <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">{b.label}</span>
+                                    </div>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -246,32 +240,32 @@ export default function PdfSignerPage() {
                 <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
 
                     {/* ── TOOLBAR ── */}
-                    <div className="flex items-center justify-between bg-zinc-950 border border-zinc-900 p-5 rounded-[2.5rem] shadow-2xl gap-4 flex-wrap">
+                    <div className="flex items-center justify-between bg-zinc-950 border border-zinc-900 p-4 sm:p-5 rounded-[2rem] sm:rounded-[2.5rem] shadow-2xl gap-3 flex-wrap">
                         <div className="flex items-center gap-4">
                             <div className="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-center justify-center shrink-0">
                                 <PenLine size={22} className="text-emerald-400" />
                             </div>
-                            <div className="min-w-0">
-                                <p className="text-sm font-black text-white truncate max-w-[220px] md:max-w-xs">{file.name}</p>
-                                <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
-                                    {pageCount} page{pageCount !== 1 ? "s" : ""} · {signatures.length} signature{signatures.length !== 1 ? "s" : ""}
+                            <div className="min-w-0 flex-1">
+                                <p className="text-xs sm:text-sm font-black text-white truncate max-w-[160px] sm:max-w-xs">{file.name}</p>
+                                <p className="text-[9px] sm:text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
+                                    {pageCount} pg · {signatures.length} sig
                                 </p>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 ml-auto">
+                        <div className="flex items-center gap-2 flex-wrap">
                             <button onClick={reset} className={btn.danger} title="Close document">
-                                <X size={15} /> Close
+                                <X size={14} /> <span className="hidden sm:inline">Close</span>
                             </button>
                             {!outputUrl && (
                                 <button
                                     onClick={exportSignedPdf}
                                     disabled={signatures.length === 0 || isExporting}
-                                    className={btn.primary}
+                                    className={btn.primary + " text-[10px] px-4 sm:px-8"}
                                 >
                                     {isExporting
-                                        ? <><div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> Finalising…</>
-                                        : <><Save size={15} /> Finalise Document</>
+                                        ? <><div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" /> <span className="hidden sm:inline">Finalising…</span></>  
+                                        : <><Save size={14} /> <span className="hidden sm:inline">Finalise</span><span className="sm:hidden">Sign PDF</span></>
                                     }
                                 </button>
                             )}
@@ -295,25 +289,27 @@ export default function PdfSignerPage() {
                                 </p>
                             </div>
 
-                            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg relative">
+                            <div className="flex flex-col gap-2 w-full max-w-sm">
                                 <button
                                     onClick={downloadPdf}
-                                    className="flex-1 h-14 rounded-2xl bg-white hover:bg-zinc-100 active:scale-[0.97] text-black text-xs font-extrabold uppercase tracking-[0.18em] shadow-[0_8px_24px_rgba(255,255,255,0.12)] hover:shadow-[0_12px_32px_rgba(255,255,255,0.2)] transition-all duration-200 flex items-center justify-center gap-2.5"
+                                    className="w-full h-12 rounded-2xl bg-white hover:bg-zinc-100 active:scale-[0.97] text-black text-xs font-extrabold uppercase tracking-widest shadow-lg transition-all duration-200 flex items-center justify-center gap-2"
                                 >
-                                    <Download size={17} /> Download PDF
+                                    <Download size={16} /> Download Signed PDF
                                 </button>
-                                <button
-                                    onClick={() => setIsSharing(true)}
-                                    className="h-14 px-7 rounded-2xl bg-zinc-900 hover:bg-zinc-800 active:scale-[0.97] border border-zinc-700/60 hover:border-emerald-500/30 text-white text-xs font-extrabold uppercase tracking-[0.18em] transition-all duration-200 flex items-center justify-center gap-2.5"
-                                >
-                                    <Share2 size={17} className="text-emerald-400" /> Share to Mobile
-                                </button>
-                                <button
-                                    onClick={() => setOutputUrl(null)}
-                                    className={btn.ghost}
-                                >
-                                    Edit More
-                                </button>
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setIsSharing(true)}
+                                        className="flex-1 h-11 rounded-2xl bg-zinc-900 hover:bg-zinc-800 active:scale-[0.97] border border-zinc-700/60 hover:border-emerald-500/30 text-white text-[10px] font-extrabold uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-2"
+                                    >
+                                        <Share2 size={15} className="text-emerald-400" /> Share to Mobile
+                                    </button>
+                                    <button
+                                        onClick={() => setOutputUrl(null)}
+                                        className={btn.ghost + " h-11"}
+                                    >
+                                        Edit More
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -351,10 +347,10 @@ export default function PdfSignerPage() {
                                             {sig.allPages ? <><Globe size={9} /> All Pages</> : "Single Page"}
                                         </button>
 
-                                        {/* Remove */}
+                                        {/* Remove — always visible on mobile, hover-only on desktop */}
                                         <button
                                             onClick={() => removeSignature(sig.id)}
-                                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200 opacity-0 group-hover:opacity-100"
+                                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-600 hover:text-red-400 hover:bg-red-400/10 transition-all duration-200 sm:opacity-0 sm:group-hover:opacity-100"
                                         >
                                             <X size={11} />
                                         </button>
@@ -366,7 +362,7 @@ export default function PdfSignerPage() {
 
                     {/* ── DOCUMENT VIEWER ── */}
                     {!outputUrl && (
-                        <div className="bg-zinc-950 border border-zinc-900 rounded-[3rem] p-1 shadow-2xl">
+                        <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] sm:rounded-[3rem] p-1 shadow-2xl">
                             <PdfViewer
                                 file={file}
                                 signatures={signatures}
@@ -390,7 +386,7 @@ export default function PdfSignerPage() {
 
             {/* ══ FEATURE GRID (shown before upload) ══ */}
             {!file && (
-                <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900/60 pt-16">
+                <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900/60 pt-10">
                     {[
                         {
                             icon: MousePointer2, color: "emerald",
