@@ -16,6 +16,21 @@ export interface Tool {
 
 export const ALL_TOOLS: Tool[] = [
     {
+        id: "pdf-signer",
+        name: "Smart PDF Signer",
+        description: "Sign PDF documents professionally. Select an area, draw your signature, and apply it to one or all pages instantly. 100% private, browser-based.",
+        href: "/tools/pdf-signer",
+        badge: "Free",
+        icon: PenTool,
+        tags: [
+            "pdf", "sign", "signature", "esign", "contract", "initials",
+            "sign pdf", "digital signature", "pdf signer", "fill and sign",
+            "sign document", "e-signature", "sign pdf online", "pdf editor"
+        ],
+        accent: "#10b981", // emerald
+        category: "PDF",
+    },
+    {
         id: "image-compressor",
         name: "Image Compressor",
         description: "Compress JPEG, PNG & WebP images instantly in your browser. 100% private, no uploads needed.",
