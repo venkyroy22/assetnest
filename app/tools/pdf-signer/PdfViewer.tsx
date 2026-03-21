@@ -121,9 +121,10 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
                 const naturalVp     = page.getViewport({ scale: 1.0 });
                 const dpr           = window.devicePixelRatio || 1;
 
-                // Scale so the PDF fits exactly in containerWidth
+                // Scale so the PDF fits exactly in containerWidth (cap DPR to 1.5 on mobile to prevent memory limits)
                 const fitScale      = containerWidth / naturalVp.width;
-                const renderScale   = fitScale * dpr;           // higher res for crispness
+                const safeDpr       = Math.min(dpr, window.innerWidth < 768 ? 1.5 : 2);
+                const renderScale   = fitScale * safeDpr;
                 const viewport      = page.getViewport({ scale: renderScale });
 
                 const canvas        = canvasRef.current!;
@@ -138,7 +139,8 @@ function PdfPage({ pdf, index, signatures, setSignatures, onBoxSelected, applyTo
                 canvas.style.height = `${displayH}px`;
                 setDimensions({ w: displayW, h: displayH });
 
-                const task = page.render({ canvasContext: ctx, viewport, intent: "print" });
+                // Render at display fidelity, NOT 'print' (print crashes mobile canvas RAM limits)
+                const task = page.render({ canvasContext: ctx, viewport });
                 renderTaskRef.current = task;
                 await task.promise;
             } catch (err: any) {

@@ -148,8 +148,50 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
     };
 
     const handleSave = () => {
-        if (!canvasRef.current) return;
-        onSave(canvasRef.current.toDataURL("image/png"));
+        const canvas = canvasRef.current;
+        const ctx = ctxRef.current;
+        if (!canvas || !ctx) return;
+        
+        // Auto-Crop bounds to prevent squishing when placed onto PDF
+        const w = canvas.width;
+        const h = canvas.height;
+        const data = ctx.getImageData(0, 0, w, h).data;
+        
+        let minX = w, minY = h, maxX = 0, maxY = 0;
+        let p = 0;
+        
+        for (let y = 0; y < h; y++) {
+            for (let x = 0; x < w; x++) {
+                if (data[p + 3] > 0) { // If pixel has opacity
+                    if (x < minX) minX = x;
+                    if (x > maxX) maxX = x;
+                    if (y < minY) minY = y;
+                    if (y > maxY) maxY = y;
+                }
+                p += 4;
+            }
+        }
+        
+        if (maxX < minX || maxY < minY) {
+            onSave(canvas.toDataURL("image/png")); return;
+        }
+        
+        const pad = 20; // safe padding
+        minX = Math.max(0, minX - pad);
+        minY = Math.max(0, minY - pad);
+        maxX = Math.min(w, maxX + pad);
+        maxY = Math.min(h, maxY + pad);
+        
+        const cropW = maxX - minX;
+        const cropH = maxY - minY;
+        
+        const cropCanvas = document.createElement("canvas");
+        cropCanvas.width = cropW;
+        cropCanvas.height = cropH;
+        const cropCtx = cropCanvas.getContext("2d")!;
+        cropCtx.putImageData(ctx.getImageData(minX, minY, cropW, cropH), 0, 0);
+        
+        onSave(cropCanvas.toDataURL("image/png"));
     };
 
     const isCustomColor = !PRESET_COLORS.find(c => c.value === color);
