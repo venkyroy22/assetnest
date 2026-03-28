@@ -6,7 +6,6 @@ export interface Settings {
   theme: "dark" | "light" | "amoled";
   eyeProtectEnabled: boolean;
   reduceMotion: boolean;
-  defaultSidebarOpen: boolean;
   fixedNavbar: boolean;
   uiScale: "compact" | "standard" | "large";
 }
@@ -15,7 +14,6 @@ export const defaultSettings: Settings = {
   theme: "dark",
   eyeProtectEnabled: false,
   reduceMotion: false,
-  defaultSidebarOpen: true,
   fixedNavbar: true,
   uiScale: "standard",
 };

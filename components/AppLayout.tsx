@@ -61,7 +61,14 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
     useEffect(() => {
         // Enforce scroll-to-top on navigation to prevent the layout from preserving
         // scroll state and accidentally hiding top portions of pages under the fixed Navbar.
-        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+        if (typeof window !== 'undefined') {
+            const lenis = (window as any).lenis;
+            if (lenis && typeof lenis.scrollTo === 'function') {
+                lenis.scrollTo(0, { immediate: true });
+            } else {
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+            }
+        }
     }, [pathname]);
 
     return (

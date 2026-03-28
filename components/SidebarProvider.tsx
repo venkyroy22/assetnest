@@ -16,14 +16,14 @@ const SidebarContext = createContext<SidebarContextType | undefined>(undefined);
 export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname();
     const { settings } = useSettings();
-    const [isOpen, setIsOpen] = useState(settings.defaultSidebarOpen);
+    const [isOpen, setIsOpen] = useState(true);
     
     // Sync with settings on mount/change
     useEffect(() => {
         if (pathname !== "/") {
-            setIsOpen(settings.defaultSidebarOpen);
+            setIsOpen(true);
         }
-    }, [settings.defaultSidebarOpen, pathname]);
+    }, [pathname]);
 
     // Track layout changes to disable CSS transitions precisely during navigation
     const [prevPath, setPrevPath] = useState(pathname);

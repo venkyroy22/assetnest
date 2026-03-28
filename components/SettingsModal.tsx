@@ -87,27 +87,6 @@ export default function SettingsModal() {
              </div>
           </section>
 
-          {/* Section: Sidebar Mode */}
-          <section className="space-y-4 pt-2">
-             <div className="flex items-center justify-between p-5 rounded-3xl border border-zinc-800 bg-zinc-900/30">
-                 <div className="flex gap-4 items-center">
-                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                         <LayoutTemplate size={20} className="text-zinc-400" />
-                     </div>
-                     <div>
-                         <h4 className="text-sm font-bold text-white">Default Sidebar Expanded</h4>
-                         <p className="text-xs text-zinc-500 mt-1 pr-4 leading-relaxed font-medium">Keep the navigation menu open by default for easier access to tools.</p>
-                     </div>
-                 </div>
-                 
-                 <button 
-                     onClick={() => updateSettings({ defaultSidebarOpen: !settings.defaultSidebarOpen })}
-                     className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ${settings.defaultSidebarOpen ? "bg-emerald-500" : "bg-zinc-800"}`}
-                 >
-                     <div className={`absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-transform duration-300 ${settings.defaultSidebarOpen ? "translate-x-6" : ""}`} />
-                 </button>
-             </div>
-          </section>
 
           {/* Section: Sticky Navbar */}
           <section className="space-y-4 pt-2">
