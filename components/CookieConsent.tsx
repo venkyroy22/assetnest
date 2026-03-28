@@ -37,11 +37,11 @@ export default function CookieConsent() {
         <div className="fixed bottom-0 left-0 right-0 z-[9999] p-4 sm:p-6 pointer-events-none flex justify-center">
             <div className="bg-zinc-900/95 backdrop-blur-md border border-zinc-700 shadow-2xl p-5 rounded-2xl max-w-2xl w-full pointer-events-auto flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 translate-y-0 opacity-100 transition-all duration-500">
                 <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center shrink-0 hidden sm:flex">
-                    <Cookie className="text-emerald-400" size={20} />
+                    <Cookie className="text-white" size={20} />
                 </div>
                 <div className="flex-1 text-sm text-zinc-300">
                     <p className="font-medium text-white mb-1 flex items-center gap-2">
-                        <Cookie className="text-emerald-400 sm:hidden" size={16} />
+                        <Cookie className="text-white sm:hidden" size={16} />
                         We value your privacy
                     </p>
                     <p className="text-xs leading-relaxed">

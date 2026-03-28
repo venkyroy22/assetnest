@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Upload, Download, Copy, Check, FileText, Info, X, Camera, RefreshCw, Scan } from "lucide-react";
+import { Upload, Download, Copy, Check, FileText, Info, X, Camera, RefreshCw, Scan, ShieldCheck } from "lucide-react";
 import { createWorker } from "tesseract.js";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 export default function ImageToTextPage() {
     const [image, setImage] = useState<File | null>(null);
@@ -13,6 +15,7 @@ export default function ImageToTextPage() {
     const [extractedText, setExtractedText] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
     const [copied, setCopied] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,12 +105,19 @@ export default function ImageToTextPage() {
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full">
-                    <Scan size={12} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full relative group">
+                    <Scan size={12} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">OCR Utility</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is this?"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    Image to <span className="text-amber-500">Text</span>
+                    Image to <span className="text-white">Text</span>
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium max-w-xl mx-auto leading-relaxed">
                     Instantly extract text from screenshots, documents, and photos. Fast, zero-logs, and processed locally for complete privacy.
@@ -130,7 +140,7 @@ export default function ImageToTextPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`min-h-[350px] border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
-                        isDragging ? "border-amber-500 bg-amber-500/5 scale-[0.99]" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
+                        isDragging ? "border-white bg-white/5 scale-[0.99]" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
                     }`}
                 >
                     <input 
@@ -181,7 +191,7 @@ export default function ImageToTextPage() {
                             <button
                                 onClick={extractText}
                                 disabled={isProcessing}
-                                className="w-full h-14 bg-amber-500 text-black font-black tracking-wide text-sm rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-amber-400 shadow-xl shadow-amber-500/10 active:scale-[0.98] disabled:opacity-50"
+                                className="w-full h-14 bg-white text-black font-black tracking-wide text-sm rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-white shadow-xl shadow-white/10 active:scale-[0.98] disabled:opacity-50"
                             >
                                 {isProcessing ? (
                                     <><RefreshCw size={18} className="animate-spin" /> Processing {progress > 0 ? `${progress}%` : ''}</>
@@ -199,14 +209,14 @@ export default function ImageToTextPage() {
                             <div className="relative flex-grow flex flex-col">
                                 <div className="flex items-center justify-between mb-6">
                                     <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                                        Extracted <span className="text-amber-500">Result</span>
+                                        Extracted <span className="text-white">Result</span>
                                     </h3>
                                     {extractedText && (
                                         <div className="flex items-center gap-2">
                                             <button 
                                                 onClick={copyToClipboard}
                                                 className={`p-2 rounded-lg border transition-all ${
-                                                    copied ? "bg-emerald-500/20 border-emerald-500/40 text-emerald-400" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                                                    copied ? "bg-white/20 border-white/40 text-white" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
                                                 }`}
                                                 title="Copy to clipboard"
                                             >
@@ -219,7 +229,7 @@ export default function ImageToTextPage() {
                                 <div className="flex-grow w-full bg-black/40 border border-zinc-900 rounded-3xl p-6 font-mono text-sm leading-relaxed text-zinc-300 overflow-y-auto max-h-[500px] scrollbar-hide">
                                     {isProcessing ? (
                                         <div className="h-full flex flex-col items-center justify-center space-y-4 animate-pulse">
-                                            <Scan size={40} className="text-amber-500/20" />
+                                            <Scan size={40} className="text-white/20" />
                                             <p className="text-zinc-600 text-[10px] font-black uppercase tracking-[0.2em]">Analyzing characters...</p>
                                         </div>
                                     ) : extractedText ? (
@@ -248,20 +258,76 @@ export default function ImageToTextPage() {
                 </div>
             )}
 
-            {!image && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12">
-                    {[
-                        { title: "Browser OCR", desc: "Our engine runs directly in your browser. No data ever hits our servers." },
-                        { title: ".TXT Export", desc: "Easily export your text results to a standard text file for your projects." },
-                        { title: "Fast Analysis", desc: "Processes dense documents and complex fonts with high-precision Tesseract technology." }
-                    ].map((f, i) => (
-                        <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[11px] font-bold text-amber-500 uppercase tracking-widest">{f.title}</h4>
-                            <p className="text-[11px] text-zinc-500 font-medium leading-relaxed max-w-[220px] mx-auto">{f.desc}</p>
-                        </div>
-                    ))}
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Visual Character Infrastructure"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Optical Character Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for text extraction. AssetNest <strong>Image-to-Text Converter</strong> transcends basic character recognition—it provides a high-performance OCR engine where you can digitize printed or handwritten assets with zero data privacy risk. Whether you are extracting tabular data from a high-res scan, digitizing long-form legal documentation, or scraping text from a protected UI screenshot, our tool gives you the power to transform visual pixels into editable strings with industry-leading character mapping.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Scan size={20} className="text-zinc-500" />
+                                How to Extract Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Drop JPG, PNG, and WebP files. Our engine automatically handles noise reduction for cleaner scans.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Client-Side Engine:</strong> We utilize Tesseract.js to run character recognition entirely in your browser memory.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>One-Click Export:</strong> Instantly copy results to your clipboard or download as a raw .txt container for further processing.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based OCR tools that store your sensitive document data on external servers, our extractor operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Buffer Mapping • Tesseract Engine Virtualization • Lossless Character Preservation • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Portrait vs Landscape?">
+                                Our engine handles all orientations. Straightening your photo yields the highest character accuracy.
+                            </AccordionItem>
+                            <AccordionItem title="Handwriting Support?">
+                                Printed text is perfectly mapped. Clear handwriting is supported, though accuracy varies by script style.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Memory?">
+                                Zero data persistence. Your text results reside in RAM and are cleared the moment you refresh the tool.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
-            )}
+            </HelpModal>
         </div>
     );
 }

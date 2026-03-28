@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, FileText, Info, X, FileEdit } from "lucide-react";
+import { Upload, Download, RefreshCw, FileText, Info, X, FileEdit, Check, ShieldCheck } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
 import { Document, Packer, Paragraph, TextRun } from "docx";
+import HelpModal from "@/components/HelpModal";
 import dynamic from "next/dynamic";
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
 
@@ -13,6 +15,7 @@ export default function PdfTextExtractorPage() {
     const [isConverting, setIsConverting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [progress, setProgress] = useState(0);
+  const [showHelp, setShowHelp] = useState(false);
     const [outputUrl, setOutputUrl] = useState<string | null>(null);
     const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
 
@@ -196,13 +199,20 @@ export default function PdfTextExtractorPage() {
     return (
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-10 relative group">
+                <button 
+                    onClick={() => setShowHelp(true)}
+                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    title="View Information"
+                >
+                    <Info size={14} />
+                </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full">
-                    <FileText size={12} className="text-blue-400" />
+                    <FileText size={12} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Text Extraction Tool</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    PDF Text <span className="text-blue-500">Extractor</span>
+                    PDF Text <span className="text-white">Extractor</span>
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium max-w-xl mx-auto leading-relaxed">
                     Extract paragraphs and un-selectable text from any PDF directly into a raw Word Document (DOCX). Keeps text secure, offline, and private.
@@ -225,7 +235,7 @@ export default function PdfTextExtractorPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
-                        isDragging ? "border-blue-500 bg-blue-500/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
+                        isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
                     }`}
                 >
                     <input 
@@ -251,7 +261,7 @@ export default function PdfTextExtractorPage() {
                     <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-6 lg:p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group">
                         
                         {/* Status Backdrop Blur */}
-                        <div className="absolute inset-0 bg-blue-500/[0.02] pointer-events-none" />
+                        <div className="absolute inset-0 bg-white/[0.02] pointer-events-none" />
 
                         {/* Thumbnail View */}
                         <div className="w-40 h-52 shrink-0 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl relative flex items-center justify-center">
@@ -264,7 +274,7 @@ export default function PdfTextExtractorPage() {
                         {/* File details & Conversion panel */}
                         <div className="flex-grow w-full flex flex-col items-start justify-center">
                             <div className="flex items-center gap-3 mb-1.5 w-full">
-                                <FileText size={18} className="text-blue-400" />
+                                <FileText size={18} className="text-white" />
                                 <h3 className="text-xl font-bold text-white truncate max-w-[80%]">{file.name}</h3>
                             </div>
                             <p className="text-xs text-zinc-500 font-semibold tracking-wider mb-6">
@@ -277,12 +287,12 @@ export default function PdfTextExtractorPage() {
                                     {isConverting ? (
                                         <div className="w-full space-y-2">
                                             <div className="flex justify-between items-center px-1">
-                                                <span className="text-xs font-bold text-blue-400">Extracting...</span>
-                                                <span className="text-xs font-bold text-blue-400">{progress}%</span>
+                                                <span className="text-xs font-bold text-white">Extracting...</span>
+                                                <span className="text-xs font-bold text-white">{progress}%</span>
                                             </div>
                                             <div className="h-2.5 w-full bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
                                                 <div 
-                                                    className="h-full bg-blue-500 transition-all duration-300 ease-out"
+                                                    className="h-full bg-white transition-all duration-300 ease-out"
                                                     style={{ width: `${progress}%` }}
                                                 />
                                             </div>
@@ -293,7 +303,7 @@ export default function PdfTextExtractorPage() {
                                     ) : (
                                         <button
                                             onClick={convertToWord}
-                                            className="w-full sm:w-auto h-12 px-8 bg-blue-500 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-blue-600 shadow-lg shadow-blue-500/20 active:scale-[0.98]"
+                                            className="w-full sm:w-auto h-12 px-8 bg-white text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-white shadow-lg shadow-white/20 active:scale-[0.98]"
                                         >
                                             Extract Text <FileText size={16} />
                                         </button>
@@ -301,13 +311,13 @@ export default function PdfTextExtractorPage() {
                                 </div>
                             ) : (
                                 <div className="w-full space-y-4 animate-in fade-in duration-700">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-lg text-xs font-bold">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 text-white rounded-lg text-xs font-bold">
                                         ✓ Extraction Complete
                                     </div>
                                     <div className="flex flex-col sm:flex-row gap-3">
                                         <button
                                             onClick={downloadWord}
-                                            className="h-12 px-8 bg-blue-500 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-blue-600 shadow-lg shadow-blue-500/20 active:scale-[0.98]"
+                                            className="h-12 px-8 bg-white text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-white shadow-lg shadow-white/20 active:scale-[0.98]"
                                         >
                                             <Download size={16} /> Download DOCX
                                         </button>
@@ -330,21 +340,75 @@ export default function PdfTextExtractorPage() {
                 </div>
             )}
 
-            {!file && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12">
-                    {[
-                        { title: "Browser Magic", desc: "Instantly extracts text algorithms using your device compute. Secure and fast." },
-                        { title: "Universal Output", desc: "Generates proper DOCX standard files containing just your text, perfect for essays." },
-                        { title: "No Subscription", desc: "Extract unbounded text from PDFs instantly. No hidden queues or processing limits." }
-                    ].map((f, i) => (
-                        <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[11px] font-bold text-blue-500 uppercase tracking-widest">{f.title}</h4>
-                            <p className="text-[11px] text-zinc-500 font-medium leading-relaxed max-w-[200px] mx-auto">{f.desc}</p>
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Text Extractor Info">
+                <div className="max-w-4xl mx-auto text-left">
+                    <div className="space-y-16">
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                Visual Text Extraction Infrastructure
+                            </h3>
+                            <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                                Step into a professional-grade workspace for document digitizing. AssetNest <strong>Advanced PDF Text Extractor</strong> transcends basic copy-pasting—it provides a structural parser where you can mine raw text from PDF containers with zero data exposure and absolute data privacy. Whether you are stripping text from a high-res legal brief, extracting data blocks from research papers, or scraping strings from protected UI documentation, our tool gives you the power to transform PDF objects into editable DOCX containers with industry-leading character preservation and zero server dependency.
+                            </p>
+                        </section>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                    <FileText size={20} className="text-zinc-500" />
+                                    How to Extract Safely
+                                </h3>
+                                <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                    <li className="flex gap-4 items-start">
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <span><strong>Universal Support:</strong> Drop any standard PDF container. Our engine automatically identifies underlying text layers for extraction.</span>
+                                    </li>
+                                    <li className="flex gap-4 items-start">
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <span><strong>Internal Mapping:</strong> We utilize client-side PDF parsing to scan document structures locally. Blazing fast, ultra-secure.</span>
+                                    </li>
+                                    <li className="flex gap-4 items-start">
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <span><strong>DOCX Reconstruction:</strong> Automatically compile extracted strings into professional Word documents while retaining paragraph flow.</span>
+                                    </li>
+                                </ul>
+                            </section>
+
+                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                    <ShieldCheck size={20} className="text-zinc-500" />
+                                    Privacy Infrastructure
+                                </h3>
+                                <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                    Unlike traditional cloud-based tools that store your sensitive document data on external servers, our text extractor operates <strong>100% locally in your browser cache</strong>.
+                                </p>
+                                <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                    <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                    <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                        Zero-Server Processing • Internal Stream Scraper • Metadata Integrity • Clean DOCX Output
+                                    </p>
+                                </div>
+                            </section>
                         </div>
-                    ))}
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                            <Accordion>
+                                <AccordionItem title="Scanned PDFs?">
+                                    No. This tool extracts from digital text layers. For image-based scans, use our dedicated OCR tools.
+                                </AccordionItem>
+                                <AccordionItem title="Table Extraction?">
+                                    Pure text extraction focuses on string data. Tables may require manual formatting after export.
+                                </AccordionItem>
+                                <AccordionItem title="Secure Memory?">
+                                    Zero data persistence. Your extracted text persists in RAM only until the current tool context is cleared.
+                                </AccordionItem>
+                            </Accordion>
+                        </section>
+                    </div>
                 </div>
-            )}
-            
+            </HelpModal>
 
         </div>
     );

@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Zap, RotateCcw, Trophy, Hash, Star, RefreshCw } from "lucide-react";
+import { Zap, RotateCcw, Trophy, Hash, Star, RefreshCw, Info } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -51,6 +53,7 @@ export default function Game2048Page() {
     const [gameOver, setGameOver] = useState(false);
     const [won, setWon] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     useEffect(() => {
         setBoard(initBoard());
@@ -198,15 +201,15 @@ export default function Game2048Page() {
         switch (val) {
             case 2: return "bg-zinc-800 text-zinc-100";
             case 4: return "bg-zinc-700 text-zinc-100";
-            case 8: return "bg-orange-600 text-white";
-            case 16: return "bg-orange-500 text-white";
-            case 32: return "bg-orange-400 text-white";
-            case 64: return "bg-orange-300 text-white";
-            case 128: return "bg-yellow-500 text-white shadow-[0_0_10px_rgba(234,179,8,0.4)]";
-            case 256: return "bg-yellow-400 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]";
-            case 512: return "bg-yellow-300 text-white shadow-[0_0_20px_rgba(234,179,8,0.6)]";
-            case 1024: return "bg-yellow-200 text-zinc-900 shadow-[0_0_25px_rgba(234,179,8,0.7)] font-black";
-            case 2048: return "bg-emerald-400 text-zinc-900 shadow-[0_0_30px_rgba(52,211,153,0.8)] font-black";
+            case 8: return "bg-white text-white";
+            case 16: return "bg-white text-white";
+            case 32: return "bg-white text-white";
+            case 64: return "bg-white text-white";
+            case 128: return "bg-white text-white shadow-[0_0_10px_rgba(255, 255, 255,0.4)]";
+            case 256: return "bg-white text-white shadow-[0_0_15px_rgba(255, 255, 255,0.5)]";
+            case 512: return "bg-white text-white shadow-[0_0_20px_rgba(255, 255, 255,0.6)]";
+            case 1024: return "bg-white text-zinc-900 shadow-[0_0_25px_rgba(255, 255, 255,0.7)] font-black";
+            case 2048: return "bg-white text-zinc-900 shadow-[0_0_30px_rgba(255, 255, 255,0.8)] font-black";
             default: return "bg-zinc-900/50 text-zinc-700";
         }
     };
@@ -219,9 +222,16 @@ export default function Game2048Page() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="Help & FAQ"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">
                     2048
@@ -239,7 +249,7 @@ export default function Game2048Page() {
                 </div>
                 <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Best</span>
-                    <span className="text-2xl font-black text-amber-400">{highScore}</span>
+                    <span className="text-2xl font-black text-white">{highScore}</span>
                 </div>
                 <button onClick={reset} className="p-5 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl">
                     <RotateCcw size={20} />
@@ -266,7 +276,7 @@ export default function Game2048Page() {
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-md rounded-[2.2rem] flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
                         {won ? (
                             <>
-                                <Star size={48} className="text-yellow-400 mb-4 animate-bounce" />
+                                <Star size={48} className="text-white mb-4 animate-bounce" />
                                 <h2 className="text-3xl font-black text-white mb-2 uppercase">You Reached 2048!</h2>
                                 <p className="text-sm text-zinc-400 mb-8">Legendary focus. Keep playing to set a record?</p>
                                 <div className="flex gap-4">
@@ -310,6 +320,79 @@ export default function Game2048Page() {
                     animation: bounce-in 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 }
             `}</style>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="2048 Strategic Briefing"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Play 2048 Online: The Ultimate Strategy Puzzle</h3>
+                        <p className="text-base leading-relaxed text-zinc-400 max-w-3xl">
+                            Welcome to the official AssetNest edition of <strong>2048</strong>, the world-famous sliding tile puzzle game. Since its viral debut, 2048 has captivated millions with its perfect blend of mathematical simplicity and deep strategic challenge. Whether you are a casual player looking to pass the time or a high-score enthusiast hunting for the legendary 2048 tile, our responsive, dark-themed version provides the smoothest gameplay experience directly in your browser. No downloads, no accounts, just pure 4x4 grid mastery.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-black">1</span>
+                                How to Master 2048
+                            </h3>
+                            <ul className="space-y-4 text-sm leading-relaxed text-zinc-400">
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">•</span>
+                                    <div><strong className="text-zinc-200">The Core Rule:</strong> Swipe tiles (Up, Down, Left, Right) to move all tiles in the grid. When two tiles with the same number collide, they merge into one with double the value!</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">•</span>
+                                    <div><strong className="text-zinc-200">Strategic Cornering:</strong> Most experts recommend picking one corner (like the bottom-left) and keeping your highest-value tile locked there to maintain grid organization.</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">•</span>
+                                    <div><strong className="text-zinc-200">Chain Reactions:</strong> Plan your moves to create back-to-back merges, which not only clears the board but exponentially boosts your score.</div>
+                                </li>
+                            </ul>
+                        </section>
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-black">2</span>
+                                Why Play Here?
+                            </h3>
+                            <div className="space-y-6">
+                                <div className="p-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl">
+                                    <h4 className="text-sm font-bold text-white mb-2">Zero Latency Controls</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed">Our game engine is optimized for instant response. Use your arrow keys or swipe with precision—every move is calculated in milliseconds without server lag.</p>
+                                </div>
+                                <div className="p-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl">
+                                    <h4 className="text-sm font-bold text-white mb-2">Local High Score Tracking</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed">Your highest score is saved directly to your browser&apos;s local storage. Close the tab and come back anytime to beat your personal record.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                        <Accordion>
+                            <AccordionItem title="Is the 2048 game free to play?">
+                                Yes, 100% free. We offer the full 2048 experience without paywalls, subscriptions, or watermarks. Just open the page and start merging.
+                            </AccordionItem>
+                            <AccordionItem title="Can I play 2048 on my phone?">
+                                Absolutely! This version of 2048 is fully responsive and supports touch gestures. Simply swipe in the direction you want the tiles to slide.
+                            </AccordionItem>
+                            <AccordionItem title="What happens when I reach the 2048 tile?">
+                                You win! However, the game doesn&apos;t have to end there. You can choose to keep playing to reach the 4096, 8192, or even the nearly-impossible 16384 tile.
+                            </AccordionItem>
+                            <AccordionItem title="How is my high score saved?">
+                                We use browser local storage to track your best score. As long as you don&apos;t clear your browser data, your high score will be waiting for you whenever you return to AssetNest.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
         </div>
     );
 }

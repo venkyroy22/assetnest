@@ -7,6 +7,9 @@ import {
     Timer, Keyboard, RotateCcw, MousePointer2, ArrowRight,
     Copy, Check, Settings2, X, Palette,
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 // ─── Themes ───────────────────────────────────────────────────────────────────
@@ -101,7 +104,7 @@ const THEMES: Theme[] = [
         name: "nebula",
         bg: "#07030f", surface: "#130a24", border: "#220f3d",
         text: "#e8d5ff", muted: "#6a3fa0", dim: "#180d2e",
-        accent: "#a78bfa", accentHex: "#a78bfa", error: "#f43f5e",
+        accent: "#a78bfa", accentHex: "#a78bfa", error: "#ffffff",
     },
     {
         name: "copper",
@@ -208,7 +211,7 @@ interface WordData {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function TypingTesterPage() {
     // --- Theme ---
-    const [themeIdx, setThemeIdx] = useState(0);
+    const [themeIdx, setThemeIdx] = useState(() => Math.max(0, THEMES.findIndex(t => t.name === "arctic")));
     const T = THEMES[themeIdx];
 
     // --- Config ---
@@ -261,6 +264,7 @@ export default function TypingTesterPage() {
     const [duelStatus, setDuelStatus] = useState<"idle" | "connecting" | "connected" | "error">("idle");
     // countdown: null = no countdown, 5..1 = ticking, 0 = GO!
     const [countdown, setCountdown] = useState<number | null>(null);
+    const [showHelp, setShowHelp] = useState(false);
 
     // --- Refs ---
     const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -918,6 +922,14 @@ export default function TypingTesterPage() {
                     >
                         <Settings2 size={18} />
                     </button>
+                    <button
+                        onClick={() => setShowHelp(true)}
+                        className="p-2 sm:p-2.5 rounded-lg transition-colors"
+                        style={{ color: T.muted }}
+                        title="What is this?"
+                    >
+                        <Info size={18} />
+                    </button>
                 </div>
             </header>
 
@@ -1264,13 +1276,13 @@ export default function TypingTesterPage() {
                         >
                             {/* Animated caret */}
                             <div
-                                className="absolute z-10 w-[2px] rounded-full pointer-events-none"
+                                className="absolute z-10 w-[3px] rounded-full pointer-events-none"
                                 style={{
-                                    top: caretPos.top,
+                                    top: caretPos.top + 2,
                                     left: caretPos.left,
-                                    height: "1.2em",
+                                    height: "1.3em",
                                     background: T.accent,
-                                    boxShadow: `0 0 8px ${T.accentHex}99`,
+                                    boxShadow: `0 0 12px ${T.accentHex}aa`,
                                     transition: "top 80ms ease, left 80ms ease",
                                     animation: !isActive && isFocused ? "caretBlink 1s ease-in-out infinite" : "none",
                                     opacity: isFocused ? 1 : 0,
@@ -1600,7 +1612,7 @@ export default function TypingTesterPage() {
                         </div>
 
                         {/* Modal Content container (scrollable) */}
-                        <div className="overflow-y-auto pr-2 sm:pr-4 space-y-12 pb-4 scrollbar-thin overflow-x-hidden">
+                        <div data-lenis-prevent className="overflow-y-auto pr-2 sm:pr-4 space-y-12 pb-4 scrollbar-thin overflow-x-hidden">
 
                             {/* Theme Grid */}
                             <section>
@@ -1701,6 +1713,79 @@ export default function TypingTesterPage() {
                     </div>
                 </div>
             )}
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Master Your Speed"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Master Your Typing Speed</h3>
+                        <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
+                            <p>
+                                Elevate your typing proficiency with our professional-grade Typing Tester. Whether you're a developer, writer, or student, speed and accuracy are the pillars of productivity. This tool provides a minimalist, focus-oriented environment inspired by modern typing benchmarks.
+                            </p>
+                            <p>
+                                <strong>Track every keystroke:</strong> We calculate your WPM (Words Per Minute), Raw WPM, and Accuracy in real-time. Use the detailed history charts to visualize where you stutter and how your speed fluctuates during the test duration.
+                            </p>
+                        </div>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Keyboard size={18} className="text-zinc-500" />
+                                Custom Practice Modes
+                            </h3>
+                            <ul className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>Time Mode:</strong> Push your stamina with 15, 30, 60, or 120-second sprints.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>Word Mode:</strong> Focus on precision by finishing a fixed set of 10, 25, 50, or 100 words.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>Punctuation & Numbers:</strong> Toggle advanced characters to simulate real coding and writing scenarios.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Palette size={18} className="text-zinc-500" />
+                                Aesthetic Personalization
+                            </h3>
+                            <p className="text-sm text-zinc-400 mb-4">
+                                Productivity is better when it looks good. Choose from over 20+ carefully curated themes—from "Midnight" and "Forest" to high-contrast "Noir" and retro "Cream"—to match your desk setup.
+                            </p>
+                            <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-500">Pro Tip</p>
+                                <p className="text-xs text-zinc-400 mt-1 italic">Hit "Tab" to quickly restart a test at any time, just like the pros.</p>
+                            </div>
+                        </section>
+                    </div>
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 pt-12 border-t border-zinc-900/50">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Typing Intelligence (FAQ)</h3>
+                        <Accordion>
+                            <AccordionItem title="How is WPM calculated?">
+                                Words Per Minute (WPM) is calculated by taking the total number of correctly typed characters, dividing by 5 (the average word length), and then dividing by the time elapsed in minutes.
+                            </AccordionItem>
+                            <AccordionItem title="What is the difference between WPM and Raw WPM?">
+                                WPM only counts correctly typed words, penalizing you for errors. Raw WPM counts all characters typed, including mistakes, giving you a sense of your pure motor speed.
+                            </AccordionItem>
+                            <AccordionItem title="Can I use this for coding practice?">
+                                Yes! By enabling the Numbers and Punctuation toggles in the settings, you can simulate the complex character sequences common in programming languages.
+                            </AccordionItem>
+                            <AccordionItem title="Does my progress get saved?">
+                                Currently, your high scores and theme preferences are stored locally in your browser. We are working on a cloud-sync feature for registered users soon!
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
         </div>
     );
 }

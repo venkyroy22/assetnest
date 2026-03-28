@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Zap, RotateCcw, Trophy, WholeWord, RefreshCw, X, Check, Gamepad2 } from "lucide-react";
+import { Zap, RotateCcw, Trophy, WholeWord, RefreshCw, X, Check, Gamepad2, Info } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -33,6 +35,7 @@ export default function WordlePage() {
     const [won, setWon] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [shakeEntry, setShakeEntry] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const startNewGame = useCallback(() => {
         const word = WORDS[Math.floor(Math.random() * WORDS.length)];
@@ -89,8 +92,8 @@ export default function WordlePage() {
 
     const getLetterColor = (guess: string, index: number) => {
         const letter = guess[index];
-        if (letter === solution[index]) return "bg-emerald-500 border-emerald-500 text-white";
-        if (solution.includes(letter)) return "bg-amber-500 border-amber-500 text-white";
+        if (letter === solution[index]) return "bg-white border-white text-white";
+        if (solution.includes(letter)) return "bg-white border-white text-white";
         return "bg-zinc-800 border-zinc-700 text-zinc-500";
     };
 
@@ -108,8 +111,8 @@ export default function WordlePage() {
         for (const guess of guesses) {
             for (let i = 0; i < WORD_LENGTH; i++) {
                 if (guess[i] === key) {
-                    if (key === solution[i]) return "bg-emerald-500 text-white";
-                    if (solution.includes(key)) status = "bg-amber-500 text-white";
+                    if (key === solution[i]) return "bg-white text-white";
+                    if (solution.includes(key)) status = "bg-white text-white";
                     else if (status === "bg-zinc-900 text-zinc-400") status = "bg-zinc-800 text-zinc-600";
                 }
             }
@@ -123,9 +126,16 @@ export default function WordlePage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="Help & FAQ"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 uppercase">
                     Wordle
@@ -194,7 +204,7 @@ export default function WordlePage() {
                     <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] shadow-2xl animate-in zoom-in-95 duration-500">
                         {won ? (
                             <>
-                                <Trophy size={48} className="text-emerald-400 mx-auto mb-6 animate-bounce" />
+                                <Trophy size={48} className="text-white mx-auto mb-6 animate-bounce" />
                                 <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Brilliant!</h2>
                                 <p className="text-sm text-zinc-500 mb-8">You found the word <span className="text-white font-bold">{solution}</span> in {guesses.length} tries.</p>
                             </>
@@ -228,6 +238,92 @@ export default function WordlePage() {
                 .animate-flip { animation: flip 0.6s ease-in-out forwards; }
                 .animate-shake { animation: shake 0.4s ease-in-out; }
             `}</style>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Linguistic Briefing"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Master the Hidden Word: Wordle Online</h3>
+                        <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
+                            Welcome to the AssetNest edition of <strong>Wordle</strong>, the viral word-guessing game that has taken the world by storm. Wordle is a brilliant test of vocabulary, logic, and deduction. Your goal is simple: uncover a secret five-letter word in six attempts or less. Each guess provides valuable feedback through color-coded tiles, guiding you closer to the solution. Our free, browser-based version offers a clean, dark-themed experience that focuses purely on the puzzle, with no trackers, no ads, and 100% privacy.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">!</span>
+                                Decoding the Feedback
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors flex gap-4">
+                                    <div className="w-10 h-10 bg-white border border-white shrink-0 rounded flex items-center justify-center text-white font-black">W</div>
+                                    <div>
+                                        <h4 className="text-sm font-black text-white mb-1 uppercase tracking-wide">Green Tile</h4>
+                                        <p className="text-xs text-zinc-500 leading-relaxed font-semibold">The letter is in the word and in the correct spot.</p>
+                                    </div>
+                                </div>
+                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors flex gap-4">
+                                    <div className="w-10 h-10 bg-white border border-white shrink-0 rounded flex items-center justify-center text-white font-black">O</div>
+                                    <div>
+                                        <h4 className="text-sm font-black text-white mb-1 uppercase tracking-wide">Yellow Tile</h4>
+                                        <p className="text-xs text-zinc-500 leading-relaxed font-semibold">The letter is in the word but in the wrong spot.</p>
+                                    </div>
+                                </div>
+                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors flex gap-4">
+                                    <div className="w-10 h-10 bg-zinc-800 border border-zinc-700 shrink-0 rounded flex items-center justify-center text-zinc-500 font-black">X</div>
+                                    <div>
+                                        <h4 className="text-sm font-black text-white mb-1 uppercase tracking-wide">Gray Tile</h4>
+                                        <p className="text-xs text-zinc-500 leading-relaxed font-semibold">The letter is not in the word at all.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">?</span>
+                                Victory Strategies
+                            </h3>
+                            <ul className="space-y-4 text-sm leading-relaxed text-zinc-400 font-medium">
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">The Power Opener:</strong> Start with a word that uses many common vowels and consonants (like "ADIEU", "ORATE", or "ROATE") to eliminate as many possibilities as possible in your first move.</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">Letter Elimination:</strong> Pay close attention to the virtual keyboard. It tracks which letters have been used and their color status, helping you visualize remaining combinations.</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">Duplication Warning:</strong> The game doesn&apos;t explicitly tell you if a letter appears twice in the word. If a letter is yellow or green, stay open to the possibility that it might be repeated!</div>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                    
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[3rem] p-10 md:p-14">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Linguistic Briefing (FAQ)</h3>
+                        <Accordion>
+                            <AccordionItem title="How many times can I play per day?">
+                                Unlike other versions that limit you to one word per day, our Wordle Clone allows you to play unlimited rounds. Just click &quot;Play New&quot; to start a fresh challenge instantly.
+                            </AccordionItem>
+                            <AccordionItem title="What dictionary do you use?">
+                                We use a curated list of common 5-letter English words to ensure that the solutions are recognizable and the game remains fair for all players.
+                            </AccordionItem>
+                            <AccordionItem title="Is my progress saved to a server?">
+                                No. We prioritize your privacy. The game logic happens entirely in your browser, and no data is sent to external servers.
+                            </AccordionItem>
+                            <AccordionItem title="Can I play on my smartphone?">
+                                Yes! Wordle Pro is fully responsive. You can use the on-screen keyboard for a perfect mobile gaming experience on any device.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
         </div>
     );
 }

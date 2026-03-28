@@ -5,8 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
     Upload, Download, Sparkles, X, RefreshCw,
-    Eraser, Info, ArrowLeft, CheckCircle2, Copy, Pipette, Plus, Minus, Maximize2
+    Eraser, Info, ArrowLeft, CheckCircle2, Copy, Pipette, Plus, Minus, Maximize2, Check, ShieldCheck
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -30,6 +32,7 @@ export default function BgRemoverPage() {
     const [error, setError] = useState<string | null>(null);
     const [copyStatus, setCopyStatus] = useState<"idle" | "success">("idle");
     const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
     const progressMap = useRef(new Map<string, number>());
@@ -117,12 +120,19 @@ export default function BgRemoverPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <Sparkles size={11} className="text-purple-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 relative group">
+                    <Sparkles size={11} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Pure Background Removal</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-zinc-500 hover:text-white transition-all"
+                        title="Help & Details"
+                    >
+                        <Info size={12} />
+                    </button>
                 </div>
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white mb-4">
-                    BG <span className="text-purple-500">Remover</span>
+                    BG <span className="text-white">Remover</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
                     Professional AI background removal in one click. 100% free, private, and runs entirely in your browser.
@@ -145,7 +155,7 @@ export default function BgRemoverPage() {
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className={`min-h-[300px] border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center transition-all duration-500 cursor-pointer ${isDragging ? "border-purple-500 bg-purple-500/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50 hover:border-zinc-800 shadow-2xl shadow-purple-500/0 hover:shadow-purple-500/5"}`}
+                            className={`min-h-[300px] border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center transition-all duration-500 cursor-pointer ${isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50 hover:border-zinc-800 shadow-2xl shadow-white/0 hover:shadow-white/5"}`}
                         >
                             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
                             <div className="p-12 text-center space-y-6">
@@ -168,7 +178,7 @@ export default function BgRemoverPage() {
                         <div className="relative group rounded-[2rem] overflow-hidden border border-zinc-800 bg-zinc-950 shadow-2xl">
                              <div className="absolute top-6 left-6 z-20 flex gap-2">
                                 <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-full border border-white/10 flex items-center gap-2">
-                                    <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'}`} />
+                                    <div className={`w-1.5 h-1.5 rounded-full ${isLoading ? 'bg-white animate-pulse' : 'bg-white'}`} />
                                     <span className="text-[10px] font-semibold tracking-wide text-white/90">
                                         {isLoading ? `Removing Background ${progress}%` : "Success"}
                                     </span>
@@ -198,8 +208,8 @@ export default function BgRemoverPage() {
                                 {isLoading ? (
                                     <div className="flex flex-col items-center gap-6">
                                         <div className="relative w-16 h-16">
-                                            <RefreshCw size={64} className="text-purple-500/20 animate-spin absolute inset-0" />
-                                            <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-purple-400 font-bold">{progress}%</div>
+                                            <RefreshCw size={64} className="text-white/20 animate-spin absolute inset-0" />
+                                            <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-white font-bold">{progress}%</div>
                                         </div>
                                         <p className="text-[11px] font-semibold tracking-wider text-zinc-400">Subject isolation in progress...</p>
                                     </div>
@@ -233,20 +243,74 @@ export default function BgRemoverPage() {
                 )}
             </div>
 
-            {/* Bottom Features */}
-            {!image && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-zinc-900 pt-12">
-                    {[
-                        { title: "Privacy First", desc: "No images ever leave your device. All processing happens in your browser." },
-                        { title: "High Quality", desc: "Export high-resolution PNGs with perfect transparency around hair and edges." }
-                    ].map((f, i) => (
-                        <div key={i} className="space-y-4">
-                             <h4 className="text-sm font-semibold text-zinc-100">{f.title}</h4>
-                             <p className="text-[11px] text-zinc-600 font-medium leading-relaxed">{f.desc}</p>
-                        </div>
-                    ))}
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="AI Background Removal"
+            >
+                <div className="space-y-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Subject Isolation Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for background removal. AssetNest <strong>AI Background Remover</strong> transcends basic image masking—it provides a high-performance engine where you can isolate subjects from their backgrounds with pixel-perfect precision and absolute data privacy. Whether you are generating clean e-commerce assets, professional headshots, or creative marketing collateral, our tool gives you the power to create transparent PNGs with industry-leading edge detection and zero server dependency.
+                        </p>
+                    </section>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Sparkles size={20} className="text-zinc-500" />
+                                How to Isolate Subjects
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Drop JPG, PNG, and WebP files. Our AI model automatically identifies the primary subject.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Local AI Processing:</strong> We utilize client-side machine learning to process your data locally. Blazing fast, ultra-secure.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>High-Fidelity Edges:</strong> Advanced neural networks handle hair, fur, and intricate boundaries with professional clarity.</span>
+                                </li>
+                            </ul>
+                        </section>
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based tools that store your sensitive photo data on external servers, our background remover operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Processing • Client-Side Neural Buffer Mapping • Lossless PNG Export • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Is it really free?">
+                                Yes. 100% free with no hidden fees, subscriptions, or output watermarks.
+                            </AccordionItem>
+                            <AccordionItem title="Image Limits?">
+                                None. Process as many photos as your device&apos;s memory and CPU power can handle.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Uploads?">
+                                There are no uploads. All processing happens locally on your computer or smartphone.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
-            )}
+            </HelpModal>
+            
             {/* Fullscreen Preview Modal */}
             {isPreviewOpen && outputUrl && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in">

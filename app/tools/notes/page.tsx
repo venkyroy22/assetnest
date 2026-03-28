@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { Plus, Trash2, FileText, ImageIcon, Smile, Menu, X, MoreHorizontal, Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, Type, BrainCircuit, Search, Check, Timer, Tag, Download, Keyboard, Sun, CalendarDays, Copy, Hash, Pin, Star, Link2, AlignLeft, Rocket, Lightbulb, BookOpen, Code2, Layers, Users, Clipboard, BarChart2, Globe, Mail, Settings, Zap, Target, Briefcase, FlaskConical, Music, Dumbbell, ShoppingCart, Camera, Heart, MessageSquare, Cpu, Cloud, Shield, Database, Pencil, NotebookText, FolderOpen, ListTodo, Clock, Sparkles } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 
 type Note = {
     id: string;
@@ -17,12 +20,12 @@ type Note = {
 };
 
 const TAG_COLORS: Record<string, string> = {
-    work: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-    personal: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-    ideas: 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30',
-    todo: 'bg-green-500/20 text-green-400 border-green-500/30',
-    research: 'bg-pink-500/20 text-pink-400 border-pink-500/30',
-    journal: 'bg-orange-500/20 text-orange-400 border-orange-500/30',
+    work: 'bg-white/20 text-white border-white/30',
+    personal: 'bg-white/20 text-white border-white/30',
+    ideas: 'bg-white/20 text-white border-white/30',
+    todo: 'bg-white/10 text-white border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]',
+    research: 'bg-white/20 text-white border-white/30',
+    journal: 'bg-white/20 text-white border-white/30',
 };
 
 const TEMPLATES = [
@@ -93,6 +96,7 @@ export default function SmartNotesPage() {
     const [showTemplates, setShowTemplates] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
     const [showProperties, setShowProperties] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     const [newTag, setNewTag] = useState("");
 
     // Command Menu & Selection State
@@ -412,7 +416,7 @@ export default function SmartNotesPage() {
                     </div>
                 </div>
 
-                <div className="flex-1 overflow-y-auto px-2 space-y-0.5 custom-scrollbar pb-10">
+                <div data-lenis-prevent className="flex-1 overflow-y-auto px-2 space-y-0.5 custom-scrollbar pb-10">
                     {pinnedNotes.length > 0 && (
                         <>
                             <div className="px-4 py-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em] flex items-center gap-1.5"><Pin size={9} /> Pinned</div>
@@ -459,6 +463,13 @@ export default function SmartNotesPage() {
                         >
                             {isSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
                         </button>
+                        <button 
+                            onClick={() => setShowHelp(true)}
+                            className="hidden sm:flex p-2 hover:bg-white/[0.05] rounded-lg transition-all text-zinc-500"
+                            title="Help & Details"
+                        >
+                            <Info size={18} />
+                        </button>
                         <div className="hidden sm:block h-4 w-[1px] bg-white/10" />
                         <div className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase">
                              <span className="text-zinc-600 hidden sm:inline">Workspace</span>
@@ -468,7 +479,7 @@ export default function SmartNotesPage() {
                     </div>
                     
                     <div className="flex items-center gap-1.5 sm:gap-2">
-                        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-500 ${isSaving ? 'bg-blue-500/10 text-blue-400' : 'bg-green-500/10 text-green-500'}`}>
+                        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-500 bg-white/5 text-white/40 border border-white/5`}>
                             <div className={`w-1 h-1 rounded-full bg-current ${isSaving ? 'animate-pulse' : ''}`} />
                             <span className="text-[10px] font-bold uppercase tracking-widest">{isSaving ? 'Syncing' : 'Saved'}</span>
                         </div>
@@ -494,7 +505,7 @@ export default function SmartNotesPage() {
                 </div>
 
                 {activeNote ? (
-                    <div className="flex-1 overflow-y-auto custom-scrollbar relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/20 via-transparent to-transparent">
+                    <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/20 via-transparent to-transparent">
                         {/* COVER IMAGE */}
                         <div className="group relative w-full h-56 md:h-72 bg-zinc-900/50 shrink-0">
                             <div className="absolute inset-0 overflow-hidden">
@@ -609,9 +620,9 @@ export default function SmartNotesPage() {
                                     <span className="flex items-center gap-1.5"><Timer size={12} /> {stats.readTime} Min Read</span>
                                     <button 
                                         onClick={() => updateActiveNote({ isFavorite: !activeNote.isFavorite })}
-                                        className={`ml-auto flex items-center gap-1.5 transition-all ${activeNote.isFavorite ? 'text-blue-400' : 'hover:text-zinc-400'}`}
+                                        className={`ml-auto flex items-center gap-1.5 transition-all ${activeNote.isFavorite ? 'text-white' : 'hover:text-zinc-400'}`}
                                     >
-                                        <div className={`w-2 h-2 rounded-full ${activeNote.isFavorite ? 'bg-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.8)]' : 'bg-transparent border border-zinc-700'}`} />
+                                        <div className={`w-2 h-2 rounded-full ${activeNote.isFavorite ? 'bg-white shadow-[0_0_10px_rgba(255, 255, 255,0.8)]' : 'bg-transparent border border-zinc-700'}`} />
                                         {activeNote.isFavorite ? 'FAVORITE' : 'MARK FAVORITE'}
                                     </button>
                                 </div>
@@ -651,19 +662,19 @@ export default function SmartNotesPage() {
                             .styled-editor h2 { font-size: 1.8em; font-weight: 800; color: white; margin: 1.4em 0 0.5em; letter-spacing: -0.02em; }
                             .styled-editor h3 { font-size: 1.35em; font-weight: 700; color: #e4e4e7; margin: 1.2em 0 0.4em; }
                             .styled-editor p { margin-bottom: 1.2em; font-weight: 400; line-height: 1.75; }
-                            .styled-editor a { color: #3b82f6; text-decoration: underline; text-underline-offset: 3px; }
+                            .styled-editor a { color: #ffffff; text-decoration: underline; text-underline-offset: 3px; }
                             .styled-editor ul { list-style-type: none; margin-bottom: 1.5em; }
                             .styled-editor ul li { position: relative; padding-left: 1.8em; margin-bottom: 0.6em; }
-                            .styled-editor ul li:before { content: "•"; color: #3b82f6; position: absolute; left: 0.2em; font-weight: 900; font-size: 1.2em; }
+                            .styled-editor ul li:before { content: "•"; color: #ffffff; position: absolute; left: 0.2em; font-weight: 900; font-size: 1.2em; }
                             .styled-editor ol { margin-left: 1.8em; margin-bottom: 1.5em; }
                             .styled-editor ol li { margin-bottom: 0.6em; padding-left: 0.3em; }
-                            .styled-editor blockquote { border-left: 3px solid #3b82f6; padding: 1rem 1.5rem; font-style: italic; color: #a1a1aa; margin: 2.5rem 0; font-size: 1.15em; background: rgba(59,130,246,0.03); border-radius: 0.75rem; }
+                            .styled-editor blockquote { border-left: 3px solid #ffffff; padding: 1rem 1.5rem; font-style: italic; color: #a1a1aa; margin: 2.5rem 0; font-size: 1.15em; background: rgba(255, 255, 255,0.03); border-radius: 0.75rem; }
                             .styled-editor pre { background: #0c0c0e; padding: 1.8rem; border-radius: 1.25rem; margin: 2.5rem 0; border: 1px solid rgba(255,255,255,0.05); font-family: monospace; font-size: 0.9em; overflow-x: auto; }
-                            .styled-editor code { font-family: monospace; background: #161618; padding: 0.2em 0.5em; border-radius: 6px; color: #3b82f6; font-size: 0.85em; border: 1px solid rgba(59,130,246,0.1); }
+                            .styled-editor code { font-family: monospace; background: #161618; padding: 0.2em 0.5em; border-radius: 6px; color: #ffffff; font-size: 0.85em; border: 1px solid rgba(255, 255, 255,0.1); }
                             .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 4px 0; }
-                            .todo-item input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #3b82f6; flex-shrink: 0; }
-                            .callout-block { background: rgba(59,130,246,0.04); border: 1px solid rgba(59,130,246,0.1); border-left: 4px solid #3b82f6; padding: 1.25rem 1.5rem; border-radius: 1rem; margin: 2rem 0; display: flex; align-items: flex-start; gap: 1rem; font-size: 1em; color: #e4e4e7; }
-                            .callout-block:before { content: ""; width: 22px; height: 22px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%233b82f6' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; flex-shrink: 0; margin-top: 2px; }
+                            .todo-item input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #ffffff; flex-shrink: 0; }
+                            .callout-block { background: rgba(255, 255, 255,0.04); border: 1px solid rgba(255, 255, 255,0.1); border-left: 4px solid #ffffff; padding: 1.25rem 1.5rem; border-radius: 1rem; margin: 2rem 0; display: flex; align-items: flex-start; gap: 1rem; font-size: 1em; color: #e4e4e7; }
+                            .callout-block:before { content: ""; width: 22px; height: 22px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; flex-shrink: 0; margin-top: 2px; }
                             .divider-line { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 3.5rem 0; }
                             .note-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
                             .note-table th { background: rgba(255,255,255,0.05); color: white; font-weight: 800; font-size: 0.85em; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
@@ -675,7 +686,14 @@ export default function SmartNotesPage() {
                         `}</style>
                     </div>
                 ) : (
-                    <HomeDashboard notes={notes} setActiveId={setActiveId} setShowTemplates={setShowTemplates} createNote={createNote} />
+                    <HomeDashboard 
+                        notes={notes} 
+                        setActiveId={setActiveId} 
+                        setShowTemplates={setShowTemplates} 
+                        createNote={createNote} 
+                        showHelp={showHelp}
+                        setShowHelp={setShowHelp}
+                    />
                 )}
             </div>
 
@@ -696,15 +714,15 @@ function NoteItem({ note, activeId, setActiveId, deleteNote, updateNote }: NoteI
                 <div className="flex flex-col overflow-hidden">
                     <span className="text-sm font-bold truncate">{note.title || "Untitled"}</span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                        {note.isFavorite && <div className="w-1 h-1 rounded-full bg-blue-400" />}
-                        {note.isPinned && <div className="w-1 h-1 rounded-full bg-yellow-400" />}
+                        {note.isFavorite && <div className="w-1 h-1 rounded-full bg-white" />}
+                        {note.isPinned && <div className="w-1 h-1 rounded-full bg-white" />}
                         <span className="text-[9px] font-bold text-zinc-700">{new Date(note.updatedAt).toLocaleDateString([],{month:'short',day:'numeric'})}</span>
                     </div>
                 </div>
             </div>
             <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isPinned: !note.isPinned }); }} className="p-1.5 rounded-lg hover:bg-yellow-500/10 text-zinc-700 hover:text-yellow-400 transition-all"><Pin size={11} /></button>
-                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isFavorite: !note.isFavorite }); }} className="p-1.5 rounded-lg hover:bg-blue-500/10 text-zinc-700 hover:text-blue-400 transition-all"><Star size={11} /></button>
+                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isPinned: !note.isPinned }); }} className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-700 hover:text-white transition-all"><Pin size={11} /></button>
+                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isFavorite: !note.isFavorite }); }} className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-700 hover:text-white transition-all"><Star size={11} /></button>
                 <button onClick={(e) => deleteNote(note.id, e)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-700 hover:text-red-400 transition-all"><Trash2 size={11} /></button>
             </div>
         </div>
@@ -774,13 +792,27 @@ function ShortcutsModal({ onClose }: { onClose: () => void; }) {
         </div>
     );
 }
-function HomeDashboard({ notes, setActiveId, setShowTemplates, createNote }: { notes: Note[]; setActiveId: (id: string) => void; setShowTemplates: (v: boolean) => void; createNote: (tpl?: string) => void; }) {
+function HomeDashboard({ 
+    notes, 
+    setActiveId, 
+    setShowTemplates, 
+    createNote,
+    showHelp,
+    setShowHelp
+}: { 
+    notes: Note[]; 
+    setActiveId: (id: string) => void; 
+    setShowTemplates: (v: boolean) => void; 
+    createNote: (tpl?: string) => void; 
+    showHelp: boolean;
+    setShowHelp: (v: boolean) => void;
+}) {
     const hour = new Date().getHours();
     const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
     const recents = [...notes].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4);
     
     return (
-        <div className="flex-1 overflow-y-auto px-4 sm:px-8 py-10 sm:py-16 custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-transparent to-transparent">
+        <div data-lenis-prevent className="flex-1 overflow-y-auto px-4 sm:px-8 py-10 sm:py-16 custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-transparent to-transparent">
             <div className="max-w-5xl mx-auto space-y-10 sm:space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
                 <div className="text-center space-y-3 mt-4 sm:mt-10">
                     <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-white">{greeting}</h1>
@@ -814,13 +846,13 @@ function HomeDashboard({ notes, setActiveId, setShowTemplates, createNote }: { n
                         <Sparkles size={16} /> <span className="text-sm">Create & Learn</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                         <div onClick={() => createNote()} className="bg-gradient-to-br from-blue-500/10 to-transparent border border-blue-500/20 hover:border-blue-500/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
-                             <div className="w-12 h-12 bg-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus size={24} /></div>
+                         <div onClick={() => createNote()} className="bg-gradient-to-br from-white/10 to-transparent border border-white/20 hover:border-white/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
+                             <div className="w-12 h-12 bg-white/20 text-white rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus size={24} /></div>
                              <h3 className="text-lg font-bold text-white mb-2">New Blank Page</h3>
                              <p className="text-sm text-zinc-400">Start fresh with a clean slate for your ideas.</p>
                          </div>
-                         <div onClick={() => createNote('daily')} className="bg-gradient-to-br from-purple-500/10 to-transparent border border-purple-500/20 hover:border-purple-500/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
-                             <div className="w-12 h-12 bg-purple-500/20 text-purple-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><CalendarDays size={24} /></div>
+                         <div onClick={() => createNote('daily')} className="bg-gradient-to-br from-white/10 to-transparent border border-white/20 hover:border-white/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
+                             <div className="w-12 h-12 bg-white/20 text-white rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><CalendarDays size={24} /></div>
                              <h3 className="text-lg font-bold text-white mb-2">Today's Note</h3>
                              <p className="text-sm text-zinc-400">Jump right into capturing today's tasks and thoughts.</p>
                          </div>
@@ -831,6 +863,84 @@ function HomeDashboard({ notes, setActiveId, setShowTemplates, createNote }: { n
                          </div>
                     </div>
                 </div>
+
+                <HelpModal 
+                    isOpen={showHelp} 
+                    onClose={() => setShowHelp(false)} 
+                    title="Smart Notes Workspace"
+                >
+                <div className="space-y-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <Sparkles className="text-zinc-500" size={32} />
+                            Your Private Workspace
+                        </h3>
+                        <p className="text-lg leading-relaxed text-zinc-400 max-w-4xl font-medium">
+                            Smart Notes is a powerful, privacy-first alternative to bloated note-taking apps. Built for speed and focus, our workspace combines the simplicity of markdown with the power of rich media, cover images, and template-based productivity. Whether you are drafting a project plan, tracking daily tasks, or brainstorming the next big thing, Smart Notes provides a fluid, dark-themed environment that lives entirely in your browser. No accounts required, no data tracking, and zero latency—just your thoughts, organized.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div className="space-y-4 p-8 bg-zinc-950/50 border border-zinc-900 rounded-[2.5rem] hover:border-zinc-700 transition-colors group">
+                            <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:text-white transition-colors">
+                                <Zap size={22} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Slash Commands</h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Type <code className="text-white bg-zinc-800 px-1.5 py-0.5 rounded">/</code> to trigger the block menu. Instantly insert headings, to-do lists, tables, code blocks, and callouts without touching your mouse.</p>
+                        </div>
+                        <div className="space-y-4 p-8 bg-zinc-950/50 border border-zinc-900 rounded-[2.5rem] hover:border-zinc-700 transition-colors group">
+                            <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:text-white transition-colors">
+                                <Shield size={22} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Local-First Privacy</h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Your notes never leave your device. We use browser LocalStorage to keep your database private and accessible even while offline.</p>
+                        </div>
+                        <div className="space-y-4 p-8 bg-zinc-950/50 border border-zinc-900 rounded-[2.5rem] hover:border-zinc-700 transition-colors group">
+                            <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center text-zinc-400 group-hover:text-white transition-colors">
+                                <Rocket size={22} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Smart Templates</h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Jumpstart your workflow with Daily Note, Project Plan, or Article Draft templates designed by productivity experts.</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-zinc-950/30 border border-zinc-900 rounded-[3.5rem] p-12 md:p-16">
+                        <div className="flex flex-col md:flex-row gap-16">
+                            <div className="flex-1 space-y-8">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Productivity Tips</h3>
+                                <div className="space-y-6">
+                                    <div className="flex gap-4">
+                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
+                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-white">Pin your active goals.</strong> Use the pin icon to keep high-priority projects at the top of your sidebar for instant access.</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
+                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-white">Style with Covers.</strong> Add high-resolution cover images to create a visual organization system that makes each page distinct.</p>
+                                    </div>
+                                    <div className="flex gap-4">
+                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
+                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-white">Markdown Mastery.</strong> Use keyboard shortcuts like <code className="text-white bg-zinc-800 px-1 py-0.5 rounded text-[10px]">#</code> for headers and <code className="text-white bg-zinc-800 px-1 py-0.5 rounded text-[10px]">-</code> for lists for the fastest editing experience.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="flex-1 space-y-8 border-t md:border-t-0 md:border-l border-zinc-900 pt-16 md:pt-0 md:pl-16">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Workspace FAQ</h3>
+                                <Accordion>
+                                    <AccordionItem title="Where is my data stored?">
+                                        Technically, in your browser&apos;s LocalStorage. This means your data is persistent on this specific browser and device but never touches our servers.
+                                    </AccordionItem>
+                                    <AccordionItem title="Can I export my notes?">
+                                        Yes! Use the download icon in the top toolbar to export any page as Markdown (.md), Plain Text (.txt), or HTML.
+                                    </AccordionItem>
+                                    <AccordionItem title="Is there a mobile app?">
+                                        Smart Notes is a Progressive Web App (PWA). You can &quot;Add to Home Screen&quot; on your phone for a full-screen, app-like experience on iOS and Android.
+                                    </AccordionItem>
+                                </Accordion>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </HelpModal>
             </div>
         </div>
     );

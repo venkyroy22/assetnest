@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@700&family=Great+Vibes&family=Homemade+Apple&family=Pacifico&family=Satisfy&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -26,6 +27,31 @@
   --font-geist-mono: "Courier New", monospace;
 }
 
+/* Light Mode Overrides (Inverts all Hardcoded Variables) */
+.light {
+  --background: #F4F4F5;
+  --foreground: #09090B;
+  --secondary: #3f3f46;
+  --border-color: #d4d4d8;
+
+  /* Invert White and Black utility classes */
+  --color-white: #09090b;
+  --color-black: #ffffff;
+  
+  /* Smoothly Invert Zinc Palette used everywhere */
+  --color-zinc-50: #09090b;   /* Maps 50 to 950 */
+  --color-zinc-100: #18181b;  /* Maps 100 to 900 */
+  --color-zinc-200: #27272a;  /* Maps 200 to 800 */
+  --color-zinc-300: #3f3f46;  /* Maps 300 to 700 */
+  --color-zinc-400: #52525b;  /* Maps 400 to 600 */
+  --color-zinc-500: #71717a;  /* Stays 500 */
+  --color-zinc-600: #a1a1aa;  /* Maps 600 to 400 */
+  --color-zinc-700: #d4d4d8;  /* Maps 700 to 300 */
+  --color-zinc-800: #e4e4e7;  /* Maps 800 to 200 */
+  --color-zinc-900: #f4f4f5;  /* Maps 900 to 100 */
+  --color-zinc-950: #ffffff;  /* Maps 950 to 50 / pure white */
+}
+
 * {
   box-sizing: border-box;
 }
@@ -40,8 +66,13 @@
 }
 
 .text-stroke {
-  -webkit-text-stroke: 1px var(--foreground);
+  -webkit-text-stroke: 1px currentColor;
   color: transparent;
+}
+
+::selection {
+  background: var(--foreground);
+  color: var(--background);
 }
 
 html {

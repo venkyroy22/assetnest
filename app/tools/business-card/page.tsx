@@ -11,6 +11,8 @@ import {
     ChevronDown, ChevronUp, GripVertical, X, Home
 } from "lucide-react";
 import html2canvas from "html2canvas";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
 
 type TextureType = "none" | "linen" | "paper" | "noise" | "mesh" | "hexagons" | "carbon" | "waves" | "diamonds" | "grid";
@@ -55,11 +57,29 @@ export default function BusinessCardPage() {
     const [draggedId, setDraggedId] = useState<string | null>(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
     const [canvasScale, setCanvasScale] = useState(0.85);
+    const [showHelp, setShowHelp] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => {
+            const width = window.innerWidth;
+            if (width < 640) setCanvasScale(Math.min(0.32, (width - 40) / 1050));
+            else if (width < 1024) setCanvasScale(Math.min(0.5, (width - 320) / 1050));
+            else if (width < 1536) setCanvasScale(0.7);
+            else setCanvasScale(0.85);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Style State
     const [themeColor, setThemeColor] = useState("#0f172a");
     const [activeTexture, setActiveTexture] = useState<TextureType>("none");
     const [patternColor, setPatternColor] = useState("#ffffff");
+
+    // Responsive State
+    const [leftPanelOpen, setLeftPanelOpen] = useState(false);
+    const [rightPanelOpen, setRightPanelOpen] = useState(false);
 
     // Contact Data
     const [phone, setPhone] = useState("+1 (555) 000-1234");
@@ -219,99 +239,132 @@ export default function BusinessCardPage() {
     };
 
     return (
-        <div className="fixed inset-0 bg-black text-white flex flex-col font-sans overflow-hidden select-none z-[9999]">
+        <div className="relative min-h-screen bg-black text-white flex flex-col font-sans select-none overflow-x-hidden z-[9999]">
             
             {/* STICKY TOOL HEADER */}
-            <div className="h-20 border-b border-white/5 px-8 flex items-center justify-between bg-black/80 backdrop-blur-3xl z-[100]">
-                <div className="flex items-center gap-8">
+            <div className="h-16 border-b border-white/5 px-4 sm:px-8 flex items-center justify-between bg-black/80 backdrop-blur-3xl sticky top-0 z-[100] shrink-0">
+                <div className="flex items-center gap-3 sm:gap-6">
+                    {/* MOBILE LEFT TOGGLE */}
+                    <button 
+                        onClick={() => setLeftPanelOpen(!leftPanelOpen)}
+                        className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white"
+                    >
+                        <SlidersHorizontal size={16} />
+                    </button>
+
                     {/* EXIT BUTTON */}
-                    <Link href="/tools" className="btn-pan px-5 py-2.5 rounded-xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                        <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                            <X size={14} className="group-hover:rotate-90 transition-transform duration-300" /> Exit Studio
-                        </span>
+                    <Link href="/tools" className="flex items-center gap-2 group transition-colors">
+                        <X size={14} className="text-zinc-500 group-hover:text-white group-hover:rotate-90 transition-all duration-300" /> 
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Exit</span>
                     </Link>
 
-                    <div className="h-6 w-px bg-white/10 mx-2" />
+                    <div className="h-6 w-px bg-white/10 hidden sm:block" />
                     
-                    <div className="flex items-center gap-4">
-                        <div className="p-2.5 bg-white/5 rounded-xl text-white shadow-[0_0_20px_rgba(255,255,255,0.1)] border border-white/10">
+                    <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 hidden sm:flex items-center justify-center bg-white/10 rounded-xl text-white border border-white/20">
                             <CreditCard size={18} />
                         </div>
-                        <div className="flex flex-col">
-                            <span className="text-xs font-black tracking-[0.2em] text-white uppercase leading-none">StudioMaster</span>
-                            <span className="text-[9px] text-zinc-500 font-bold uppercase tracking-tight mt-1.5 flex items-center gap-2">
-                                <div className="w-1 h-1 rounded-full bg-white animate-pulse" /> AssetNest // Professional
+                        <div className="flex flex-col relative group">
+                            <div className="flex items-center gap-2">
+                                <span className="text-[11px] font-black tracking-widest text-white uppercase leading-none">StudioMaster</span>
+                                <button 
+                                    onClick={() => setShowHelp(true)}
+                                    className="p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                                    title="What is this?"
+                                >
+                                    <Info size={10} />
+                                </button>
+                            </div>
+                            <span className="hidden sm:flex text-[8px] text-zinc-500 font-bold uppercase tracking-tight mt-1 items-center gap-1.5">
+                                <div className="w-1 h-1 rounded-full bg-white animate-pulse" /> AssetNest // Pro
                             </span>
                         </div>
-                    </div>
-
-                    <div className="h-6 w-px bg-white/10 mx-2 hidden lg:block" />
-                    
-                    <div className="hidden lg:flex items-center gap-2">
-                        <button onClick={undo} disabled={history.length === 0} className="w-11 h-11 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
-                            <Undo2 size={16} />
-                        </button>
-                        <button onClick={redo} disabled={redoStack.length === 0} className="w-11 h-11 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
-                            <Redo2 size={16} />
-                        </button>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
-                     <div className="hidden md:flex items-center gap-4">
-                         <button onClick={() => addElement("text", "New Layer")} className="btn-pan px-6 py-3 rounded-xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                            <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                                <Plus size={14} className="text-white group-hover:scale-125 transition-transform"/> Element
-                            </span>
+                <div className="flex items-center gap-2 sm:gap-4">
+                     <div className="hidden lg:flex items-center gap-2">
+                        <button onClick={undo} disabled={history.length === 0} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
+                            <Undo2 size={16} />
                         </button>
-                        <label className="btn-pan px-6 py-3 rounded-xl border border-white/10 cursor-pointer group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                            <span className="flex items-center gap-3 text-[10px] font-black uppercase tracking-[0.2em]">
-                                <Upload size={14} className="text-white group-hover:-translate-y-0.5 transition-transform" /> Image
-                            </span>
+                        <button onClick={redo} disabled={redoStack.length === 0} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
+                            <Redo2 size={16} />
+                        </button>
+                    </div>
+
+                    <div className="h-6 w-px bg-white/10 hidden lg:block" />
+
+                     <div className="hidden sm:flex items-center gap-6">
+                         <button onClick={() => addElement("text", "New Layer")} className="flex items-center gap-2 group transition-colors">
+                            <Plus size={14} className="text-zinc-500 group-hover:text-white group-hover:scale-125 transition-all"/>
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Element</span>
+                        </button>
+                        <label className="flex items-center gap-2 cursor-pointer group transition-colors">
+                            <Upload size={14} className="text-zinc-500 group-hover:text-white group-hover:-translate-y-0.5 transition-all" />
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Image</span>
                             <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, "logo")} />
                         </label>
                     </div>
-                    <div className="w-px h-6 bg-white/10 mx-2 hidden md:block" />
-                    <button onClick={handleGenerate} disabled={isGenerating} className="btn-pan px-8 py-3.5 rounded-xl shadow-2xl group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                        <span className="flex items-center gap-3 text-[11px] font-black uppercase tracking-[0.2em]">
-                            {isGenerating ? "Rendering..." : <><Download size={16} className="group-hover:translate-y-0.5 transition-transform" /> Save PNG</>}
+
+                    <button 
+                        onClick={handleGenerate} 
+                        disabled={isGenerating} 
+                        className="flex items-center gap-2 group transition-colors disabled:opacity-20 ml-2"
+                    >
+                        <Download size={15} className="text-white group-hover:text-white group-hover:translate-y-0.5 transition-all" />
+                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white group-hover:text-white transition-colors">
+                            {isGenerating ? "Processing..." : "Save"}
                         </span>
+                    </button>
+
+                    {/* MOBILE RIGHT TOGGLE */}
+                    <button 
+                        onClick={() => setRightPanelOpen(!rightPanelOpen)}
+                        className={`lg:hidden w-10 h-10 flex items-center justify-center rounded-full border transition-all ${selectedId ? "bg-white border-white text-black animate-pulse" : "bg-white/5 border-white/10 text-white opacity-40"}`}
+                    >
+                        <Settings size={16} />
                     </button>
                 </div>
             </div>
 
-            <div className="flex-grow flex overflow-hidden">
+            <div className="flex-grow flex overflow-hidden relative">
                 
-                {/* LEFT DRAWER */}
-                <div className="w-72 border-r border-zinc-900 bg-zinc-950 flex flex-col h-full overflow-hidden">
-                    <div className="flex border-b border-white/5 p-2 bg-white/[0.02]">
-                        {["design", "layers"].map((t) => (
-                            <button key={t} onClick={() => setActiveTab(t as any)} className={`flex-1 py-3 text-[10px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${activeTab === t ? "text-emerald-500 bg-emerald-500/10 shadow-inner" : "text-zinc-500 hover:text-white hover:bg-white/5"}`}>{t}</button>
-                        ))}
+                {/* LEFT DRAWER (Responsive) */}
+                <div className={`
+                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-zinc-950 border-r border-zinc-900 flex flex-col z-50 transition-transform duration-300
+                    ${leftPanelOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full lg:translate-x-0"}
+                `}>
+                    <div className="flex items-center justify-between border-b border-white/5 p-2 bg-white/[0.02]">
+                        <div className="flex flex-1 gap-1">
+                            {["design", "layers"].map((t) => (
+                                <button key={t} onClick={() => setActiveTab(t as any)} className={`flex-1 py-2 text-[9px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${activeTab === t ? "text-white bg-white/10" : "text-zinc-500 hover:text-white"}`}>{t}</button>
+                            ))}
+                        </div>
+                        <button onClick={() => setLeftPanelOpen(false)} className="lg:hidden p-2 text-zinc-500"><X size={16}/></button>
                     </div>
 
-                    <div className="flex-grow overflow-y-auto p-6 custom-scrollbar space-y-10 pb-32 bg-black">
+                    <div data-lenis-prevent className="flex-grow overflow-y-auto p-6 custom-scrollbar space-y-10 pb-32 bg-black">
                         {activeTab === "design" && (
                             <>
                                 <section>
-                                    <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Palette size={14}/> Appearance</h3>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Palette size={14}/> Appearance</h3>
                                     <div className="space-y-4">
-                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-emerald-500/30 transition-all">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-emerald-500 transition-colors">Surface</span>
+                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/30 transition-all">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Surface</span>
                                             <input type="color" value={themeColor} onChange={e => setThemeColor(e.target.value)} className="w-10 h-10 rounded-xl bg-transparent cursor-pointer border-none" />
                                         </div>
-                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-emerald-500/30 transition-all">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-emerald-500 transition-colors">Pattern</span>
+                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/30 transition-all">
+                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-white transition-colors">Pattern</span>
                                             <input type="color" value={patternColor} onChange={e => setPatternColor(e.target.value)} className="w-10 h-10 rounded-xl bg-transparent cursor-pointer border-none" />
                                         </div>
                                     </div>
                                 </section>
 
                                 <section>
-                                    <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Layers size={14}/> Textures</h3>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Layers size={14}/> Textures</h3>
                                     <div className="grid grid-cols-4 gap-3">
                                         {["none", "hexagons", "waves", "grid", "carbon", "diamonds", "noise"].map(t => (
-                                            <button key={t} onClick={() => setActiveTexture(t as any)} className={`w-12 h-12 rounded-xl border transition-all flex items-center justify-center ${activeTexture === t ? "bg-white border-white text-black shadow-lg" : "bg-white/5 border-white/10 text-zinc-600 hover:border-emerald-500/50 hover:text-white"}`}>
+                                            <button key={t} onClick={() => setActiveTexture(t as any)} className={`w-12 h-12 rounded-xl border transition-all flex items-center justify-center ${activeTexture === t ? "bg-white border-white text-black shadow-lg" : "bg-white/5 border-white/10 text-zinc-600 hover:border-white/50 hover:text-white"}`}>
                                                 <Layers size={16} />
                                             </button>
                                         ))}
@@ -322,7 +375,7 @@ export default function BusinessCardPage() {
                                     <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Briefcase size={14}/> Metadata</h3>
                                     <div className="space-y-4">
                                         {[ {v: phone, s: setPhone, p: "Phone Number"}, {v: email, s: setEmail, p: "Email Address"}, {v: website, s: setWebsite, p: "Personal Website"}, {v: address, s: setAddress, p: "Corporate Location"} ].map((f, i) => (
-                                             <input key={i} type="text" placeholder={f.p} value={f.v} onChange={e => f.s(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[11px] text-zinc-400 focus:border-emerald-500 focus:bg-white/5 outline-none transition-all shadow-inner tracking-wide" />
+                                             <input key={i} type="text" placeholder={f.p} value={f.v} onChange={e => f.s(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[11px] text-zinc-400 focus:border-white focus:bg-white/5 outline-none transition-all shadow-inner tracking-wide" />
                                         ))}
                                     </div>
                                 </section>
@@ -332,8 +385,8 @@ export default function BusinessCardPage() {
                         {activeTab === "layers" && (
                             <div className="space-y-2">
                                 {[...elements].reverse().map((el) => (
-                                    <div key={el.id} onClick={() => setSelectedId(el.id)} className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all group cursor-pointer ${selectedId === el.id ? "bg-indigo-500/10 border-indigo-500/30 shadow-inner" : "bg-zinc-900 border-zinc-900 hover:border-zinc-800"}`}>
-                                        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-zinc-600 group-hover:text-indigo-400 transition-colors">
+                                    <div key={el.id} onClick={() => setSelectedId(el.id)} className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all group cursor-pointer ${selectedId === el.id ? "bg-white/10 border-white/30 shadow-inner" : "bg-zinc-900 border-zinc-900 hover:border-zinc-800"}`}>
+                                        <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center text-zinc-600 group-hover:text-white transition-colors">
                                             <GripVertical size={14} />
                                         </div>
                                         <div className="flex-grow overflow-hidden">
@@ -355,7 +408,7 @@ export default function BusinessCardPage() {
                     
                     {/* Zoom Info */}
                     <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-zinc-950/80 backdrop-blur-3xl border border-zinc-900 rounded-full shadow-2xl z-20 flex items-center gap-3">
-                         <span className="text-[9px] font-black text-indigo-400 uppercase tracking-[0.2em]">Studio Fit: {Math.round(canvasScale * 100)}%</span>
+                         <span className="text-[9px] font-black text-white uppercase tracking-[0.2em]">Studio Fit: {Math.round(canvasScale * 100)}%</span>
                     </div>
 
                     <div 
@@ -365,7 +418,7 @@ export default function BusinessCardPage() {
                         className="relative group/canvas flex items-center justify-center transition-transform duration-300"
                         style={{ transform: `scale(${canvasScale})` }}
                     >
-                        <div className="absolute inset-0 bg-indigo-500/10 blur-[200px] rounded-full scale-150 opacity-40 group-hover/canvas:opacity-60 transition-opacity" />
+                        <div className="absolute inset-0 bg-white/10 blur-[200px] rounded-full scale-150 opacity-40 group-hover/canvas:opacity-60 transition-opacity" />
 
                         <div 
                             ref={cardRef}
@@ -388,7 +441,7 @@ export default function BusinessCardPage() {
                                         position: "absolute",
                                         cursor: el.locked ? "default" : "move",
                                         padding: "8px",
-                                        outline: selectedId === el.id ? "3px solid #6366f1" : "none",
+                                        outline: selectedId === el.id ? "3px solid #ffffff" : "none",
                                         outlineOffset: "8px",
                                         minWidth: "max-content",
                                         display: "inline-block"
@@ -420,62 +473,68 @@ export default function BusinessCardPage() {
                     </div>
                 </div>
 
-                {/* RIGHT PROPERTY INSPECTOR */}
-                <div className="w-80 border-l border-zinc-900 bg-zinc-950 flex flex-col h-full overflow-hidden">
+                {/* RIGHT PROPERTY INSPECTOR (Responsive) */}
+                <div className={`
+                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-zinc-950 border-l border-zinc-900 flex flex-col z-50 transition-transform duration-300
+                    ${rightPanelOpen ? "translate-x-0 shadow-[-20px_0_60px_rgba(0,0,0,0.8)]" : "translate-x-full lg:translate-x-0"}
+                `}>
                     {selectedElement ? (
-                        <div className="flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-500">
-                             <div className="p-6 border-b border-zinc-900 flex items-center justify-between bg-zinc-950/50">
-                                <h3 className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Properties</h3>
-                                <button onClick={() => { saveToHistory(elements.filter(el => el.id !== selectedId)); setSelectedId(null); }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors bg-red-500/5 rounded-lg border border-red-500/10"><Trash2 size={16} /></button>
+                        <div className="flex flex-col h-full overflow-hidden">
+                             <div className="p-4 border-b border-zinc-900 flex items-center justify-between bg-zinc-950/50">
+                                <div className="flex items-center gap-3">
+                                     <button onClick={() => setRightPanelOpen(false)} className="lg:hidden p-1 text-zinc-500"><X size={18}/></button>
+                                     <h3 className="text-[10px] font-black text-white uppercase tracking-widest">Properties</h3>
+                                </div>
+                                <button onClick={() => { saveToHistory(elements.filter(el => el.id !== selectedId)); setSelectedId(null); setRightPanelOpen(false); }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors bg-red-500/5 rounded-lg border border-red-500/10"><Trash2 size={16} /></button>
                              </div>
 
-                              <div className="flex-grow overflow-y-auto p-8 custom-scrollbar space-y-12 pb-32">
+                              <div data-lenis-prevent className="flex-grow overflow-y-auto p-8 custom-scrollbar space-y-12 pb-32 bg-black">
                                 <section className="space-y-10">
                                     <div>
                                         <div className="flex justify-between mb-5">
                                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Master Scale</span>
-                                            <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">{selectedElement.size}px</span>
+                                            <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-md">{selectedElement.size}px</span>
                                         </div>
                                         <div className="flex items-center gap-4">
-                                            <button onClick={() => updateElement(selectedElement.id, { size: Math.max(4, selectedElement.size - 5) }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-emerald-500/50 text-zinc-500 hover:text-white transition-all shadow-inner"><Minimize2 size={16} /></button>
-                                            <input type="range" min="4" max="1000" value={selectedElement.size} onChange={e => updateElement(selectedElement.id, { size: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="flex-grow scrollbar-emerald accent-emerald-500" />
-                                            <button onClick={() => updateElement(selectedElement.id, { size: selectedElement.size + 5 }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-emerald-500/50 text-zinc-500 hover:text-white transition-all shadow-inner"><Maximize2 size={16} /></button>
+                                            <button onClick={() => updateElement(selectedElement.id, { size: Math.max(4, selectedElement.size - 5) }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-white/50 text-zinc-500 hover:text-white transition-all shadow-inner"><Minimize2 size={16} /></button>
+                                             <input type="range" min="4" max="1000" value={selectedElement.size} onChange={e => updateElement(selectedElement.id, { size: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="flex-grow scrollbar-indigo white" />
+                                             <button onClick={() => updateElement(selectedElement.id, { size: selectedElement.size + 5 }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-white/50 text-zinc-500 hover:text-white transition-all shadow-inner"><Maximize2 size={16} /></button>
                                         </div>
                                     </div>
 
                                     <div>
                                         <div className="flex justify-between mb-5">
                                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Transparency</span>
-                                            <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">{Math.round(selectedElement.opacity * 100)}%</span>
+                                             <span className="text-[10px] font-mono text-white bg-white/10 px-2 py-0.5 rounded-md">{Math.round(selectedElement.opacity * 100)}%</span>
                                         </div>
-                                        <input type="range" min="0" max="1" step="0.01" value={selectedElement.opacity} onChange={e => updateElement(selectedElement.id, { opacity: parseFloat(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full accent-emerald-500" />
+                                        <input type="range" min="0" max="1" step="0.01" value={selectedElement.opacity} onChange={e => updateElement(selectedElement.id, { opacity: parseFloat(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full white" />
                                     </div>
 
                                     <div>
                                         <div className="flex justify-between mb-5">
                                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Orientation</span>
                                             <div className="flex items-center gap-3">
-                                                <button onClick={() => updateElement(selectedElement.id, { rotation: 0 }, true)} className="text-[9px] font-black text-emerald-500 hover:text-white transition-colors tracking-widest">RESET</button>
-                                                <span className="text-[10px] font-mono text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded-md">{selectedElement.rotation}°</span>
+                                                 <button onClick={() => updateElement(selectedElement.id, { rotation: 0 }, true)} className="text-[9px] font-black text-white hover:text-white transition-colors tracking-widest">RESET</button>
+                                                 <span className="text-[10px] font-mono text-white bg-white/10 px-2 py-0.5 rounded-md">{selectedElement.rotation}°</span>
                                             </div>
                                         </div>
-                                        <input type="range" min="-180" max="180" value={selectedElement.rotation} onChange={e => updateElement(selectedElement.id, { rotation: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full accent-emerald-500" />
+                                        <input type="range" min="-180" max="180" value={selectedElement.rotation} onChange={e => updateElement(selectedElement.id, { rotation: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full white" />
                                     </div>
                                 </section>
 
                                 {selectedElement.type === "text" && (
                                     <section className="space-y-10 pt-12 border-t border-white/5">
-                                         <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] flex items-center gap-3"><Type size={14}/> Typography</h3>
+                                          <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] flex items-center gap-3"><Type size={14}/> Typography</h3>
                                          <div>
                                             <label className="text-[9px] font-black text-zinc-600 uppercase mb-5 block tracking-[0.2em]">Ink Swatch</label>
                                             <div className="flex gap-4">
                                                 <input type="color" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 cursor-pointer p-1.5 transition-transform active:scale-95 shadow-lg" />
-                                                <input type="text" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="flex-grow bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-mono uppercase text-zinc-400 outline-none focus:border-emerald-500 shadow-inner" />
+                                                 <input type="text" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="flex-grow bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-mono uppercase text-zinc-400 outline-none focus:border-white shadow-inner" />
                                             </div>
                                          </div>
                                          <div>
                                             <label className="text-[9px] font-black text-zinc-600 uppercase mb-5 block tracking-[0.2em]">Live Layer Content</label>
-                                            <textarea value={selectedElement.content} onChange={e => updateElement(selectedElement.id, { content: e.target.value })} onBlur={() => saveToHistory(elements)} className="w-full bg-white/5 border border-white/10 rounded-3xl p-5 text-[11px] text-white focus:border-emerald-500 outline-none h-32 resize-none leading-relaxed transition-all shadow-inner" />
+                                             <textarea value={selectedElement.content} onChange={e => updateElement(selectedElement.id, { content: e.target.value })} onBlur={() => saveToHistory(elements)} className="w-full bg-white/5 border border-white/10 rounded-3xl p-5 text-[11px] text-white focus:border-white outline-none h-32 resize-none leading-relaxed transition-all shadow-inner" />
                                          </div>
                                          <div className="grid grid-cols-2 gap-3">
                                             {[ {l: "Black", w: "900"}, {l: "Bold", w: "700"}, {l: "Medium", w: "400"}, {l: "Light", w: "200"} ].map(w => (
@@ -488,7 +547,7 @@ export default function BusinessCardPage() {
                                 )}
 
                                 <section className="pt-12 border-t border-white/5">
-                                    <h3 className="text-[10px] font-black text-emerald-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><AlignLeft size={14}/> Studio Align</h3>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><AlignLeft size={14}/> Studio Align</h3>
                                     <div className="space-y-4">
                                         <button onClick={() => updateElement(selectedElement.id, { x: 525 - (elWidth(selectedElement)/2) }, true)} className="btn-pan w-full h-14 rounded-2xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
                                             <span className="flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.2em]">
@@ -507,8 +566,7 @@ export default function BusinessCardPage() {
                     ) : (
                         <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-8">
                             <div className="relative">
-                                <div className="absolute inset-0 bg-emerald-500/20 blur-2xl rounded-full" />
-                                <div className="w-20 h-20 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-emerald-500 border border-white/10 shadow-2xl relative backdrop-blur-3xl">
+                                <div className="w-20 h-20 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-zinc-600 border border-white/10 shadow-2xl relative backdrop-blur-3xl">
                                     <Sparkles size={32} strokeWidth={1} />
                                 </div>
                             </div>
@@ -525,7 +583,7 @@ export default function BusinessCardPage() {
                 .custom-scrollbar::-webkit-scrollbar { width: 4px; }
                 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
                 .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.3); }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255,0.3); }
                 
                 input[type='range'] {
                     -webkit-appearance: none;
@@ -548,9 +606,90 @@ export default function BusinessCardPage() {
 
                 input[type='range']::-webkit-slider-thumb:hover {
                     transform: scale(1.2);
-                    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
                 }
             `}</style>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Professional Design Infrastructure"
+            >
+                <div className="max-w-6xl mx-auto space-y-24 text-left pb-24">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-center space-y-6 max-w-4xl mx-auto animate-in fade-in duration-1000">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            The Future of Networking: Professional Business Card Studio
+                        </h3>
+                        <p className="text-lg md:text-xl leading-relaxed text-zinc-500 font-medium">
+                            Welcome to the AssetNest <strong>Business Card Design Studio</strong>—the world&apos;s most intuitive, browser-based professional design environment. Stop relying on generic templates and static creators. Our StudioMaster engine provides an interactive, layer-based workflow that allows you to drag, rotate, and scale every element with pixel perfection. Whether you are a corporate executive or a creative freelancer, our tool ensures your first impression is not just a card, but a piece of modern art.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <PenTool size={28} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Layer-Based Workflow</h3>
+                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Full control over z-index and visibility. Manage your design like a pro in Photoshop, but without the complexity.</p>
+                        </div>
+                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <Palette size={28} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Texture Synthesis</h3>
+                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Apply organic textures like Linen, Mesh, and Carbon Fiber to your card surface for a premium physical feel.</p>
+                        </div>
+                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <ShieldCheck size={28} />
+                            </div>
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">100% Private Export</h3>
+                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">We never store your contact data. Everything is processed locally in your browser for absolute security.</p>
+                        </div>
+                    </div>
+
+                    <div className="bg-zinc-950/30 border border-zinc-900 rounded-[4rem] p-12 md:p-20">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
+                            <div className="space-y-10">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Design Briefing & FAQ</h3>
+                                <Accordion>
+                                    <AccordionItem title="What is the export resolution?">
+                                        Our StudioMaster engine exports in Ultra-High Resolution (4x Scale), making it ready for professional offset or digital printing without loss of quality.
+                                    </AccordionItem>
+                                    <AccordionItem title="Can I upload my own logo?">
+                                        Yes! Use the &quot;Image&quot; upload button in the top toolbar to import your brand assets. We support PNG, JPG, and SVG formats.
+                                    </AccordionItem>
+                                    <AccordionItem title="How do I align elements to the center?">
+                                        Select any element and use the &quot;Studio Align&quot; buttons in the right panel to perfectly center them horizontally or vertically.
+                                    </AccordionItem>
+                                </Accordion>
+                            </div>
+                            <div className="space-y-10 flex flex-col justify-center bg-zinc-900/40 p-12 rounded-[3rem] border border-white/5">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                    <Sparkles className="text-zinc-500" size={24} />
+                                    Pro Tip: Studio Shortcuts
+                                </h3>
+                                <div className="space-y-4">
+                                     <div className="flex items-center justify-between py-3 border-b border-white/5">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Undo Change</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Ctrl + Z</kbd>
+                                     </div>
+                                     <div className="flex items-center justify-between py-3 border-b border-white/5">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Redo Change</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Ctrl + Y</kbd>
+                                     </div>
+                                     <div className="flex items-center justify-between py-3">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Delete Layer</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Delete</kbd>
+                                     </div>
+                                </div>
+                                <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-widest text-center mt-6 italic">© 2026 AssetNest Studio Solutions</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </HelpModal>
         </div>
     );
 }

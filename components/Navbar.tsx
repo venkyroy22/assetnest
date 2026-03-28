@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ArrowRight, Wrench, Sparkles } from "lucide-react";
+import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, Home, ZoomIn, Check, RotateCcw } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
+import { useMemo } from "react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS } from "@/lib/tools";
 import Tooltip from "./Tooltip";
+import { useSettings } from "./SettingsProvider";
 
 // ── Searchable content index ──────────────────────────────────────────────────
 // Dynamically built from ALL_TOOLS so new tools are automatically searchable.
@@ -34,8 +36,8 @@ const SEARCH_INDEX: SearchItem[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 
 const TAG_COLORS: Record<string, string> = {
-    Tool: "text-emerald-400",
-    Prompts: "text-purple-400",
+    Tool: "text-white",
+    Prompts: "text-white",
     Page: "text-zinc-400",
 };
 
@@ -55,6 +57,9 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const searchRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const pathname = usePathname();
+    const { settings, updateSettings } = useSettings();
+    const [isZoomOpen, setIsZoomOpen] = useState(false);
+    const zoomRef = useRef<HTMLDivElement>(null);
 
     // Filter results as user types
     useEffect(() => {
@@ -73,11 +78,14 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
 
 
-    // Close dropdown when clicking outside
+    // Close dropdowns when clicking outside
     useEffect(() => {
         const handler = (e: MouseEvent) => {
             if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
                 setShowResults(false);
+            }
+            if (zoomRef.current && !zoomRef.current.contains(e.target as Node)) {
+                setIsZoomOpen(false);
             }
         };
         document.addEventListener("mousedown", handler);
@@ -104,7 +112,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
     if (!mounted) {
         return (
-            <nav className="sticky top-0 z-50 w-full bg-background h-20">
+            <nav className={`${settings.fixedNavbar ? "sticky" : "absolute"} top-0 z-50 w-full bg-background h-20`}>
                 <div className="px-10 h-full">
                     <div className="flex justify-between items-center h-full">
                         <div className="text-xl md:text-2xl font-bold tracking-tight shrink-0">AssetNest</div>
@@ -116,23 +124,21 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     }
 
     return (
-        <nav className={`fixed top-0 left-0 w-full z-50 transition-[background-color,border-color,backdrop-filter] duration-500 h-20 transform-gpu ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-zinc-800/50" : "bg-transparent border-b border-transparent"} ${className}`}>
+        <nav className={`${settings.fixedNavbar ? "fixed" : "absolute"} top-0 left-0 w-full z-50 transition-[background-color,border-color,backdrop-filter] duration-500 h-20 transform-gpu ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-zinc-800/50" : "bg-transparent border-b border-transparent"} ${className}`}>
             <div className="flex h-full items-center relative">
                 {/* Sidebar Toggle - Fixed stationary position */}
                 <div className="hidden lg:flex items-center justify-center h-full absolute left-0 z-10 w-16">
-                    <Tooltip content={isOpen ? "Close Sidebar" : "Open Sidebar"} position="bottom" delay={500}>
-                        <button
-                            onClick={toggle}
-                            className="flex items-center justify-center p-2 rounded-sm border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
-                            aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
-                        >
-                            <Menu size={20} />
-                        </button>
-                    </Tooltip>
+                    <button
+                        onClick={toggle}
+                        className="flex items-center justify-center p-2 rounded-sm border border-zinc-800 bg-zinc-900/30 hover:border-zinc-700 hover:bg-zinc-800/50 transition-all active:scale-95"
+                        aria-label={isOpen ? "Close Sidebar" : "Open Sidebar"}
+                    >
+                        <Menu size={20} />
+                    </button>
                 </div>
 
                 {/* Main Navbar Content */}
-                <div className="flex-grow h-full px-4 lg:pl-20 lg:pr-10">
+                <div className="flex-grow h-full px-4 lg:pl-28 lg:pr-10">
                     <div className="flex justify-between items-center h-full gap-2 md:gap-8">
                         <div className="flex items-center gap-2 md:gap-4 shrink-0">
                             <Link href="/" className="group active:scale-95 transition-all">
@@ -143,10 +149,43 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             </Link>
                         </div>
 
+                        {/* ── Breadcrumbs ── */}
+                        <div className="hidden lg:flex items-center gap-2 px-4 border-l border-zinc-800/50 h-8 shrink-0">
+                            <Link href="/" className="text-zinc-500 hover:text-white transition-colors">
+                                <Home size={16} />
+                            </Link>
+                            {pathname !== "/" && (
+                                <>
+                                    <ChevronRight size={12} className="text-zinc-700" />
+                                    {pathname.split("/").filter(Boolean).map((segment, idx, arr) => {
+                                        const href = "/" + arr.slice(0, idx + 1).join("/");
+                                        const isLast = idx === arr.length - 1;
+                                        const tool = ALL_TOOLS.find(t => t.href === href);
+                                        const label = tool ? tool.name : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+
+                                        return (
+                                            <div key={href} className="flex items-center gap-2">
+                                                <Link
+                                                    href={href}
+                                                    className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                                                        isLast ? "text-white cursor-default" : "text-zinc-500 hover:text-zinc-300"
+                                                    }`}
+                                                    onClick={(e) => isLast && e.preventDefault()}
+                                                >
+                                                    {label}
+                                                </Link>
+                                                {!isLast && <ChevronRight size={12} className="text-zinc-700" />}
+                                            </div>
+                                        );
+                                    })}
+                                </>
+                            )}
+                        </div>
+
                         {/* ── Functional Search Bar ── */}
                         <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg relative">
                             <div className={`flex items-center bg-zinc-900/40 backdrop-blur-md border px-3 md:px-5 py-2 md:py-2.5 w-full rounded-2xl transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.03)] focus-within:border-zinc-500 ${showResults ? "border-zinc-600 rounded-b-none" : "border-zinc-800"}`}>
-                                <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0" />
+                                <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0 group-focus-within:text-white" />
                                 <input
                                     type="text"
                                     id="global-search"
@@ -167,7 +206,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
                             {/* Dropdown Results */}
                             {showResults && (
-                                <div className="fixed top-20 left-4 right-4 lg:absolute lg:top-full lg:left-0 lg:right-0 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 shadow-2xl z-[200] overflow-y-auto max-h-[70vh] rounded-2xl lg:rounded-t-none lg:border-t-0 p-1">
+                                <div data-lenis-prevent className="fixed top-20 left-4 right-4 lg:absolute lg:top-full lg:left-0 lg:right-0 bg-zinc-900/95 backdrop-blur-xl border border-zinc-700/50 shadow-2xl z-[200] overflow-y-auto max-h-[70vh] rounded-2xl lg:rounded-t-none lg:border-t-0 p-1">
                                     {results.length > 0 ? (
                                         <>
                                             {results.map((item, i) => (
@@ -218,6 +257,54 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                     </Link>
                                 );
                             })}
+                        </div>
+
+                        {/* ── UI Scale / Zoom Dropdown ── */}
+                        <div ref={zoomRef} className="hidden lg:relative lg:block">
+                            <button
+                                onClick={() => setIsZoomOpen(!isZoomOpen)}
+                                className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-all active:scale-90 ${isZoomOpen ? "bg-white text-black border-white" : "bg-zinc-900/40 border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700"}`}
+                                title="UI Scaling"
+                            >
+                                <ZoomIn size={18} />
+                            </button>
+
+                            {isZoomOpen && (
+                                <div className="absolute top-full right-0 mt-2 w-48 bg-zinc-900/95 backdrop-blur-2xl border border-zinc-800 shadow-2xl rounded-2xl p-1.5 z-50 animate-in fade-in zoom-in-95 duration-200">
+                                    <p className="px-3 py-2 text-[10px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-800/50 mb-1">Text Zoom</p>
+                                    {[
+                                        { id: "compact",  label: "A- Compact",  desc: "90% UI Scale" },
+                                        { id: "standard", label: "A Standard",  desc: "100% UI Scale" },
+                                        { id: "large",    label: "A+ Large",    desc: "115% UI Scale" },
+                                    ].map((scale) => (
+                                        <button
+                                            key={scale.id}
+                                            onClick={() => {
+                                                updateSettings({ uiScale: scale.id as any });
+                                                setIsZoomOpen(false);
+                                            }}
+                                            className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl transition-all ${settings.uiScale === scale.id ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-zinc-200"}`}
+                                        >
+                                            <div className="flex flex-col items-start transition-transform group-active:scale-95">
+                                                <span className="text-[11px] font-black uppercase tracking-wider">{scale.label}</span>
+                                                <span className="text-[9px] text-zinc-600 font-bold">{scale.desc}</span>
+                                            </div>
+                                            {settings.uiScale === scale.id && <Check size={12} className="text-white" />}
+                                        </button>
+                                    ))}
+                                    {settings.uiScale !== "standard" && (
+                                        <button
+                                            onClick={() => {
+                                                updateSettings({ uiScale: "standard" });
+                                                setIsZoomOpen(false);
+                                            }}
+                                            className="w-full flex items-center justify-center gap-2 mt-1 px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all"
+                                        >
+                                            <RotateCcw size={10} /> Reset Zoom
+                                        </button>
+                                    )}
+                                </div>
+                            )}
                         </div>
 
                         {/* Mobile Menu Toggle */}

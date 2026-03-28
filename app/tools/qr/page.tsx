@@ -2,7 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
-import { Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2, Image as ImageIcon, Smile, Star, ChevronDown, Maximize, ImagePlus, Square } from "lucide-react";
+import { Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2, Image as ImageIcon, Smile, Star, ChevronDown, Maximize, ImagePlus, Square, Check, ShieldCheck, Info } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const FG_PRESETS = ['#000000', '#27272a', '#1e3a8a', '#4c1d95', '#be123c', '#047857'];
 const BG_PRESETS = ['#ffffff', '#f4f4f5', '#fffbeb', '#f0fdf4', '#eff6ff', '#faf5ff'];
@@ -19,6 +21,7 @@ export default function QRGeneratorPage() {
     const [cornerType, setCornerType] = useState<CornerType>("square");
     const [openSection, setOpenSection] = useState<string>("");
     const [headerVisible, setHeaderVisible] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     useEffect(() => {
         const t = setTimeout(() => setHeaderVisible(true), 100);
@@ -393,7 +396,14 @@ export default function QRGeneratorPage() {
             />
 
             <div className="relative z-10 w-full">
-                <header className="mb-8 lg:mb-16 text-center">
+                <header className="mb-8 lg:mb-16 text-center relative group">
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                        title="View Information"
+                    >
+                        <Info size={14} />
+                    </button>
                     <div
                         style={{
                             opacity: headerVisible ? 1 : 0,
@@ -810,6 +820,73 @@ export default function QRGeneratorPage() {
                     </div>
                 </div>
             </div>
+
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="QR Generator Info">
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Matrix Encoding Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for QR generation. AssetNest <strong>Custom QR Engine</strong> transcends basic link encoding—it provides a high-performance design studio where you can architect visual data matrices with zero data privacy risk and absolute fidelity. Whether you are generating branded codes for restaurant menus, complex marketing campaigns with embedded logos, or secure Wi-Fi access points, our tool gives you the power to transform URLs into artistic assets with industry-leading error correction and zero server dependency.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <QrCode size={20} className="text-zinc-500" />
+                                How to Encode Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Encode URLs, text, and raw strings. Our engine automatically optimizes the data matrix for the density of your content.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Visual Customization:</strong> Switch from classic squares to stars or emojis, and embed brand logos with automatic protective buffer zones.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Lossless PNG Export:</strong> Export high-resolution assets ready for high-quality print production with perfect edge sharpness.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based QR tools that track your link analytics and store your data on external servers, our generator operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Generation • Static Matrix Encoding • Level H Error Correction • No Expiration
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Do they expire?">
+                                No. Our QR codes are static and standalone. As long as your destination link is active, the code will scan forever.
+                            </AccordionItem>
+                            <AccordionItem title="Commercial Use?">
+                                Absolutely. Generate high-res assets for product packaging, billboards, and restaurant menus without watermarks.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Memory?">
+                                Zero data persistence. Your QR configurations reside in browser memory and are cleared upon tool reset.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
 
             {/* ── Lightbox Modal ── */}
             {lightboxOpen && lightboxSrc && (

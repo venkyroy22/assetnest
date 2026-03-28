@@ -4,7 +4,8 @@ import Link from "next/link";
 import CategoryCard from "@/components/CategoryCard";
 import {
   TrendingUp, Sparkles, Wrench, ArrowRight, Shield, Zap,
-  Lock, Globe, Star, CheckCircle, ArrowUpRight, Move,
+  Lock, Globe, Star, CheckCircle, ArrowUpRight, Move, QrCode,
+  Palette, Shapes, Images
 } from "lucide-react";
 import HomeToolsGrid from "@/components/HomeToolsGrid";
 import { useState, useEffect, useRef } from "react";
@@ -90,9 +91,9 @@ function StatCard({ value, suffix, label, delay }: {
 // ── Feature pill ──────────────────────────────────────────────────────────────
 function FeaturePill({ icon: Icon, label }: { icon: any; label: string }) {
   return (
-    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/8 bg-white/[0.03] backdrop-blur-md hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all duration-300 cursor-default group">
-      <Icon size={13} className="text-zinc-100 group-hover:text-emerald-400 group-hover:scale-110 transition-all duration-300" />
-      <span className="text-xs font-semibold text-zinc-300">{label}</span>
+    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/8 bg-white/[0.03] backdrop-blur-md hover:border-white/20 hover:bg-white/5 transition-all duration-300 cursor-default group">
+      <Icon size={13} className="text-zinc-100 group-hover:scale-110 transition-all duration-300" />
+      <span className="text-xs font-semibold text-zinc-300 group-hover:text-white transition-colors">{label}</span>
     </div>
   );
 }
@@ -117,23 +118,14 @@ function WhyCard({ icon: Icon, title, desc, accent, index }: {
         opacity: visible ? 1 : 0,
         transform: visible ? "translateY(0)" : "translateY(20px)",
         transition: `opacity 0.5s ease ${index * 80}ms, transform 0.5s cubic-bezier(0.23,1,0.32,1) ${index * 80}ms`,
-        boxShadow: hovered ? `0 16px 40px -8px ${accent}20, 0 0 0 1px ${accent}20` : "0 0 0 1px rgba(63,63,70,0.4)",
       }}
-      className="relative overflow-hidden rounded-2xl bg-zinc-900/30 backdrop-blur-md border border-white/5 p-6 transition-all duration-300 w-full"
+      className="relative overflow-hidden rounded-2xl bg-zinc-900/30 backdrop-blur-md border border-white/5 p-6 transition-all duration-300 w-full hover:border-zinc-700 hover:bg-zinc-900/60"
     >
-      <div
-        className="absolute -top-6 -right-6 w-24 h-24 rounded-full blur-2xl pointer-events-none transition-opacity duration-500"
-        style={{ background: accent, opacity: hovered ? 0.15 : 0.04 }}
-      />
       <div className="relative z-10">
         <div
-          className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-4 border transition-all duration-300"
-          style={{
-            background: hovered ? `${accent}18` : "rgba(39,39,42,0.8)",
-            borderColor: hovered ? `${accent}40` : "rgba(63,63,70,0.8)",
-          }}
+          className="w-11 h-11 rounded-[14px] flex items-center justify-center mb-4 border transition-all duration-300 border-zinc-800 bg-zinc-900 group-hover:bg-zinc-800 group-hover:border-zinc-700"
         >
-          <Icon size={18} style={{ color: hovered ? accent : "#71717a", transition: "color 0.3s" }} />
+          <Icon size={18} className="text-zinc-500 group-hover:text-white transition-colors duration-300" />
         </div>
         <h3 className="text-sm font-bold text-white mb-2 tracking-tight">{title}</h3>
         <p className="text-xs text-zinc-500 leading-relaxed font-medium">{desc}</p>
@@ -216,16 +208,19 @@ export default function Home() {
   const scrollProgress = Math.min(Math.max(scrollY / 500, 0), 1);
 
   const categories = [
-    { title: "AI Image Prompts", count: "Best Prompts", image: "/promptsimg/Gemini_Generated_Image_l454rnl454rnl454.png", href: "/prompts" },
-    { title: "QR Generator", count: "Free Tool", image: "/categories/qr-generator-cover.png", href: "/tools/qr" },
+    { title: "AI Image Prompts", count: "Best Prompts", icon: Sparkles, href: "/prompts", accent: "#ffffff" },
+    { title: "QR Generator", count: "Free Tool", icon: QrCode, href: "/tools/qr", accent: "#ffffff" },
+    { title: "CSS Gradient Maker", count: "Mix & Copy", icon: Palette, href: "/tools/css-gradient", accent: "#ffffff" },
+    { title: "SVG Patterns", count: "Cool Backgrounds", icon: Shapes, href: "/tools/svg-patterns", accent: "#ffffff" },
+    { title: "Icon Library", count: "Click to Copy", icon: Images, href: "/tools/icons", accent: "#ffffff" },
   ];
 
   const whyCards = [
-    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#a1a1aa" },
-    { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#f59e0b" },
-    { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#6366f1" },
-    { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#a855f7" },
-    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ec4899" },
+    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#ffffff" },
+    { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#ffffff" },
+    { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#ffffff" },
+    { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#ffffff" },
+    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ffffff" },
   ];
 
   if (!mounted) return <div className="min-h-screen bg-background" />;
@@ -239,10 +234,10 @@ export default function Home() {
         {/* ── Animated orbs in the background ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           <FloatingOrb size={500} color="rgba(255,255,255,0.12)"   x="-10%"  y="-20%" duration={12} delay={0}   />
-          <FloatingOrb size={420} color="rgba(99,102,241,0.18)"   x="68%"   y="-10%" duration={15} delay={2}   />
-          <FloatingOrb size={360} color="rgba(168,85,247,0.15)"   x="50%"   y="50%"  duration={10} delay={4}   />
-          <FloatingOrb size={300} color="rgba(14,165,233,0.14)"   x="-6%"   y="60%"  duration={13} delay={1}   />
-          <FloatingOrb size={220} color="rgba(245,158,11,0.12)"   x="38%"   y="15%"  duration={18} delay={6}   />
+          <FloatingOrb size={420} color="rgba(255, 255, 255,0.12)"   x="68%"   y="-10%" duration={15} delay={2}   />
+          <FloatingOrb size={360} color="rgba(255, 255, 255,0.08)"   x="50%"   y="50%"  duration={10} delay={4}   />
+          <FloatingOrb size={300} color="rgba(255, 255, 255,0.1)"   x="-6%"   y="60%"  duration={13} delay={1}   />
+          <FloatingOrb size={220} color="rgba(255, 255, 255,0.06)"   x="38%"   y="15%"  duration={18} delay={6}   />
         </div>
 
         {/* ── Grid dot pattern ── */}
@@ -322,8 +317,8 @@ export default function Home() {
 
             <div className="relative w-full h-full">
               {/* Layered Glows radiating from behind the mask */}
-              <div className="absolute inset-0 bg-emerald-500/20 blur-[130px] rounded-full scale-50 animate-pulse" />
-              <div className="absolute inset-0 bg-blue-500/10 blur-[160px] rounded-full scale-75" />
+              <div className="absolute inset-0 bg-white/20 blur-[130px] rounded-full scale-50 animate-pulse" />
+              <div className="absolute inset-0 bg-white/5 blur-[160px] rounded-full scale-75" />
               
               <img 
                 src="/hero-mask.png" 
@@ -352,7 +347,7 @@ export default function Home() {
             <div className="flex flex-wrap items-center justify-center gap-5">
               <Link
                 href="/tools"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-emerald-500/5 group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-zinc-800/20 group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
@@ -361,7 +356,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/prompts"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full border border-white/10 backdrop-blur-xl group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full group"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
                 <span className="flex items-center gap-3">
@@ -397,7 +392,7 @@ export default function Home() {
           <div className="px-6 md:px-10">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
-                <TrendingUp className="text-amber-500" size={20} />
+                <TrendingUp className="text-white" size={20} />
                 Assets
               </h2>
               <Link
@@ -456,7 +451,7 @@ export default function Home() {
           <div className="relative z-10 max-w-5xl mx-auto">
             <div className="text-center mb-14">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-5">
-                <Star size={11} className="text-amber-400" />
+                <Star size={11} className="text-white" />
                 <span className="text-[10px] font-bold tracking-widest text-zinc-300 uppercase">Why AssetNest</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">

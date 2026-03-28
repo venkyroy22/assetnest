@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Zap, RotateCcw, Trophy, Calculator, Timer, Check, X, RefreshCw } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -26,6 +29,7 @@ export default function MathGamePage() {
     const [userAnswer, setUserAnswer] = useState("");
     const [isLoaded, setIsLoaded] = useState(false);
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+    const [showHelp, setShowHelp] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     const generateProblem = useCallback(() => {
@@ -114,9 +118,16 @@ export default function MathGamePage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="Help & FAQ"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 uppercase">
                     Quick Math
@@ -138,12 +149,12 @@ export default function MathGamePage() {
                     </div>
                     <div className="flex-1 p-5 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col items-center">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Score</span>
-                        <span className="text-3xl font-black text-emerald-400 tabular-nums">{score}</span>
+                        <span className="text-3xl font-black text-white tabular-nums">{score}</span>
                     </div>
                 </div>
 
                 <div className="w-full relative group">
-                    <div className={`p-10 bg-zinc-950 border-4 border-zinc-900 rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-emerald-500/50 shadow-emerald-500/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
+                    <div className={`p-10 bg-zinc-950 border-4 border-zinc-900 rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-white/50 shadow-white/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
                         {!isPlaying && !gameOver ? (
                             <div className="flex flex-col items-center text-center gap-8">
                                 <Calculator size={48} className="text-zinc-800" />
@@ -160,7 +171,7 @@ export default function MathGamePage() {
                             </div>
                         ) : gameOver ? (
                             <div className="flex flex-col items-center text-center gap-8 animate-in zoom-in duration-500">
-                                <Trophy size={48} className="text-amber-400 animate-bounce" />
+                                <Trophy size={48} className="text-white animate-bounce" />
                                 <div>
                                     <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Test Concluded</h2>
                                     <p className="text-sm text-zinc-500 font-medium">You identified <span className="text-white font-bold">{score}</span> problems corectly.</p>
@@ -196,6 +207,35 @@ export default function MathGamePage() {
                     <p className="text-[10px] font-black text-zinc-700 uppercase tracking-[0.4em]">Press ENTER to submit</p>
                 </div>
             </div>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Quick Math Intelligence"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <Calculator size={24} className="text-zinc-500" />
+                            Quick Math Intelligence (FAQ)
+                        </h3>
+                        <Accordion>
+                            <AccordionItem title="Why should I practice mental math?">
+                                Regular mental calculation improves your brain's processing speed, enhances memory, and builds confidence in handling everyday number-based tasks without a calculator.
+                            </AccordionItem>
+                            <AccordionItem title="What types of problems are included?">
+                                The challenge features addition, subtraction, and multiplication problems scaled for quick mental processing, testing your versatility across different operations.
+                            </AccordionItem>
+                            <AccordionItem title="Can children play this math game?">
+                                Absolutely. The Quick Math Challenge is an excellent educational tool for students to sharpen their arithmetic skills in a fun, gamified environment.
+                            </AccordionItem>
+                            <AccordionItem title="Is my score saved?">
+                                Yes! Your highest score is stored locally in your browser, allowing you to track your improvement and compete against your own personal best over time.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
 
             <style jsx global>{`
                 @keyframes shake {

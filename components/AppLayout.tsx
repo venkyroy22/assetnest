@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
@@ -9,9 +9,11 @@ import Footer from "@/components/Footer";
 import { SidebarProvider, useSidebar } from "@/components/SidebarProvider";
 import { PinProvider } from "@/components/PinProvider";
 import { MusicProvider } from "@/components/MusicProvider";
+import { SettingsProvider } from "@/components/SettingsProvider";
+import SettingsModal from "@/components/SettingsModal";
 
 function AppLayoutContent({ children, isBillingView }: { children: React.ReactNode; isBillingView: boolean }) {
-    const { isOpen } = useSidebar();
+    const { isOpen, isNavigating } = useSidebar();
     const pathname = usePathname();
     const isHome = pathname === "/";
     const [showScrollTop, setShowScrollTop] = useState(false);
@@ -35,6 +37,27 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
         }
     };
 
+    useLayoutEffect(() => {
+        // Next.js Layout hydration bug brute-force fallback:
+        // Layout components sometimes freeze their render cycles or mis-compute 
+        // derived state from usePathname() during soft navigations.
+        // We bypass React state completely and enforce the true layout here.
+        if (typeof window === 'undefined') return;
+        
+        const mainEl = document.getElementById('main-layout-content');
+        if (!mainEl) return;
+
+        const path = window.location.pathname;
+        const currentIsHome = path === "/";
+        const isDesktop = window.innerWidth >= 1024;
+
+        if (isBillingView || currentIsHome || !isDesktop) {
+            mainEl.style.paddingLeft = '0px';
+        } else {
+            mainEl.style.paddingLeft = isOpen ? '256px' : '64px';
+        }
+    });
+
     useEffect(() => {
         // Enforce scroll-to-top on navigation to prevent the layout from preserving
         // scroll state and accidentally hiding top portions of pages under the fixed Navbar.
@@ -47,10 +70,14 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
             <div className="flex flex-1 relative">
                 {!isBillingView && <Sidebar />}
                 <main 
-                    className={`flex-grow flex flex-col pt-20 transition-[padding] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
-                        ${isBillingView ? "pl-0" : 
-                          isHome ? "pl-0" : 
-                          isOpen ? "lg:pl-64" : "lg:pl-16"}`}
+                    id="main-layout-content"
+                    className={`flex-grow flex flex-col pt-20 transition-[padding-left] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
+                        ${isNavigating ? "!transition-none" : ""}`}
+                    style={{
+                        paddingLeft: typeof window !== 'undefined' && window.innerWidth < 1024 
+                            ? '0px' 
+                            : (isBillingView || isHome ? '0px' : (isOpen ? '256px' : '64px'))
+                    }}
                 >
                     <div className="flex-grow">
                         {isBillingView && <Navbar className="no-print" />}
@@ -89,13 +116,16 @@ export default function AppLayout({
 
     return (
         <MusicProvider>
-            <SidebarProvider>
-                <PinProvider>
-                    <AppLayoutContent isBillingView={isBillingView}>
-                        {children}
-                    </AppLayoutContent>
-                </PinProvider>
-            </SidebarProvider>
+            <SettingsProvider>
+                <SidebarProvider>
+                    <PinProvider>
+                        <AppLayoutContent isBillingView={isBillingView}>
+                            {children}
+                        </AppLayoutContent>
+                        <SettingsModal />
+                    </PinProvider>
+                </SidebarProvider>
+            </SettingsProvider>
         </MusicProvider>
     );
 }

@@ -21,9 +21,12 @@ import {
     X,
     ChevronDown,
     ChevronUp,
+    ShieldCheck
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
+import HelpModal from "@/components/HelpModal";
 
 // Helper to center an aspect ratio crop on init
 function centerAspectCrop(
@@ -87,6 +90,7 @@ export default function ImageCropperPage() {
     const [tweaksOpen, setTweaksOpen] = useState(false);
     const [exactSizeOpen, setExactSizeOpen] = useState(false);
     const [customRatioOpen, setCustomRatioOpen] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -297,12 +301,19 @@ export default function ImageCropperPage() {
                     <ArrowLeft size={16} /> back to tools
                 </Link>
                 <div className="flex items-center gap-3 relative mr-8 sm:mr-0 z-10">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(59,130,246,0.4)]" style={{ background: "linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)" }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)]" style={{ background: "linear-gradient(135deg, #2563eb 0%, #ffffff 100%)" }}>
                         <CropIcon size={16} />
                     </div>
                     <span className="text-lg font-bold tracking-tight text-white hidden sm:block">
                         Advanced Image Cropper
                     </span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is this?"
+                    >
+                        <Info size={14} />
+                    </button>
                 </div>
             </header>
 
@@ -313,7 +324,7 @@ export default function ImageCropperPage() {
 
                     {!imgSrc ? (
                         <div className="flex flex-col items-center justify-center p-12 text-center h-full w-full min-h-[500px]">
-                            <div className="w-20 h-20 rounded-2xl bg-blue-500/10 border-2 border-dashed border-blue-500/30 flex items-center justify-center mb-6 text-blue-500 group-hover:border-blue-500/60 transition-colors">
+                            <div className="w-20 h-20 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center mb-6 text-white group-hover:border-white/60 transition-colors">
                                 <CropIcon size={32} />
                             </div>
                             <h2 className="text-white font-black text-2xl tracking-tight mb-3">
@@ -322,7 +333,7 @@ export default function ImageCropperPage() {
                             <p className="text-zinc-500 text-sm max-w-sm mx-auto mb-8">
                                 Drag and drop your photo, or click the button below to browse. We support ultra-high resolution images.
                             </p>
-                            <label className="flex items-center gap-2 px-8 py-4 bg-blue-600 hover:bg-blue-500 active:scale-95 transition-all text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-blue-500/20">
+                            <label className="flex items-center gap-2 px-8 py-4 bg-white hover:bg-white active:scale-95 transition-all text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-white/20">
                                 <UploadCloud size={20} />
                                 Browse Files
                                 <input
@@ -380,7 +391,7 @@ export default function ImageCropperPage() {
                             onClick={() => setDimensionsOpen(!dimensionsOpen)}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-blue-500/20" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6" }}>
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-white/20" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                     <Settings2 size={20} />
                                 </div>
                                 <div>
@@ -406,7 +417,7 @@ export default function ImageCropperPage() {
                                                 key={ratio.label}
                                                 onClick={() => handleAspectChange(ratio.value)}
                                                 className={`py-2 text-[11px] font-bold rounded-lg border transition-all ${aspect === ratio.value
-                                                    ? "bg-blue-600 border-blue-500 text-white shadow-lg shadow-blue-500/20"
+                                                    ? "bg-white border-white text-white shadow-lg shadow-white/20"
                                                     : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                                                     }`}
                                             >
@@ -434,7 +445,7 @@ export default function ImageCropperPage() {
                                     {exactSizeOpen && (
                                         <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="flex items-center gap-3">
-                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-blue-500 transition-colors">
+                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-white transition-colors">
                                                     <span className="text-xs text-zinc-600 font-bold mr-2">W</span>
                                                     <input
                                                         type="number"
@@ -448,7 +459,7 @@ export default function ImageCropperPage() {
                                                     />
                                                 </div>
                                                 <X size={14} className="text-zinc-700 shrink-0" />
-                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-blue-500 transition-colors">
+                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-white transition-colors">
                                                     <span className="text-xs text-zinc-600 font-bold mr-2">H</span>
                                                     <input
                                                         type="number"
@@ -486,7 +497,7 @@ export default function ImageCropperPage() {
                                     {customRatioOpen && (
                                         <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
                                             <div className="flex items-center gap-3">
-                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-blue-500 transition-colors">
+                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-white transition-colors">
                                                     <span className="text-xs text-zinc-600 font-bold mr-2">W</span>
                                                     <input
                                                         type="number"
@@ -499,7 +510,7 @@ export default function ImageCropperPage() {
                                                     />
                                                 </div>
                                                 <span className="text-zinc-500 font-bold">:</span>
-                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-blue-500 transition-colors">
+                                                <div className="flex-1 bg-zinc-950 border border-zinc-800 rounded-xl overflow-hidden flex items-center px-3 focus-within:border-white transition-colors">
                                                     <span className="text-xs text-zinc-600 font-bold mr-2">H</span>
                                                     <input
                                                         type="number"
@@ -529,7 +540,7 @@ export default function ImageCropperPage() {
                             onClick={() => setTweaksOpen(!tweaksOpen)}
                         >
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-purple-500/20" style={{ background: "rgba(168, 85, 247, 0.1)", color: "#a855f7" }}>
+                                <div className="w-10 h-10 rounded-xl flex items-center justify-center transition-colors group-hover:bg-white/20" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                     <RotateCw size={20} />
                                 </div>
                                 <div>
@@ -557,7 +568,7 @@ export default function ImageCropperPage() {
                                         step={0.1}
                                         value={scale}
                                         onChange={(e) => setScale(Number(e.target.value))}
-                                        className="w-full accent-purple-500 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                                        className="w-full white h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                                     />
                                 </div>
 
@@ -574,7 +585,7 @@ export default function ImageCropperPage() {
                                         step={1}
                                         value={rotate}
                                         onChange={(e) => setRotate(Number(e.target.value))}
-                                        className="w-full accent-purple-500 h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
+                                        className="w-full white h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer"
                                     />
                                 </div>
                             </div>
@@ -585,7 +596,7 @@ export default function ImageCropperPage() {
                     <button
                         onClick={generatePreview}
                         disabled={!crop || !imgSrc}
-                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 border border-emerald-500"
+                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white disabled:opacity-50 border border-white"
                     >
                         <CropIcon size={18} />
                         Crop Image
@@ -600,12 +611,83 @@ export default function ImageCropperPage() {
                 </div>
             </main>
 
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Visual Framing Infrastructure"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Image Framing Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for asset framing. AssetNest <strong>Advanced Image Cropper</strong> transcends basic photo resizing—it provides a structural editor where you can manipulate image boundaries with pixel-perfect precision. Whether you are framing a high-end editorial portrait, a complex product shot, or a widescreen web banner, our tool gives you the power to rotate, scale, and crop your creative assets with zero loss in quality and absolute data privacy.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <CropIcon size={20} className="text-zinc-500" />
+                                How to Crop Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Precision Masking:</strong> Drag to define the exact crop zone. Our engine previews the output in real-time.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Aspect Locking:</strong> Instantly snap to 1:1, 16:9, or 4:3 presets, or define your own custom ratios.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Exact Dimensioning:</strong> Need a precise 1200x630px crop? Input exact pixel values for target-aligned output.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based tools that store your sensitive photo data on external servers, our cropper operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Processing • High-Fidelity Vector Preservation • Lossless Container Export • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Custom Ratios?">
+                                Yes. Use the Custom Ratio menu to enter specific proportions like 5:4 or 21:9 for cinematic crops.
+                            </AccordionItem>
+                            <AccordionItem title="Quality Loss?">
+                                Zero. Our rendering engine maps the crop directly to your original source resolution for maximum clarity.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Uploads?">
+                                There are no uploads. Your file resides entirely in your computer&apos;s memory during the entire process.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
+
             {/* ── Preview Modal ── */}
             {previewModalOpen && previewUrl && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
                     <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-black text-xl text-emerald-500 flex items-center gap-3">
+                            <h3 className="font-black text-xl text-white flex items-center gap-3">
                                 <Check size={24} /> Crop Successful
                             </h3>
                             <button onClick={() => {
@@ -625,7 +707,7 @@ export default function ImageCropperPage() {
 
                             <button
                                 onClick={downloadFinalImage}
-                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 shadow-xl"
+                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white border border-white shadow-xl"
                             >
                                 <Download size={18} />
                                 Download Final Image

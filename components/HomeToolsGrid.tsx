@@ -34,109 +34,40 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
     const Icon = tool.icon;
 
     return (
-        <Link href={tool.href} className="block h-full" tabIndex={-1}>
+        <Link href={tool.href} className="block h-full group" tabIndex={-1}>
             <div
                 ref={cardRef}
-                onMouseMove={handleMouseMove}
-                onMouseEnter={() => setHovered(true)}
-                onMouseLeave={() => { setHovered(false); setTilt({ x: 0, y: 0 }); }}
                 style={{
                     opacity: visible ? 1 : 0,
-                    transform: visible
-                        ? hovered
-                            ? `perspective(900px) rotateX(${tilt.x}deg) rotateY(${tilt.y}deg) translateY(-5px) scale(1.02)`
-                            : "perspective(900px) rotateX(0) rotateY(0) translateY(0) scale(1)"
-                        : "translateY(28px) scale(0.97)",
-                    transition: visible
-                        ? hovered
-                            ? "transform 0.12s ease-out, box-shadow 0.2s ease"
-                            : `transform 0.45s cubic-bezier(0.23,1,0.32,1) ${Math.max(0, index - 2) * 50}ms, opacity 0.45s ease ${Math.max(0, index - 2) * 50}ms, box-shadow 0.3s ease ${Math.max(0, index - 2) * 50}ms`
-                        : "opacity 0.45s ease, transform 0.45s cubic-bezier(0.23,1,0.32,1)",
-                    boxShadow: hovered
-                        ? `0 24px 56px -12px ${accent}35, 0 0 0 1px ${accent}28`
-                        : "0 0 0 1px rgba(63,63,70,0.5)",
-                    willChange: "transform, opacity",
+                    transform: visible ? "translateY(0)" : "translateY(20px)",
+                    transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
                 }}
-                className="relative overflow-hidden rounded-3xl bg-zinc-900/40 border border-white/5 backdrop-blur-md p-5 cursor-pointer h-full"
+                className="relative overflow-hidden rounded-[2rem] bg-zinc-900/40 border border-white/5 backdrop-blur-md p-5 h-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60"
             >
-                {/* Dot-grid texture */}
-                <div
-                    className="absolute inset-0 pointer-events-none"
-                    style={{
-                        backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.055) 1px, transparent 1px)`,
-                        backgroundSize: "20px 20px",
-                    }}
-                />
-
-                {/* Spotlight radial */}
-                <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-300"
-                    style={{
-                        opacity: hovered ? 1 : 0,
-                        background: hovered
-                            ? `radial-gradient(260px circle at ${mouse.x}px ${mouse.y}px, ${accent}22, transparent 70%)`
-                            : "none",
-                    }}
-                />
-
-                {/* Glowing border ring */}
-                <div
-                    className="absolute inset-0 rounded-3xl pointer-events-none transition-opacity duration-300"
-                    style={{
-                        opacity: hovered ? 1 : 0,
-                        background: hovered
-                            ? `radial-gradient(180px circle at ${mouse.x}px ${mouse.y}px, ${accent}55, transparent 60%)`
-                            : "none",
-                        WebkitMask: "linear-gradient(#fff,#fff) content-box, linear-gradient(#fff,#fff)",
-                        WebkitMaskComposite: "xor" as React.CSSProperties["WebkitMaskComposite"],
-                        maskComposite: "exclude" as React.CSSProperties["maskComposite"],
-                        padding: "1px",
-                    }}
-                />
-
-                {/* Corner glow */}
-                <div
-                    className="absolute -top-8 -right-8 w-28 h-28 rounded-full blur-2xl pointer-events-none transition-opacity duration-500"
-                    style={{ background: accent, opacity: hovered ? 0.16 : 0.05 }}
-                />
-
                 {/* Content */}
-                <div className="relative z-10 flex flex-col h-full gap-3.5">
+                <div className="relative z-10 flex flex-col h-full gap-4">
                     <div className="flex items-start justify-between">
                         <div
-                            className="w-11 h-11 rounded-[14px] flex items-center justify-center border transition-all duration-300"
-                            style={{
-                                background: hovered ? `${accent}18` : "rgba(39,39,42,0.8)",
-                                borderColor: hovered ? `${accent}50` : "rgba(63,63,70,0.8)",
-                                boxShadow: hovered ? `0 0 14px ${accent}30` : "none",
-                            }}
+                            className="w-11 h-11 rounded-[14px] flex items-center justify-center border border-zinc-800 bg-zinc-900 transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700"
                         >
-                            <Icon size={18} style={{ color: hovered ? accent : "#71717a", transition: "color 0.3s" }} />
+                            <Icon size={18} className="text-zinc-500 group-hover:text-white transition-colors duration-300" />
                         </div>
 
                         <div className="flex items-center gap-1.5">
                             <span
-                                className="text-[10px] font-bold tracking-wide px-2 py-0.5 border rounded-full"
-                                style={{ color: accent, borderColor: `${accent}40`, background: `${accent}12` }}
+                                className="text-[10px] font-bold tracking-wide px-2 py-0.5 border border-white/10 bg-white/5 text-zinc-400 rounded-full group-hover:text-white transition-colors"
                             >
                                 {tool.category}
                             </span>
                             <ArrowUpRight
                                 size={14}
-                                style={{
-                                    color: hovered ? accent : "#3f3f46",
-                                    transform: hovered ? "translate(2px,-2px)" : "translate(0,0)",
-                                    transition: "color 0.3s, transform 0.3s",
-                                }}
+                                className="text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300"
                             />
                         </div>
                     </div>
 
-                    <div>
-                        <h3
-                            className="text-xs font-bold tracking-normal mb-1.5 transition-colors duration-300"
-                            style={{ color: hovered ? accent : "#fff" }}
-                        >
+                    <div className="space-y-1.5">
+                        <h3 className="text-xs font-bold tracking-tight text-white">
                             {tool.name}
                         </h3>
                         <p className="text-[11px] text-zinc-500 font-medium leading-relaxed line-clamp-2">

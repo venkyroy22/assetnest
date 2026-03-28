@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
 
@@ -27,7 +27,7 @@ export const ALL_TOOLS: Tool[] = [
             "sign pdf", "digital signature", "pdf signer", "fill and sign",
             "sign document", "e-signature", "sign pdf online", "pdf editor"
         ],
-        accent: "#10b981", // emerald
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -38,7 +38,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: FileImage,
         tags: ["image", "compress", "jpeg", "png", "webp", "optimize", "resize"],
-        accent: "#e4e4e7",   // emerald
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -49,7 +49,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Eraser,
         tags: ["image", "background", "remover", "bg", "ai", "remove", "transparent", "creator"],
-        accent: "#a855f7",   // purple
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -60,7 +60,40 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: QrCode,
         tags: ["qr", "qrcode", "barcode", "link", "generate", "scan"],
-        accent: "#6366f1",   // indigo
+        accent: "#ffffff",
+        category: "Generate",
+    },
+    {
+        id: "css-gradient",
+        name: "CSS Gradient Maker",
+        description: "Mix beautiful gradients and instantly copy the pure CSS. Real-time linear and radial controls with randomizer.",
+        href: "/tools/css-gradient",
+        badge: "Free",
+        icon: Palette,
+        tags: ["css", "gradient", "maker", "generator", "colors", "background", "design", "ui"],
+        accent: "#ffffff",
+        category: "Generate",
+    },
+    {
+        id: "svg-patterns",
+        name: "SVG Patterns",
+        description: "A curated library of beautiful, seamless geometric SVG backgrounds ready to copy.",
+        href: "/tools/svg-patterns",
+        badge: "Free",
+        icon: Shapes,
+        tags: ["svg", "pattern", "background", "shapes", "geometric", "css", "data uri", "design"],
+        accent: "#ffffff",
+        category: "Generate",
+    },
+    {
+        id: "icons",
+        name: "Icon Library",
+        description: "A beautifully clean icon library featuring premium outline icons. Click to copy the exact SVG or React component code.",
+        href: "/tools/icons",
+        badge: "Free",
+        icon: Images,
+        tags: ["icons", "svg", "lucide", "react", "components", "vector", "library", "assets"],
+        accent: "#ffffff",
         category: "Generate",
     },
     {
@@ -71,7 +104,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: PenTool,
         tags: ["signature", "esign", "sign", "digital signature", "draw", "transparent", "png", "svg"],
-        accent: "#e4e4e7",
+        accent: "#ffffff",
         category: "Generate",
     },
     {
@@ -82,7 +115,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Timer,
         tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break", "water reminder", "hydration", "drink water"],
-        accent: "#f43f5e",   // rose
+        accent: "#ffffff",
         category: "Productivity",
     },
     {
@@ -92,8 +125,8 @@ export const ALL_TOOLS: Tool[] = [
         href: "/tools/typing-tester",
         badge: "Free",
         icon: Keyboard,
-        tags: ["typing", "speed", "test", "tester", "wpm", "accuracy", "practice", "keyboard", "monkeytype", "typist"],
-        accent: "#0ea5e9",   // sky
+        tags: ["typing", "speed", "test", "tester", "wpm", "accuracy", "practice", "keyboard", "typist"],
+        accent: "#ffffff",
         category: "Productivity",
     },
     {
@@ -104,7 +137,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Receipt,
         tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
-        accent: "#f59e0b",   // amber
+        accent: "#ffffff",
         category: "Business",
     },
     {
@@ -115,7 +148,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: CreditCard,
         tags: ["business card", "maker", "generator", "design", "corporate", "card", "branding"],
-        accent: "#6366f1",
+        accent: "#ffffff",
         category: "Business",
     },
     {
@@ -126,7 +159,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: RefreshCw,
         tags: ["image", "convert", "jpg", "jpeg", "png", "webp", "format", "converter", "batch"],
-        accent: "#8b5cf6",   // violet
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -137,7 +170,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Grid3X3,
         tags: ["instagram", "grid", "planner", "feed", "social", "media", "preview", "drag", "drop", "layout"],
-        accent: "#ec4899",   // pink
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -148,7 +181,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Crop,
         tags: ["image", "crop", "cropper", "resize", "aspect", "ratio", "dimensions"],
-        accent: "#3b82f6",   // blue
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -159,7 +192,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: FileText,
         tags: ["image", "ocr", "text", "extract", "scanner", "image to text", "photo to text"],
-        accent: "#f59e0b",   // amber
+        accent: "#ffffff",
         category: "Images",
     },
     {
@@ -174,7 +207,7 @@ export const ALL_TOOLS: Tool[] = [
             "combine pdfs", "join pdf", "merge pdf files", "pdf joiner",
             "merge pdf online", "combine pdf files", "document", "merge documents"
         ],
-        accent: "#ef4444",
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -190,7 +223,7 @@ export const ALL_TOOLS: Tool[] = [
             "pdf file size", "shrink pdf", "pdf optimizer", "smaller pdf",
             "compress pdf online", "pdf size reducer"
         ],
-        accent: "#f97316",
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -206,7 +239,7 @@ export const ALL_TOOLS: Tool[] = [
             "split pdf into pages", "separate pdf pages", "remove pages from pdf",
             "pdf cutter", "pdf page selector", "extract pdf pages"
         ],
-        accent: "#8b5cf6",
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -221,7 +254,7 @@ export const ALL_TOOLS: Tool[] = [
             "pdf to word", "pdf to docx", "convert pdf", "pdf to document",
             "free pdf text extractor", "pdf converter", "pdf text extractor"
         ],
-        accent: "#3b82f6", // blue
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -232,7 +265,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: NotebookPen,
         tags: ["notes", "workspace", "editor", "markdown", "write", "draft", "document", "text"],
-        accent: "#f43f5e",   // rose
+        accent: "#ffffff",
         category: "Productivity",
     },
     {
@@ -248,7 +281,7 @@ export const ALL_TOOLS: Tool[] = [
             "convert image to pdf", "picture to pdf", "convert jpg to pdf",
             "images to pdf", "photo to pdf", "webp to pdf", "pdf from images"
         ],
-        accent: "#e4e4e7",
+        accent: "#ffffff",
         category: "PDF",
     },
     {
@@ -259,7 +292,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Hash,
         tags: ["game", "puzzle", "2048", "logic", "sliding", "numbers", "brain", "fun"],
-        accent: "#f59e0b",
+        accent: "#ffffff",
         category: "Games",
     },
     {
@@ -270,7 +303,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Table,
         tags: ["game", "sudoku", "logic", "puzzle", "numbers", "brain", "intelligence"],
-        accent: "#6366f1",
+        accent: "#ffffff",
         category: "Games",
     },
     {
@@ -281,7 +314,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: WholeWord,
         tags: ["game", "wordle", "word", "puzzle", "vocabulary", "daily", "guess"],
-        accent: "#e4e4e7",
+        accent: "#ffffff",
         category: "Games",
     },
     {
@@ -292,7 +325,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Gamepad2,
         tags: ["game", "dino", "runner", "infinite", "arcade", "avoid", "jump", "pixel"],
-        accent: "#3b82f6",
+        accent: "#ffffff",
         category: "Games",
     },
     {
@@ -303,7 +336,7 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Calculator,
         tags: ["game", "math", "arithmetic", "speed", "test", "brain", "training", "logic"],
-        accent: "#ef4444",
+        accent: "#ffffff",
         category: "Games",
     },
 ];

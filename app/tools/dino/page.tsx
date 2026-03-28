@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Zap, RotateCcw, Trophy, Gamepad2, Timer, RefreshCw } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -29,6 +32,7 @@ export default function DinoRunPage() {
     const [gameOver, setGameOver] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const stateRef = useRef({
         dinoY: GROUND_Y - DINO_HEIGHT,
@@ -177,9 +181,16 @@ export default function DinoRunPage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all"
+                        title="Help & FAQ"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 uppercase">
                     Dino Run
@@ -196,7 +207,7 @@ export default function DinoRunPage() {
                 </div>
                 <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">High</span>
-                    <span className="text-2xl font-black text-emerald-400 tabular-nums">{highScore}</span>
+                    <span className="text-2xl font-black text-white tabular-nums">{highScore}</span>
                 </div>
             </div>
 
@@ -242,6 +253,79 @@ export default function DinoRunPage() {
                </div>
                <p className="text-xs text-zinc-600 font-medium">Avoid the crimson pillars. Speed increases over distance.</p>
             </div>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Dino Run Strategy Briefing"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Edge of Extinction: The Dino Run Experience</h3>
+                        <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
+                            Welcome to <strong>Dino Run</strong>, a high-octane, infinite runner inspired by the classic arcade era. In a world where speed is your only ally, take control of the last surviving dinosaur and navigate a treacherous landscape filled with pillars of flame and rising difficulty. Our browser-based game is built for minimal latency, ensuring your jumps are pixel-perfect every time. Whether you are looking for a quick five-minute break or aim to dominate the high-score leaderboard, Dino Run offers an addictive, rhythmic challenge that is 100% free and private.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">!</span>
+                                Game Mechanics
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
+                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Dynamic Speed Scaling</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed font-semibold">The further you run, the faster the world moves. Every 2000 distance units, the scroll speed increases, testing your reflexes to their absolute limit.</p>
+                                </div>
+                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
+                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Pixel-Perfect Collision</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed font-semibold">We use specialized bounding-box detection to ensure that your survival depends entirely on your timing—not random glitches.</p>
+                                </div>
+                            </div>
+                        </section>
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">?</span>
+                                How to Surpass your Best
+                            </h3>
+                            <ul className="space-y-4 text-sm leading-relaxed text-zinc-400 font-medium">
+                                <li className="flex gap-3">
+                                    <span className="text-red-500 shrink-0">»</span>
+                                    <div><strong className="text-zinc-200">The Space Advantage:</strong> Use the spacebar for more tactical jumps. Tapping for shorter hops can sometimes be safer than long leaps when obstacles are bunched together.</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-red-500 shrink-0">»</span>
+                                    <div><strong className="text-zinc-200">Rhythm Mastery:</strong> Dino Run is as much about sound and rhythm as it is about sight. Get into a flow state to predict obstacle spawns naturally.</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-red-500 shrink-0">»</span>
+                                    <div><strong className="text-zinc-200">Visual Focus:</strong> Try soft-focusing on the middle of the screen rather than looking directly at the dino or the far right edge. This helps track incoming threats more effectively at high speeds.</div>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+                    
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[3rem] p-10 md:p-14">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Strategic Briefing (FAQ)</h3>
+                        <Accordion>
+                            <AccordionItem title="Is this game free forever?">
+                                Yes. Dino Run is a part of the AssetNest free utility suite. No ads, no tracking, and no cost to play, ever.
+                            </AccordionItem>
+                            <AccordionItem title="Does speed ever stop increasing?">
+                                The speed continues to scale based on your total distance, meaning there is no theoretical ceiling to the difficulty—only your own skill.
+                            </AccordionItem>
+                            <AccordionItem title="Is my progress saved?">
+                                Your highest score is stored in your local browser storage. This ensures your legacy remains intact between sessions without needing an account.
+                            </AccordionItem>
+                            <AccordionItem title="Does it work on mobile?">
+                                Absolutely. Simply tap the canvas area on your smartphone to jump. The game is optimized for smooth performance on both iOS and Android browsers.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
         </div>
     );
 }

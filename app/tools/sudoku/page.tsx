@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Zap, RotateCcw, Trophy, Table, Check, Info, RefreshCw, Trash2 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -58,6 +60,7 @@ export default function SudokuPage() {
     const [history, setHistory] = useState<number[][][]>([]);
     const [gameOver, setGameOver] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const startNewGame = useCallback((diff: Difficulty) => {
         const { puzzle: p, solution: s } = generateSudoku(diff);
@@ -112,9 +115,16 @@ export default function SudokuPage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="Help & FAQ"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">
                     Sudoku Pro
@@ -165,7 +175,7 @@ export default function SudokuPage() {
                                         onClick={() => setSelected({ r, c })}
                                         className={`w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center text-sm sm:text-lg font-bold transition-all
                                             ${isSelected ? 'bg-white text-black z-10 scale-105 shadow-xl !rounded-lg' : 
-                                              isSuccess ? 'bg-emerald-500/20 text-emerald-400' :
+                                              isSuccess ? 'bg-white/20 text-white' :
                                               isRelated ? 'bg-zinc-800/50 text-zinc-300' : 'bg-zinc-950 text-zinc-400'}
                                             ${isInitial ? 'font-black' : 'font-medium'}
                                             ${isInitial && !isSelected && !isSuccess ? 'text-zinc-100' : ''}
@@ -183,7 +193,7 @@ export default function SudokuPage() {
 
                     {gameOver && (
                         <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
-                            <Trophy size={48} className="text-amber-400 mb-4 animate-bounce" />
+                            <Trophy size={48} className="text-white mb-4 animate-bounce" />
                             <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Solved!</h2>
                             <p className="text-sm text-zinc-400 mb-8">Impressive speed. Want to try a harder one?</p>
                             <button onClick={() => startNewGame(difficulty)} className="px-10 py-4 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">
@@ -232,6 +242,79 @@ export default function SudokuPage() {
                     </div>
                 </div>
             </div>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Sudoku Intelligence Briefing"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Play Sudoku: The Ultimate Brain Training Puzzle</h3>
+                        <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
+                            Welcome to <strong>Sudoku Pro</strong>, a premium, browser-based edition of the classic number-placement puzzle. Sudoku is globally recognized as one of the best cognitive exercises to enhance logical deduction, concentration, and pattern recognition. Our dark-themed version is designed for a focused, distraction-free environment, allowing you to immerse yourself in the grid. Whether you are a beginner looking for an Easy starting point or a logic master seeking a Hard challenge, Sudoku Pro provides a seamless interface with zero ads, zero tracking, and absolute privacy.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">!</span>
+                                The Rules of the Grid
+                            </h3>
+                            <ul className="space-y-4 text-sm leading-relaxed text-zinc-400 font-medium pb-6">
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">The 9x9 Grid:</strong> The puzzle consists of 81 cells, divided into nine 3x3 subgrids or "blocks".</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">The 1-9 Objective:</strong> Every row, column, and 3x3 block must contain the numbers from 1 to 9 exactly once. No repeats allowed!</div>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="text-white shrink-0">◇</span>
+                                    <div><strong className="text-zinc-200">Logic Only:</strong> Every valid Sudoku puzzle has a unique solution that can be reached purely through logic—no guessing required.</div>
+                                </li>
+                            </ul>
+                        </section>
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">?</span>
+                                Pro Strategies
+                            </h3>
+                            <div className="space-y-4">
+                                <div className="p-5 bg-zinc-950/50 border border-zinc-900 rounded-2xl">
+                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Cross-Hatching</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed font-semibold">Examine a specific number and scan its rows and columns to find the only possible spot for it within a 3x3 block.</p>
+                                </div>
+                                <div className="p-5 bg-zinc-950/50 border border-zinc-900 rounded-2xl">
+                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Naked Singles</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed font-semibold">When a cell has only one possible candidate remaining based on its row, column, and block neighbors, fill it in immediately!</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                    
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[3rem] p-10 md:p-14">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Sudoku Intelligence (FAQ)</h3>
+                        <Accordion>
+                            <AccordionItem title="Why is Sudoku good for your brain?">
+                                Solving puzzles regularly improves mental agility, memory, and can help reduce stress by providing a meditative &quot;flow state&quot; focus.
+                            </AccordionItem>
+                            <AccordionItem title="Can I play Sudoku offline?">
+                                Once the page is loaded, the game logic is entirely containerized in your browser. You can continue playing without an active internet connection.
+                            </AccordionItem>
+                            <AccordionItem title="Is this Sudoku really private?">
+                                Yes. We do not track your moves, save your puzzles to a server, or monitor your gameplay. Your progress stays locally on your device.
+                            </AccordionItem>
+                            <AccordionItem title="Are there different levels?">
+                                Absolutely. We offer Easy for warming up, Medium for a standard challenge, and Hard for true puzzle veterans.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
         </div>
     );
 }

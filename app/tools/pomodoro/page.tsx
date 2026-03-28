@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Play, Pause, RotateCcw, SkipForward, SkipBack, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check, Music, Volume2, VolumeX, CloudRain, Trees, Wind, Moon, Search, Link as LinkIcon, ArrowLeft, ExternalLink, RefreshCw, Trash2, Droplets, Gamepad2 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 import { useMusic } from "@/components/MusicProvider";
 import { MiniGames } from "./games";
 
@@ -27,7 +30,7 @@ const CX = 160;
 const CY = 160;
 const CIRC = 2 * Math.PI * RADIUS;
 
-const FOCUS_Q_COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#c084fc"];
+const FOCUS_Q_COLORS = ["#60a5fa", "#ffffff", "#ffffff", "#c084fc"];
 
 function lerpColor(a: string, b: string, t: number): string {
     const ah = parseInt(a.slice(1), 16);
@@ -159,7 +162,7 @@ function Particles({ active }: { active: boolean }) {
         Array.from({ length: 18 }, (_, i) => ({
             left: Math.random() * 100,
             top: Math.random() * 100,
-            color: ["#fff", "#34d399", "#818cf8", "#fbbf24", "#f87171"][i % 5],
+            color: ["#fff", "#ffffff", "#ffffff", "#ffffff", "#f87171"][i % 5],
             delay: Math.random() * 0.4,
             dur: 0.5 + Math.random() * 0.7,
         }))
@@ -260,17 +263,17 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
     };
 
     return (
-        <div className={`fixed inset-0 z-[500] flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/40 via-blue-950/80 to-zinc-950/90 backdrop-blur-xl transition-opacity duration-1000 ${isHydrating ? 'opacity-0 delay-500' : 'animate-in fade-in duration-700'}`}>
+        <div className={`fixed inset-0 z-[500] flex items-center justify-center bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-white/40 via-white/80 to-zinc-950/90 backdrop-blur-xl transition-opacity duration-1000 ${isHydrating ? 'opacity-0 delay-500' : 'animate-in fade-in duration-700'}`}>
             <div className={`relative w-full max-w-lg mx-auto flex flex-col items-center transition-transform duration-1000 ${isHydrating ? 'scale-95' : ''}`}>
                 {/* Magic Aura */}
-                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-blue-500/20 blur-[100px] rounded-full animate-pulse z-0 transition-opacity duration-1000 ${isHydrating ? 'opacity-0' : 'opacity-100'}`} style={{ animationDuration: '4s' }} />
+                <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] bg-white/20 blur-[100px] rounded-full animate-pulse z-0 transition-opacity duration-1000 ${isHydrating ? 'opacity-0' : 'opacity-100'}`} style={{ animationDuration: '4s' }} />
 
                 {/* Floating Ambient Droplets */}
                 <div className={`fixed inset-0 overflow-hidden pointer-events-none z-0 transition-opacity duration-1000 ${isHydrating ? 'opacity-0' : 'opacity-100'}`}>
                     {[...Array(15)].map((_, i) => (
                         <Droplets 
                             key={i} 
-                            className="absolute text-blue-400/20 animate-float-up" 
+                            className="absolute text-white/20 animate-float-up" 
                             size={12 + Math.random() * 24}
                             style={{
                                 left: `${Math.random() * 100}%`,
@@ -292,11 +295,11 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
 
                         {/* Water Container */}
                         <div className={`absolute bottom-0 w-full origin-bottom rounded-b-[36px] overflow-hidden`} style={{ height: '75%', animation: isHydrating ? 'water-empty 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards' : 'water-fill 2s ease-out forwards' }}>
-                            <div className="absolute inset-0 bg-gradient-to-t from-blue-700 via-blue-500 to-blue-400" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-white via-white to-white" />
                             
                             {/* Waves - properly positioned above water */}
-                            <div className="absolute top-0 w-[200%] h-6 bg-blue-300/40 rounded-[100%] animate-wave-front opacity-90 -translate-x-1/4 -translate-y-1/2" />
-                            <div className="absolute top-0 w-[200%] h-8 bg-blue-400/50 rounded-[100%] animate-wave-back -translate-x-1/2 -translate-y-1/2" />
+                            <div className="absolute top-0 w-[200%] h-6 bg-white/40 rounded-[100%] animate-wave-front opacity-90 -translate-x-1/4 -translate-y-1/2" />
+                            <div className="absolute top-0 w-[200%] h-8 bg-white/50 rounded-[100%] animate-wave-back -translate-x-1/2 -translate-y-1/2" />
                             
                             {/* Bubbles in water */}
                             {[...Array(8)].map((_, i) => (
@@ -314,22 +317,22 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
                         </div>
                     </div>
                     {/* Base shadow */}
-                    <div className={`w-24 h-4 bg-blue-900/50 blur-[10px] rounded-[100%] mx-auto mt-4 transition-opacity duration-1000 ${isHydrating ? 'opacity-20' : 'opacity-100'}`} />
+                    <div className={`w-24 h-4 bg-white/50 blur-[10px] rounded-[100%] mx-auto mt-4 transition-opacity duration-1000 ${isHydrating ? 'opacity-20' : 'opacity-100'}`} />
                 </div>
 
                 {/* Text and Button */}
                 <div className={`mt-12 text-center space-y-5 relative z-10 transition-all duration-700 ${isHydrating ? 'opacity-0 translate-y-8 pointer-events-none' : 'animate-in slide-in-from-bottom-8 fade-in duration-1000 ease-out delay-300 fill-mode-both'}`}>
-                    <h2 className="text-4xl sm:text-5xl font-black tracking-widest uppercase bg-gradient-to-r from-blue-200 via-white to-blue-200 bg-clip-text text-transparent drop-shadow-sm">
+                    <h2 className="text-4xl sm:text-5xl font-black tracking-widest uppercase bg-gradient-to-r from-white via-white to-white bg-clip-text text-transparent drop-shadow-sm">
                         Hydration Time
                     </h2>
-                    <p className="text-blue-200/80 font-semibold tracking-wider text-sm sm:text-base">
+                    <p className="text-white/80 font-semibold tracking-wider text-sm sm:text-base">
                         Take a quick sip and recharge your focus.
                     </p>
                     
                     <button 
                         onClick={handleHydrated}
                         disabled={isHydrating}
-                        className="mt-8 px-10 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-white text-sm font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_-10px_rgba(59,130,246,0.6)] border border-blue-400/50 flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[200px]"
+                        className="mt-8 px-10 py-4 bg-gradient-to-r from-white to-white hover:from-white hover:to-white text-white text-sm font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_-10px_rgba(255, 255, 255,0.6)] border border-white/50 flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[200px]"
                     >
                         <Check size={18} strokeWidth={3} />
                         <span>I'M HYDRATED</span>
@@ -426,7 +429,7 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
                             </div>
                             <button 
                                 onClick={() => setWr(!wr)}
-                                className={`w-10 h-5 rounded-full transition-colors relative ${wr ? 'bg-blue-500' : 'bg-zinc-700'}`}
+                                className={`w-10 h-5 rounded-full transition-colors relative ${wr ? 'bg-white' : 'bg-zinc-700'}`}
                             >
                                 <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${wr ? 'left-6' : 'left-1'}`} />
                             </button>
@@ -452,9 +455,9 @@ function BreakDialog({ isOpen, onClose, onOpenGames }: { isOpen: boolean; onClos
         <div className="fixed inset-0 z-[550] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose} />
             <div className="relative w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 text-center overflow-hidden">
-                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-emerald-500/10 blur-[80px]" />
+                 <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 blur-[80px]" />
                  <div className="relative z-10">
-                    <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center text-emerald-400 mx-auto mb-8 shadow-inner group">
+                    <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center text-white mx-auto mb-8 shadow-inner group">
                         <Gamepad2 size={36} className="group-hover:scale-110 transition-transform duration-500" />
                     </div>
                     <h2 className="text-2xl font-black text-white mb-3 uppercase tracking-tighter">Time for a Break!</h2>
@@ -489,11 +492,11 @@ export default function PomodoroPage() {
     const [waterInterval, setWaterInterval] = useState(30);
     const durations = { focus: focusMins * 60, short: shortMins * 60, long: longMins * 60 };
 
-    const COLORS: Record<Mode, string> = { focus: "#ffffff", short: "#34d399", long: "#818cf8" };
-    const BG: Record<Mode, string> = { focus: "from-zinc-900 to-zinc-950", short: "from-emerald-950 to-zinc-950", long: "from-indigo-950 to-zinc-950" };
+    const COLORS: Record<Mode, string> = { focus: "#ffffff", short: "#ffffff", long: "#ffffff" };
+    const BG: Record<Mode, string> = { focus: "from-zinc-900 to-zinc-950", short: "from-white to-zinc-950", long: "from-white to-zinc-950" };
     const LABELS: Record<Mode, string> = { focus: "Focus", short: "Short Break", long: "Long Break" };
 
-    const CYCLE_COLORS = ["#60a5fa", "#34d399", "#f59e0b", "#c084fc"] as const;
+    const CYCLE_COLORS = ["#60a5fa", "#ffffff", "#ffffff", "#c084fc"] as const;
     const QUARTER_LABELS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
     const [mode, setMode] = useState<Mode>("focus");
@@ -511,6 +514,7 @@ export default function PomodoroPage() {
     const [lastWaterTime, setLastWaterTime] = useState(Date.now());
     const [gamesOpen, setGamesOpen] = useState(false);
     const [showBreakDialog, setShowBreakDialog] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const [activeTrack, setActiveTrack] = useState<string | null>(null);
 
@@ -627,7 +631,7 @@ export default function PomodoroPage() {
             if (endTimeMsRef.current !== null) {
                 const remaining = Math.max(0, (endTimeMsRef.current - Date.now()) / 1000);
                 const p = totalSecsRef.current > 0 ? remaining / totalSecsRef.current : 0;
-                const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : modeRef.current === "short" ? "#34d399" : "#818cf8";
+                const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : modeRef.current === "short" ? "#ffffff" : "#ffffff";
                 applyProgress(p, ringRef.current, dotRef.current, glowRef.current, strokeColor);
                 if (glowRef.current) glowRef.current.setAttribute("opacity", "0.12");
             }
@@ -756,9 +760,16 @@ export default function PomodoroPage() {
 
             {/* ── Header (Centered & Balanced) ── */}
             <div className="max-w-5xl mx-auto mb-10 flex flex-col items-center justify-center gap-6 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 w-fit">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 w-fit relative group">
                     <Brain size={11} className="text-zinc-400" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Productivity Tool</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is Pomodoro?"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
 
                 <div className="flex flex-col items-center gap-8">
@@ -856,7 +867,7 @@ export default function PomodoroPage() {
                     <div className="p-5 border border-zinc-800 bg-zinc-900/30">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-semibold text-zinc-400">Total Sessions</span>
-                            <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-orange-400" : "text-zinc-600"} /><span className="text-sm font-black text-white">{sessions}</span></div>
+                            <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-white" : "text-zinc-600"} /><span className="text-sm font-black text-white">{sessions}</span></div>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                             {Array.from({ length: Math.max(8, sessions + 2) }).map((_, i) => (
@@ -902,10 +913,10 @@ export default function PomodoroPage() {
                             {ACHIEVEMENTS.map(a => {
                                 const done = unlocked.includes(a.id);
                                 return (
-                                    <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-amber-500/50 bg-amber-500/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
-                                        <div className={done ? "text-amber-400" : "text-zinc-600"}>{a.icon}</div>
+                                    <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-white/50 bg-white/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
+                                        <div className={done ? "text-white" : "text-zinc-600"}>{a.icon}</div>
                                         <div><p className="text-[10px] font-bold text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
-                                        {done && <span className="text-[10px] font-bold tracking-wide text-amber-400 border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
+                                        {done && <span className="text-[10px] font-bold tracking-wide text-white border border-white/30 bg-white/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
                                     </div>
                                 );
                             })}
@@ -932,13 +943,96 @@ export default function PomodoroPage() {
                 </div>
             </div>
 
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="The Ultimate Pomodoro Guide"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">The Ultimate Pomodoro Focus Timer</h3>
+                        <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
+                            <p>
+                                Supercharge your studying, coding, or reading sessions with the AssetNest Productivity Pomodoro Timer. Based on the proven Pomodoro Technique, this tool alternates defined blocks of intense focus with automated short breaks to maximize your brain's endurance and prevent burnout.
+                            </p>
+                            <p>
+                                <strong>More than just a timer:</strong> We've built in gamified achievements, dynamic lo-fi ambient backgrounds (like gentle rain or a bustling coffee shop), strict hydration reminders, and embedded mini-games for when your mind needs a genuine reset.
+                            </p>
+                        </div>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Brain size={18} className="text-zinc-500" />
+                                How the Method Works
+                            </h3>
+                            <ol className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex gap-3">
+                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">1</span>
+                                    <span><strong>Deep Focus:</strong> Work uninterrupted for 25 minutes. No phones, no emails. Just the task at hand.</span>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">2</span>
+                                    <span><strong>Short Break:</strong> Take a 5-minute breather. Stand up, stretch, and step away from the screen entirely.</span>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">3</span>
+                                    <span><strong>Repeat the Cycle:</strong> Perform 4 focus cycles consecutively (amounting to approx. 2 hours).</span>
+                                </li>
+                                <li className="flex gap-3">
+                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">4</span>
+                                    <span><strong>Long Break:</strong> Reward yourself with a 15-30 minute deep break to recharge neurologically before starting again.</span>
+                                </li>
+                            </ol>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Settings size={18} className="text-zinc-500" />
+                                Advanced Customization
+                            </h3>
+                            <ul className="space-y-3 text-sm text-zinc-400">
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>Tailored Intervals:</strong> Not an avid fan of 25 minutes? Click the settings gear to change your exact time variables for Focus, Short Break, and Long Break configurations.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>YouTube Music Built-In:</strong> Don't leave the page. Click the music player icon in the bottom left corner to paste any public YouTube playlist of your choice to get into the flow zone seamlessly.</span>
+                                </li>
+                                <li className="flex items-start gap-2">
+                                    <div className="mt-1 shrink-0"><Check size={14} className="text-zinc-500" /></div>
+                                    <span><strong>Water Reminders:</strong> Activate the hydration setting to receive an immersive overlay, guaranteeing you drink water routinely.</span>
+                                </li>
+                            </ul>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 pt-12 border-t border-zinc-900 font-sans">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Pomodoro Intelligence (FAQ)</h3>
+                        <Accordion>
+                            <AccordionItem title="Can I customize the timer durations?">
+                                Absolutely. Click the settings gear icon to adjust your Focus, Short Break, and Long Break durations to fit your personal productivity rhythm.
+                            </AccordionItem>
+                            <AccordionItem title="Is my data saved between sessions?">
+                                Yes! Your achievement progress, custom settings, and total session count are all stored locally in your browser so you can pick up exactly where you left off.
+                            </AccordionItem>
+                            <AccordionItem title="How do the hydration reminders work?">
+                                When enabled, a full-screen immersive reminder will appear after your set interval, encouraging you to step away and hydrate before resuming your work.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
+
             {/* Achievement Toast */}
             <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[300] transition-all duration-500 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8 pointer-events-none"}`}>
                 {toast && (
-                    <div className="flex items-center gap-4 px-6 py-4 bg-zinc-900 border border-amber-500/50 shadow-2xl shadow-amber-500/10 min-w-[300px]">
-                        <div className="text-amber-400 shrink-0">{toast.icon}</div>
-                        <div><p className="text-[11px] font-bold tracking-wide text-amber-400 mb-1">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
-                        <Trophy size={18} className="text-amber-400 shrink-0 ml-2 animate-bounce" />
+                    <div className="flex items-center gap-4 px-6 py-4 bg-zinc-900 border border-white/50 shadow-2xl shadow-white/10 min-w-[300px]">
+                        <div className="text-white shrink-0">{toast.icon}</div>
+                        <div><p className="text-[11px] font-bold tracking-wide text-white mb-1">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
+                        <Trophy size={18} className="text-white shrink-0 ml-2 animate-bounce" />
                     </div>
                 )}
             </div>

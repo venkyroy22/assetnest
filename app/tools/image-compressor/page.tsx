@@ -4,8 +4,10 @@ import { useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
     Upload, Download, ImageIcon, Zap, X, RefreshCw,
-    Scissors, AlertTriangle, Info, Maximize2,
+    Scissors, AlertTriangle, Info, Maximize2, Check
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -33,6 +35,7 @@ export default function ImageCompressorPage() {
     const [isCompressing, setIsCompressing] = useState(false);
     const [isDragging, setIsDragging] = useState(false);
     const [hasCompressed, setHasCompressed] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const formatBytes = (bytes: number) => {
@@ -178,9 +181,16 @@ export default function ImageCompressorPage() {
 
             {/* Header */}
             <div className="mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5">
-                    <Zap size={11} className="text-amber-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 relative group">
+                    <Zap size={11} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Free Tool</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is this?"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-3">
                     Image Compressor
@@ -250,10 +260,10 @@ export default function ImageCompressorPage() {
 
                     {/* PNG note */}
                     {outputFormat === "image/png" && (
-                        <div className="flex items-start gap-3 px-4 py-3 border border-blue-500/20 bg-blue-500/5">
-                            <Info size={14} className="text-blue-400 mt-0.5 shrink-0" />
+                        <div className="flex items-start gap-3 px-4 py-3 border border-white/20 bg-white/5">
+                            <Info size={14} className="text-white mt-0.5 shrink-0" />
                             <p className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                                <span className="text-blue-400 font-black">PNG is lossless</span> — browsers ignore the quality slider for PNG.
+                                <span className="text-white font-black">PNG is lossless</span> — browsers ignore the quality slider for PNG.
                                 Resize (Max Width) is the only way to reduce PNG file size. Switch to <strong>JPEG</strong> or <strong>WebP</strong> for significant compression.
                             </p>
                         </div>
@@ -328,10 +338,10 @@ export default function ImageCompressorPage() {
 
                     {/* Increased size warning */}
                     {increased && (
-                        <div className="flex items-start gap-3 px-4 py-3 border border-amber-500/30 bg-amber-500/5">
-                            <AlertTriangle size={14} className="text-amber-400 mt-0.5 shrink-0" />
+                        <div className="flex items-start gap-3 px-4 py-3 border border-white/30 bg-white/5">
+                            <AlertTriangle size={14} className="text-white mt-0.5 shrink-0" />
                             <div className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                                <span className="text-amber-400 font-black">Output is larger than original.</span>{" "}
+                                <span className="text-white font-black">Output is larger than original.</span>{" "}
                                 Try: switching to <strong>JPEG or WebP</strong> format, lowering quality, or reducing max width.
                                 PNG files can increase in size when re-encoded if the original was already optimised.
                             </div>
@@ -373,8 +383,8 @@ export default function ImageCompressorPage() {
                                     )}
                                     {hasCompressed && compressedSize > 0 && (
                                         <span className={`text-[11px] font-bold tracking-wider border px-2 py-0.5 rounded-full ${savings > 0
-                                            ? "text-emerald-400 border-emerald-400/30 bg-emerald-400/10"
-                                            : "text-amber-400 border-amber-400/30 bg-amber-400/10"
+                                            ? "text-white border-white/30 bg-white/10"
+                                            : "text-white border-white/30 bg-white/10"
                                             }`}>
                                             {savings > 0 ? `-${savings}%` : "+size"}
                                         </span>
@@ -422,44 +432,80 @@ export default function ImageCompressorPage() {
                 </div>
             )}
 
-            {/* Tips */}
-            <div className="mt-16 pt-10 border-t border-zinc-800">
-                <h2 className="text-xs font-bold text-zinc-500 mb-6">Compression Tips</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-                    {[
-                        { icon: "🎯", title: "JPEG/WebP", tip: "Use quality 60–80% for photos. Best file-size reduction." },
-                        { icon: "🖼️", title: "PNG files", tip: "PNG is lossless — only resize reduces size. Switch to WebP for photos." },
-                        { icon: "📐", title: "Resize first", tip: "Cutting max dimension in half reduces file size by ~75%." },
-                        { icon: "🔄", title: "Format swap", tip: "Converting a PNG photo to JPEG or WebP often saves 60–90%." },
-                    ].map(item => (
-                        <div key={item.title} className="flex gap-3 p-4 border border-zinc-800/50 bg-zinc-950/20">
-                            <span className="text-lg mt-0.5 shrink-0">{item.icon}</span>
-                            <div>
-                                <p className="text-xs font-bold text-white mb-1">{item.title}</p>
-                                <p className="text-xs text-zinc-500 font-medium leading-relaxed">{item.tip}</p>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Ultra-Efficient Optimization"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Ultra-Efficient Image Minification
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Optimize your digital footprint with the AssetNest <strong>Professional Image Compressor</strong>. High-resolution photography shouldn&apos;t compromise your website&apos;s performance. Our browser-native engine allows you to shrink JPEG, PNG, and WebP assets by up to 90% without losing the visual clarity your audience expects. By processing every pixel locally, we ensure your high-value creative assets stay secure while achieving industry-leading compression ratios for faster load times and better SEO.
+                        </p>
+                    </section>
 
-            {/* Related Tools */}
-            <div className="mt-16 pt-10 border-t border-zinc-800">
-                <h2 className="text-xs font-bold text-zinc-500 mb-6">Related Tools</h2>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    {[
-                        { href: "/tools/image-cropper", label: "Image Cropper", desc: "Crop to any aspect ratio, right in your browser." },
-                        { href: "/tools/image-converter", label: "Image Converter", desc: "Convert between PNG, JPEG, WebP and more formats." },
-                        { href: "/tools/qr", label: "QR Code Generator", desc: "Generate free QR codes for any URL or text." },
-                    ].map(t => (
-                        <Link key={t.href} href={t.href}
-                            className="flex flex-col gap-1 p-4 border border-zinc-800 hover:border-zinc-600 transition-colors bg-zinc-950/20">
-                            <span className="text-xs font-bold text-white">{t.label}</span>
-                            <span className="text-[11px] text-zinc-500 font-medium leading-relaxed">{t.desc}</span>
-                        </Link>
-                    ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Scissors size={20} className="text-zinc-500" />
+                                Smart Optimization
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-zinc-500" /></div>
+                                    <span><strong>Targeted quality:</strong> Fine-tune the balance between file size and visual fidelity with our precision quality slider.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-zinc-500" /></div>
+                                    <span><strong>Dimension Capping:</strong> Massive camera photos are often larger than needed. Cap the width or height to reduce weight exponentially.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-zinc-500" /></div>
+                                    <span><strong>Format Evolution:</strong> Instantly convert heavy PNGs into modern WebP containers for the ultimate web-ready performance.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Zap size={20} className="text-zinc-500" />
+                                Pro Compression Tips
+                            </h3>
+                            <div className="grid grid-cols-1 gap-4">
+                                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Sweet Spot</p>
+                                    <p className="text-xs text-zinc-500 mt-1">Aim for 70-80% quality. It typically cuts file size in half with zero visible artifacts.</p>
+                                </div>
+                                <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
+                                    <p className="text-[10px] font-black text-white uppercase tracking-widest">WebP Advantage</p>
+                                    <p className="text-xs text-zinc-500 mt-1">WebP files are consistently 25-30% smaller than JPEGs at equivalent visual quality.</p>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                        <Accordion>
+                            <AccordionItem title="Is my data secure?">
+                                Yes. We use HTML5 Canvas APIs for local processing. Your images never touch any server, providing 100% privacy.
+                            </AccordionItem>
+                            <AccordionItem title="Which formats are supported?">
+                                We support JPEG, PNG, and WebP. You can also convert between these formats during the compression process.
+                            </AccordionItem>
+                            <AccordionItem title="Is there a file size limit?">
+                                There are no server-side limits. You can process images as large as your browser&apos;s memory allows—typically up to 50MB per file.
+                            </AccordionItem>
+                            <AccordionItem title="Will it slow down my computer?">
+                                Compression is a CPU-intensive task, but our engine is optimized to run efficiently in the background without freezing your browser.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
-            </div>
+            </HelpModal>
         </div>
     );
 }

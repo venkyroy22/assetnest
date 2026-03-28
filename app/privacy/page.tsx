@@ -48,7 +48,7 @@ export default function PrivacyPage() {
                                         <strong className="text-white block mb-2 text-base">Google AdSense</strong> Google, as a third-party vendor, uses cookies to serve ads on AssetNest. Google's use of advertising cookies enables it and its partners to serve ads to our users based on their visit to our site and/or other sites on the Internet.
                                     </p>
                                     <p className="leading-relaxed">
-                                        <strong className="text-white block mb-2 text-base">Opt-Out</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-sky-400 hover:text-sky-300 hover:underline transition-all">Google Ad Settings</a>.
+                                        <strong className="text-white block mb-2 text-base">Opt-Out</strong> Users may opt out of personalized advertising by visiting <a href="https://www.google.com/settings/ads" target="_blank" rel="noopener noreferrer" className="text-white hover:text-white hover:underline transition-all">Google Ad Settings</a>.
                                     </p>
                                 </div>
                             </section>

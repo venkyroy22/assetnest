@@ -78,7 +78,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                 </button>
 
                 <div className="text-center mb-6">
-                    <div className="w-12 h-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div className="w-12 h-12 bg-white/10 border border-white/20 text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <Smartphone size={24} />
                     </div>
                     <h2 className="text-xl font-bold text-white tracking-tight mb-2">Share to Mobile</h2>
@@ -87,7 +87,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
 
                 {status === "uploading" && (
                     <div className="flex flex-col items-center justify-center py-12 px-4 border border-zinc-800 rounded-2xl bg-zinc-900/40">
-                        <div className="w-10 h-10 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin mb-4" />
+                        <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin mb-4" />
                         <p className="text-sm font-bold text-white tracking-wide">Generating Secure Link...</p>
                         <p className="text-xs text-zinc-500 mt-1">This will only take a moment</p>
                     </div>
@@ -105,7 +105,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                 {status === "success" && url && (
                     <div className="flex flex-col items-center space-y-6">
                         {/* QR Code */}
-                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-blue-500/5 border-4 border-zinc-800/50 relative overflow-hidden group">
+                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-white/5 border-4 border-zinc-800/50 relative overflow-hidden group">
                            <QRCodeSVG 
                                value={url} 
                                size={180} 
@@ -114,7 +114,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                                fgColor="#000000"
                                bgColor="#FFFFFF"
                            />
-                           <div className="absolute inset-0 bg-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+                           <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
                         </div>
 
                         {/* Copy Link */}
@@ -129,7 +129,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                                 <button 
                                     onClick={handleCopy}
                                     className={`shrink-0 h-10 px-4 rounded-xl text-xs font-bold tracking-wide transition-all flex items-center gap-2 
-                                        ${copied ? 'bg-emerald-500/20 text-emerald-400 px-6' : 'bg-blue-500 hover:bg-blue-600 text-white shadow-lg shadow-blue-500/20'}`}
+                                        ${copied ? 'bg-white/20 text-white px-6' : 'bg-white hover:bg-white text-white shadow-lg shadow-white/20'}`}
                                 >
                                     {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                                 </button>

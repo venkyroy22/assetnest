@@ -107,7 +107,7 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hi-Score</span>
-                    <span className="text-2xl font-black text-emerald-400">{highScore}</span>
+                    <span className="text-2xl font-black text-white">{highScore}</span>
                 </div>
             </div>
 
@@ -125,7 +125,7 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
                 
                 {/* Food */}
                 <div 
-                    className="absolute bg-emerald-500 rounded-sm animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]"
+                    className="absolute bg-white rounded-sm animate-pulse shadow-[0_0_10px_rgba(255, 255, 255,0.5)]"
                     style={{ 
                         left: food.x * CELL_SIZE + 2, 
                         top: food.y * CELL_SIZE + 2, 
@@ -152,7 +152,7 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
 
                 {gameOver && (
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-300">
-                        <Trophy size={40} className="text-amber-500 mb-4" />
+                        <Trophy size={40} className="text-white mb-4" />
                         <h3 className="text-xl font-bold text-white mb-2">Game Over!</h3>
                         <p className="text-sm text-zinc-400 mb-6">You scored {score} points. Ready to beat your high score?</p>
                         <button 
@@ -230,10 +230,10 @@ function MemoryGame({ onExit }: { onExit: () => void }) {
                             key={i}
                             disabled={isOpen || flipped.length >= 2}
                             onClick={() => setFlipped(f => [...f, i])}
-                            className={`w-16 h-16 rounded-xl border-2 transition-all duration-300 relative preserve-3d ${isOpen ? 'rotate-y-180 border-emerald-500/50 bg-emerald-500/10' : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'}`}
+                            className={`w-16 h-16 rounded-xl border-2 transition-all duration-300 relative preserve-3d ${isOpen ? 'rotate-y-180 border-white/50 bg-white/10' : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'}`}
                         >
                             <div className={`absolute inset-0 flex items-center justify-center transition-all ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                <card.Icon size={24} className="text-emerald-400" />
+                                <card.Icon size={24} className="text-white" />
                             </div>
                             <div className={`absolute inset-0 flex items-center justify-center transition-all ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
                                 <div className="w-2 h-2 rounded-full bg-zinc-800" />
@@ -245,10 +245,10 @@ function MemoryGame({ onExit }: { onExit: () => void }) {
 
              {win && (
                 <div className="mt-6 animate-in fade-in zoom-in flex flex-col items-center gap-4">
-                    <p className="text-emerald-400 font-bold">Puzzle Solved! ✨</p>
+                    <p className="text-white font-bold">Puzzle Solved! ✨</p>
                     <button 
                         onClick={reset}
-                        className="bg-emerald-500 text-black text-[10px] font-black py-2.5 px-6 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                        className="bg-white text-black text-[10px] font-black py-2.5 px-6 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
                     >
                         <RefreshCw size={12} /> PLAY AGAIN
                     </button>
@@ -303,7 +303,7 @@ function ReactionGame({ onExit }: { onExit: () => void }) {
                 className={`w-full aspect-[4/3] rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border-2 shadow-2xl ${
                     state === "idle" ? "bg-zinc-950 border-zinc-900" :
                     state === "waiting" ? "bg-red-500/10 border-red-500/20" :
-                    state === "ready" ? "bg-emerald-500 border-emerald-400 scale-[1.02]" :
+                    state === "ready" ? "bg-white border-white scale-[1.02]" :
                     "bg-zinc-900 border-zinc-800"
                 }`}
             >
@@ -324,7 +324,7 @@ function ReactionGame({ onExit }: { onExit: () => void }) {
                             </>
                         ) : (
                             <>
-                                <Zap size={40} className="text-amber-500 mx-auto" strokeWidth={3} />
+                                <Zap size={40} className="text-white mx-auto" strokeWidth={3} />
                                 <h4 className="text-4xl font-black text-white tabular-nums">{result}ms</h4>
                                 <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">
                                     {result < 200 ? "SUPERHUMAN! ⚡" : result < 300 ? "Fast! 🔥" : "Classic ☕"}
@@ -380,9 +380,9 @@ export function MiniGames({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     {!activeGame ? (
                         <div className="grid grid-cols-1 gap-4">
                             {[
-                                { id: "snake", title: "Snake Pro", desc: "The classic arcade survival game. Beat your records.", icon: <Gamepad2 className="text-emerald-400" /> },
-                                { id: "memory", title: "Recall", desc: "A fast-paced memory matching puzzle.", icon: <Brain className="text-blue-400" /> },
-                                { id: "clicker", title: "Reflex", desc: "Test your reaction time with millisecond precision.", icon: <Zap className="text-amber-400" /> },
+                                { id: "snake", title: "Snake Pro", desc: "The classic arcade survival game. Beat your records.", icon: <Gamepad2 className="text-white" /> },
+                                { id: "memory", title: "Recall", desc: "A fast-paced memory matching puzzle.", icon: <Brain className="text-white" /> },
+                                { id: "clicker", title: "Reflex", desc: "Test your reaction time with millisecond precision.", icon: <Zap className="text-white" /> },
                             ].map((g) => (
                                 <button 
                                     key={g.id}

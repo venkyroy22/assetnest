@@ -138,8 +138,12 @@ export default function PromptsPage() {
     };
 
     return (
-        <div className="py-20 min-h-screen bg-black px-4 md:px-10">
-            <div className="max-w-[95rem] mx-auto space-y-16">
+        <div className="py-20 min-h-screen bg-black px-4 md:px-10 relative overflow-hidden">
+            <div className="absolute top-0 right-0 text-white/5 pointer-events-none rotate-12 -z-0 translate-x-32 -translate-y-20">
+                <Sparkles size={700} strokeWidth={0.5} />
+            </div>
+
+            <div className="max-w-[95rem] mx-auto space-y-16 relative z-10">
                 
                 {/* ── Header ── */}
                 <div 
@@ -151,7 +155,7 @@ export default function PromptsPage() {
                     className="text-center space-y-4"
                 >
                     <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full backdrop-blur-sm">
-                        <Sparkles size={11} className="text-purple-500" />
+                        <Sparkles size={11} className="text-white" />
                         <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400">Premium AI Prompts</span>
                     </div>
                     <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">
@@ -183,12 +187,12 @@ export default function PromptsPage() {
                                         <div className="flex items-center gap-2">
                                             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">#{idx + 1} Made with {item.author}</span>
                                             {idx === 0 && likesCount > 0 && (
-                                                <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 bg-amber-500 text-black rounded-full shadow-[0_0_15px_rgba(245,158,11,0.3)]">Most Popular</span>
+                                                <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 bg-white text-black rounded-full shadow-[0_0_15px_rgba(255, 255, 255,0.3)]">Most Popular</span>
                                             )}
                                         </div>
                                         {likesCount > 0 && (
                                             <div className="flex items-center gap-1 px-2 py-0.5 bg-white/5 border border-white/5 rounded-full backdrop-blur-md">
-                                                <Heart size={8} className="text-rose-500 fill-rose-500" />
+                                                <Heart size={8} className="text-white fill-white" />
                                                 <span className="text-[8px] font-black text-white/60">{likesCount} Liked</span>
                                             </div>
                                         )}
@@ -211,8 +215,8 @@ export default function PromptsPage() {
                                                 onClick={() => handleLike(item.slug)}
                                                 className={`p-3 backdrop-blur-2xl border transition-all duration-300 active:scale-90 rounded-xl flex items-center justify-center hover:scale-110 ${
                                                     isLiked 
-                                                    ? "bg-rose-500/20 border-rose-500/40 text-rose-500" 
-                                                    : "bg-white/10 border-white/10 text-white hover:bg-rose-500 hover:text-white hover:border-rose-500"
+                                                    ? "bg-white/20 border-white/40 text-white" 
+                                                    : "bg-white/10 border-white/10 text-white hover:bg-white hover:text-white hover:border-white"
                                                 }`}
                                             >
                                                 <Heart size={16} className={isLiked ? "fill-current" : ""} />
@@ -284,9 +288,9 @@ export default function PromptsPage() {
                                         AI models are trained on billions of images, but they require specific linguistic cues to narrow down their output. By using structured prompts like those in our "Editorial Style" or "Cinematic Portrait" series, you control critical variables:
                                     </p>
                                     <ul className="grid grid-cols-1 gap-4 text-sm font-medium">
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-purple-500" /> Lighting: Low-key, Golden Hour, Rim Lighting</li>
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-blue-500" /> Composition: Dutch Tilt, Close-up Profile, 35mm Lens</li>
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-emerald-500" /> Detail: Pores, fabric texture, metallic reflections</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Lighting: Low-key, Golden Hour, Rim Lighting</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Composition: Dutch Tilt, Close-up Profile, 35mm Lens</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Detail: Pores, fabric texture, metallic reflections</li>
                                     </ul>
                                 </div>
                             </section>

@@ -33,9 +33,9 @@ export default function ContactPage() {
                             <div className="flex justify-center">
                                 <a 
                                     href="mailto:assetnestt@gmail.com"
-                                    className="group flex items-center gap-6 p-8 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] hover:border-emerald-500/50 hover:bg-emerald-500/5 transition-all duration-500 shadow-2xl active:scale-95"
+                                    className="group flex items-center gap-6 p-8 bg-zinc-900 border border-zinc-800 rounded-[2.5rem] hover:border-white/50 hover:bg-white/5 transition-all duration-500 shadow-2xl active:scale-95"
                                 >
-                                    <div className="p-4 bg-zinc-800 rounded-2xl text-emerald-400 group-hover:bg-emerald-400 group-hover:text-black transition-colors duration-500">
+                                    <div className="p-4 bg-zinc-800 rounded-2xl text-white group-hover:bg-white group-hover:text-black transition-colors duration-500">
                                         <Mail size={24} />
                                     </div>
                                     <div className="text-left">

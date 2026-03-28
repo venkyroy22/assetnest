@@ -3,10 +3,13 @@
 import { useState, useRef, useCallback } from "react";
 import {
     Upload, Download, X, RefreshCw, ImageIcon, Undo, Redo,
-    ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus, Share2
+    ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus, Share2, Check, ShieldCheck
 } from "lucide-react";
 import ShareModal from "@/components/ShareModal";
+import HelpModal from "@/components/HelpModal";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import { Info } from "lucide-react";
 import { PDFDocument, PageSizes } from "pdf-lib";
 
 const jsonLd = {
@@ -55,6 +58,7 @@ export default function ImageToPdfPage() {
     const [margin, setMargin] = useState(20); // in points
     const [quality, setQuality] = useState(0.82); // JPEG quality 0-1
     const [showSettings, setShowSettings] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -266,12 +270,19 @@ export default function ImageToPdfPage() {
 
             {/* ── Header ── */}
             <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <ImagePlus size={11} className="text-sky-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 relative group">
+                    <ImagePlus size={11} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is this?"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    Image <span className="text-sky-500">to PDF</span>
+                    Image <span className="text-white">to PDF</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
                     Convert JPG, PNG, or WebP images into a single PDF. Drag to reorder, set page size and margins — all in your browser.
@@ -294,7 +305,7 @@ export default function ImageToPdfPage() {
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`py-10 px-6 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${isDragging ? "border-sky-500 bg-sky-500/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
+                    className={`py-10 px-6 border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center gap-4 transition-all duration-300 cursor-pointer ${isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
                 >
                     <input ref={fileInputRef} type="file" multiple accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" onChange={handleFileChange} />
                     <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center shadow-xl">
@@ -314,7 +325,7 @@ export default function ImageToPdfPage() {
                         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between px-6 py-4 border-b border-zinc-900 gap-4">
                             <div className="flex items-center gap-4">
                                 <h3 className="text-sm font-bold text-white">
-                                    Images <span className="text-sky-400">({images.length})</span>
+                                    Images <span className="text-white">({images.length})</span>
                                 </h3>
                                 <div className="flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
                                     <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
@@ -324,7 +335,7 @@ export default function ImageToPdfPage() {
                             <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
                                 <button
                                     onClick={() => setShowSettings(s => !s)}
-                                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-all whitespace-nowrap ${showSettings ? "border-sky-500/50 bg-sky-500/10 text-sky-400" : "border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-600"}`}
+                                    className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-all whitespace-nowrap ${showSettings ? "border-white/50 bg-white/10 text-white" : "border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-600"}`}
                                 >
                                     <Settings2 size={14} /> Settings
                                 </button>
@@ -343,7 +354,7 @@ export default function ImageToPdfPage() {
                                         <label className="text-[10px] font-semibold text-zinc-500">Page Size</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {(["A4", "A3", "Letter", "FitImage"] as PageSize[]).map(s => (
-                                                <button key={s} onClick={() => setPageSize(s)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${pageSize === s ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
+                                                <button key={s} onClick={() => setPageSize(s)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${pageSize === s ? "bg-white/20 border-white/50 text-white" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
                                                     {s === "FitImage" ? "Fit Image" : s}
                                                 </button>
                                             ))}
@@ -354,7 +365,7 @@ export default function ImageToPdfPage() {
                                         <label className="text-[10px] font-semibold text-zinc-500">Orientation</label>
                                         <div className="flex gap-1.5">
                                             {(["portrait", "landscape"] as Orientation[]).map(o => (
-                                                <button key={o} onClick={() => setOrientation(o)} disabled={pageSize === "FitImage"} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border capitalize transition-all disabled:opacity-30 ${orientation === o ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
+                                                <button key={o} onClick={() => setOrientation(o)} disabled={pageSize === "FitImage"} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border capitalize transition-all disabled:opacity-30 ${orientation === o ? "bg-white/20 border-white/50 text-white" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
                                                     {o}
                                                 </button>
                                             ))}
@@ -365,7 +376,7 @@ export default function ImageToPdfPage() {
                                         <label className="text-[10px] font-semibold text-zinc-500">Image Fit</label>
                                         <div className="flex flex-wrap gap-1.5">
                                             {([["fit", "Letterbox"], ["fill", "Fill Page"], ["original", "Original Size"]] as [ImageFit, string][]).map(([val, label]) => (
-                                                <button key={val} onClick={() => setImageFit(val)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${imageFit === val ? "bg-sky-500/20 border-sky-500/50 text-sky-300" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
+                                                <button key={val} onClick={() => setImageFit(val)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border transition-all ${imageFit === val ? "bg-white/20 border-white/50 text-white" : "border-zinc-800 text-zinc-500 hover:text-white"}`}>
                                                     {label}
                                                 </button>
                                             ))}
@@ -374,7 +385,7 @@ export default function ImageToPdfPage() {
                                     {/* Margin */}
                                     <div className="space-y-2">
                                         <label className="text-[10px] font-semibold text-zinc-500">Margin — {margin}pt</label>
-                                        <input type="range" min={0} max={72} step={4} value={margin} onChange={e => setMargin(+e.target.value)} className="w-full accent-sky-500 cursor-pointer" />
+                                        <input type="range" min={0} max={72} step={4} value={margin} onChange={e => setMargin(+e.target.value)} className="w-full white cursor-pointer" />
                                         <div className="flex justify-between text-[9px] text-zinc-600 font-bold">
                                             <span>None</span><span>72pt</span>
                                         </div>
@@ -382,9 +393,9 @@ export default function ImageToPdfPage() {
                                     {/* Quality */}
                                     <div className="space-y-2">
                                         <label className="text-[11px] font-semibold tracking-wider text-zinc-500">
-                                            Quality — <span className={quality >= 0.8 ? "text-green-400" : quality >= 0.5 ? "text-yellow-400" : "text-red-400"}>{Math.round(quality * 100)}%</span>
+                                            Quality — <span className={quality >= 0.8 ? "text-white" : quality >= 0.5 ? "text-white/60" : "text-red-400"}>{Math.round(quality * 100)}%</span>
                                         </label>
-                                        <input type="range" min={0.1} max={1} step={0.05} value={quality} onChange={e => setQuality(+e.target.value)} className="w-full accent-sky-500 cursor-pointer" />
+                                        <input type="range" min={0.1} max={1} step={0.05} value={quality} onChange={e => setQuality(+e.target.value)} className="w-full white cursor-pointer" />
                                         <div className="flex justify-between text-[9px] text-zinc-600 font-bold">
                                             <span>Smallest</span><span>Best Quality</span>
                                         </div>
@@ -403,7 +414,7 @@ export default function ImageToPdfPage() {
                                         onDragStart={e => onDragStart(e, index)}
                                         onDragOver={e => e.preventDefault()}
                                         onDrop={e => onDropCard(e, index)}
-                                        className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-grab active:cursor-grabbing ${draggedIdx === index ? "opacity-30 border-sky-500 border-dashed" : "border-zinc-800 hover:border-sky-500/40 hover:-translate-y-1"}`}
+                                        className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-grab active:cursor-grabbing ${draggedIdx === index ? "opacity-30 border-white border-dashed" : "border-zinc-800 hover:border-white/40 hover:-translate-y-1"}`}
                                     >
                                         {/* Preview */}
                                         <div className="aspect-[3/4] bg-zinc-900 relative">
@@ -450,7 +461,7 @@ export default function ImageToPdfPage() {
                 <button
                     onClick={convert}
                     disabled={images.length === 0 || isConverting}
-                    className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-sky-500 text-white hover:bg-sky-600 shadow-lg shadow-sky-500/20"}`}
+                    className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-white hover:bg-white shadow-lg shadow-white/20"}`}
                 >
                     {isConverting
                         ? <><RefreshCw size={18} className="animate-spin" /> Converting {images.length} image{images.length !== 1 ? "s" : ""}…</>
@@ -479,8 +490,8 @@ export default function ImageToPdfPage() {
 
                         {/* Right: Actions */}
                         <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-6 flex flex-col justify-center gap-6">
-                            <div className="w-16 h-16 bg-sky-500/10 border border-sky-500/20 rounded-full flex items-center justify-center mx-auto">
-                                <ImagePlus size={28} className="text-sky-400" />
+                            <div className="w-16 h-16 bg-white/10 border border-white/20 rounded-full flex items-center justify-center mx-auto">
+                                <ImagePlus size={28} className="text-white" />
                             </div>
                             <div className="text-center">
                                 <h2 className="text-xl font-black text-white tracking-tight mb-1">Looking Good!</h2>
@@ -493,7 +504,7 @@ export default function ImageToPdfPage() {
                                     <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Pages</span>
                                 </div>
                                 <div className="text-center">
-                                    <span className="block text-2xl font-black text-sky-400">{outputSize ? formatBytes(outputSize) : "—"}</span>
+                                    <span className="block text-2xl font-black text-white">{outputSize ? formatBytes(outputSize) : "—"}</span>
                                     <span className="text-[11px] font-semibold tracking-wider text-zinc-500">File Size</span>
                                 </div>
                             </div>
@@ -509,7 +520,7 @@ export default function ImageToPdfPage() {
                                     onClick={() => setIsSharing(true)}
                                     className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all hover:-translate-y-0.5"
                                 >
-                                    <Share2 size={16} className="text-sky-400" /> Share to Mobile
+                                    <Share2 size={16} className="text-white" /> Share to Mobile
                                 </button>
                                 <button
                                     onClick={() => setPreviewUrl(null)}
@@ -529,21 +540,76 @@ export default function ImageToPdfPage() {
                 </div>
             )}
 
-            {/* ── Feature footer ── */}
-            {images.length === 0 && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12">
-                    {[
-                        { title: "Any Image Format", desc: "Supports JPG, PNG, WebP, and GIF. Mix formats in a single PDF." },
-                        { title: "Full Control", desc: "Set page size (A4, A3, Letter), orientation, margin, and how images scale to fill pages." },
-                        { title: "Drag to Reorder", desc: "Drag image cards to arrange pages in exactly the order you need before converting." }
-                    ].map((f, i) => (
-                        <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[10px] font-bold text-sky-500">{f.title}</h4>
-                            <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
-                        </div>
-                    ))}
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Visual Document Infrastructure"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Image-to-PDF Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for document assembly. AssetNest <strong>Image-to-PDF Converter</strong> transcends basic file merging—it provides a structural editor where you can manipulate individual image pages as if they were physical assets. Whether you are compiling a massive photo book, a complex legal docket, or a personal portfolio, our tool gives you the power to drag, reorder, and refine your PDF documents with zero loss in quality and absolute data privacy.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ImagePlus size={20} className="text-zinc-500" />
+                                How to Build Your PDF
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Drop JPG, PNG, WebP, and GIF files. Mix formats instantly in a single container.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Dynamic Reorder:</strong> Use the drag-and-drop grid to visually sequence your document flow.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Layout Control:</strong> Open Settings to toggle A4, A3, Letter, or "Fit Image" sizing on the fly.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based tools that store your sensitive photo data on external servers, our converter operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Processing • High-Fidelity Vector Alignment • Lossless Container Preservation • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Portrait vs Landscape?">
+                                Mixed orientations are supported. We center and scale each asset perfectly based on your fit settings.
+                            </AccordionItem>
+                            <AccordionItem title="Image Limits?">
+                                The only limit is your device&apos;s memory. We easily handle hundreds of high-res photos in a single export.
+                            </AccordionItem>
+                            <AccordionItem title="PDF Quality?">
+                                Zero loss. Our engine creates a high-definition PDF container that preserves every pixel of your original images.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
-            )}
+            </HelpModal>
             
             <ShareModal 
                 isOpen={isSharing} 

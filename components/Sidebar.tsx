@@ -3,9 +3,10 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin, Info, Mail } from "lucide-react";
+import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin, Info, Mail, Settings } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
 import { usePins } from "./PinProvider";
+import { useSettings } from "./SettingsProvider";
 import { ALL_TOOLS } from "@/lib/tools";
 
 // ── Menu config ───────────────────────────────────────────────────────────────
@@ -177,7 +178,8 @@ function NavItem({
 
 // ── Sidebar ───────────────────────────────────────────────────────────────────
 const Sidebar = () => {
-    const { isOpen } = useSidebar();
+    const { isOpen, isNavigating } = useSidebar();
+    const { setSettingsOpen } = useSettings();
     const { pinnedToolIds } = usePins();
     const pathname = usePathname();
     const isHome = pathname === "/";
@@ -186,7 +188,8 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 transition-[width,opacity] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-x-hidden
+            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-x-hidden
+                ${isNavigating ? "!transition-none" : "transition-[width,opacity] duration-500"}
                 ${isOpen ? "w-64" : isHome ? "w-0 opacity-0" : "w-16"}`}
         >
             {/* Background dot grid */}
@@ -253,6 +256,19 @@ const Sidebar = () => {
                         </nav>
                     </div>
                 </div>
+
+                {/* ── Settings Button Bottom ── */}
+                <div className={`shrink-0 pt-4 mt-2 border-t border-white/5 transition-all duration-500 ${isOpen ? "px-1" : "px-0 flex justify-center"}`}>
+                   <button 
+                       onClick={() => setSettingsOpen(true)} 
+                       className={`flex items-center group overflow-hidden w-full text-zinc-500 hover:text-white rounded-xl hover:bg-zinc-800/50 transition-all ${isOpen ? "gap-3 px-3 py-2" : "justify-center h-12"}`}
+                       title="Platform Settings"
+                   >
+                      <Settings size={isOpen ? 18 : 22} className="shrink-0 group-hover:rotate-45 transition-transform duration-500 ease-in-out" />
+                      <span className={`text-[13px] font-bold tracking-tight whitespace-nowrap transition-all duration-500 ${isOpen ? "opacity-100 max-w-[150px]" : "opacity-0 max-w-0"}`}>Platform Settings</span>
+                   </button>
+                </div>
+
             </div>
         </aside>
     );

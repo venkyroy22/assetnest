@@ -4,8 +4,10 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
     Image as ImageIcon, UploadCloud, GripHorizontal,
     X, Download, Trash2, Maximize2, Camera, Scissors, Grid3X3,
-    Info, DownloadCloud, Package, CheckCircle
+    Info, DownloadCloud, Package, CheckCircle, Check, ShieldCheck
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import JSZip from "jszip";
@@ -18,6 +20,7 @@ interface GridImage {
 
 export default function IGGridPlannerPage() {
     const [images, setImages] = useState<GridImage[]>([]);
+    const [showHelp, setShowHelp] = useState(false);
     const [draggedIdx, setDraggedIdx] = useState<number | null>(null);
     const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -231,13 +234,20 @@ export default function IGGridPlannerPage() {
                 >
                     <ArrowLeft size={16} /> back to tools
                 </Link>
-                <div className="flex items-center gap-3 relative mr-8 sm:mr-0 z-10">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(236,72,153,0.4)]" style={{ background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" }}>
+                <div className="flex items-center gap-3 relative mr-8 sm:mr-0 z-10 group">
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)]" style={{ background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" }}>
                         AN
                     </div>
                     <span className="text-lg font-bold tracking-tight text-white hidden sm:block">
                         IG Grid Planner
                     </span>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        title="What is this?"
+                    >
+                        <Info size={10} />
+                    </button>
                 </div>
             </header>
 
@@ -279,7 +289,7 @@ export default function IGGridPlannerPage() {
                     <div className="px-4 py-4">
                         <div className="flex items-center gap-6">
                             <div className="relative group cursor-pointer" onClick={() => profileInputRef.current?.click()}>
-                                <div className="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500">
+                                <div className="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-white via-white to-white">
                                     <div className="w-full h-full rounded-full border-2 border-black overflow-hidden bg-zinc-900 flex items-center justify-center relative">
                                         {profilePic ? (
                                             <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
@@ -368,7 +378,7 @@ export default function IGGridPlannerPage() {
                                         onDrop={(e) => handleDrop(e, idx)}
                                         onDragEnd={() => handleDragEnd(idx)}
                                         className={`aspect-square relative group cursor-grab active:cursor-grabbing transition-transform duration-200 ${hoveredIdx === idx && draggedIdx !== idx
-                                            ? "scale-[0.95] z-10 rounded-lg overflow-hidden shadow-2xl ring-2 ring-pink-500"
+                                            ? "scale-[0.95] z-10 rounded-lg overflow-hidden shadow-2xl ring-2 ring-white"
                                             : "scale-100"
                                             }`}
                                     >
@@ -407,7 +417,7 @@ export default function IGGridPlannerPage() {
                 <div className="sticky top-10 space-y-6">
                     <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(236, 72, 153, 0.1)", color: "#ec4899" }}>
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <UploadCloud size={20} />
                             </div>
                             <div>
@@ -416,8 +426,8 @@ export default function IGGridPlannerPage() {
                             </div>
                         </div>
 
-                        <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-pink-500 hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-zinc-950">
-                            <UploadCloud className="text-zinc-600 group-hover:text-pink-500 transition-colors mb-2" size={28} />
+                        <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-white hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-zinc-950">
+                            <UploadCloud className="text-zinc-600 group-hover:text-white transition-colors mb-2" size={28} />
                             <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors">Click to upload</span>
                             <span className="text-xs font-semibold text-zinc-600 mt-1 tracking-wide">JPG, PNG, HEIC</span>
                             <input
@@ -433,7 +443,7 @@ export default function IGGridPlannerPage() {
 
                     <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(168, 85, 247, 0.1)", color: "#a855f7" }}>
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <Scissors size={20} />
                             </div>
                             <div>
@@ -442,8 +452,8 @@ export default function IGGridPlannerPage() {
                             </div>
                         </div>
 
-                        <label className="block w-full h-16 border border-zinc-700 hover:border-purple-500 bg-black hover:bg-purple-500/10 rounded-2xl cursor-pointer transition-colors relative flex items-center justify-center group overflow-hidden">
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-purple-400 transition-colors flex items-center gap-2">
+                        <label className="block w-full h-16 border border-zinc-700 hover:border-white bg-black hover:bg-white/10 rounded-2xl cursor-pointer transition-colors relative flex items-center justify-center group overflow-hidden">
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors flex items-center gap-2">
                                 <Grid3X3 size={16} /> Choose Image to Split
                             </span>
                             <input
@@ -458,7 +468,7 @@ export default function IGGridPlannerPage() {
 
                     <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
-                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(59, 130, 246, 0.1)", color: "#3b82f6" }}>
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <GripHorizontal size={20} />
                             </div>
                             <div>
@@ -498,13 +508,84 @@ export default function IGGridPlannerPage() {
                 </div>
             </main>
 
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Visual Aesthetic Orchestration"
+            >
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Aesthetic Orchestration
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for feed planning. AssetNest <strong>Advanced IG Grid Planner</strong> transcends basic photo layout—it provides a structural simulation where you can architect your brand identity with zero data exposure and absolute privacy. Whether you are orchestrating a complex color flow, splitting massive panoramic banners, or distilling your personal narrative into a targeted 3x3 layout, our tool gives you the power to manipulate your social architecture with industry-leading visual precision and zero server dependency.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <GripHorizontal size={20} className="text-zinc-500" />
+                                How to Plan Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Drop your entire camera roll. Our engine renders physical mockups for instant aesthetic verification.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Visual Grid Composer:</strong> Drag and drop posts to test structural combinations, or customize your bio to mirror your actual profile.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Giant Image Splicing:</strong> Automatically slice high-res landscapes into perfectly numbered tiles ready for sequential posting.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based planning apps that log your social credentials and store your assets on external servers, our planner operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Sync • Local Storage Mockup • Metadata Preservation • No Account Linking
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Account Required?">
+                                No. Our engine is standalone. Plan your grid privately without ever providing your social login credentials.
+                            </AccordionItem>
+                            <AccordionItem title="Splicing Quality?">
+                                Lossless. We utilize browser-side GPU cropping to ensure your split tiles retain high-resolution edge sharpness.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Caching?">
+                                Zero data persistence. Your planned grid resides in local RAM and is flushed upon session reset.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
+
             {/* ── Split Image Modal ── */}
             {splitModalOpen && splitImageSrc && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
                     <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
 
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-bold text-xl text-purple-500">
+                            <h3 className="font-bold text-xl text-white">
                                 {splitResults.length > 0 ? "Grid Split Successful!" : "Split Giant Image"}
                             </h3>
                             <button onClick={() => {
@@ -549,7 +630,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitCols(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-purple-500 text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-white text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -563,7 +644,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitRows(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-purple-500 text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-white text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -572,7 +653,7 @@ export default function IGGridPlannerPage() {
                                         <button
                                             onClick={confirmSplit}
                                             disabled={isSplitting}
-                                            className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-purple-600 hover:bg-purple-500 disabled:opacity-50"
+                                            className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white disabled:opacity-50"
                                         >
                                             {isSplitting ? "Splitting..." : `Split into ${splitCols * splitRows} Images`}
                                         </button>
@@ -581,11 +662,11 @@ export default function IGGridPlannerPage() {
                             ) : (
                                 /* Success View */
                                 <div className="space-y-8">
-                                    <div className="bg-purple-500/10 border border-purple-500/20 p-4 sm:p-5 rounded-xl flex items-start gap-4">
-                                        <Info size={24} className="text-purple-400 shrink-0 mt-0.5" />
+                                    <div className="bg-white/10 border border-white/20 p-4 sm:p-5 rounded-xl flex items-start gap-4">
+                                        <Info size={24} className="text-white shrink-0 mt-0.5" />
                                         <div>
                                             <h4 className="text-white font-bold mb-1">How to post to Instagram</h4>
-                                            <p className="text-sm text-purple-200">
+                                            <p className="text-sm text-white">
                                                 To make these images assemble perfectly on your Instagram timeline, you must post them in <strong>reverse order</strong>. Download the images, and begin posting from the last file to the first file.
                                             </p>
                                         </div>
@@ -603,7 +684,7 @@ export default function IGGridPlannerPage() {
                                                     <img src={img.url} className="w-full h-full object-cover rounded shadow-md" />
                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
                                                         <span className="text-[10px] font-bold text-white mb-1">Post Order</span>
-                                                        <span className="w-6 h-6 rounded-full bg-purple-500 text-white font-bold flex items-center justify-center text-xs">
+                                                        <span className="w-6 h-6 rounded-full bg-white text-white font-bold flex items-center justify-center text-xs">
                                                             {splitResults.length - i}
                                                         </span>
                                                     </div>
@@ -623,7 +704,7 @@ export default function IGGridPlannerPage() {
 
                                             <button
                                                 onClick={addSplitImagesToGrid}
-                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-purple-600 hover:bg-purple-500 border border-purple-500"
+                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white border border-white"
                                             >
                                                 <CheckCircle size={18} />
                                                 Add to Grid Planner

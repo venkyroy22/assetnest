@@ -6,6 +6,9 @@ import {
     RefreshCw, Smartphone, Settings, Check, Edit3,
     Receipt, Store, CameraOff, Package, Copy,
 } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
+import { Info } from "lucide-react";
 import QRCode from "qrcode";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -100,6 +103,7 @@ export default function BillingPage() {
     // Shop editor
     const [shopOpen, setShopOpen] = useState(false);
     const [tmpShop, setTmpShop] = useState<ShopInfo>(DEFAULT_SHOP);
+    const [showHelp, setShowHelp] = useState(false);
 
     const videoRef = useRef<HTMLVideoElement>(null);
     const controlsRef = useRef<{ stop: () => void } | null>(null);  // IScannerControls from ZXing
@@ -294,11 +298,21 @@ export default function BillingPage() {
             <div className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
                 <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-emerald-500 rounded-lg flex items-center justify-center shrink-0">
+                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0">
                             <Receipt size={16} className="text-black" />
                         </div>
-                        <div>
-                            <p className="text-xs font-semibold tracking-wide text-zinc-500">Smart Billing</p>
+                        <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                                <p className="text-[10px] font-bold tracking-[0.15em] text-zinc-500 uppercase">Smart Billing</p>
+                                <button 
+                                    onClick={() => setShowHelp(true)}
+                                    className="p-1 px-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 shadow-xl"
+                                    title="Information"
+                                >
+                                    <Info size={11} strokeWidth={2.5} />
+                                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Info</span>
+                                </button>
+                            </div>
                             <p className="text-xs font-black text-white leading-tight truncate max-w-[160px]">
                                 {shopInfo.name || "Configure Shop" }
                             </p>
@@ -310,7 +324,7 @@ export default function BillingPage() {
                         </span>
                         <button
                             onClick={() => { setTmpShop(shopInfo); setShopOpen(true); }}
-                            className="p-2 border border-zinc-700 text-zinc-400 hover:border-emerald-500 hover:text-emerald-400 transition-all rounded-lg"
+                            className="p-2 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-lg"
                         >
                             <Settings size={15} />
                         </button>
@@ -336,7 +350,7 @@ export default function BillingPage() {
                     >
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl border ${scanning ? "bg-red-500/10 border-red-500/30" :
-                                scanStatus === "error" ? "bg-amber-500/10 border-amber-500/30" :
+                                scanStatus === "error" ? "bg-white/10 border-white/30" :
                                     "bg-zinc-800 border-zinc-700"
                                 }`}>
                                 {scanning ? <CameraOff size={18} /> : <Camera size={18} />}
@@ -371,12 +385,12 @@ export default function BillingPage() {
                             {scanning && (
                                 <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                                     <div className="relative w-52 h-36">
-                                        <div className="absolute top-0 left-0 w-7 h-7 border-t-[3px] border-l-[3px] border-emerald-400 rounded-tl-lg" />
-                                        <div className="absolute top-0 right-0 w-7 h-7 border-t-[3px] border-r-[3px] border-emerald-400 rounded-tr-lg" />
-                                        <div className="absolute bottom-0 left-0 w-7 h-7 border-b-[3px] border-l-[3px] border-emerald-400 rounded-bl-lg" />
-                                        <div className="absolute bottom-0 right-0 w-7 h-7 border-b-[3px] border-r-[3px] border-emerald-400 rounded-br-lg" />
+                                        <div className="absolute top-0 left-0 w-7 h-7 border-t-[3px] border-l-[3px] border-white rounded-tl-lg" />
+                                        <div className="absolute top-0 right-0 w-7 h-7 border-t-[3px] border-r-[3px] border-white rounded-tr-lg" />
+                                        <div className="absolute bottom-0 left-0 w-7 h-7 border-b-[3px] border-l-[3px] border-white rounded-bl-lg" />
+                                        <div className="absolute bottom-0 right-0 w-7 h-7 border-b-[3px] border-r-[3px] border-white rounded-br-lg" />
                                         {/* Animated scan line */}
-                                        <div className="absolute inset-x-2 h-0.5 bg-emerald-400 shadow-[0_0_8px_#34d399] animate-bounce" style={{ top: "45%" }} />
+                                        <div className="absolute inset-x-2 h-0.5 bg-white shadow-[0_0_8px_rgba(255, 255, 255,0.6)] animate-bounce" style={{ top: "45%" }} />
                                     </div>
                                 </div>
                             )}
@@ -388,7 +402,7 @@ export default function BillingPage() {
 
                     {scanStatus === "error" && scanError && !scanning && (
                         <div className="px-4 pb-4 pt-0">
-                            <p className="text-[11px] text-amber-400 font-medium bg-amber-500/10 border border-amber-500/20 rounded-xl px-3 py-2">
+                            <p className="text-[11px] text-white font-medium bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                                 {scanError}
                             </p>
                         </div>
@@ -398,7 +412,7 @@ export default function BillingPage() {
                 {/* ── Add Item Form ── */}
                 <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl p-5 space-y-4">
                     <div className="flex items-center gap-2 mb-2">
-                        <Package size={14} className="text-emerald-400" />
+                        <Package size={14} className="text-zinc-400" />
                         <span className="text-sm font-semibold tracking-wide text-zinc-400">
                             {editId ? "Edit Item" : "Add Item"}
                         </span>
@@ -422,10 +436,10 @@ export default function BillingPage() {
                                 }
                             }}
                             placeholder="Scan or type barcode number"
-                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm font-mono text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm font-mono text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                         />
                         {formBarcode && catalog[formBarcode.trim()] && (
-                            <p className="text-[10px] text-emerald-400 font-black mt-1">
+                            <p className="text-[10px] text-white font-black mt-1">
                                 ✓ Found in catalog — auto-filled
                             </p>
                         )}
@@ -442,7 +456,7 @@ export default function BillingPage() {
                             onChange={e => setFormName(e.target.value)}
                             onKeyDown={e => e.key === "Enter" && addItem()}
                             placeholder="e.g. Tata Tea 500g"
-                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                         />
                     </div>
 
@@ -460,7 +474,7 @@ export default function BillingPage() {
                                 onChange={e => setFormPrice(e.target.value)}
                                 onKeyDown={e => e.key === "Enter" && addItem()}
                                 placeholder="0.00"
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                             />
                         </div>
                         <div>
@@ -470,7 +484,7 @@ export default function BillingPage() {
                                 min="1"
                                 value={formQty}
                                 onChange={e => setFormQty(e.target.value)}
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all"
+                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all"
                             />
                         </div>
                         <div>
@@ -478,7 +492,7 @@ export default function BillingPage() {
                             <select
                                 value={formGst}
                                 onChange={e => setFormGst(Number(e.target.value) as GstRate)}
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-2 py-2.5 text-sm text-zinc-200 outline-none transition-all cursor-pointer"
+                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-2 py-2.5 text-sm text-zinc-200 outline-none transition-all cursor-pointer"
                             >
                                 {GST_RATES.map(r => <option key={r} value={r}>{r}%</option>)}
                             </select>
@@ -489,7 +503,7 @@ export default function BillingPage() {
                         <button
                             onClick={addItem}
                             disabled={!formName.trim() || !formPrice}
-                            className="flex-1 flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="flex-1 flex items-center justify-center gap-2 bg-white text-white py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-white/10"
                         >
                             {editId ? <><Check size={14} /> Update Item</> : <><Plus size={14} /> Add Item</>}
                         </button>
@@ -509,7 +523,7 @@ export default function BillingPage() {
                     <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl overflow-hidden">
                         <div className="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                                <Receipt size={14} className="text-emerald-400" />
+                                <Receipt size={14} className="text-zinc-400" />
                                 <span className="text-xs font-semibold tracking-wide text-zinc-400">
                                     Bill Items ({items.length})
                                 </span>
@@ -540,7 +554,7 @@ export default function BillingPage() {
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1 shrink-0">
-                                            <button onClick={() => startEdit(item)} className="p-1.5 text-zinc-600 hover:text-emerald-400 transition-colors rounded-lg">
+                                            <button onClick={() => startEdit(item)} className="p-1.5 text-zinc-600 hover:text-white transition-colors rounded-lg">
                                                 <Edit3 size={13} />
                                             </button>
                                             <button onClick={() => removeItem(item.id)} className="p-1.5 text-zinc-600 hover:text-red-400 transition-colors rounded-lg">
@@ -581,7 +595,7 @@ export default function BillingPage() {
 
                             <div className="flex justify-between pt-2 border-t border-zinc-700">
                                 <span className="text-sm font-semibold tracking-wide text-white">Grand Total</span>
-                                <span className="text-xl font-black text-emerald-400">{fmtINR(grandTotal)}</span>
+                                <span className="text-xl font-black text-white">{fmtINR(grandTotal)}</span>
                             </div>
                         </div>
                     </div>
@@ -591,7 +605,7 @@ export default function BillingPage() {
                 {items.length > 0 && (
                     <button
                         onClick={generateQR}
-                        className="w-full flex items-center justify-center gap-3 bg-emerald-500 text-black py-5 rounded-full text-sm font-bold tracking-wide hover:bg-emerald-400 active:scale-[0.98] transition-all shadow-2xl shadow-emerald-500/20"
+                        className="w-full flex items-center justify-center gap-3 bg-white text-white py-5 rounded-full text-sm font-bold tracking-wide hover:bg-white active:scale-[0.98] transition-all shadow-2xl shadow-white/20"
                     >
                         <Smartphone size={20} />
                         Generate Customer QR Code
@@ -613,10 +627,73 @@ export default function BillingPage() {
             </div>
 
             <footer className="max-w-4xl mx-auto px-6 py-10 text-center">
-                <p className="text-xs font-semibold tracking-wide text-zinc-600">
-                    Smart Billing System — Safe, Fast, Digital
+                <p className="text-xs font-semibold tracking-wide text-zinc-600 italic">
+                    Smart Billing System — Safe, Fast, Digital — AssetNest Tools
                 </p>
             </footer>
+
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Digital Invoicing Infrastructure"
+            >
+                <div className="max-w-4xl mx-auto space-y-16 pb-16 text-left">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Digital Billing for the Modern Merchant
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into the future of retail with <strong>AssetNest Smart Billing</strong>. Our lightweight, browser-based POS (Point of Sale) system is designed for shop owners, freelancers, and small businesses who need a fast, privacy-first way to generate invoices. By combining an integrated barcode scanner with dynamic QR code generation, we eliminate the need for expensive hardware or complex software. Every receipt generated is fully digital, reducing paper waste and providing your customers with a professional, mobile-friendly experience instantly.
+                        </p>
+                    </section>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ScanLine size={18} className="text-zinc-500" />
+                                Barcode Intelligence
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Turn any smartphone or webcam into a professional barcode reader. Our system supports <strong>EAN-13, CODE-128, and QR codes</strong>. Once scanned, the tool automatically fetches product details from your local catalog, allowing you to build complex bills in seconds. 
+                            </p>
+                            <div className="p-5 bg-white/5 rounded-2xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Supported Formats</p>
+                                <p className="text-[10px] text-zinc-500 mt-2 font-bold tracking-tight">UPC-A, UPC-E, EAN-8, EAN-13, CODE-39, CODE-128, ITF, QR</p>
+                            </div>
+                        </section>
+                        
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Smartphone size={18} className="text-zinc-500" />
+                                Contactless Receipts
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                In the era of digital payments, why still use paper? Generate a unique, encrypted QR code for every transaction. Your customer simply scans the QR with their phone to view, download, or print their official GST-compliant receipt.
+                            </p>
+                            <ul className="space-y-3 text-xs text-zinc-400 font-bold">
+                                <li className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white"/> GST Calculation (0% - 28%)</li>
+                                <li className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white"/> Automatic SGST/CGST Split</li>
+                                <li className="flex items-center gap-2"><div className="w-1 h-1 rounded-full bg-white"/> Professional INR Formatting</li>
+                            </ul>
+                        </section>
+                    </div>
+
+                    <div className="pt-10 border-t border-zinc-900">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                        <Accordion>
+                            <AccordionItem title="Privacy-First Coding">
+                                We never see your sales data. All inventory and shop details are stored in your device&apos;s local memory, ensuring absolute confidentiality.
+                            </AccordionItem>
+                            <AccordionItem title="No Hidden Costs">
+                                Unlike traditional SaaS billing tools, AssetNest Billing is free to use with no monthly subscriptions or per-invoice fees.
+                            </AccordionItem>
+                            <AccordionItem title="Multi-Device Ready">
+                                Optimized for touchscreens, tablets, and laptops. Use it as a dedicated billing terminal in your physical storefront.
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </div>
+            </HelpModal>
 
             {/* ── QR Modal ── */}
             {showQR && qrDataUrl && (
@@ -627,7 +704,7 @@ export default function BillingPage() {
 
                         <div className="flex items-center justify-between mb-5">
                             <div>
-                                <p className="text-xs font-semibold tracking-wide text-emerald-400 mb-0.5">Customer Bill QR</p>
+                                <p className="text-xs font-semibold tracking-wide text-white mb-0.5">Customer Bill QR</p>
                                 <p className="text-sm font-black text-white">Scan to view digital receipt</p>
                             </div>
                             <button onClick={() => setShowQR(false)}
@@ -646,7 +723,7 @@ export default function BillingPage() {
                         <div className="flex items-center justify-between mb-5 px-2">
                             <div>
                                 <p className="text-xs font-semibold tracking-wide text-zinc-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
-                                <p className="text-2xl font-black text-emerald-400">{fmtINR(grandTotal)}</p>
+                                <p className="text-2xl font-black text-white">{fmtINR(grandTotal)}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] text-zinc-600 font-medium">{invoiceNo}</p>
@@ -662,7 +739,7 @@ export default function BillingPage() {
 
                         {/* Copy link */}
                         <button onClick={copyLink}
-                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-emerald-500 hover:text-emerald-400 rounded-full text-xs font-bold tracking-wide transition-all">
+                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-white hover:text-white rounded-full text-xs font-bold tracking-wide transition-all">
                             {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Bill Link</>}
                         </button>
                     </div>
@@ -677,7 +754,7 @@ export default function BillingPage() {
                         onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2">
-                                <Store size={16} className="text-emerald-400" />
+                                <Store size={16} className="text-white" />
                                 <p className="text-sm font-black text-white">Shop Details</p>
                             </div>
                             <button onClick={() => setShopOpen(false)}
@@ -699,13 +776,13 @@ export default function BillingPage() {
                                         value={tmpShop[f.key as keyof ShopInfo]}
                                         onChange={e => setTmpShop(p => ({ ...p, [f.key]: e.target.value }))}
                                         placeholder={f.placeholder}
-                                        className="w-full bg-zinc-800 border border-zinc-700 focus:border-emerald-500 rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                                        className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                                     />
                                 </div>
                             ))}
                         </div>
                         <button onClick={saveShop}
-                            className="mt-5 w-full flex items-center justify-center gap-2 bg-emerald-500 text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-emerald-400 transition-all">
+                            className="mt-5 w-full flex items-center justify-center gap-2 bg-white text-white py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white transition-all shadow-lg shadow-white/10">
                             <Check size={13} /> Save Shop Info
                         </button>
                     </div>

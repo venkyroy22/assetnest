@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, Split, Info, X, Scissors, Undo, Redo, Share2 } from "lucide-react";
+import { Upload, Download, RefreshCw, Split, Info, X, Scissors, Undo, Redo, Share2, Layout, Check, ShieldCheck } from "lucide-react";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
@@ -37,6 +39,7 @@ export default function PdfSplitterPage() {
     const [outputUrl, setOutputUrl] = useState<string | null>(null);
     const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
     const [isSharing, setIsSharing] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,13 +152,20 @@ export default function PdfSplitterPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             {/* Header */}
-            <div className="text-center mb-10">
+            <div className="text-center mb-10 relative group">
+                <button 
+                    onClick={() => setShowHelp(true)}
+                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    title="View Information"
+                >
+                    <Info size={14} />
+                </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <Scissors size={11} className="text-violet-400" />
+                    <Scissors size={11} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    PDF <span className="text-violet-500">Splitter</span>
+                    PDF <span className="text-white">Splitter</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
                     Upload a PDF, visually select the pages you want, and export them as a new PDF — entirely in your browser.
@@ -177,7 +187,7 @@ export default function PdfSplitterPage() {
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-violet-500 bg-violet-500/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
+                    className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
                 >
                     <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
                     <div className="text-center px-8 space-y-4">
@@ -195,8 +205,8 @@ export default function PdfSplitterPage() {
                     {/* Controls bar */}
                     <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-5 flex flex-col md:flex-row items-start md:items-center gap-4">
                         <div className="flex items-center gap-3 shrink-0">
-                            <div className="w-9 h-9 bg-violet-500/10 border border-violet-500/20 rounded-xl flex items-center justify-center">
-                                <Split size={16} className="text-violet-400" />
+                            <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
+                                <Split size={16} className="text-white" />
                             </div>
                             <div>
                                 <p className="text-xs font-black text-white truncate max-w-[200px]">{file.name}</p>
@@ -213,9 +223,9 @@ export default function PdfSplitterPage() {
                                 value={rangeInput}
                                 onChange={e => setRangeInput(e.target.value)}
                                 placeholder="e.g. 1, 3-5, 8"
-                                className="bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-medium text-zinc-200 px-4 py-2.5 placeholder:text-zinc-600 focus:outline-none focus:border-violet-500/50 flex-grow"
+                                className="bg-zinc-900 border border-zinc-800 rounded-xl text-xs font-medium text-zinc-200 px-4 py-2.5 placeholder:text-zinc-600 focus:outline-none focus:border-white/50 flex-grow"
                             />
-                            <button onClick={applyRange} disabled={!rangeInput.trim()} className="h-10 px-4 bg-violet-500/10 border border-violet-500/20 text-violet-400 text-xs font-semibold tracking-wide rounded-full hover:bg-violet-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
+                            <button onClick={applyRange} disabled={!rangeInput.trim()} className="h-10 px-4 bg-white/10 border border-white/20 text-white text-xs font-semibold tracking-wide rounded-full hover:bg-white/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap">
                                 Apply Range
                             </button>
                         </div>
@@ -232,7 +242,7 @@ export default function PdfSplitterPage() {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-5 border-b border-zinc-900 pb-4">
                             <div>
                                 <h3 className="text-sm font-bold text-white">
-                                    Select Pages <span className="text-violet-400">({selectedCount} / {pageCount} selected)</span>
+                                    Select Pages <span className="text-white">({selectedCount} / {pageCount} selected)</span>
                                 </h3>
                                 <span className="text-[11px] tracking-wider text-zinc-500 font-semibold block mt-1">Click to toggle • Green = included</span>
                             </div>
@@ -249,12 +259,12 @@ export default function PdfSplitterPage() {
                                     onClick={() => togglePage(p.index)}
                                     className={`group relative h-36 rounded-2xl flex flex-col items-center p-2 transition-all duration-200 border-2 ${
                                         p.selected
-                                            ? "border-violet-500 bg-violet-500/10 hover:bg-violet-500/20"
+                                            ? "border-white bg-white/10 hover:bg-white/20"
                                             : "border-zinc-800 bg-zinc-900 hover:border-zinc-700 opacity-50 hover:opacity-70"
                                     }`}
                                 >
                                     {/* Selected indicator */}
-                                    <div className={`absolute top-1.5 left-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all z-10 ${p.selected ? "bg-violet-500 border-violet-400" : "bg-zinc-800 border-zinc-700"}`}>
+                                    <div className={`absolute top-1.5 left-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all z-10 ${p.selected ? "bg-white border-white" : "bg-zinc-800 border-zinc-700"}`}>
                                         {p.selected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
                                     </div>
 
@@ -277,7 +287,7 @@ export default function PdfSplitterPage() {
                         <button
                             onClick={exportPdf}
                             disabled={selectedCount === 0 || isExporting}
-                            className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"}`}
+                            className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-white hover:bg-white shadow-lg shadow-white/20"}`}
                         >
                             {isExporting
                                 ? <><RefreshCw size={18} className="animate-spin" /> Exporting...</>
@@ -288,7 +298,7 @@ export default function PdfSplitterPage() {
                         <div className="flex flex-col sm:flex-row gap-3 w-full">
                             <button
                                 onClick={downloadPdf}
-                                className="flex-1 h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-violet-500 text-white hover:bg-violet-600 shadow-lg shadow-violet-500/20"
+                                className="flex-1 h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-white text-white hover:bg-white shadow-lg shadow-white/20"
                             >
                                 <Download size={18} /> Download Split PDF
                             </button>
@@ -296,27 +306,79 @@ export default function PdfSplitterPage() {
                                 onClick={() => setIsSharing(true)}
                                 className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98]"
                             >
-                                <Share2 size={18} className="text-violet-400" /> Share to Mobile
+                                <Share2 size={18} className="text-white" /> Share to Mobile
                             </button>
                         </div>
                     )}
                 </div>
             )}
 
-            {!file && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12">
-                    {[
-                        { title: "Visual Selection", desc: "See real page previews and click to include or exclude each page." },
-                        { title: "Range Input", desc: "Quickly select pages with ranges like '1, 3-5, 8' for fast precision." },
-                        { title: "Instant Export", desc: "Your custom PDF is generated and ready to download in seconds." }
-                    ].map((f, i) => (
-                        <div key={i} className="text-center space-y-2">
-                            <h4 className="text-[10px] font-bold text-violet-500">{f.title}</h4>
-                            <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
-                        </div>
-                    ))}
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Splitter Info">
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual Document Extraction Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for document decomposition. AssetNest <strong>Advanced PDF Splitter</strong> transcends basic page range extraction—it provides a structural editor where you can manipulate PDF page maps with zero loss in quality and absolute data privacy. Whether you are extracting a single signature page from a massive legal transcript, splitting complex architectural blueprints, or distilling a personal portfolio into targeted assets, our tool gives you the power to slice and compile your documents with industry-leading precision and zero server dependency.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Layout size={20} className="text-zinc-500" />
+                                How to Split Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Universal Support:</strong> Drop any standard PDF container. Our engine renders every page thumbnail for physical verification.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Visual Page Selector:</strong> Click to include or exclude specific pages, or use range syntax (e.g., 1-5, 8, 12) for fast batching.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <span><strong>Lossless Re-Cataloging:</strong> We preserve every vector, font, and high-res asset in the extracted container. Zero quality degradation.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based tools that store your sensitive document data on external servers, our splitter operates <strong>100% locally in your browser cache</strong>.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Processing • Internal Vector Map Re-Splicing • Metadata Integrity Preservation • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Multiple Splits?">
+                                Yes. You can extract as many independent page sets as you need by resetting the selection map.
+                            </AccordionItem>
+                            <AccordionItem title="Quality Loss?">
+                                Zero. We use surgical stream-splitting technology that leaves the original data objects untouched.
+                            </AccordionItem>
+                            <AccordionItem title="Secure Uploads?">
+                                There are no uploads. Your file resides entirely in your computer&apos;s memory during the entire process.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
-            )}
+            </HelpModal>
 
             <ShareModal 
                 isOpen={isSharing} 

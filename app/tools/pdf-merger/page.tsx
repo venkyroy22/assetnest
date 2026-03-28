@@ -3,7 +3,8 @@
 import { useState, useRef } from "react";
 import {
     Upload, Download, X, RefreshCw, Combine, Undo, Redo,
-    ChevronLeft, ChevronRight, Info, Grid, ArrowLeft, Share2
+    ChevronLeft, ChevronRight, Info, Grid, ArrowLeft, Share2,
+    Check, ShieldCheck
 } from "lucide-react";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
@@ -12,6 +13,8 @@ import dynamic from "next/dynamic";
 const PdfPageThumbnail = dynamic(() => import("./PdfPreviewThumbnail"), { ssr: false });
 import ShareModal from "@/components/ShareModal";
 import Tooltip from "@/components/Tooltip";
+import { Accordion, AccordionItem } from "@/components/Accordion";
+import HelpModal from "@/components/HelpModal";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -48,6 +51,7 @@ export default function PdfMergerPage() {
     const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
     const [outputSize, setOutputSize] = useState<number | null>(null);
     const [isSharing, setIsSharing] = useState(false);
+    const [showHelp, setShowHelp] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -235,7 +239,14 @@ export default function PdfMergerPage() {
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            <div className="text-center mb-8">
+            <div className="text-center mb-8 relative group">
+                <button 
+                    onClick={() => setShowHelp(true)}
+                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    title="View Information"
+                >
+                    <Info size={14} />
+                </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Combine size={11} className="text-red-400" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Secure Document Utility</span>
@@ -459,6 +470,73 @@ export default function PdfMergerPage() {
                     ))}
                 </div>
             )}
+            
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Merger Info">
+                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            Visual PDF Architecture: Merge & Organize
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
+                            Step into a professional-grade workspace for document assembly. AssetNest <strong>Visual PDF Merger</strong> transcends basic file combination—it provides a structural editor where you can manipulate individual pages as if they were physical assets. Whether you are compiling a massive corporate report, a complex legal brief, or a personal portfolio, our tool gives you the power to drag, reorder, and refine your PDF documents with zero loss in quality and absolute data privacy.
+                        </p>
+                    </section>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <Combine size={20} className="text-red-500" />
+                                How to Merge Safely
+                            </h3>
+                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-red-500" /></div>
+                                    <span><strong>Secure Drop:</strong> Drag multiple PDF files into the encrypted dropzone. Our engine instantly maps every page.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-red-500" /></div>
+                                    <span><strong>Dynamic Reorder:</strong> Use the drag-and-drop grid to visually sequence your document flow. Move cover pages, appendices, and tables of contents with ease.</span>
+                                </li>
+                                <li className="flex gap-4 items-start">
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-red-500" /></div>
+                                    <span><strong>Precision Delete:</strong> Hover over any page thumbnail and click &quot;X&quot; to permanently remove unwanted blank pages or sensitive sections before export.</span>
+                                </li>
+                            </ul>
+                        </section>
+
+                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                                <ShieldCheck size={20} className="text-zinc-500" />
+                                Privacy Infrastructure
+                            </h3>
+                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
+                                Unlike traditional cloud-based tools that store your sensitive PDF data on external servers, our merger operates <strong>100% locally in your browser cache</strong>. Your files never leave your device, ensuring total compliance with privacy regulations.
+                            </p>
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
+                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
+                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
+                                    Zero-Server Processing • Encrypted Buffer Alignment • High-Fidelity Vector Preservation • No Watermarks
+                                </p>
+                            </div>
+                        </section>
+                    </div>
+
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <Accordion>
+                            <AccordionItem title="Is it free?">
+                                Yes. We provide 100% free PDF combination with no subscriptions, file limits, or hidden costs.
+                            </AccordionItem>
+                            <AccordionItem title="Quality Loss?">
+                                Zero. Our stitching engine preserves every vector, font, and high-resolution image during the merge.
+                            </AccordionItem>
+                            <AccordionItem title="File Limits?">
+                                The only limit is your device&apos;s memory. We easily handle hundreds of pages in a single export.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
+                </div>
+            </HelpModal>
             
             <ShareModal 
                 isOpen={isSharing} 

@@ -43,8 +43,8 @@ const Footer = ({ className = "" }: { className?: string }) => {
 
       {/* Ambient glows */}
       <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-[600px] h-[200px] rounded-full bg-white/3 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[300px] h-[200px] rounded-full bg-indigo-500/4 blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[300px] h-[200px] rounded-full bg-purple-500/4 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[300px] h-[200px] rounded-full bg-white/4 blur-3xl pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[300px] h-[200px] rounded-full bg-white/4 blur-3xl pointer-events-none" />
 
       <div className="relative z-10 px-6 md:px-10 pt-16 pb-8">
         {/* Main grid */}
@@ -64,15 +64,15 @@ const Footer = ({ className = "" }: { className?: string }) => {
 
             {/* Trust badges */}
             <div className="flex flex-wrap gap-2.5">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/5 text-[11px] font-semibold text-emerald-400">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-semibold text-zinc-400">
                 <Shield size={10} />
                 100% Private
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-blue-500/20 bg-blue-500/5 text-[11px] font-semibold text-blue-400">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-semibold text-zinc-400">
                 <Zap size={10} />
                 No Sign-Up
               </div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-purple-500/20 bg-purple-500/5 text-[11px] font-semibold text-purple-400">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-white/10 bg-white/[0.03] text-[11px] font-semibold text-zinc-400">
                 <Sparkles size={10} />
                 Always Free
               </div>
