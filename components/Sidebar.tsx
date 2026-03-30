@@ -16,7 +16,6 @@ const MENU_ITEMS = [
     { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#d4d4d8", dev: false },
     { name: "About", href: "/about", icon: Info, accent: "#d4d4d8", dev: false },
     { name: "Contact", href: "/contact", icon: Mail, accent: "#d4d4d8", dev: false },
-    { name: "Guides", href: "/guides", icon: BookOpen, accent: "#d4d4d8", dev: false },
 ];
 
 // ── Nav item ──────────────────────────────────────────────────────────────────

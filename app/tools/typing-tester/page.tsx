@@ -198,7 +198,7 @@ function generateText(wordCount: number, withPunct: boolean, withNums: boolean):
 }
 
 // ─── Types ────────────────────────────────────────────────────────────────────
-type TestMode = "time" | "words";
+type TestMode = "time" | "words" | "both";
 type CharState = "pending" | "correct" | "incorrect";
 
 interface WordData {
@@ -206,6 +206,7 @@ interface WordData {
     chars: { char: string; state: CharState }[];
     isComplete: boolean;
     hasError: boolean;
+    typed: string;
 }
 
 // ─── Main Component ───────────────────────────────────────────────────────────
@@ -303,6 +304,7 @@ export default function TypingTesterPage() {
             chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
             isComplete: false,
             hasError: false,
+            typed: "",
         }));
     }, []); // no state deps needed — refs are always current
 
@@ -312,7 +314,7 @@ export default function TypingTesterPage() {
         if (elapsedRef.current) clearInterval(elapsedRef.current);
         if (historyTimerRef.current) clearInterval(historyTimerRef.current);
 
-        const count = testMode === "words" ? wordConfig : 80;
+        const count = testMode === "time" ? 80 : wordConfig;
         const newWords = buildWords(count);
 
         setWords(newWords);
@@ -323,7 +325,7 @@ export default function TypingTesterPage() {
         setIsFinished(false);
         setStartTime(null);
         setEndTime(null);
-        setTimeLeft(testMode === "time" ? timeConfig : 0);
+        setTimeLeft(testMode === "words" ? 0 : timeConfig);
         setElapsed(0);
         setWpm(0);
         setRawWpm(0);
@@ -399,12 +401,14 @@ export default function TypingTesterPage() {
             }
             setCaretPos({ top, left });
 
-            // Auto-scroll: push words up when current word drifts below visible area
-            const wrapperRect = wrapperRef.current.getBoundingClientRect();
-            const wordTop = currentWordEl.getBoundingClientRect().top - wrapperRect.top;
-            if (wordTop > 80) {
-                const cur = parseInt(wordsRef.current.style.transform.replace(/[^-\d]/g, "") || "0");
-                wordsRef.current.style.transform = `translateY(${cur - wordTop + 35}px)`;
+            // Auto-scroll: robust fixed positioning using offsetTop
+            if (wrapperRef.current && wordsRef.current) {
+                const wordOffsetTop = currentWordEl.offsetTop;
+                if (wordOffsetTop > 35) {
+                    wordsRef.current.style.transform = `translateY(-${wordOffsetTop - 35}px)`;
+                } else {
+                    wordsRef.current.style.transform = `translateY(0px)`;
+                }
             }
         });
     }, [currentWordIdx, currentInput]);
@@ -526,7 +530,7 @@ export default function TypingTesterPage() {
             }
         }, 500);
 
-        if (testMode === "time") {
+        if (testMode === "time" || testMode === "both") {
             timerRef.current = setInterval(() => {
                 setTimeLeft(prev => {
                     if (prev <= 1) { finishTest(); return 0; }
@@ -582,7 +586,7 @@ export default function TypingTesterPage() {
             }
 
             const hasError = typed !== wordData.word;
-            const completedWord: WordData = { ...wordData, chars: updatedChars, isComplete: true, hasError };
+            const completedWord: WordData = { ...wordData, chars: updatedChars, isComplete: true, hasError, typed };
             const newCompleted = [...completedWords, completedWord];
             setCompletedWords(newCompleted);
             completedWordsRef.current = newCompleted;
@@ -596,7 +600,9 @@ export default function TypingTesterPage() {
             }
 
             // Check for test completion
-            if (testMode === "words" && nextIdx >= words.length) {
+            if ((testMode === "words" || testMode === "both") && nextIdx >= words.length) {
+                setCurrentInput("");
+                currentInputRef.current = "";
                 finishTest();
                 return;
             }
@@ -611,11 +617,20 @@ export default function TypingTesterPage() {
 
         const currentWord = words[currentWordIdx]?.word || "";
 
-        // AUTO-FINISH on last word in "words" mode if typed correctly
-        if (testMode === "words" && currentWordIdx === words.length - 1 && val === currentWord) {
+        // AUTO-FINISH on last word in "words" or "both" mode when length matches
+        if ((testMode === "words" || testMode === "both") && currentWordIdx === words.length - 1 && val.length === currentWord.length) {
             const wordData = words[currentWordIdx];
-            const updatedChars = wordData.word.split("").map(c => ({ char: c, state: "correct" as CharState }));
-            const completedWord = { ...wordData, chars: updatedChars, isComplete: true, hasError: false };
+            const updatedChars = wordData.word.split("").map((c, i) => ({ 
+                char: c, 
+                state: (val[i] === c ? "correct" : "incorrect") as CharState 
+            }));
+            const completedWord: WordData = { 
+                ...wordData, 
+                chars: updatedChars, 
+                isComplete: true, 
+                hasError: val !== currentWord, 
+                typed: val 
+            };
 
             // Sync refs and call finish
             const newCompleted = [...completedWords, completedWord];
@@ -639,9 +654,12 @@ export default function TypingTesterPage() {
             const prevCompleted = completedWords.slice(0, -1);
             const prevWord = completedWords[completedWords.length - 1];
             if (!prevWord) return;
+            // Prevent going back to a completely correct word to prevent WPM farming and mimic professional testers
+            if (!prevWord.hasError && prevWord.chars.every(c => c.state === "correct")) return;
+            
             setCurrentWordIdx(prev => prev - 1);
             setCompletedWords(prevCompleted);
-            const typed = prevWord.chars.map(c => c.char).join("");
+            const typed = prevWord.typed || prevWord.chars.map(c => c.char).join("");
             setCurrentInput(typed);
             currentInputRef.current = typed;
         }
@@ -670,8 +688,8 @@ export default function TypingTesterPage() {
     const createDuel = () => {
         if (!supabase) return;
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-        // Pre-generate the shared word list
-        const sharedWords = generateText(testMode === "words" ? wordConfig : 200, punctRef.current, numsRef.current);
+        // Generate enough words to prevent running out during time trial
+        const sharedWords = generateText(testMode === "words" ? wordConfig : 600, punctRef.current, numsRef.current);
         setSessionCode(code);
         setIsHost(true);
         setDuelStatus("connecting");
@@ -716,7 +734,7 @@ export default function TypingTesterPage() {
         const wordList = sharedWords.split(" ").map(w => ({
             word: w,
             chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
-            isComplete: false, hasError: false,
+            isComplete: false, hasError: false, typed: "",
         }));
         setWords(wordList);
         setCurrentWordIdx(0);
@@ -757,7 +775,7 @@ export default function TypingTesterPage() {
             const wordList = (payload.text as string).split(" ").map((w: string) => ({
                 word: w,
                 chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
-                isComplete: false, hasError: false,
+                isComplete: false, hasError: false, typed: "",
             }));
             setWords(wordList);
             setCurrentWordIdx(0);
@@ -794,7 +812,7 @@ export default function TypingTesterPage() {
         }
 
         // Host handles the restart logic
-        const sharedWords = generateText(testMode === "words" ? wordConfig : 200, punctRef.current, numsRef.current);
+        const sharedWords = generateText(testMode === "words" ? wordConfig : 600, punctRef.current, numsRef.current);
 
         // Broadcast new words and countdown to everyone
         channelRef.current.send({
@@ -814,7 +832,7 @@ export default function TypingTesterPage() {
         const wordList = sharedWords.split(" ").map(w => ({
             word: w,
             chars: w.split("").map(c => ({ char: c, state: "pending" as CharState })),
-            isComplete: false, hasError: false,
+            isComplete: false, hasError: false, typed: ""
         }));
         setWords(wordList);
         setCountdown(5);
@@ -910,7 +928,7 @@ export default function TypingTesterPage() {
                 <div className="flex items-center gap-3">
                     {isActive && (
                         <div className="text-sm font-semibold tracking-wide" style={{ color: T.muted }}>
-                            {testMode === "time" ? `${timeLeft}s` : `${currentWordIdx}/${wordConfig}`}
+                            {testMode === "time" ? `${timeLeft}s` : testMode === "words" ? `${currentWordIdx}/${wordConfig}` : `${timeLeft}s • ${currentWordIdx}/${wordConfig}`}
                         </div>
                     )}
                     {/* Settings Button */}
@@ -944,7 +962,7 @@ export default function TypingTesterPage() {
                         >
                             {/* Mode toggles */}
                             <div className="flex items-center gap-1 pr-3" style={{ borderRight: `1px solid ${T.border}` }}>
-                                {(["time", "words"] as TestMode[]).map(m => (
+                                {(["time", "words", "both"] as TestMode[]).map(m => (
                                     <button
                                         key={m}
                                         onClick={() => setTestMode(m)}
@@ -954,7 +972,7 @@ export default function TypingTesterPage() {
                                             background: testMode === m ? `${T.accentHex}18` : "transparent",
                                         }}
                                     >
-                                        {m === "time" ? <Timer size={12} /> : <Keyboard size={12} />}
+                                        {m === "time" ? <Timer size={12} /> : m === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
                                         {m}
                                     </button>
                                 ))}
@@ -1002,7 +1020,7 @@ export default function TypingTesterPage() {
 
                             {/* Config presets */}
                             <div className="flex items-center gap-1 px-3">
-                                {(testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
+                                {testMode !== "both" && (testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
                                     <button
                                         key={v}
                                         onClick={() => {
@@ -1019,10 +1037,17 @@ export default function TypingTesterPage() {
                                     </button>
                                 ))}
                                 <button
-                                    onClick={() => { setCustomInput(activeConfig.toString()); setSettingsModalOpen(true); }}
+                                    onClick={() => { 
+                                        if (testMode === "both") {
+                                            setCustomInput(""); // We don't populate for 'both' since it requires two values, let custom modal handle it separately or just open it
+                                        } else {
+                                            setCustomInput(activeConfig.toString()); 
+                                        }
+                                        setSettingsModalOpen(true); 
+                                    }}
                                     className="px-2 py-1.5 rounded-lg transition-all"
                                     style={{
-                                        color: (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
+                                        color: testMode === "both" ? T.accent : (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
                                     }}
                                     title="Custom Settings"
                                 >
@@ -1133,12 +1158,12 @@ export default function TypingTesterPage() {
                                 </div>
                                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg" style={{ background: T.surface, border: `1px solid ${T.border}` }}>
                                     <div className="flex items-center gap-1.5 text-xs font-bold" style={{ color: T.accent }}>
-                                        {testMode === "time" ? <Timer size={12} /> : <Keyboard size={12} />}
+                                        {testMode === "time" ? <Timer size={12} /> : testMode === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
                                         {testMode}
                                     </div>
                                     <div className="h-3 w-px bg-zinc-800" />
                                     <div className="text-xs font-bold text-white">
-                                        {testMode === "time" ? `${timeConfig}s` : `${wordConfig} words`}
+                                        {testMode === "time" ? `${timeConfig}s` : testMode === "words" ? `${wordConfig} words` : `${timeConfig}s & ${wordConfig}w`}
                                     </div>
                                 </div>
                                 <div className="text-xs font-bold tracking-wide mt-4" style={{ color: T.muted }}>
@@ -1223,7 +1248,7 @@ export default function TypingTesterPage() {
                 {isActive && (
                     <div className="flex items-center gap-8 mb-6">
                         <div className="text-5xl font-black tabular-nums leading-none" style={{ color: T.accent }}>
-                            {testMode === "time" ? timeLeft : `${elapsed.toFixed(0)}s`}
+                            {testMode === "words" ? `${elapsed.toFixed(0)}s` : timeLeft}
                         </div>
                         <div className="flex gap-6 text-sm">
                             {[
@@ -1455,22 +1480,22 @@ export default function TypingTesterPage() {
                                     const VIEWBOX_H = 100;
 
                                     const points = data.map((h, i) => ({
-                                        x: (i / (data.length - 1)) * VIEWBOX_W,
+                                        x: (i / Math.max(1, data.length - 1)) * VIEWBOX_W,
                                         y: VIEWBOX_H - (h.wpm / maxWpm) * 85,
                                         t: h.t
                                     }));
 
                                     const errorPoints = errorHistory.map(eh => {
-                                        // Find corresponding X by interpolating time
+                                        // Find corresponding X by interpolating time safely
                                         const totalTime = data[data.length - 1].t;
-                                        const x = (eh.t / totalTime) * VIEWBOX_W;
+                                        const x = totalTime > 0 ? (eh.t / totalTime) * VIEWBOX_W : 0;
                                         // Find Y by interpolating WPM at that time
                                         const idx = data.findIndex(h => h.t >= eh.t);
                                         let y = VIEWBOX_H;
                                         if (idx > 0) {
                                             const h1 = data[idx - 1];
                                             const h2 = data[idx];
-                                            const ratio = (eh.t - h1.t) / (h2.t - h1.t || 0.001);
+                                            const ratio = (eh.t - h1.t) / Math.max(0.001, (h2.t - h1.t));
                                             const interpolatedWpm = h1.wpm + (h2.wpm - h1.wpm) * ratio;
                                             y = VIEWBOX_H - (interpolatedWpm / maxWpm) * 85;
                                         }
@@ -1566,7 +1591,7 @@ export default function TypingTesterPage() {
                                 { label: "raw", value: finalStats.finalRaw },
                                 { label: "characters", value: `${finalStats.correct}/${finalStats.incorrect}/0/0` },
                                 { label: "time", value: `${finalStats.mm}:${finalStats.ss}` },
-                                { label: "mode", value: `${testMode} ${testMode === "time" ? timeConfig : wordConfig}` },
+                                { label: "mode", value: `${testMode} ${testMode === "time" ? timeConfig : testMode === "words" ? wordConfig : `${timeConfig}s/${wordConfig}w`}` },
                                 { label: "theme", value: T.name },
                             ].map(({ label, value }) => (
                                 <div key={label} className="flex flex-col gap-1 min-w-[80px]">
@@ -1667,45 +1692,92 @@ export default function TypingTesterPage() {
                                         Custom Behavior
                                     </h4>
                                 </div>
-                                <div className="flex flex-col sm:flex-row gap-4">
-                                    <div className="flex-1">
-                                        <label className="block text-xs font-semibold tracking-wide mb-2" style={{ color: T.muted }}>
-                                            Custom {testMode === "time" ? "Time (sec)" : "Word Count"}
-                                        </label>
-                                        <input
-                                            type="number"
-                                            min={1}
-                                            value={customInput}
-                                            onChange={e => setCustomInput(e.target.value)}
-                                            onKeyDown={e => {
-                                                if (e.key === "Enter") {
-                                                    const v = parseInt(customInput);
-                                                    if (!isNaN(v) && v > 0) {
-                                                        if (testMode === "time") setTimeConfig(v);
-                                                        else setWordConfig(v);
-                                                        setSettingsModalOpen(false);
-                                                    }
-                                                }
-                                                if (e.key === "Escape") setSettingsModalOpen(false);
-                                            }}
-                                            className="w-full rounded-xl px-4 py-3 sm:py-4 text-xl sm:text-2xl font-bold max-w-[200px] outline-none border-2 transition-colors"
-                                            style={{ background: T.bg, borderColor: T.border, color: T.text }}
-                                        />
-                                    </div>
-                                    <div className="flex items-end">
-                                        <button
-                                            onClick={() => {
-                                                const v = parseInt(customInput);
-                                                if (!isNaN(v) && v > 0) {
-                                                    if (testMode === "time") setTimeConfig(v);
-                                                    else setWordConfig(v);
-                                                    setSettingsModalOpen(false);
-                                                }
-                                            }}
-                                            className="w-full sm:w-auto px-8 py-4 font-bold rounded-full text-sm tracking-wide text-black transition-transform active:scale-95"
-                                            style={{ background: T.accent }}
-                                        >Apply settings</button>
-                                    </div>
+                                <div className="flex flex-col gap-6">
+                                    {/* Separate inputs for Time and Words if we are in 'both' mode, otherwise unified */}
+                                    {testMode === "both" ? (
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-semibold tracking-wide mb-2" style={{ color: T.muted }}>
+                                                    Time Limit (sec)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    min={1}
+                                                    value={timeConfig}
+                                                    onChange={e => {
+                                                        const v = parseInt(e.target.value);
+                                                        if (!isNaN(v) && v > 0) setTimeConfig(v);
+                                                    }}
+                                                    className="w-full rounded-xl px-4 py-3 sm:py-4 text-xl sm:text-2xl font-bold max-w-[200px] outline-none border-2 transition-colors"
+                                                    style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                                                />
+                                            </div>
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-semibold tracking-wide mb-2" style={{ color: T.muted }}>
+                                                    Word Count Limit
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    min={1}
+                                                    value={wordConfig}
+                                                    onChange={e => {
+                                                        const v = parseInt(e.target.value);
+                                                        if (!isNaN(v) && v > 0) setWordConfig(v);
+                                                    }}
+                                                    className="w-full rounded-xl px-4 py-3 sm:py-4 text-xl sm:text-2xl font-bold max-w-[200px] outline-none border-2 transition-colors"
+                                                    style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                                                />
+                                            </div>
+                                            <div className="flex items-end mt-4 sm:mt-0">
+                                                <button
+                                                    onClick={() => setSettingsModalOpen(false)}
+                                                    className="w-full sm:w-auto px-8 py-4 font-bold rounded-full text-sm tracking-wide text-black transition-transform active:scale-95"
+                                                    style={{ background: T.accent }}
+                                                >Apply settings</button>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="flex flex-col sm:flex-row gap-4">
+                                            <div className="flex-1">
+                                                <label className="block text-xs font-semibold tracking-wide mb-2" style={{ color: T.muted }}>
+                                                    Custom {testMode === "time" ? "Time (sec)" : "Word Count"}
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    min={1}
+                                                    value={customInput}
+                                                    onChange={e => setCustomInput(e.target.value)}
+                                                    onKeyDown={e => {
+                                                        if (e.key === "Enter") {
+                                                            const v = parseInt(customInput);
+                                                            if (!isNaN(v) && v > 0) {
+                                                                if (testMode === "time") setTimeConfig(v);
+                                                                else setWordConfig(v);
+                                                                setSettingsModalOpen(false);
+                                                            }
+                                                        }
+                                                        if (e.key === "Escape") setSettingsModalOpen(false);
+                                                    }}
+                                                    className="w-full rounded-xl px-4 py-3 sm:py-4 text-xl sm:text-2xl font-bold max-w-[200px] outline-none border-2 transition-colors"
+                                                    style={{ background: T.bg, borderColor: T.border, color: T.text }}
+                                                />
+                                            </div>
+                                            <div className="flex items-end">
+                                                <button
+                                                    onClick={() => {
+                                                        const v = parseInt(customInput);
+                                                        if (!isNaN(v) && v > 0) {
+                                                            if (testMode === "time") setTimeConfig(v);
+                                                            else setWordConfig(v);
+                                                            setSettingsModalOpen(false);
+                                                        }
+                                                    }}
+                                                    className="w-full sm:w-auto px-8 py-4 font-bold rounded-full text-sm tracking-wide text-black transition-transform active:scale-95"
+                                                    style={{ background: T.accent }}
+                                                >Apply settings</button>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </section>
 

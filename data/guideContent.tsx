@@ -491,95 +491,175 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
   ),
   "design-with-svg-patterns": (
     <>
-      <P>Raster images (like PNG or JPG) are inherently heavy. SVG patterns use pure math and XML code to render mathematically perfect textures.</P>
-      <H2>The Advantage</H2>
+      <P>Raster images (like PNG or JPG) are inherently heavy, especially when dealing with repeating background textures for web design. If you need a high-resolution background to span across an ultra-wide 4K monitor, a raster image can quickly exceed 5MB. That destroys your page load speed.</P>
+      <P>SVG (Scalable Vector Graphics) patterns solve this by using pure mathematics and XML code to render mathematically perfect textures. Instead of storing data for every single pixel, the browser is just reading an equation that plots lines, circles, and polygons on the screen.</P>
+      <H2>The Mathematical Advantage</H2>
       <UL>
-        <LI>Absolute zero pixelation, even on retina or 4K displays.</LI>
-        <LI>Inject them directly into CSS as a data URI to bypass network requests.</LI>
+        <LI>Absolute zero pixelation, guaranteeing it looks sharp on any display.</LI>
+        <LI>File sizes are often under 1KB, making them effectively weightless.</LI>
+        <LI>You can dynamically change colors using CSS variables.</LI>
       </UL>
+      <Alert title="Zero Network Requests">
+        You don't even need to link to an external file. You can inject the SVG directly into your CSS as a base64 encoded data-URI. This bypasses the network request entirely, causing the pattern to load instantaneously as the CSS parses. 
+      </Alert>
     </>
   ),
   "modern-react-icon-libraries": (
     <>
-      <P>An inconsistent icon set can immediately betray a website as unprofessional. The modern standard relies on unified stroke weights and simple vectors.</P>
-      <Alert title="Zero-Bloat Rule">Never import an entire library to use three icons. Copy the raw SVG data to keep bundle sizes minuscule.</Alert>
+      <P>An inconsistent icon set can immediately betray a website as unprofessional. Mixing bold, filled Material icons with thin, minimalist outline icons creates a jarring, frankenstein-like UI aesthetic.</P>
+      <P>The modern standard for web applications relies on unified stroke weights, clean geometry, and simple vectors. Frameworks like React have made it incredibly easy to consume icons as native components.</P>
+      <H2>The Bloat Problem</H2>
+      <P>However, many beginner developers make the fatal mistake of importing entire 3,000-icon libraries (like FontAwesome) when they only intend to use a magnifying glass and a menu hamburger. This forces users to download hundreds of kilobytes of unused icons, killing your lighthouse score.</P>
+      <Alert title="The Naked SVG Approach">
+        The most performant way to use an icon is to literally copy the raw SVG path data and paste it directly into your HTML/JSX. This guarantees zero bloat and lets you directly target the stroke paths using Tailwind CSS for hover effects.
+      </Alert>
+      <P>AssetNest provides a curated collection of premium outline icons designed on a strict 24x24 grid. You can browse them and copy the raw SVG with a single click.</P>
     </>
   ),
   "how-to-draw-e-signature-online": (
     <>
-      <P>Applying a white JPEG signature to a colored document is an unmistakable rookie error. You need an alpha-channel transparent PNG or SVG.</P>
-      <P>Our tool processes your stroke path locally to export a perfect transparent vector.</P>
+      <P>We have all seen it: a beautiful, formatted PDF document completely ruined by a glaring, pixelated signature attached to a solid white background box. Applying a scanned JPEG signature to a colored or textured document is an unmistakable rookie error that screams "I don't know what I'm doing."</P>
+      <P>To look professional, you need a signature image file that features an alpha-channel (transparency). This allows the ink to float seamlessly above any background, document line, or watermark.</P>
+      <H2>Achieving the Perfect Cutout</H2>
+      <P>Historically, getting a transparent signature required signing on white paper, scanning it, loading it into Photoshop, using the Magic Wand tool to delete the white, and exporting as a PNG. It was incredibly tedious.</P>
+      <P>Our tool bypasses this entirely. By processing your mouse or trackpad stroke-path locally, we capture the pure, raw vector data of your movement. We then immediately export it natively as a transparent PNG or an infinitely scalable SVG.</P>
+      <UL>
+        <LI>Zero background artifacts or fuzzy edges.</LI>
+        <LI>Works seamlessly in Word, Google Docs, and Adobe Acrobat.</LI>
+        <LI>100% private, as your signature traces never leave your browser.</LI>
+      </UL>
     </>
   ),
   "improve-typing-speed": (
     <>
-      <P>Your keyboard is your interface with the digital world. Hunting and pecking severely bottlenecks your intellectual output.</P>
-      <H2>100 WPM Strategy</H2>
+      <P>Your keyboard is your primary interface with the digital world. If you code, write, or manage emails for a living, your typing speed represents a hard bottleneck on your intellectual output. Hunting and pecking letters forces your brain to constantly task-switch between thinking about the idea and physically finding the corresponding key.</P>
+      <H2>The Philosophy of Touch Typing</H2>
+      <P>Breaking past the 80 WPM (Words Per Minute) barrier requires abandoning visual dependency. You must train your muscle memory to the point where typing a word feels like a single fluid thought, not a sequence of 6 independent finger strikes.</P>
+      <H2>The 100 WPM Strategy</H2>
       <UL>
-        <LI>Always reset to the home row.</LI>
-        <LI>Do not look at your fingers.</LI>
-        <LI>Focus on extreme accuracy in the beginning, speed will naturally follow.</LI>
+        <LI><strong className="text-white">The Home Row:</strong> Your index fingers must always rest on the F and J keys (which possess physical tactile bumps). Every keystroke radiates from this origin point.</LI>
+        <LI><strong className="text-white">Complete Blindness:</strong> Do not look at your fingers. Cover your keyboard with a towel if you have to. Staring at the keys reinforces a visual dependency loop.</LI>
+        <LI><strong className="text-white">Accuracy Before Speed:</strong> Hitting backspace destroys your WPM. If you type 120 WPM but spend 30% of your time correcting typos, your net WPM is actually much lower than someone smoothly typing 80 WPM.</LI>
       </UL>
+      <Alert title="Take the Baseline Test">
+        Before you can improve, you need to know your exact metrics. Open the AssetNest Typing Tester to get a real-time analysis of your WPM, accuracy, and specific character weaknesses.
+      </Alert>
     </>
   ),
   "paperless-billing-small-merchants": (
     <>
-      <P>Thermal printers break, and paper receipts are toxic and instantly lost. Converting to digital QR tracking immediately modernizes your checkout process.</P>
-      <P>Customers simply scan a screen to receive their encrypted itemized receipt via mobile.</P>
+      <P>Hardware thermal printers are notoriously frustrating. They constantly run out of proprietary ink, their paper jams, the receipts fade after three days, and the physical footprint clutters your merchant checkout desk.</P>
+      <P>Converting to digital QR tracking immediately modernizes your entire checkout process, saving you hundreds of dollars annually in operational costs while projecting a modern aesthetic to your customers.</P>
+      <H2>How the Paperless Flow Works</H2>
+      <P>Instead of handing over a physical slip of paper, the modern workflow is entirely screen-based:</P>
+      <UL>
+        <LI>You scan the product barcodes using a USB scanner directly into your dashboard.</LI>
+        <LI>The system calculates the subtotal, taxes, and final absolute amount in real time.</LI>
+        <LI>Upon checkout, a unique QR code is generated on your merchant facing screen.</LI>
+        <LI>The customer scans the code with their smartphone camera.</LI>
+      </UL>
+      <P>This immediately transfers an encrypted, itemized digital receipt directly into the customer's mobile browser, which they can save for their records. It is frictionless, instantaneous, and environmentally friendly.</P>
     </>
   ),
   "design-professional-business-cards": (
     <>
-      <P>A clean, brutalist business card commands more respect than an overly complicated template littered with random graphics.</P>
-      <P>Stick to strong typography, ample whitespace, and high-contrast colorways.</P>
-      <Alert title="Export Standards">Always export your card at a minimum of 300 DPI for physical printing.</Alert>
+      <P>In the era of LinkedIn, handing someone a physical business card remains one of the few ways to leave a tangible, memorable impression. However, a cheap, overly complicated template littered with random graphics and unreadable fonts achieves the exact opposite.</P>
+      <P>A clean, brutalist business card commands respect. You do not need a degree in Graphic Design or an expensive Adobe CC subscription to create something striking.</P>
+      <H2>The Anatomy of a Premium Card</H2>
+      <UL>
+        <LI><strong className="text-white">Typography:</strong> Pick exactly two font weights (e.g., Black for your name, Medium for your title). Never use more than two typefaces on a single card.</LI>
+        <LI><strong className="text-white">Whitespace:</strong> Do not try to fill every corner. Negative space implies confidence and luxury. Group your contact info tightly together and leave the rest blank.</LI>
+        <LI><strong className="text-white">Contrast:</strong> Avoid light grey text on a white background. Aim for stark contrast like ivory on charcoal, or classic black on matte paper.</LI>
+      </UL>
+      <Alert title="Export Standards for Print">
+        Printers require incredibly high resolution to render text crisply. Always export your final card design at a minimum of 300 DPI (Dots Per Inch). Anything lower will look blurry and pixelated when physically printed.
+      </Alert>
     </>
   ),
   "plan-instagram-grid-layout": (
     <>
-      <P>Brands rely on grid cohesion to portray professionalism. Visually mapping out your subsequent 9 posts ensures colors harmonize together.</P>
-      <P>Use our grid planner to preview exactly how a new photograph impacts your overarching aesthetic.</P>
+      <P>Treat your Instagram grid as a digital portfolio or a magazine spread. For brands and creators, individual post engagement is important, but profile conversion (turning a visitor into a follower) depends entirely on the split-second impression of your overall grid cohesion.</P>
+      <P>If a user clicks on your profile and sees a chaotic mess of clashing colors, different filters, and randomly assorted quotes, they will bounce.</P>
+      <H2>Strategies for Grid Cohesion</H2>
+      <UL>
+        <LI><strong className="text-white">The Checkerboard:</strong> Alternate between photos and graphic quotes, creating a visually striking checkerboard pattern.</LI>
+        <LI><strong className="text-white">Color Blocking:</strong> Transition your core brand color palette slowly over time, phasing from cool blues to warm oranges across 9-grid sections.</LI>
+        <LI><strong className="text-white">Consistent Borders:</strong> Applying a rigid white or black border to every single crop creates an instant art-gallery aesthetic regardless of the content inside.</LI>
+      </UL>
+      <Alert title="Pre-Visualization is Key">
+        Never upload blindly. Use our IG Grid Planner to upload your next batch of photos, drag and drop them to simulate your future profile, and guarantee your aesthetic before committing.
+      </Alert>
     </>
   ),
   "perfect-aspect-ratios-images": (
     <>
-      <P>Every platform punishes irregular dimensions by awkwardly cropping the subject or applying black bars.</P>
+      <P>Uploading a massive horizontal photograph to Instagram or TikTok usually results in the platform forcefully cropping off the edges or squeezing your content between ugly black bars. Every social network relies on specific mathematical aspect ratios to dictate their UI feeds.</P>
+      <H2>The Golden Rules of Cropping</H2>
+      <P>Understanding these specific dimensions guarantees your content will take up the maximum possible screen real estate without distortion:</P>
       <UL>
-        <LI><strong>Instagram Portrait:</strong> 4:5</LI>
-        <LI><strong>Twitter Timeline:</strong> 16:9</LI>
-        <LI><strong>Pinterest:</strong> 2:3</LI>
+        <LI><strong className="text-white">Instagram Portrait (4:5):</strong> The most valuable real estate parameter. It is taller than a square but fits perfectly on a mobile screen without triggering scrolling.</LI>
+        <LI><strong className="text-white">Twitter & LinkedIn (16:9):</strong> The classic cinematic wide-screen. Perfect for link previews and desktop timeline scrolling.</LI>
+        <LI><strong className="text-white">TikTok & Reels (9:16):</strong> The absolute vertical canvas natively matched to modern smartphone dimensions.</LI>
       </UL>
+      <P>Our precision Image Cropper allows you to lock onto these exact aspect ratios, drag your frame over the perfect subject matter, and export optimized assets ready for publishing.</P>
     </>
   ),
   "extract-text-from-screenshots": (
     <>
-      <P>Manually transcribing data from screenshots is archaic. Machine learning OCR (Optical Character Recognition) can identify typography reliably.</P>
-      <P>Just drop any image into our tool to instantly harvest the raw text characters, completely locally.</P>
+      <P>We have all encountered this frustration: a colleague sends you a dense spreadsheet, a Wi-Fi password, or a block of code, but they sent it as a JPEG screenshot. Manually transcribing alphanumeric data from an image is archaic and hugely prone to human error, especially concerning passwords or financial digits.</P>
+      <H2>Understanding OCR Technology</H2>
+      <P>Machine learning OCR (Optical Character Recognition) completely solves this by acting as a mechanical eye. The AI scans the pixels identifying edges and contrasts that correlate with known typographical character maps. It then translates those pixel matrices into raw string characters.</P>
+      <Alert title="Total Client Privacy">
+        Usually, text extraction apps require uploading your screenshot to a cloud server API for analysis. Our Image to Text extraction utilizes a web-compiled WebAssembly module to perform the neural network analysis entirely locally. Your data never transmits across the internet.
+      </Alert>
+      <P>Just drop any receipt, screenshot, or scanned document into the canvas to instantly harvest the raw, editable text parameters.</P>
     </>
   ),
   "how-to-compress-pdfs": (
     <>
-      <P>PDFs bloat quickly due to uncompressed embedded fonts and high-res raster images.</P>
-      <P>Targeting a compression level that down-samples internal images to 144 DPI usually crushes file size by 70% with zero reading impact.</P>
+      <P>You attempt to upload your resume or email a legal contract, only to be hit with a hard block: "File Attachment Too Large (Max 5MB)." PDFs bloat quickly. This usually happens because the document contains uncompressed embedded fonts, massive high-resolution raster images, or inefficient vector data exports.</P>
+      <H2>How PDF Compression Functions</H2>
+      <P>Crushing a massive 30MB PDF down to 2MB without destroying text legibility requires a surgical approach to the file's internal assets:</P>
+      <UL>
+        <LI><strong className="text-white">Downsampling Images:</strong> If a PDF contains a 4K logo, it is completely unnecessary for standard viewing. The compressor resamples internal images to a web-optimized 144 DPI.</LI>
+        <LI><strong className="text-white">Subsetting Fonts:</strong> If you use a custom font, PDFs often embed the entire character library. Compression strips out unused characters.</LI>
+        <LI><strong className="text-white">Removing Metadata:</strong> Stripping out bloated XML metadata and structural revision histories saves massive raw kilobyte overhead.</LI>
+      </UL>
     </>
   ),
   "split-pdf-pages-safely": (
     <>
-      <P>Extracting specific pages from a confidential tax document should never occur on a cloud server.</P>
-      <P>By operating wholly inside the browser cache, you ensure that severed documents never touch the network.</P>
+      <P>Sometimes you only need page 14 of an incredibly dense 200-page corporate document. Sending the entire file to a client is confusing, wastes bandwidth, and might expose confidential data on the adjacent pages.</P>
+      <H2>The Privacy Implication of PDF Splitting</H2>
+      <P>To extract a specific page, millions of users rely on free tools appearing on the first page of Google. What they don't realize is that uploading a sensitive tax document or NDA to an offshore server simply to slice the file is a catastrophic security risk.</P>
+      <P>The AssetNest PDF Splitter operates entirely inside your device's browser cache via JavaScript. This means we sever and reconstruct the requested pages without a single byte of data leaving your Wi-Fi network.</P>
+      <Alert title="Visual Selection">
+        Our interface generates a visual thumbnail of every single page. You simply click the exact pages you want isolated and hit export. No complex page-range math required.
+      </Alert>
     </>
   ),
   "why-local-markdown-notes-matter": (
     <>
-      <P>Subscription SaaS products weaponize your personal data. A local workspace guarantees you own your thoughts.</P>
+      <P>We are living through an era of subscription fatigue. Proprietary SaaS note-taking applications lock your intellectual property behind walled gardens. If the company pivots, shuts down, or raises prices, your unpolished thoughts, drafts, and strategies are held hostage.</P>
+      <P>Furthermore, centralized cloud silos are prime targets for data breaches. Your personal notes should belong to you.</P>
       <H2>The Markdown Edge</H2>
-      <P>Writing in Markdown ensures your styling isn&apos;t locked into proprietary databases. Your essays remain highly portable plain-text strings.</P>
+      <P>Writing your thoughts in raw Markdown is the ultimate future-proof strategy. Markdown is a brilliant syntax that allows you to format text (bolding, headers, lists) using standard keyboard characters (like asterisks and hashes) without locking your writing into a proprietary database.</P>
+      <UL>
+        <LI><strong className="text-white">Extreme Portability:</strong> A Markdown file is just a plain-text string. You can open it on Windows 95, a MacBook, or a Linux terminal.</LI>
+        <LI><strong className="text-white">Local-First Architecture:</strong> Our Smart Notes workspace leverages browser local storage. We wrap a beautiful UI over your plaintext files, keeping your brain dump extremely fast and offline-ready.</LI>
+      </UL>
     </>
   ),
   "convert-photos-scans-to-pdf": (
     <>
-      <P>Scattered photos of homework or invoices are incredibly frustrating to manage. Stitching them into a chronological PDF portfolio solves everything.</P>
-      <Alert title="Pro Tip">Apply a strict A4 margin to photo compilation PDFs so they remain universally printable.</Alert>
+      <P>Scattered photos of physical homework, whiteboards, or expense invoices are an absolute nightmare to track and manage. Stitching them into a single, cohesive, chronological PDF portfolio resolves the scattering and makes it universally accessible.</P>
+      <H2>Best Practices for Multi-Page PDFs</H2>
+      <P>When compiling images for professional usage (like sending receipts to a university or an accountant), you must standardize the format:</P>
+      <UL>
+        <LI><strong className="text-white">Standardize to A4 Dimensions:</strong> By forcing the images to fit onto an A4 page overlay, you guarantee that whoever receives the document can print it predictably on a standard printer.</LI>
+        <LI><strong className="text-white">Add Margins:</strong> Never let your photo touch the bleeding edge of the PDF. Leave a white margin so text isn't cut off by printer hardware limits.</LI>
+        <LI><strong className="text-white">Order Matters:</strong> Utilize our drag-and-drop sequencer to ensure page 1 is the cover sheet before executing the final PDF compile.</LI>
+      </UL>
     </>
   )
 };
