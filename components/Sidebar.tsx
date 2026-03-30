@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin, Info, Mail, Settings } from "lucide-react";
+import { ChevronRight, Video, Globe, Sparkles, Volume2, Image as ImageIcon, QrCode, Wrench, Pin, Info, Mail, Settings, BookOpen } from "lucide-react";
 import { useSidebar } from "./SidebarProvider";
 import { usePins } from "./PinProvider";
 import { useSettings } from "./SettingsProvider";
@@ -16,6 +16,7 @@ const MENU_ITEMS = [
     { name: "QR Generator", href: "/tools/qr", icon: QrCode, accent: "#d4d4d8", dev: false },
     { name: "About", href: "/about", icon: Info, accent: "#d4d4d8", dev: false },
     { name: "Contact", href: "/contact", icon: Mail, accent: "#d4d4d8", dev: false },
+    { name: "Guides", href: "/guides", icon: BookOpen, accent: "#d4d4d8", dev: false },
 ];
 
 // ── Nav item ──────────────────────────────────────────────────────────────────

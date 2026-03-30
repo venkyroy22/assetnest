@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { Zap, RotateCcw, Trophy, Table, Check, Info, RefreshCw, Trash2 } from "lucide-react";
+import { Zap, RotateCcw, Trophy, Table, Check, Info, RefreshCw, Trash2, Heart, HeartCrack, Play } from "lucide-react";
 import { Accordion, AccordionItem } from "@/components/Accordion";
 import HelpModal from "@/components/HelpModal";
 
@@ -61,6 +61,8 @@ export default function SudokuPage() {
     const [gameOver, setGameOver] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [mistakes, setMistakes] = useState(0);
+    const [isWatchingAd, setIsWatchingAd] = useState(false);
 
     const startNewGame = useCallback((diff: Difficulty) => {
         const { puzzle: p, solution: s } = generateSudoku(diff);
@@ -70,6 +72,7 @@ export default function SudokuPage() {
         setGameOver(false);
         setHistory([]);
         setSelected(null);
+        setMistakes(0);
     }, []);
 
     useEffect(() => {
@@ -78,9 +81,13 @@ export default function SudokuPage() {
     }, [startNewGame]);
 
     const handleInput = (val: number) => {
-        if (!selected || gameOver) return;
+        if (!selected || gameOver || mistakes >= 3) return;
         const { r, c } = selected;
         if (initial[r][c]) return;
+
+        if (val !== 0 && val !== solution[r][c]) {
+            setMistakes(prev => prev + 1);
+        }
 
         setPuzzle(prev => {
             const next = prev.map((row, ri) => row.map((cell, ci) => (ri === r && ci === c ? val : cell)));
@@ -105,7 +112,16 @@ export default function SudokuPage() {
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selected, gameOver]);
+    }, [selected, gameOver, mistakes]);
+
+    const watchAdToRevive = () => {
+        setIsWatchingAd(true);
+        // Simulate watching an ad
+        setTimeout(() => {
+            setMistakes(prev => Math.max(0, prev - 1));
+            setIsWatchingAd(false);
+        }, 3000);
+    };
 
     if (!isLoaded) return null;
 
@@ -135,7 +151,7 @@ export default function SudokuPage() {
             </div>
 
             {/* Controls */}
-            <div className="flex flex-col sm:flex-row items-center gap-6 mb-10 w-full max-w-[500px]">
+            <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full max-w-2xl justify-center">
                 <div className="flex bg-zinc-900 border border-zinc-800 p-1 rounded-2xl w-full sm:w-auto">
                     {(["Easy", "Medium", "Hard"] as Difficulty[]).map(d => (
                         <button 
@@ -147,7 +163,15 @@ export default function SudokuPage() {
                         </button>
                     ))}
                 </div>
-                <button onClick={() => startNewGame(difficulty)} className="w-full sm:w-auto p-4 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl flex items-center justify-center gap-2">
+
+                <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-5 py-2.5 rounded-2xl h-[46px]">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mr-2">Mistakes:</span>
+                    <span className="text-sm font-black text-red-500 tracking-wider">
+                        {mistakes}/3
+                    </span>
+                </div>
+
+                <button onClick={() => startNewGame(difficulty)} className="w-full sm:w-auto h-[46px] px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl flex items-center justify-center gap-2">
                     <RotateCcw size={16} />
                     <span className="text-[10px] font-black uppercase tracking-wider">New</span>
                 </button>
@@ -192,13 +216,40 @@ export default function SudokuPage() {
                     </div>
 
                     {gameOver && (
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500 z-50">
                             <Trophy size={48} className="text-white mb-4 animate-bounce" />
                             <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Solved!</h2>
                             <p className="text-sm text-zinc-400 mb-8">Impressive speed. Want to try a harder one?</p>
                             <button onClick={() => startNewGame(difficulty)} className="px-10 py-4 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">
                                 <RefreshCw size={14} /> NEW GAME
                             </button>
+                        </div>
+                    )}
+
+                    {mistakes >= 3 && !gameOver && (
+                        <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-500 z-50">
+                            <HeartCrack size={48} className="text-red-500 mb-4 animate-pulse" />
+                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Game Over</h2>
+                            <p className="text-sm text-zinc-400 mb-8 max-w-xs leading-relaxed">You have made 3 mistakes. Watch a short ad to revive and get 1 extra chance.</p>
+                            
+                            <div className="flex flex-col gap-3 w-full max-w-[280px]">
+                                <button 
+                                    onClick={watchAdToRevive}
+                                    disabled={isWatchingAd}
+                                    className="w-full py-4 px-6 bg-white text-black text-xs font-black rounded-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:hover:scale-100 disabled:pointer-events-none"
+                                >
+                                    {isWatchingAd ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />} 
+                                    {isWatchingAd ? "Watching Ad..." : "Watch Ad to Revive"}
+                                </button>
+                                
+                                <button 
+                                    onClick={() => startNewGame(difficulty)} 
+                                    disabled={isWatchingAd}
+                                    className="w-full py-4 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white text-xs font-black rounded-xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:pointer-events-none"
+                                >
+                                    <RotateCcw size={14} /> NEW GAME
+                                </button>
+                            </div>
                         </div>
                     )}
                 </div>

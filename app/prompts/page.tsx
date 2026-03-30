@@ -269,7 +269,7 @@ export default function PromptsPage() {
                                 <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight leading-tight">Mastering the Art of <span className="text-zinc-600">AI Prompting</span></h2>
                                 <div className="space-y-8 text-zinc-400 leading-relaxed text-[17px]">
                                     <p>
-                                        In the rapidly evolving landscape of generative AI, the difference between a generic output and a professional masterpiece often lies in the precision of the prompt. Our **AI Image Prompts** gallery is more than just a list—it's a curated archive designed to provide creators with high-fidelity starting points for tools like Midjourney, DALL-E 3, and Stable Diffusion.
+                                        In the rapidly evolving landscape of generative AI, the difference between a generic output and a professional masterpiece often lies in the precision of the prompt. Our **AI Image Prompts** gallery is more than just a list—it's a curated archive designed to provide creators with high-fidelity starting points for leading AI image generation models.
                                     </p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-12 py-12 border-y border-zinc-900/50">

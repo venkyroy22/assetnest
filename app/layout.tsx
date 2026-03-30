@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "compress image online",
     "QR code generator",
     "AI image prompts",
-    "midjourney prompts",
+    "ai art generation",
     "free creator tools",
     "design utilities",
     "video editing resources",

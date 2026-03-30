@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, Home, ZoomIn, Check, RotateCcw } from "lucide-react";
+import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, Home, ZoomIn, Check, RotateCcw, FileText } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Logo from "./Logo";
@@ -26,8 +26,9 @@ const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
 const SEARCH_INDEX: SearchItem[] = [
     ...TOOL_ENTRIES,
     // Keywords pages
-    { title: "AI Image Prompts", desc: "Curated prompt lists for Midjourney, ChatGPT, and more", href: "/prompts", tag: "Prompts" },
+    { title: "AI Image Prompts", desc: "Curated prompt lists for leading image generation models", href: "/prompts", tag: "Prompts" },
     // Static pages
+    { title: "Guides", desc: "Creator tips, AI guides, and productivity methods", href: "/guides", tag: "Page" },
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
     { title: "About AssetNest", desc: "Learn about our mission", href: "/about", tag: "Page" },

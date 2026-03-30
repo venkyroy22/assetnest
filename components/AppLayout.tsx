@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useState, useLayoutEffect } from "react";
+import { useEffect, useState, useLayoutEffect, useRef } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
@@ -17,6 +17,8 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
     const pathname = usePathname();
     const isHome = pathname === "/";
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [toastMessage, setToastMessage] = useState<string | null>(null);
+    const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -71,6 +73,36 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
         }
     }, [pathname]);
 
+    useEffect(() => {
+        const handleClick = (e: MouseEvent) => {
+            const link = (e.target as HTMLElement).closest('a');
+            if (!link) return;
+
+            const href = link.getAttribute('href');
+            
+            // Fix: ignore empty hrefs or hash links (like #section)
+            if (!href || href.startsWith('#')) return;
+
+            // Strip trailing slashes to prevent false negatives (e.g. /tools/ vs /tools)
+            const cleanHref = href.replace(/\/$/, '') || '/';
+            const cleanPathname = window.location.pathname.replace(/\/$/, '') || '/';
+
+            if (cleanHref === cleanPathname) {
+                e.preventDefault();
+                setToastMessage("You're already on this page.");
+                
+                if (toastTimeoutRef.current) clearTimeout(toastTimeoutRef.current);
+                toastTimeoutRef.current = setTimeout(() => {
+                    setToastMessage(null);
+                }, 3000);
+            }
+        };
+
+        // Use capture mode to intercept the click before it potentially bubbles away
+        document.addEventListener('click', handleClick, true);
+        return () => document.removeEventListener('click', handleClick, true);
+    }, []);
+
     return (
         <div className="flex flex-1 flex-col min-h-screen">
             {!isBillingView && <Navbar />}
@@ -92,6 +124,15 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                     </div>
                     {!isBillingView ? <Footer /> : <Footer className="no-print" />}
                 </main>
+            </div>
+
+            {/* ── Global Already On Page Toast ── */}
+            <div 
+                className={`fixed top-24 right-6 md:right-10 z-[2147483647] flex items-center gap-3 px-5 py-3.5 rounded-xl bg-zinc-900 border border-zinc-800 text-[14px] font-medium tracking-wide text-zinc-100 shadow-[0_10px_40px_rgba(0,0,0,0.8)] transition-all duration-400 pointer-events-none transform
+                ${toastMessage ? 'translate-y-0 opacity-100 scale-100' : '-translate-y-6 opacity-0 scale-95'}`}
+            >
+                <div className="w-2 h-2 rounded-full bg-zinc-500/50 animate-pulse" />
+                {toastMessage}
             </div>
 
             {/* ── Global Back to Top ── */}

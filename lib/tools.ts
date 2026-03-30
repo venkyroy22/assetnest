@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
 
@@ -265,6 +265,17 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: NotebookPen,
         tags: ["notes", "workspace", "editor", "markdown", "write", "draft", "document", "text"],
+        accent: "#ffffff",
+        category: "Productivity",
+    },
+    {
+        id: "kanban",
+        name: "Kanban Board",
+        description: "A professional, minimalist Kanban board with seamless drag-and-drop. Organize tasks, track project status, and boost your workflow privately.",
+        href: "/tools/kanban",
+        badge: "Free",
+        icon: KanbanSquare,
+        tags: ["kanban", "board", "task", "project", "management", "workflow", " productivity", "organization", "dnd"],
         accent: "#ffffff",
         category: "Productivity",
     },
