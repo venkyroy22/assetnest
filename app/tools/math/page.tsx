@@ -119,7 +119,7 @@ export default function MathGamePage() {
             {/* Header */}
             <div className="w-full mb-10 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
-                    <Zap size={11} className="text-white" />
+                    <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
@@ -149,12 +149,12 @@ export default function MathGamePage() {
                     </div>
                     <div className="flex-1 p-5 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col items-center">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Score</span>
-                        <span className="text-3xl font-black text-white tabular-nums">{score}</span>
+                        <span className="text-3xl font-black text-emerald-400 tabular-nums">{score}</span>
                     </div>
                 </div>
 
                 <div className="w-full relative group">
-                    <div className={`p-10 bg-zinc-950 border-4 border-zinc-900 rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-white/50 shadow-white/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
+                    <div className={`p-10 bg-zinc-950 border-4 border-zinc-900 rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-emerald-500/50 shadow-emerald-500/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
                         {!isPlaying && !gameOver ? (
                             <div className="flex flex-col items-center text-center gap-8">
                                 <Calculator size={48} className="text-zinc-800" />
@@ -171,7 +171,7 @@ export default function MathGamePage() {
                             </div>
                         ) : gameOver ? (
                             <div className="flex flex-col items-center text-center gap-8 animate-in zoom-in duration-500">
-                                <Trophy size={48} className="text-white animate-bounce" />
+                                <Trophy size={48} className="text-amber-400 animate-bounce" />
                                 <div>
                                     <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Test Concluded</h2>
                                     <p className="text-sm text-zinc-500 font-medium">You identified <span className="text-white font-bold">{score}</span> problems corectly.</p>

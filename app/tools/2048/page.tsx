@@ -201,15 +201,15 @@ export default function Game2048Page() {
         switch (val) {
             case 2: return "bg-zinc-800 text-zinc-100";
             case 4: return "bg-zinc-700 text-zinc-100";
-            case 8: return "bg-white text-white";
-            case 16: return "bg-white text-white";
-            case 32: return "bg-white text-white";
-            case 64: return "bg-white text-white";
-            case 128: return "bg-white text-white shadow-[0_0_10px_rgba(255, 255, 255,0.4)]";
-            case 256: return "bg-white text-white shadow-[0_0_15px_rgba(255, 255, 255,0.5)]";
-            case 512: return "bg-white text-white shadow-[0_0_20px_rgba(255, 255, 255,0.6)]";
-            case 1024: return "bg-white text-zinc-900 shadow-[0_0_25px_rgba(255, 255, 255,0.7)] font-black";
-            case 2048: return "bg-white text-zinc-900 shadow-[0_0_30px_rgba(255, 255, 255,0.8)] font-black";
+            case 8: return "bg-orange-600 text-white";
+            case 16: return "bg-orange-500 text-white";
+            case 32: return "bg-orange-400 text-white";
+            case 64: return "bg-orange-300 text-white";
+            case 128: return "bg-yellow-500 text-white shadow-[0_0_10px_rgba(234,179,8,0.4)]";
+            case 256: return "bg-yellow-400 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]";
+            case 512: return "bg-yellow-300 text-white shadow-[0_0_20px_rgba(234,179,8,0.6)]";
+            case 1024: return "bg-yellow-200 text-zinc-900 shadow-[0_0_25px_rgba(234,179,8,0.7)] font-black";
+            case 2048: return "bg-emerald-400 text-zinc-900 shadow-[0_0_30px_rgba(52,211,153,0.8)] font-black";
             default: return "bg-zinc-900/50 text-zinc-700";
         }
     };
@@ -223,7 +223,7 @@ export default function Game2048Page() {
             {/* Header */}
             <div className="w-full mb-10 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
-                    <Zap size={11} className="text-white" />
+                    <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
@@ -249,7 +249,7 @@ export default function Game2048Page() {
                 </div>
                 <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Best</span>
-                    <span className="text-2xl font-black text-white">{highScore}</span>
+                    <span className="text-2xl font-black text-amber-400">{highScore}</span>
                 </div>
                 <button onClick={reset} className="p-5 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl">
                     <RotateCcw size={20} />
@@ -276,7 +276,7 @@ export default function Game2048Page() {
                     <div className="absolute inset-0 bg-black/80 backdrop-blur-md rounded-[2.2rem] flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
                         {won ? (
                             <>
-                                <Star size={48} className="text-white mb-4 animate-bounce" />
+                                <Star size={48} className="text-yellow-400 mb-4 animate-bounce" />
                                 <h2 className="text-3xl font-black text-white mb-2 uppercase">You Reached 2048!</h2>
                                 <p className="text-sm text-zinc-400 mb-8">Legendary focus. Keep playing to set a record?</p>
                                 <div className="flex gap-4">

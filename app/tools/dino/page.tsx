@@ -182,7 +182,7 @@ export default function DinoRunPage() {
             {/* Header */}
             <div className="w-full mb-10 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
-                    <Zap size={11} className="text-white" />
+                    <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
@@ -207,7 +207,7 @@ export default function DinoRunPage() {
                 </div>
                 <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">High</span>
-                    <span className="text-2xl font-black text-white tabular-nums">{highScore}</span>
+                    <span className="text-2xl font-black text-emerald-400 tabular-nums">{highScore}</span>
                 </div>
             </div>
 

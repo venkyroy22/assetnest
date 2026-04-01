@@ -132,7 +132,7 @@ export default function SudokuPage() {
             {/* Header */}
             <div className="w-full mb-10 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
-                    <Zap size={11} className="text-white" />
+                    <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
@@ -199,7 +199,7 @@ export default function SudokuPage() {
                                         onClick={() => setSelected({ r, c })}
                                         className={`w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center text-sm sm:text-lg font-bold transition-all
                                             ${isSelected ? 'bg-white text-black z-10 scale-105 shadow-xl !rounded-lg' : 
-                                              isSuccess ? 'bg-white/20 text-white' :
+                                              isSuccess ? 'bg-emerald-500/20 text-emerald-400' :
                                               isRelated ? 'bg-zinc-800/50 text-zinc-300' : 'bg-zinc-950 text-zinc-400'}
                                             ${isInitial ? 'font-black' : 'font-medium'}
                                             ${isInitial && !isSelected && !isSuccess ? 'text-zinc-100' : ''}
@@ -217,7 +217,7 @@ export default function SudokuPage() {
 
                     {gameOver && (
                         <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500 z-50">
-                            <Trophy size={48} className="text-white mb-4 animate-bounce" />
+                            <Trophy size={48} className="text-amber-400 mb-4 animate-bounce" />
                             <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Solved!</h2>
                             <p className="text-sm text-zinc-400 mb-8">Impressive speed. Want to try a harder one?</p>
                             <button onClick={() => startNewGame(difficulty)} className="px-10 py-4 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">

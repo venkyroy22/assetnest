@@ -104,7 +104,7 @@ const THEMES: Theme[] = [
         name: "nebula",
         bg: "#07030f", surface: "#130a24", border: "#220f3d",
         text: "#e8d5ff", muted: "#6a3fa0", dim: "#180d2e",
-        accent: "#a78bfa", accentHex: "#a78bfa", error: "#ffffff",
+        accent: "#a78bfa", accentHex: "#a78bfa", error: "#f43f5e",
     },
     {
         name: "copper",

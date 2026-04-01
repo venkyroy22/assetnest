@@ -92,8 +92,8 @@ export default function WordlePage() {
 
     const getLetterColor = (guess: string, index: number) => {
         const letter = guess[index];
-        if (letter === solution[index]) return "bg-white border-white text-white";
-        if (solution.includes(letter)) return "bg-white border-white text-white";
+        if (letter === solution[index]) return "bg-emerald-500 border-emerald-500 text-white";
+        if (solution.includes(letter)) return "bg-amber-500 border-amber-500 text-white";
         return "bg-zinc-800 border-zinc-700 text-zinc-500";
     };
 
@@ -111,8 +111,8 @@ export default function WordlePage() {
         for (const guess of guesses) {
             for (let i = 0; i < WORD_LENGTH; i++) {
                 if (guess[i] === key) {
-                    if (key === solution[i]) return "bg-white text-white";
-                    if (solution.includes(key)) status = "bg-white text-white";
+                    if (key === solution[i]) return "bg-emerald-500 text-white";
+                    if (solution.includes(key)) status = "bg-amber-500 text-white";
                     else if (status === "bg-zinc-900 text-zinc-400") status = "bg-zinc-800 text-zinc-600";
                 }
             }
@@ -127,7 +127,7 @@ export default function WordlePage() {
             {/* Header */}
             <div className="w-full mb-10 text-center">
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
-                    <Zap size={11} className="text-white" />
+                    <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
@@ -204,7 +204,7 @@ export default function WordlePage() {
                     <div className="max-w-sm w-full bg-zinc-900 border border-zinc-800 p-10 rounded-[3rem] shadow-2xl animate-in zoom-in-95 duration-500">
                         {won ? (
                             <>
-                                <Trophy size={48} className="text-white mx-auto mb-6 animate-bounce" />
+                                <Trophy size={48} className="text-emerald-400 mx-auto mb-6 animate-bounce" />
                                 <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Brilliant!</h2>
                                 <p className="text-sm text-zinc-500 mb-8">You found the word <span className="text-white font-bold">{solution}</span> in {guesses.length} tries.</p>
                             </>
