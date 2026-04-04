@@ -158,7 +158,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             {pathname !== "/" && (
                                 <>
                                     <ChevronRight size={12} className="text-zinc-700" />
-                                    {pathname.split("/").filter(Boolean).map((segment, idx, arr) => {
+                                    {pathname?.split("/").filter(Boolean).map((segment, idx, arr) => {
                                         const href = "/" + arr.slice(0, idx + 1).join("/");
                                         const isLast = idx === arr.length - 1;
                                         const tool = ALL_TOOLS.find(t => t.href === href);
