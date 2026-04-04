@@ -1065,24 +1065,11 @@ export default function PdfSignerPage() {
 
             {/* ══ SIGNATURE PAD MODAL ══ */}
             {isPadOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center animate-in fade-in duration-300 p-4">
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => { setIsPadOpen(false); setActiveBox(null); }} />
-                    <div className="relative w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl">
-                        <SignaturePad
-                            onCancel={() => { setIsPadOpen(false); setActiveBox(null); }}
-                            onSave={onSignatureSaved}
-                        />
-                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block">
-                            <button
-                                onClick={() => { setIsPadOpen(false); setIsMobileModalOpen(true); }}
-                                className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-white transition-all group"
-                            >
-                                <Smartphone size={14} className="group-hover:translate-y-[-2px] transition-transform" />
-                                Sign on Mobile Device
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <SignaturePad
+                    onCancel={() => { setIsPadOpen(false); setActiveBox(null); }}
+                    onSave={onSignatureSaved}
+                    onMobileSign={() => { setIsPadOpen(false); setIsMobileModalOpen(true); }}
+                />
             )}
 
             {/* ══ MOBILE SIGNING MODAL ══ */}

@@ -263,6 +263,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, a
         const render = async () => {
             try {
                 const page      = await pdf.getPage(index + 1);
+                if (!isMounted) return;
                 const naturalVp = page.getViewport({ scale: 1.0 });
                 const dpr       = window.devicePixelRatio || 1;
                 const fitScale  = containerWidth / naturalVp.width;
@@ -270,8 +271,12 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, a
                 const renderScale = fitScale * safeDpr;
                 const viewport  = page.getViewport({ scale: renderScale });
 
-                const canvas = canvasRef.current!;
-                const ctx    = canvas.getContext("2d", { alpha: false, willReadFrequently: true })!;
+                const canvas = canvasRef.current;
+                if (!canvas || !isMounted) return;
+
+                const ctx    = canvas.getContext("2d", { alpha: false, willReadFrequently: true });
+                if (!ctx) return;
+
                 canvas.width  = viewport.width;
                 canvas.height = viewport.height;
 
@@ -279,7 +284,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, a
                 const displayH = Math.round(naturalVp.height * fitScale);
                 canvas.style.width  = `${displayW}px`;
                 canvas.style.height = `${displayH}px`;
-                setDimensions({ w: displayW, h: displayH });
+                if (isMounted) setDimensions({ w: displayW, h: displayH });
 
                 const task = page.render({ canvasContext: ctx, viewport });
                 await task.promise;
