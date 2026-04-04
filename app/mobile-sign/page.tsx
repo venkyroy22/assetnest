@@ -94,7 +94,7 @@ function MobileSignerInner() {
         <div className="min-h-screen bg-black">
             <SignaturePad 
                 onSave={onSignatureSaved} 
-                onCancel={() => window.close()} 
+                onCancel={() => typeof window !== 'undefined' && window.close()} 
             />
         </div>
     );
