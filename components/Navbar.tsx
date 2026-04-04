@@ -243,7 +243,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                         <div className="hidden md:flex items-center gap-1">
                             {NAV_LINKS.map((link) => {
                                 const Icon = link.icon;
-                                const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+                                const isActive = (pathname ?? "") === link.href || (pathname ?? "").startsWith(link.href + "/");
                                 return (
                                     <Link
                                         key={link.href}
