@@ -14,8 +14,11 @@ const ShareModal = dynamic(() => import("@/components/ShareModal"), { ssr: false
 import { Accordion, AccordionItem } from "@/components/Accordion";
 import type { Signature, LibraryItem } from "@/app/tools/pdf-signer/types";
 import Link from "next/link";
-import { MonitorSmartphone } from "lucide-react";
+import { MonitorSmartphone, Smartphone, QrCode } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
+import { io } from "socket.io-client";
+import { v4 as uuidv4 } from "uuid";
+import QRCodeStyling from "qr-code-styling";
 
 const PdfViewer = dynamic<any>(
     () => import("@/app/tools/pdf-signer/PdfViewer").then(m => m.default),
@@ -93,6 +96,63 @@ export default function PdfSignerPage() {
     const [isItalic, setIsItalic] = useState(false);
     const [isUnderline, setIsUnderline] = useState(false);
     const [activeSigId, setActiveSigId] = useState<string | null>(null);
+
+    // Mobile Signing State
+    const [mobileSessionId, setMobileSessionId] = useState<string | null>(null);
+    const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
+    const qrRef = useRef<HTMLDivElement>(null);
+    const socketRef = useRef<any>(null);
+
+    // Initialize Socket for Mobile Signing
+    useEffect(() => {
+        if (isMobileModalOpen && !mobileSessionId) {
+            const sid = uuidv4();
+            setMobileSessionId(sid);
+            
+            const initSocket = async () => {
+                await fetch("/api/socket");
+                const socket = io({ path: "/api/socket" });
+                socketRef.current = socket;
+
+                socket.on("connect", () => {
+                    socket.emit("join-session", sid);
+                });
+
+                socket.on("signature-received", (dataUrl: string) => {
+                    if (activeBox) {
+                        onSignatureSaved(dataUrl, undefined, activeBox);
+                        setIsMobileModalOpen(false);
+                        setMobileSessionId(null);
+                    }
+                });
+            };
+            initSocket();
+        }
+
+        return () => {
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+        };
+    }, [isMobileModalOpen, activeBox]);
+
+    // QR Code Generation
+    useEffect(() => {
+        if (isMobileModalOpen && mobileSessionId && qrRef.current) {
+            const qrCode = new QRCodeStyling({
+                width: 280,
+                height: 280,
+                data: `${window.location.origin}/mobile-sign?sid=${mobileSessionId}`,
+                dotsOptions: { color: "#ffffff", type: "rounded" },
+                backgroundOptions: { color: "transparent" },
+                cornersSquareOptions: { type: "extra-rounded", color: "#ffffff" },
+                cornersDotOptions: { type: "dot", color: "#ffffff" }
+            });
+            qrRef.current.innerHTML = "";
+            qrCode.append(qrRef.current);
+        }
+    }, [isMobileModalOpen, mobileSessionId]);
 
     // Sync styles when a different annotation is selected
     useEffect(() => {
@@ -1005,10 +1065,55 @@ export default function PdfSignerPage() {
 
             {/* ══ SIGNATURE PAD MODAL ══ */}
             {isPadOpen && (
-                <SignaturePad
-                    onCancel={() => { setIsPadOpen(false); setActiveBox(null); }}
-                    onSave={onSignatureSaved}
-                />
+                <div className="fixed inset-0 z-[200] flex items-center justify-center animate-in fade-in duration-300 p-4">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-md" onClick={() => { setIsPadOpen(false); setActiveBox(null); }} />
+                    <div className="relative w-full max-w-4xl bg-zinc-950 border border-white/10 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl">
+                        <SignaturePad
+                            onCancel={() => { setIsPadOpen(false); setActiveBox(null); }}
+                            onSave={onSignatureSaved}
+                        />
+                        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 hidden md:block">
+                            <button
+                                onClick={() => { setIsPadOpen(false); setIsMobileModalOpen(true); }}
+                                className="flex items-center gap-2 px-6 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest text-white transition-all group"
+                            >
+                                <Smartphone size={14} className="group-hover:translate-y-[-2px] transition-transform" />
+                                Sign on Mobile Device
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ══ MOBILE SIGNING MODAL ══ */}
+            {isMobileModalOpen && (
+                <div className="fixed inset-0 z-[250] flex items-center justify-center animate-in fade-in zoom-in-95 duration-300 p-4">
+                    <div className="absolute inset-0 bg-black/90 backdrop-blur-2xl" onClick={() => setIsMobileModalOpen(false)} />
+                    <div className="relative w-full max-w-md bg-zinc-900 border border-white/10 rounded-[2.5rem] p-10 flex flex-col items-center text-center shadow-2xl">
+                        <button 
+                            onClick={() => setIsMobileModalOpen(false)}
+                            className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-zinc-500 hover:text-white transition-colors"
+                        >
+                            <X size={20} />
+                        </button>
+
+                        <div className="w-16 h-16 rounded-2xl bg-white text-black flex items-center justify-center mb-6">
+                            <QrCode size={32} />
+                        </div>
+
+                        <h2 className="text-2xl font-black text-white tracking-tight mb-2 uppercase">Sign on Mobile</h2>
+                        <p className="text-zinc-500 text-sm font-medium mb-8">Scan the code with your phone camera to draw your signature wirelessly.</p>
+
+                        <div className="p-4 bg-white rounded-3xl mb-8 group transition-transform hover:scale-[1.02]">
+                            <div ref={qrRef} className="w-[280px] h-[280px] flex items-center justify-center" />
+                        </div>
+
+                        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                            <span className="text-[10px] font-black text-emerald-400 uppercase tracking-widest">Awaiting Remote Signal...</span>
+                        </div>
+                    </div>
+                </div>
             )}
 
             {/* ══ SHARE MODAL ══ */}
