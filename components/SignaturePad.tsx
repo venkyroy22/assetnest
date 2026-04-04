@@ -1,12 +1,11 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { X, Eraser, RotateCcw, Check, PenTool, Palette, PenLine, Type, Image as ImageIcon, Upload as UploadIcon, Trash2, Smartphone } from "lucide-react";
+import { X, Eraser, RotateCcw, Check, PenTool, Palette, PenLine, Type, Image as ImageIcon, Upload as UploadIcon, Trash2 } from "lucide-react";
 
 interface SignaturePadProps {
     onSave: (dataUrl: string, color?: string) => void;
     onCancel: () => void;
-    onMobileSign?: () => void;
 }
 
 const SIGNATURE_FONTS = [
@@ -34,7 +33,7 @@ const PEN_STYLES: { id: PenStyle; label: string; desc: string }[] = [
     { id: "marker",    label: "Marker",   desc: "Bold & visible"   },
 ];
 
-export default function SignaturePad({ onSave, onCancel, onMobileSign }: SignaturePadProps) {
+export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
     const canvasRef     = useRef<HTMLCanvasElement>(null);
     const wrapperRef    = useRef<HTMLDivElement>(null);
     const colorInputRef = useRef<HTMLInputElement>(null);
@@ -560,16 +559,6 @@ export default function SignaturePad({ onSave, onCancel, onMobileSign }: Signatu
                                 </div>
                             )}
 
-                            {/* Mobile Signing Option */}
-                            {onMobileSign && (
-                                <button
-                                    onClick={onMobileSign}
-                                    className="hidden sm:flex items-center gap-3 px-6 py-4 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-[11px] font-black uppercase tracking-[0.2em] transition-all"
-                                >
-                                    <Smartphone size={16} />
-                                    <span>Sign on Mobile</span>
-                                </button>
-                            )}
 
                             {/* Confirm */}
                             <button
