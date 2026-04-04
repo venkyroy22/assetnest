@@ -140,7 +140,7 @@ function BillViewer() {
 
     // Decode ─────────────────────────────────────────────────────────────────
     useEffect(() => {
-        const d = searchParams.get("d");
+        const d = searchParams?.get("d");
         if (!d) { setError(true); return; }
         const data = decode(d);
         if (!data) { setError(true); return; }
