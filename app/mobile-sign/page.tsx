@@ -1,6 +1,6 @@
 "use client";
 
-import React, { Suspense, useState, useEffect } from "react";
+import React, { Suspense, useState, useEffect, useRef } from "react";
 import { useSearchParams } from "next/navigation";
 import dynamic from "next/dynamic";
 import { io } from "socket.io-client";
@@ -13,7 +13,10 @@ function MobileSignerInner() {
     const searchParams = useSearchParams();
     const sessionId = searchParams?.get("sid");
     const [status, setStatus] = useState<"connecting" | "ready" | "done" | "error">("connecting");
-    const [socket, setSocket] = useState<any>(null);
+
+    // Use a ref instead of state so the onSignatureSaved callback
+    // always captures the live socket, not a stale closure value.
+    const socketRef = useRef<any>(null);
 
     useEffect(() => {
         if (!sessionId) {
@@ -23,36 +26,57 @@ function MobileSignerInner() {
 
         // Initialize socket connection
         const initializeSocket = async () => {
-            await fetch("/api/socket"); // Trigger socket server initialization
-            const newSocket = io({
-                path: "/api/socket"
-            });
+            try {
+                await fetch("/api/socket"); // Trigger socket server initialization
 
-            newSocket.on("connect", () => {
-                console.log("Connected to socket", newSocket.id);
-                newSocket.emit("join-session", sessionId);
-                setStatus("ready");
-            });
+                const newSocket = io({
+                    path: "/api/socket",
+                    reconnectionAttempts: 5,
+                    timeout: 10000,
+                });
 
-            newSocket.on("connect_error", (err) => {
-                console.error("Socket connection error", err);
+                socketRef.current = newSocket;
+
+                newSocket.on("connect", () => {
+                    console.log("[Mobile] Connected to socket:", newSocket.id);
+                    newSocket.emit("join-session", sessionId);
+                    setStatus("ready");
+                });
+
+                newSocket.on("connect_error", (err) => {
+                    console.error("[Mobile] Socket connection error:", err);
+                    setStatus("error");
+                });
+
+                newSocket.on("disconnect", (reason) => {
+                    console.warn("[Mobile] Disconnected:", reason);
+                });
+            } catch (err) {
+                console.error("[Mobile] Failed to initialize socket:", err);
                 setStatus("error");
-            });
-
-            setSocket(newSocket);
+            }
         };
 
         initializeSocket();
 
+        // Cleanup — use the ref, not a stale state value
         return () => {
-            if (socket) socket.disconnect();
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
         };
     }, [sessionId]);
 
     const onSignatureSaved = (dataUrl: string) => {
+        // Read from ref — always the live socket, never stale
+        const socket = socketRef.current;
         if (socket && sessionId) {
+            console.log("[Mobile] Emitting signature-applied for session:", sessionId);
             socket.emit("signature-applied", { sessionId, signatureData: dataUrl });
             setStatus("done");
+        } else {
+            console.error("[Mobile] Cannot send signature — socket not connected or no sessionId");
         }
     };
 
@@ -90,11 +114,12 @@ function MobileSignerInner() {
         );
     }
 
+    // status === "ready"
     return (
         <div className="min-h-screen bg-black">
-            <SignaturePad 
-                onSave={onSignatureSaved} 
-                onCancel={() => typeof window !== 'undefined' && window.close()} 
+            <SignaturePad
+                onSave={onSignatureSaved}
+                onCancel={() => typeof window !== 'undefined' && window.close()}
             />
         </div>
     );

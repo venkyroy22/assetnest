@@ -102,32 +102,58 @@ export default function PdfSignerPage() {
     const [isMobileModalOpen, setIsMobileModalOpen] = useState(false);
     const qrRef = useRef<HTMLDivElement>(null);
     const socketRef = useRef<any>(null);
+    // Keep a live reference to activeBox so the socket handler always sees the current value
+    const activeBoxRef = useRef<typeof activeBox>(null);
 
     // Initialize Socket for Mobile Signing
+    // NOTE: activeBox is intentionally accessed via ref, not dependency array,
+    // so the socket is never disconnected mid-session when activeBox changes.
     useEffect(() => {
-        if (isMobileModalOpen && !mobileSessionId) {
-            const sid = uuidv4();
-            setMobileSessionId(sid);
-            
-            const initSocket = async () => {
-                await fetch("/api/socket");
-                const socket = io({ path: "/api/socket" });
-                socketRef.current = socket;
-
-                socket.on("connect", () => {
-                    socket.emit("join-session", sid);
-                });
-
-                socket.on("signature-received", (dataUrl: string) => {
-                    if (activeBox) {
-                        onSignatureSaved(dataUrl, undefined, activeBox);
-                        setIsMobileModalOpen(false);
-                        setMobileSessionId(null);
-                    }
-                });
-            };
-            initSocket();
+        if (!isMobileModalOpen) {
+            // Modal closed — tear down socket
+            if (socketRef.current) {
+                socketRef.current.disconnect();
+                socketRef.current = null;
+            }
+            return;
         }
+
+        // Modal just opened — generate session and connect socket
+        const sid = uuidv4();
+        setMobileSessionId(sid);
+
+        const initSocket = async () => {
+            await fetch("/api/socket");
+            const socket = io({ path: "/api/socket" });
+            socketRef.current = socket;
+
+            socket.on("connect", () => {
+                console.log("[PC] Socket connected, joining session:", sid);
+                socket.emit("join-session", sid);
+            });
+
+            socket.on("connect_error", (err: any) => {
+                console.error("[PC] Socket connection error:", err);
+            });
+
+            socket.on("signature-received", (dataUrl: string) => {
+                console.log("[PC] Signature received from mobile");
+                // Use the ref — always has the most current value
+                const box = activeBoxRef.current;
+                if (box) {
+                    onSignatureSaved(dataUrl, undefined, box);
+                } else {
+                    console.warn("[PC] signature-received but no activeBox — placing at default position");
+                    // Fallback: place at a sensible default
+                    const fallbackBox = { pageIndex: 0, x: 0.1, y: 0.7, w: 0.35, h: 0.12 };
+                    onSignatureSaved(dataUrl, undefined, fallbackBox);
+                }
+                setIsMobileModalOpen(false);
+                setMobileSessionId(null);
+            });
+        };
+
+        initSocket();
 
         return () => {
             if (socketRef.current) {
@@ -135,7 +161,7 @@ export default function PdfSignerPage() {
                 socketRef.current = null;
             }
         };
-    }, [isMobileModalOpen, activeBox]);
+    }, [isMobileModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // QR Code Generation
     useEffect(() => {
@@ -321,6 +347,7 @@ export default function PdfSignerPage() {
 
         if (activeTool === "signature" || activeTool === "initials") {
             setActiveBox(box);
+            activeBoxRef.current = box; // keep ref in sync
             setIsPadOpen(true);
         } else if (activeTool === "text") {
             addAnnotation("text", box, "");
