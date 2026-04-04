@@ -144,10 +144,10 @@ export default function PdfSignerPage() {
                 width: 280,
                 height: 280,
                 data: `${window.location.origin}/mobile-sign?sid=${mobileSessionId}`,
-                dotsOptions: { color: "#ffffff", type: "rounded" },
+                dotsOptions: { color: "#000000", type: "rounded" },
                 backgroundOptions: { color: "transparent" },
-                cornersSquareOptions: { type: "extra-rounded", color: "#ffffff" },
-                cornersDotOptions: { type: "dot", color: "#ffffff" }
+                cornersSquareOptions: { type: "extra-rounded", color: "#000000" },
+                cornersDotOptions: { type: "dot", color: "#000000" }
             });
             qrRef.current.innerHTML = "";
             qrCode.append(qrRef.current);
