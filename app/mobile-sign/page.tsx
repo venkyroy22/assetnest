@@ -11,7 +11,7 @@ const SignaturePad = dynamic(() => import("@/components/SignaturePad"), { ssr: f
 
 function MobileSignerInner() {
     const searchParams = useSearchParams();
-    const sessionId = searchParams.get("sid");
+    const sessionId = searchParams?.get("sid");
     const [status, setStatus] = useState<"connecting" | "ready" | "done" | "error">("connecting");
     const [socket, setSocket] = useState<any>(null);
 
