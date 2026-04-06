@@ -661,5 +661,23 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         <LI><strong className="text-white">Order Matters:</strong> Utilize our drag-and-drop sequencer to ensure page 1 is the cover sheet before executing the final PDF compile.</LI>
       </UL>
     </>
+  ),
+  "how-to-crop-pdf-pages-visually": (
+    <>
+      <P>Dealing with excessive white margins or unwanted watermarks on a PDF document can be incredibly frustrating. Attempting to fix this by printing the document, physically cutting the paper, and rescanning it is a massive waste of time and destroys the document's original quality.</P>
+      <H2>Understanding PDF Viewports</H2>
+      <P>Unlike standard image formats, a PDF doesn't just crop pixels. The PDF specification includes a feature called a "CropBox"—a mathematical boundary that defines the visible region of a page without deleting the underlying geometry or text data outside of it.</P>
+      <H2>How to Crop without Software Extensions</H2>
+      <P>Using the AssetNest PDF Cropper eliminates the need for expensive desktop licenses and protects your data by doing all the heavy lifting locally in your browser memory.</P>
+      <UL>
+        <LI><strong className="text-white">Upload Your File:</strong> Securely drop your PDF into the editor.</LI>
+        <LI><strong className="text-white">Draw the Box:</strong> Use your mouse to intuitively draw around the exact section you want to keep. The darkened overlay highlights exactly what will be removed.</LI>
+        <LI><strong className="text-white">Precision Edits:</strong> Need pixel-perfect margins? Simply type the exact percentage values into the numerical inputs on the sidebar.</LI>
+        <LI><strong className="text-white">Apply Globally:</strong> Toggle "Apply crop to all pages" to sync your drawn frame across the entire document in one click.</LI>
+      </UL>
+      <Alert title="Zero Quality Loss">
+        Because this tool edits the structural metadata of the document (the CropBox) rather than rasterizing the pages into images, your final export retains 100% of its original vector quality and text searchability.
+      </Alert>
+    </>
   )
 };

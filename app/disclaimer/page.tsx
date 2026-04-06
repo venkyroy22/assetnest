@@ -42,12 +42,7 @@ export default function DisclaimerPage() {
                                 </p>
                             </section>
 
-                            <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. External Services</h2>
-                                <p className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-zinc-400">
-                                    Our platform may link to external tools or hosting services. AssetNest exercises no control over the privacy policies or operational integrity of these third-party platforms. Use of such links is at your own risk.
-                                </p>
-                            </section>
+
 
                             <div className="mt-12 pt-8 border-t border-zinc-900">
                                 <p className="text-sm italic text-zinc-500">

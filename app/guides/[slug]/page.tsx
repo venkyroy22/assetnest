@@ -58,7 +58,7 @@ export default async function GuidePostPage({ params }: Props) {
             className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors mb-10 group"
           >
             <ArrowLeft size={13} className="group-hover:-translate-x-0.5 transition-transform" />
-            All Articles
+            All Guides
           </Link>
 
           {/* Article Header */}
@@ -149,7 +149,7 @@ export default async function GuidePostPage({ params }: Props) {
           {related.length > 0 && (
             <div className="mt-14">
               <h3 className="text-xs font-black uppercase tracking-widest text-zinc-600 mb-5">
-                Related Articles
+                Related Guides
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {related.map((r) => (
@@ -180,7 +180,7 @@ export default async function GuidePostPage({ params }: Props) {
               className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors group"
             >
               <ArrowLeft size={12} className="group-hover:-translate-x-0.5 transition-transform" />
-              Back to All Articles
+              Back to All Guides
             </Link>
           </div>
         </div>

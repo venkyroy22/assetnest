@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
 
@@ -238,6 +238,22 @@ export const ALL_TOOLS: Tool[] = [
             "split pdf", "pdf splitter", "extract pages", "pdf page extractor",
             "split pdf into pages", "separate pdf pages", "remove pages from pdf",
             "pdf cutter", "pdf page selector", "extract pdf pages"
+        ],
+        accent: "#ffffff",
+        category: "PDF",
+    },
+    {
+        id: "pdf-cropper",
+        name: "PDF Cropper",
+        description: "Visually crop and trim the margins or any region of your PDF pages. Set precise crop areas, apply to all pages, and export — 100% private, in-browser.",
+        href: "/tools/pdf-cropper",
+        badge: "Free",
+        icon: Crop,
+        tags: [
+            "pdf", "crop", "trim", "margins", "cropper", "cut",
+            "crop pdf", "pdf cropper", "trim pdf", "pdf margin trimmer",
+            "crop pdf pages", "remove margins pdf", "pdf crop tool",
+            "trim pdf margins", "crop pdf online", "pdf viewport"
         ],
         accent: "#ffffff",
         category: "PDF",

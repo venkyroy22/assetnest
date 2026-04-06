@@ -53,17 +53,12 @@ export default function PrivacyPage() {
                                 </div>
                             </section>
 
-                            <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Third-Party Links</h2>
-                                <p className="leading-relaxed">
-                                    Our site may contain links to external web tools or resources. We are not responsible for the privacy practices or content of these third-party sites.
-                                </p>
-                            </section>
+
 
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">5. Third-Party Services</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-4">4. Third-Party Services</h2>
                                 <p className="leading-relaxed">
-                                    We may use third-party services for analytics or file hosting. These services have their own privacy policies, and we encourage you to review them.
+                                    We only engage with third-party vendors for advertising (e.g., Google AdSense). We explicitly do not use external file hosting services, as all document and image processing occurs securely and locally on your device.
                                 </p>
                             </section>
 

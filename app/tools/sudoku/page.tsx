@@ -34,8 +34,15 @@ const generateSudoku = (difficulty: Difficulty) => {
         [3, 4, 5, 2, 8, 6, 1, 7, 9]
     ];
 
-    // Shuffling rows/cols within blocks would be better, but for now we'll just mask.
-    const board = base.map(row => [...row]);
+    // Create a new randomized mapping for the digits 1-9 to ensure unique grids
+    const digits = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    for (let i = digits.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [digits[i], digits[j]] = [digits[j], digits[i]];
+    }
+
+    const shuffledBase = base.map(row => row.map(cell => digits[cell - 1]));
+    const board = shuffledBase.map(row => [...row]);
     const maskCount = difficulty === "Easy" ? 35 : difficulty === "Medium" ? 45 : 55;
     
     let count = 0;
@@ -48,7 +55,7 @@ const generateSudoku = (difficulty: Difficulty) => {
         }
     }
 
-    return { puzzle: board, solution: base };
+    return { puzzle: board, solution: shuffledBase };
 };
 
 export default function SudokuPage() {
@@ -80,10 +87,10 @@ export default function SudokuPage() {
         setIsLoaded(true);
     }, [startNewGame]);
 
-    const handleInput = (val: number) => {
+    const handleInput = useCallback((val: number) => {
         if (!selected || gameOver || mistakes >= 3) return;
         const { r, c } = selected;
-        if (initial[r][c]) return;
+        if (!initial || !initial[r] || initial[r][c]) return;
 
         if (val !== 0 && val !== solution[r][c]) {
             setMistakes(prev => prev + 1);
@@ -99,20 +106,20 @@ export default function SudokuPage() {
             
             return next;
         });
-    };
+    }, [selected, gameOver, mistakes, initial, solution]);
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (e.key >= '1' && e.key <= '9') handleInput(parseInt(e.key));
             else if (e.key === 'Backspace' || e.key === 'Delete') handleInput(0);
-            else if (e.key === 'ArrowUp') setSelected(s => s ? { ...s, r: Math.max(0, s.r - 1) } : { r: 0, c: 0 });
-            else if (e.key === 'ArrowDown') setSelected(s => s ? { ...s, r: Math.min(8, s.r + 1) } : { r: 0, c: 0 });
-            else if (e.key === 'ArrowLeft') setSelected(s => s ? { ...s, c: Math.max(0, s.c - 1) } : { r: 0, c: 0 });
-            else if (e.key === 'ArrowRight') setSelected(s => s ? { ...s, c: Math.min(8, s.c + 1) } : { r: 0, c: 0 });
+            else if (e.key === 'ArrowUp') { e.preventDefault(); setSelected(s => s ? { ...s, r: Math.max(0, s.r - 1) } : { r: 0, c: 0 }); }
+            else if (e.key === 'ArrowDown') { e.preventDefault(); setSelected(s => s ? { ...s, r: Math.min(8, s.r + 1) } : { r: 0, c: 0 }); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); setSelected(s => s ? { ...s, c: Math.max(0, s.c - 1) } : { r: 0, c: 0 }); }
+            else if (e.key === 'ArrowRight') { e.preventDefault(); setSelected(s => s ? { ...s, c: Math.min(8, s.c + 1) } : { r: 0, c: 0 }); }
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selected, gameOver, mistakes]);
+    }, [handleInput]);
 
     const watchAdToRevive = () => {
         setIsWatchingAd(true);
@@ -203,7 +210,7 @@ export default function SudokuPage() {
                                               isRelated ? 'bg-zinc-800/50 text-zinc-300' : 'bg-zinc-950 text-zinc-400'}
                                             ${isInitial ? 'font-black' : 'font-medium'}
                                             ${isInitial && !isSelected && !isSuccess ? 'text-zinc-100' : ''}
-                                            ${isError && !isSelected ? 'text-red-500 bg-red-500/10' : ''}
+                                            ${isError && !isSelected ? '!text-red-500 !bg-red-500/10' : ''}
                                             ${(c + 1) % 3 === 0 && c < 8 ? 'mr-1' : ''}
                                             ${(r + 1) % 3 === 0 && r < 8 ? 'mb-1' : ''}
                                         `}

@@ -129,7 +129,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                                 <button 
                                     onClick={handleCopy}
                                     className={`shrink-0 h-10 px-4 rounded-xl text-xs font-bold tracking-wide transition-all flex items-center gap-2 
-                                        ${copied ? 'bg-white/20 text-white px-6' : 'bg-white hover:bg-white text-white shadow-lg shadow-white/20'}`}
+                                        ${copied ? 'bg-white/20 text-white px-6' : 'bg-white hover:bg-zinc-100 text-black shadow-lg shadow-white/10'}`}
                                 >
                                     {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                                 </button>

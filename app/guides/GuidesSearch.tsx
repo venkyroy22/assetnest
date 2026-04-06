@@ -89,7 +89,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                   {featured.readTime}
                 </div>
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-white group-hover:gap-2.5 transition-all duration-200">
-                  Read Article
+                  Read Guide
                   <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </div>
               </div>
@@ -133,7 +133,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                     {post.readTime}
                   </div>
                   <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 group-hover:text-white transition-colors">
-                    Read
+                    Read Guide
                     <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                   </div>
                 </div>
