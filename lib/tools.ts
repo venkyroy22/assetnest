@@ -1,6 +1,6 @@
 import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine } from "lucide-react";
 
-export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games";
+export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games" | "Design Training";
 
 export interface Tool {
     id: string;
@@ -366,4 +366,26 @@ export const ALL_TOOLS: Tool[] = [
         accent: "#ffffff",
         category: "Games",
     },
+    {
+        id: "ui-pixel-perfect",
+        name: "Pixel Perfect",
+        description: "Develop a precise eye for pixels. Draw boxes matching exact dimension targets to train your UI spatial awareness.",
+        href: "/tools/pixel-perfect",
+        badge: "Free",
+        icon: ScanLine,
+        tags: ["ui", "training", "pixels", "design", "box"],
+        accent: "from-blue-500/20 to-cyan-500/20",
+        category: "Design Training"
+    },
+    {
+        id: "ui-is-it-centered",
+        name: "Is It Centered",
+        description: "Sharpen your spacing discernment. Identify whether a geometric dot is perfectly centered within a container.",
+        href: "/tools/is-it-centered",
+        badge: "Free",
+        icon: CropIcon,
+        tags: ["ui", "training", "alignment", "design", "center"],
+        accent: "from-fuchsia-500/20 to-pink-500/20",
+        category: "Design Training"
+    }
 ];

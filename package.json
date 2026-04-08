@@ -26,6 +26,7 @@
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "docx": "^9.6.1",
+    "framer-motion": "^12.38.0",
     "html2canvas": "^1.4.1",
     "instagram-url-direct": "^2.0.7",
     "jszip": "^3.10.1",

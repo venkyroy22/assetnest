@@ -679,5 +679,82 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         Because this tool edits the structural metadata of the document (the CropBox) rather than rasterizing the pages into images, your final export retains 100% of its original vector quality and text searchability.
       </Alert>
     </>
+  ),
+  "master-your-eye-pixel-perfect": (
+    <>
+      <P>
+        As a designer or developer, your eyes are your most valuable tool. Being able to look at a box and instinctively know if it's 200px or 250px wide is a skill that separates juniors from senior professionals. <strong>Pixel Perfect</strong> is designed to gamify this calibration process.
+      </P>
+
+      <H2>The Science of Optical Estimation</H2>
+      <P>
+        Humans are naturally good at comparing sizes when objects are side-by-side, but our "absolute" estimation—guessing the size of a standalone object—is notoriously unreliable. Factors like screen resolution, viewing distance, and optical illusions can easily trick your brain into misjudging dimensions by 20% or more.
+      </P>
+
+      <H3>Training Your Internal Ruler</H3>
+      <UL>
+        <LI>
+          <strong className="text-white">Start with Training Mode:</strong> Don't jump straight into the challenge. Use the training mode to see a ghost reference and a 100px grid. This helps set a baseline for "what a hundred pixels looks like" on your specific monitor.
+        </LI>
+        <LI>
+          <strong className="text-white">Use Your Hands:</strong> Sometimes, physically referencing the size of your thumb or a finger against the screen (safely!) can help you anchor your guesses for smaller dimensions.
+        </LI>
+        <LI>
+          <strong className="text-white">Analyze Your Bias:</strong> Most people have a consistent bias—they either always overestimate or always underestimate. Pay attention to your final results screen to see which way you lean.
+        </LI>
+      </UL>
+
+      <Alert title="Why Pixels Matter">
+        In modern web development, sub-pixel rendering and precise spacing (padding/margins) define the luxury feel of a UI. Developing a sharp eye for these details allows you to spot layout bugs faster than any automated tester.
+      </Alert>
+
+      <H2>How to Play</H2>
+      <P>
+        The game is simple but difficult to master. You'll be given a target Width and Height in the header. Your job is to click and drag on the canvas to draw a box that matches those numbers as closely as possible.
+      </P>
+      <P>
+        Release the mouse to "submit" your guess. The game will show you your box (in blue) overlaid with the correct target (in emerald dashed lines). Your score is the total number of pixels you were off—so lower is better!
+      </P>
+    </>
+  ),
+  "is-it-centered-the-optical-perfection-test": (
+    <>
+      <P>
+        There is nothing more frustrating in UI design than an element that looks <em>almost</em> centered but isn't. This "optical misalignment" can create a subconscious sense of unease for users, making an application feel unstable or unpolished.
+      </P>
+      <P>
+        <strong>Is It Centered?</strong> is a high-stakes test of your ability to detect absolute geometric balance versus deceptive shifts.
+      </P>
+
+      <H2>Optical vs. Mathematical Centering</H2>
+      <P>
+        While math tells us the center is always <Code>(width/2, height/2)</Code>, our eyes sometimes disagree. For example, a heavy play icon (a triangle) often needs to be shifted slightly to the right to <em>look</em> centered because of its asymmetrical weight. 
+      </P>
+      <P>
+        However, in this game, we are testing for <strong>Mathematical Perfection</strong>. The dot is either exactly at the algebraic center of the shape, or it has been shifted by a randomized vector to throw you off.
+      </P>
+
+      <H3>The Rules of Engagement</H3>
+      <UL>
+        <LI>
+          <strong className="text-white">One Life Only:</strong> This isn't a practice session. A single incorrect guess terminates your training immediately.
+        </LI>
+        <LI>
+          <strong className="text-white">Increasing Difficulty:</strong> As you progress through the 10 levels, the shapes become more complex (from simple squares to intersecting tri-combos) and the offsets become smaller and harder to detect.
+        </LI>
+        <LI>
+          <strong className="text-white">Target Results:</strong> After you guess, the game reveals the "algebraic crosshairs"—the perfect vertical and horizontal axes of the shape.
+        </LI>
+      </UL>
+
+      <Alert title="Pro Tip: The Squint Test">
+        If you're struggling to decide, try squinting your eyes slightly. This blurs the sharp edges and lets you perceive the "mass" of the shape and the dot more holistically. Sometimes the raw weight distribution is easier to see when the details are out of focus.
+      </Alert>
+
+      <H2>Track Your Precision</H2>
+      <P>
+        At the end of your run, you'll receive a Final Precision Score based on how many levels you cleared. The game will even give you a sarcastic remark about your performance—because as designers, we're our own harshest critics.
+      </P>
+    </>
   )
 };
