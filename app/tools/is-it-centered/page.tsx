@@ -39,66 +39,163 @@ const PoopIcon = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 100 100" className={className}>
         <defs>
             <linearGradient id="poopGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#A1887F" />
-                <stop offset="100%" stopColor="#5D4037" />
+                <stop offset="0%" stopColor="#8D6E63" />
+                <stop offset="50%" stopColor="#5D4037" />
+                <stop offset="100%" stopColor="#3E2723" />
             </linearGradient>
+            <filter id="poopGlow">
+                <feGaussianBlur stdDeviation="2" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
         </defs>
         <motion.g
-            animate={{ rotate: [0, -2, 2, -2, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ 
+                rotate: [0, -4, 4, -4, 0],
+                scale: [1, 1.05, 1, 1.05, 1]
+            }}
+            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-            <path fill="url(#poopGradient)" d="M79.783,50.325C79.099,54.719,76.759,58.17,72.79,60.602C67.962,63.561,60.507,65,50,65S32.038,63.561,27.21,60.602C23.242,58.17,20.902,54.719,20.217,50.325C13.107,53.978,10,59.199,10,65C10,76.046,21.242,85,50,85S90,76.046,90,65C90,59.199,86.893,53.978,79.783,50.325Z"/>
+            {/* The main swirl */}
+            <path fill="url(#poopGradient)" filter="url(#poopGlow)" d="M79.783,50.325C79.099,54.719,76.759,58.17,72.79,60.602C67.962,63.561,60.507,65,50,65S32.038,63.561,27.21,60.602C23.242,58.17,20.902,54.719,20.217,50.325C13.107,53.978,10,59.199,10,65C10,76.046,21.242,85,50,85S90,76.046,90,65C90,59.199,86.893,53.978,79.783,50.325Z"/>
             <path fill="url(#poopGradient)" d="M25,47.5C25,54.404,29.526,60,50,60S75,54.404,75,47.5C75,42.582,72.697,38.329,63.972,36.288C61.916,42.475,56.922,47.333,50.649,49.186C47.833,50.019,45,47.937,45,45L45,45C53.284,45,60,38.284,60,30C60,21.716,53.284,15,45,15C45,30,25,35,25,47.5Z"/>
+            
+            {/* Highlights */}
+            <path d="M45,20 C35,22 30,30 30,40" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.2" fill="none" />
+            <path d="M15,65 C15,75 25,80 50,80" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.1" fill="none" />
+
+            {/* Face */}
             <circle cx="40" cy="65" r="4" fill="white" />
             <circle cx="60" cy="65" r="4" fill="white" />
-            <path d="M42,75 Q50,80 58,75" stroke="white" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <motion.path 
+                animate={{ d: ["M42,75 Q50,80 58,75", "M42,76 Q50,82 58,76", "M42,75 Q50,80 58,75"] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                stroke="white" strokeWidth="3" fill="none" strokeLinecap="round" 
+            />
         </motion.g>
     </svg>
 );
 
 const HappyIcon = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 100 100" className={className} fill="none">
-        <circle cx="50" cy="50" r="45" fill="#FFC107" />
+        <defs>
+            <radialGradient id="faceGradientHappy" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFECB3" />
+                <stop offset="70%" stopColor="#FFD54F" />
+                <stop offset="100%" stopColor="#FFB300" />
+            </radialGradient>
+            <filter id="eyeGlow">
+                <feGaussianBlur stdDeviation="1" result="blur" />
+                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+            </filter>
+        </defs>
+        <circle cx="50" cy="50" r="45" fill="url(#faceGradientHappy)" stroke="#FF8F00" strokeWidth="1" />
+        
+        {/* Shine */}
+        <circle cx="35" cy="30" r="15" fill="white" fillOpacity="0.2" />
+
         <motion.g 
             animate={{ 
-                x: [0, 0, -8, -8, 0, 0, 8, 8, 0], 
-                y: [0, 0, -12, -12, 0, 0, 12, 12, 0] 
+                x: [0, 0, -5, -5, 0, 0, 5, 5, 0], 
+                y: [0, 0, -8, -8, 0, 0, 8, 8, 0] 
             }} 
             transition={{ 
-                duration: 8, 
+                duration: 6, 
                 repeat: Infinity, 
                 times: [0, 0.1, 0.25, 0.35, 0.5, 0.6, 0.75, 0.85, 1],
                 ease: "easeInOut" 
             }}
         >
-            <circle cx="38" cy="46" r="5" fill="#5D4037" />
-            <circle cx="62" cy="46" r="5" fill="#5D4037" />
-            <path d="M30,62 Q50,85 70,62 L30,62 Z" fill="white" />
+            <g filter="url(#eyeGlow)">
+                <circle cx="38" cy="46" r="6" fill="#4E342E" />
+                <circle cx="62" cy="46" r="6" fill="#4E342E" />
+                <circle cx="36" cy="44" r="2" fill="white" />
+                <circle cx="60" cy="44" r="2" fill="white" />
+            </g>
+            <motion.path 
+                animate={{ scaleY: [1, 1.2, 1] }} 
+                transition={{ duration: 2, repeat: Infinity }}
+                d="M30,65 Q50,90 70,65 Q50,75 30,65 Z" 
+                fill="white" 
+            />
         </motion.g>
     </svg>
 );
 
 const SadIcon = ({ className }: { className?: string }) => (
     <svg viewBox="0 0 100 100" className={className} fill="none">
-        <circle cx="50" cy="50" r="45" fill="#FFC107" />
+        <defs>
+            <radialGradient id="faceGradientSad" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFB74D" />
+                <stop offset="100%" stopColor="#E65100" />
+            </radialGradient>
+        </defs>
+        <circle cx="50" cy="50" r="45" fill="url(#faceGradientSad)" stroke="#BF360C" strokeWidth="1" />
+        
+        {/* Sweat drop? Or just shine */}
+        <circle cx="65" cy="30" r="10" fill="white" fillOpacity="0.1" />
+
         <motion.g 
             animate={{ 
-                x: [0, 0, 8, 8, 0, 0, -8, -8, 0], 
-                y: [0, 0, -12, -12, 0, 0, 12, 12, 0] 
+                x: [0, 0, 5, 5, 0, 0, -5, -5, 0], 
+                y: [0, 0, -8, -8, 0, 0, 8, 8, 0] 
             }} 
             transition={{ 
-                duration: 8, 
+                duration: 6, 
                 repeat: Infinity, 
                 times: [0, 0.1, 0.25, 0.35, 0.5, 0.6, 0.75, 0.85, 1],
                 ease: "easeInOut" 
             }}
         >
-            <circle cx="38" cy="46" r="5" fill="#5D4037" />
-            <circle cx="62" cy="46" r="5" fill="#5D4037" />
-            <path d="M30,75 Q50,58 70,75 L30,75 Z" fill="white" />
+            <circle cx="38" cy="46" r="6" fill="#311B92" />
+            <circle cx="62" cy="46" r="6" fill="#311B92" />
+            
+            <motion.path 
+                animate={{ y: [0, 2, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+                d="M35,75 Q50,60 65,75" 
+                stroke="white" 
+                strokeWidth="4" 
+                strokeLinecap="round" 
+                fill="none" 
+            />
         </motion.g>
     </svg>
 );
+
+const Confetti = () => {
+    const particles = Array.from({ length: 40 });
+    return (
+        <div className="fixed inset-0 pointer-events-none z-[100] overflow-hidden">
+            {particles.map((_, i) => (
+                <motion.div
+                    key={i}
+                    initial={{ 
+                        x: "50%", 
+                        y: "100%", 
+                        opacity: 1, 
+                        scale: Math.random() * 0.5 + 0.5,
+                        rotate: 0 
+                    }}
+                    animate={{ 
+                        x: `${Math.random() * 100}%`,
+                        y: ["100%", "-20%"],
+                        opacity: [1, 1, 0],
+                        rotate: Math.random() * 360 + 360
+                    }}
+                    transition={{ 
+                        duration: Math.random() * 2 + 1, 
+                        delay: Math.random() * 0.5,
+                        ease: "easeOut"
+                    }}
+                    className="absolute w-3 h-3 rounded-sm"
+                    style={{ 
+                        backgroundColor: ["#fbbf24", "#34d399", "#60a5fa", "#f87171", "#e879f9"][Math.floor(Math.random() * 5)]
+                    }}
+                />
+            ))}
+        </div>
+    );
+};
 
 export default function IsItCenteredPage() {
     const [gameState, setGameState] = useState<RoundState>("intro");
@@ -153,7 +250,7 @@ export default function IsItCenteredPage() {
             const newScore = score + 1;
             setScore(newScore);
             if (level === MAX_LEVELS) {
-                setGameState("game_over");
+                setGameState("result");
             } else {
                 setGameState("result");
             }
@@ -189,13 +286,16 @@ export default function IsItCenteredPage() {
 
     const getBgColor = (color: string) => color + "20";
 
+    const isSuccess = score === MAX_LEVELS;
+
     return (
         <div 
-            className="min-h-[100vh] flex flex-col items-center p-4 sm:p-6 font-sans overflow-hidden relative transition-colors duration-1000"
+            className="h-[calc(100vh-80px)] flex flex-col items-center p-4 sm:p-6 pb-20 sm:pb-28 font-sans overflow-hidden relative transition-colors duration-1000"
             style={{ backgroundColor: (gameState === "playing" || gameState === "result") ? getBgColor(currentShape.color) : "#09090b" }}
         >
+            {gameState === "game_over" && isSuccess && <Confetti />}
             
-            <div className="w-full max-w-6xl flex items-center justify-between mb-8 sm:mb-10">
+            <div className="w-full max-w-6xl flex items-center justify-between mb-4 sm:mb-6">
                 <div className="flex flex-col">
                     <div className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500 mb-1">AssetNest</div>
                     <div className="text-2xl font-black text-white leading-none tracking-tighter">Is It Centered?</div>
@@ -251,8 +351,8 @@ export default function IsItCenteredPage() {
 
             {(gameState === "playing" || gameState === "result" || gameState === "game_over" || gameState === "fail_splat") && (
                 <>
-                    {gameState !== "game_over" && (
-                        <div className="flex-1 w-full flex items-center justify-between gap-4 max-w-6xl mx-auto">
+                    {(gameState === "playing" || gameState === "result" || gameState === "fail_splat") && (
+                        <div className="flex-1 w-full flex items-center justify-between gap-4 max-w-6xl mx-auto -mt-24 md:-mt-32">
                             
                             <div className="w-1/4 flex flex-col items-center">
                                 <button 
@@ -260,7 +360,7 @@ export default function IsItCenteredPage() {
                                     onMouseEnter={() => setIsYesHovered(true)}
                                     onMouseLeave={() => setIsYesHovered(false)}
                                     disabled={gameState !== "playing"}
-                                    className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-10 cursor-default"}`}
+                                    className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-0 pointer-events-none cursor-default"}`}
                                 >
                                     <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-zinc-900 rounded-[2rem] flex items-center justify-center border border-zinc-800 shadow-2xl transition-all group-hover:bg-zinc-800 group-hover:border-zinc-700 p-5 overflow-hidden relative ${isYesHovered ? 'shadow-[0_0_40px_rgba(52,211,153,0.15)]' : ''}`}>
                                         <HappyIcon className="w-full h-full" />
@@ -270,7 +370,7 @@ export default function IsItCenteredPage() {
                             </div>
 
                             <div className="flex-1 w-full flex flex-col items-center justify-center relative">
-                                <div className={`relative flex items-center justify-center transition-all duration-700 ${gameState === "result" ? "scale-90" : "scale-100"}`}>
+                                <div className={`relative w-[20rem] h-[20rem] sm:w-[24rem] sm:h-[24rem] flex items-center justify-center transition-all duration-700 ${gameState === "result" ? "scale-90" : "scale-100"}`}>
                                     <div className="relative flex items-center justify-center transition-transform duration-300">
                                         {currentShape.elements.map((el, i) => (
                                             <div 
@@ -284,11 +384,11 @@ export default function IsItCenteredPage() {
                                             style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}
                                         />
 
-                                        {gameState === "result" && (
-                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-10 animate-in fade-in duration-500 min-w-full min-h-full">
-                                                <div className="absolute w-[150%] h-[1px] bg-white/40" />
-                                                <div className="absolute h-[150%] w-[1px] bg-white/40" />
-                                                <div className="w-1 h-1 bg-white rounded-full" />
+                                        {(gameState === "result" || gameState === "fail_splat") && (
+                                            <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-[30] animate-in fade-in duration-500 min-w-full min-h-full">
+                                                <div className="absolute w-[120%] h-[1px] bg-white/30 shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
+                                                <div className="absolute h-[120%] w-[1px] bg-white/30 shadow-[0_0_8px_rgba(255,255,255,0.15)]" />
+                                                <div className="w-1.5 h-1.5 bg-white rounded-full shadow-[0_0_12px_white]" />
                                             </div>
                                         )}
                                     </div>
@@ -301,7 +401,7 @@ export default function IsItCenteredPage() {
                                     onMouseEnter={() => setIsNoHovered(true)}
                                     onMouseLeave={() => setIsNoHovered(false)}
                                     disabled={gameState !== "playing"}
-                                    className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-10 cursor-default"}`}
+                                    className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-0 pointer-events-none cursor-default"}`}
                                 >
                                     <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-zinc-900 rounded-[2rem] flex items-center justify-center border border-zinc-800 shadow-2xl transition-all group-hover:bg-zinc-800 group-hover:border-zinc-700 p-5 relative ${isNoHovered ? 'shadow-[0_0_40px_rgba(239,68,68,0.15)]' : ''}`}>
                                         <SadIcon className="w-full h-full" />
@@ -312,7 +412,7 @@ export default function IsItCenteredPage() {
                         </div>
                     )}
 
-                    <div className="mt-auto pb-8 flex flex-col items-center gap-8">
+                    <div className="mb-auto pb-4 flex flex-col items-center gap-4">
                         
                         {gameState === "playing" && (
                             <h2 className="text-2xl md:text-3xl font-black text-white tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 text-center opacity-70">
@@ -324,29 +424,31 @@ export default function IsItCenteredPage() {
                             <div className="flex flex-col items-center gap-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
                                 <div className="text-xs font-black uppercase tracking-[0.5em] text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Target Secured</div>
                                 <button 
-                                    onClick={handleNextRound}
+                                    onClick={level === MAX_LEVELS ? () => setGameState("game_over") : handleNextRound}
                                     className="px-20 py-6 bg-white text-black font-black uppercase tracking-[0.2em] text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
                                 >
-                                    Proceed to Level {level + 1}
+                                    {level === MAX_LEVELS ? "Finish Training" : `Proceed to Level ${level + 1}`}
                                 </button>
                             </div>
                         )}
 
                         {gameState === "game_over" && (
                             <div className="flex-1 flex flex-col items-center justify-center max-w-lg text-center animate-in fade-in zoom-in duration-500">
-                                <div className="w-16 h-16 sm:w-20 sm:h-20 mb-6 text-red-500">
-                                    <SadIcon className="w-full h-full" />
+                                <div className={`w-16 h-16 sm:w-20 sm:h-20 mb-6 ${isSuccess ? "text-emerald-400" : "text-red-500"}`}>
+                                    {isSuccess ? <HappyIcon className="w-full h-full" /> : <SadIcon className="w-full h-full" />}
                                 </div>
-                                <div className="text-[9px] uppercase tracking-[0.4em] font-black text-zinc-500 mb-2">Training Terminated</div>
+                                <div className={`text-[9px] uppercase tracking-[0.4em] font-black ${isSuccess ? "text-emerald-500" : "text-zinc-500"} mb-2`}>
+                                    {isSuccess ? "Calibration Complete" : "Training Terminated"}
+                                </div>
                                 <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2">
-                                    {score === MAX_LEVELS ? "Pixel Perfect." : "You Failed."}
+                                    {isSuccess ? "Absolute Perfection." : "You Failed."}
                                 </h2>
                                 <p className="text-zinc-500 font-medium mb-5 sm:mb-8 text-sm sm:text-base italic px-4">
                                     "{getSarcasticRemark(score)}"
                                 </p>
                                 
-                                <div className="bg-zinc-900/40 border border-zinc-800/60 rounded-2xl p-4 sm:p-8 w-full max-w-sm mb-6 sm:mb-8 flex flex-col items-center">
-                                    <div className="text-4xl sm:text-5xl font-black text-white mb-1">{score}</div>
+                                <div className={`bg-zinc-900/40 border ${isSuccess ? "border-emerald-500/30" : "border-zinc-800/60"} rounded-2xl p-4 sm:p-8 w-full max-w-sm mb-6 sm:mb-8 flex flex-col items-center shadow-2xl`}>
+                                    <div className={`text-4xl sm:text-5xl font-black ${isSuccess ? "text-emerald-400" : "text-white"} mb-1`}>{score}</div>
                                     <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-zinc-500">Final Precision Score</div>
                                 </div>
 
@@ -354,7 +456,7 @@ export default function IsItCenteredPage() {
                                     onClick={startGame}
                                     className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-3"
                                 >
-                                    Try Again <RotateCcw size={16} />
+                                    {isSuccess ? "Train Again" : "Try Again"} <RotateCcw size={16} />
                                 </button>
                                 <button 
                                     onClick={() => setGameState("intro")}
@@ -369,7 +471,7 @@ export default function IsItCenteredPage() {
             )}
 
             {/* Cinematic Background Branding */}
-            <div className="absolute bottom-6 left-1/2 -translate-x-1/2 pointer-events-none select-none opacity-[0.03]">
+            <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none select-none opacity-[0.02] scale-75 md:scale-100">
                 <span className="text-[12vw] font-black text-white whitespace-nowrap uppercase tracking-tighter italic leading-none">
                     Is It Centered?
                 </span>
@@ -406,7 +508,7 @@ export default function IsItCenteredPage() {
                                     ease: "easeOut"
                                 }
                             }}
-                            className="w-[40rem] h-[40rem] flex items-center justify-center relative"
+                            className="w-[30rem] h-[30rem] sm:w-[40rem] sm:h-[40rem] flex items-center justify-center relative"
                         >
                             <PoopIcon className="w-full h-full drop-shadow-[0_20px_100px_rgba(0,0,0,0.9)]" />
                         </motion.div>

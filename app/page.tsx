@@ -378,9 +378,9 @@ export default function Home() {
           }} />
           <div className="px-6 md:px-10 relative z-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 max-w-5xl mx-auto">
-              <StatCard value={23}  suffix="+"    label="Free Tools"       delay={0} />
+              <StatCard value={32}  suffix="+"    label="Free Tools"       delay={0} />
               <StatCard value={100} suffix="%"    label="Browser-Based"    delay={100} />
-              <StatCard value={6}   suffix=" Cats" label="Tool Categories" delay={200} />
+              <StatCard value={7}   suffix=" Cats" label="Tool Categories" delay={200} />
             </div>
           </div>
         </section>
@@ -390,17 +390,11 @@ export default function Home() {
       <FadeReveal distance={40}>
         <section className="py-12 bg-black">
           <div className="px-6 md:px-10">
-            <div className="flex items-center justify-between mb-8">
+            <div className="mb-8">
               <h2 className="text-xl font-bold tracking-tight text-zinc-100 flex items-center gap-3">
                 <TrendingUp className="text-white" size={20} />
                 Assets
               </h2>
-              <Link
-                href="/prompts"
-                className="flex items-center gap-1.5 text-xs font-semibold text-zinc-500 hover:text-white transition-colors"
-              >
-                View All <ArrowUpRight size={12} />
-              </Link>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {categories.map((category, index) => (

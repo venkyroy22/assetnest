@@ -59,18 +59,6 @@ export default function BusinessCardPage() {
     const [canvasScale, setCanvasScale] = useState(0.85);
     const [showHelp, setShowHelp] = useState(false);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const width = window.innerWidth;
-            if (width < 640) setCanvasScale(Math.min(0.32, (width - 40) / 1050));
-            else if (width < 1024) setCanvasScale(Math.min(0.5, (width - 320) / 1050));
-            else if (width < 1536) setCanvasScale(0.7);
-            else setCanvasScale(0.85);
-        };
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     // Style State
     const [themeColor, setThemeColor] = useState("#0f172a");
@@ -130,10 +118,10 @@ export default function BusinessCardPage() {
         const updateScale = () => {
             if (canvasContainerRef.current) {
                 const container = canvasContainerRef.current;
-                const availableW = container.clientWidth - 100;
-                const availableH = container.clientHeight - 100;
-                const scale = Math.min(availableW / 1050, availableH / 600, 1.2);
-                setCanvasScale(scale);
+                const availableW = container.clientWidth - 40;
+                const availableH = container.clientHeight - 80;
+                const scale = Math.min(availableW / 1050, availableH / 600, 1.0);
+                setCanvasScale(Math.max(scale, 0.2));
             }
         };
         updateScale();
@@ -239,10 +227,10 @@ export default function BusinessCardPage() {
     };
 
     return (
-        <div className="relative min-h-screen bg-black text-white flex flex-col font-sans select-none overflow-x-hidden z-[9999]">
+        <div className="relative flex flex-col bg-black text-white font-sans select-none overflow-hidden" style={{ height: "calc(100vh - 80px)" }}>
             
             {/* STICKY TOOL HEADER */}
-            <div className="h-16 border-b border-white/5 px-4 sm:px-8 flex items-center justify-between bg-black/80 backdrop-blur-3xl sticky top-0 z-[100] shrink-0">
+            <div className="h-16 border-b border-white/5 px-4 sm:px-8 flex items-center justify-between bg-black/80 backdrop-blur-3xl shrink-0 z-40">
                 <div className="flex items-center gap-3 sm:gap-6">
                     {/* MOBILE LEFT TOGGLE */}
                     <button 
@@ -327,11 +315,19 @@ export default function BusinessCardPage() {
                 </div>
             </div>
 
-            <div className="flex-grow flex overflow-hidden relative">
+            <div className="flex-1 flex overflow-hidden relative min-h-0 w-full">
+                
+                {/* MOBILE BACKDROP */}
+                {(leftPanelOpen || rightPanelOpen) && (
+                    <div 
+                        className="lg:hidden fixed inset-0 bg-black/60 z-[45] backdrop-blur-sm animate-in fade-in"
+                        onClick={() => { setLeftPanelOpen(false); setRightPanelOpen(false); }}
+                    />
+                )}
                 
                 {/* LEFT DRAWER (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-zinc-950 border-r border-zinc-900 flex flex-col z-50 transition-transform duration-300
+                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-zinc-950 border-r border-zinc-900 flex flex-col z-30 transition-transform duration-300
                     ${leftPanelOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full lg:translate-x-0"}
                 `}>
                     <div className="flex items-center justify-between border-b border-white/5 p-2 bg-white/[0.02]">
@@ -415,17 +411,29 @@ export default function BusinessCardPage() {
                         onMouseMove={onMouseMove}
                         onMouseUp={onMouseUp}
                         onMouseLeave={onMouseUp}
-                        className="relative group/canvas flex items-center justify-center transition-transform duration-300"
-                        style={{ transform: `scale(${canvasScale})` }}
+                        className="relative group/canvas flex items-center justify-center transition-all duration-300"
+                        style={{ 
+                            width: `${1050 * canvasScale}px`,
+                            height: `${600 * canvasScale}px`,
+                        }}
                     >
                         <div className="absolute inset-0 bg-white/10 blur-[200px] rounded-full scale-150 opacity-40 group-hover/canvas:opacity-60 transition-opacity" />
 
                         <div 
-                            ref={cardRef}
-                            id="card-studio-render"
-                            style={{ width: "1050px", height: "600px", background: themeColor, overflow: "hidden", position: "relative" }} 
-                            className="rounded-[3rem] shadow-[0_100px_300px_rgba(0,0,0,1)] ring-1 ring-white/10 shrink-0 select-none animate-in fade-in zoom-in-95 duration-700"
+                            style={{ 
+                                transform: `scale(${canvasScale})`,
+                                transformOrigin: "center center",
+                                width: "1050px",
+                                height: "600px",
+                                flexShrink: 0
+                            }}
                         >
+                            <div 
+                                ref={cardRef}
+                                id="card-studio-render"
+                                style={{ width: "1050px", height: "600px", background: themeColor, overflow: "hidden", position: "relative" }} 
+                                className="rounded-[3rem] shadow-[0_100px_300px_rgba(0,0,0,1)] ring-1 ring-white/10 shrink-0 select-none animate-in fade-in zoom-in-95 duration-700"
+                            >
                             {activeTexture !== "none" && (
                                 <div className="absolute inset-0 pointer-events-none z-[1]" style={{ backgroundImage: `url("${getPatternSvg(activeTexture, patternColor)}")`, backgroundRepeat: "repeat", opacity: 0.8 }} />
                             )}
@@ -469,13 +477,14 @@ export default function BusinessCardPage() {
                                 {website && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{website} <Globe size={11} className="text-zinc-500" /></div>}
                                 {address && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{address} <MapPin size={11} className="text-zinc-500" /></div>}
                              </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 {/* RIGHT PROPERTY INSPECTOR (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-zinc-950 border-l border-zinc-900 flex flex-col z-50 transition-transform duration-300
+                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-zinc-950 border-l border-zinc-900 flex flex-col z-30 transition-transform duration-300
                     ${rightPanelOpen ? "translate-x-0 shadow-[-20px_0_60px_rgba(0,0,0,0.8)]" : "translate-x-full lg:translate-x-0"}
                 `}>
                     {selectedElement ? (

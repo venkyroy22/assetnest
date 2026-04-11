@@ -321,7 +321,7 @@ export default function ToolsPage() {
                     {filtered.length > 0 && (
                         <div className="space-y-16 mt-8">
                             {categoriesList.map((group) => (
-                                <div key={group.name} className="space-y-6">
+                                <div key={group.name} id={group.name.toLowerCase().replace(/\s+/g, '-')} className="space-y-6 scroll-mt-24">
                                     <div className="flex items-center gap-3">
                                         <div className="h-px bg-zinc-800 flex-1" />
                                         <h2 className="text-sm font-semibold text-zinc-300 px-4">

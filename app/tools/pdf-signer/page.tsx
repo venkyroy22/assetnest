@@ -391,11 +391,34 @@ export default function PdfSignerPage() {
                         const b64 = sig.dataUrl!.split(",")[1];
                         const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
                         const img = await pdfDoc.embedPng(bytes);
+                        
+                        // Maintain aspect ratio (object-contain behavior)
+                        const { width: imgW, height: imgH } = img.scale(1);
+                        const targetW = sig.width * pW;
+                        const targetH = sig.height * pH;
+                        const imgRatio = imgW / imgH;
+                        const boxRatio = targetW / targetH;
+
+                        let drawW = targetW;
+                        let drawH = targetH;
+                        let drawX = sig.x * pW;
+                        let drawY = (1 - sig.y - sig.height) * pH;
+
+                        if (imgRatio > boxRatio) {
+                            // Image is proportionally wider than box: fit to width, center vertically
+                            drawH = targetW / imgRatio;
+                            drawY += (targetH - drawH) / 2;
+                        } else {
+                            // Image is proportionally taller than box: fit to height, center horizontally
+                            drawW = targetH * imgRatio;
+                            drawX += (targetW - drawW) / 2;
+                        }
+
                         page.drawImage(img, {
-                            x: sig.x * pW,
-                            y: (1 - sig.y - sig.height) * pH,
-                            width: sig.width * pW,
-                            height: sig.height * pH,
+                            x: drawX,
+                            y: drawY,
+                            width: drawW,
+                            height: drawH,
                         });
                     } else if (sig.type === "text" || sig.type === "date") {
                         const text = sig.content || "";

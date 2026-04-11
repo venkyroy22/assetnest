@@ -158,27 +158,38 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             {pathname !== "/" && (
                                 <>
                                     <ChevronRight size={12} className="text-zinc-700" />
-                                    {pathname?.split("/").filter(Boolean).map((segment, idx, arr) => {
-                                        const href = "/" + arr.slice(0, idx + 1).join("/");
-                                        const isLast = idx === arr.length - 1;
-                                        const tool = ALL_TOOLS.find(t => t.href === href);
-                                        const label = tool ? tool.name : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+                                    {(() => {
+                                        const segments = pathname?.split("/").filter(Boolean) || [];
+                                        const currentTool = ALL_TOOLS.find(t => t.href === pathname);
+                                        const categoryHash = currentTool ? `#${currentTool.category.toLowerCase().replace(/\s+/g, '-')}` : '';
 
-                                        return (
-                                            <div key={href} className="flex items-center gap-2">
-                                                <Link
-                                                    href={href}
-                                                    className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
-                                                        isLast ? "text-white cursor-default" : "text-zinc-500 hover:text-zinc-300"
-                                                    }`}
-                                                    onClick={(e) => isLast && e.preventDefault()}
-                                                >
-                                                    {label}
-                                                </Link>
-                                                {!isLast && <ChevronRight size={12} className="text-zinc-700" />}
-                                            </div>
-                                        );
-                                    })}
+                                        return segments.map((segment, idx, arr) => {
+                                            const href = "/" + arr.slice(0, idx + 1).join("/");
+                                            const isLast = idx === arr.length - 1;
+                                            const tool = ALL_TOOLS.find(t => t.href === href);
+                                            const label = tool ? tool.name : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
+
+                                            let finalHref = href;
+                                            if (segment === "tools" && !isLast && categoryHash) {
+                                                finalHref += categoryHash;
+                                            }
+
+                                            return (
+                                                <div key={href} className="flex items-center gap-2">
+                                                    <Link
+                                                        href={finalHref}
+                                                        className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                                                            isLast ? "text-white cursor-default" : "text-zinc-500 hover:text-zinc-300"
+                                                        }`}
+                                                        onClick={(e) => isLast && e.preventDefault()}
+                                                    >
+                                                        {label}
+                                                    </Link>
+                                                    {!isLast && <ChevronRight size={12} className="text-zinc-700" />}
+                                                </div>
+                                            );
+                                        });
+                                    })()}
                                 </>
                             )}
                         </div>
