@@ -1,28 +1,65 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import { ArrowRight, Clock, Search } from "lucide-react";
 import * as Icons from "lucide-react";
-import type { GuidePost } from "@/data/guidePosts";
+import { type GuidePost, GUIDE_CATEGORIES, type GuideCategory } from "@/data/guidePosts";
 
 export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
   const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<GuideCategory>("All");
 
-  const [featured, ...rest] = allPosts;
+  // Get distinct categories that actually have posts (plus "All")
+  const activeCategories = useMemo(() => {
+    const categoriesWithPosts = new Set(allPosts.map(p => p.category));
+    return GUIDE_CATEGORIES.filter(cat => cat === "All" || categoriesWithPosts.has(cat));
+  }, [allPosts]);
 
-  // If there's a search query, filter ALL posts. 
-  // If no query, we display the Featured Post + the Rest.
-  const isSearching = query.trim().length > 0;
-  
-  const filteredPosts = isSearching 
-    ? allPosts.filter(post => 
-        post.title.toLowerCase().includes(query.toLowerCase()) ||
-        post.description.toLowerCase().includes(query.toLowerCase()) ||
-        post.tags.some(t => t.toLowerCase().includes(query.toLowerCase())) ||
-        post.category.toLowerCase().includes(query.toLowerCase())
-      )
-    : rest;
+  const filteredPosts = useMemo(() => {
+    let posts = allPosts;
+    
+    // 1. Category Filter
+    if (selectedCategory !== "All") {
+      posts = posts.filter(post => post.category === selectedCategory);
+    }
+    
+    // 2. Query Filter with scoring
+    if (query.trim()) {
+      const words = query.toLowerCase().split(/\s+/).filter(w => w.length > 0);
+      
+      const scored = posts.map(post => {
+        let score = 0;
+        const title = post.title.toLowerCase();
+        const desc = post.description.toLowerCase();
+        const cat = post.category.toLowerCase();
+        const tags = post.tags.map(t => t.toLowerCase());
+
+        for (const word of words) {
+          if (title.includes(word)) score += 30;
+          if (tags.some(t => t.includes(word))) score += 20;
+          if (cat.includes(word)) score += 15;
+          if (desc.includes(word)) score += 5;
+        }
+
+        return { post, score };
+      }).filter(r => r.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(r => r.post);
+
+      return scored;
+    }
+    
+    return posts;
+  }, [allPosts, query, selectedCategory]);
+
+  const [featured, ...rest] = filteredPosts;
+
+  // Decide what to show in the grid
+  // If we are filtering, we show EVERYTHING in the grid (no featured hero)
+  // Or we keep the hero if the filter is just category?
+  // Let's keep it simple: if filtering by text or category, show a flat list if it feels better.
+  const isFiltering = query.trim().length > 0 || selectedCategory !== "All";
 
   const getSmallIcon = (iconName: string) => {
     // @ts-ignore
@@ -38,7 +75,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
 
   return (
     <>
-      <div className="relative max-w-2xl mx-auto mb-16">
+      <div className="relative max-w-2xl mx-auto mb-10">
         <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
           <Search size={18} className="text-zinc-500" />
         </div>
@@ -51,8 +88,25 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
         />
       </div>
 
-      {/* Featured Post displays only if not searching */}
-      {!isSearching && featured && (
+      {/* Category Tabs */}
+      <div className="flex flex-wrap items-center justify-center gap-2 mb-16 overflow-x-auto pb-4 scrollbar-hide">
+        {activeCategories.map((category) => (
+          <button
+            key={category}
+            onClick={() => setSelectedCategory(category)}
+            className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap border ${
+              selectedCategory === category
+                ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                : "bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-zinc-300"
+            }`}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+
+      {/* Featured Post displays only if not "deeply" filtering and we have a winner */}
+      {!isFiltering && featured && (
         <Link
           href={`/guides/${featured.slug}`}
           className="group block mb-12 bg-zinc-950 border border-zinc-900 rounded-[2rem] p-8 sm:p-10 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_60px_rgba(255,255,255,0.04)] relative overflow-hidden"
@@ -61,7 +115,6 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/[0.02] blur-3xl pointer-events-none group-hover:bg-white/[0.04] transition-all duration-500" />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
-            {/* Emoji cover */}
             <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
               {getFeaturedIcon(featured.icon)}
             </div>
@@ -100,8 +153,8 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
 
       {/* Grid of posts */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {filteredPosts.length > 0 ? (
-          filteredPosts.map((post) => (
+        {(isFiltering ? filteredPosts : rest).length > 0 ? (
+          (isFiltering ? filteredPosts : rest).map((post) => (
             <Link
               key={post.slug}
               href={`/guides/${post.slug}`}
@@ -110,12 +163,10 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
-                {/* Emoji */}
                 <div className="w-14 h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
                   {getSmallIcon(post.icon)}
                 </div>
 
-                {/* Category */}
                 <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full border border-zinc-700 bg-zinc-800/40 text-zinc-400 w-fit mb-3">
                   {post.category}
                 </span>
@@ -145,8 +196,8 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
              <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-5">
                 <Search size={24} className="text-zinc-600" />
              </div>
-             <p className="text-zinc-400 font-medium tracking-tight">No guides found matching "{query}"</p>
-             <p className="text-zinc-600 text-sm mt-2">Try searching by tool, topic, or keyword.</p>
+             <p className="text-zinc-400 font-medium tracking-tight">No guides found matching your filters</p>
+             <p className="text-zinc-600 text-sm mt-2">Try adjusting your search or category selection.</p>
           </div>
         )}
       </div>

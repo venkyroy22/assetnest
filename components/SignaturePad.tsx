@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 import { X, Eraser, RotateCcw, Check, PenTool, Palette, PenLine, Type, Image as ImageIcon, Upload as UploadIcon, Trash2 } from "lucide-react";
 
 interface SignaturePadProps {
@@ -55,6 +55,73 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
     // Upload tab state
     const [uploadedImg, setUploadedImg] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Undo/Redo history
+    const [history, setHistory] = useState<ImageData[]>([]);
+    const [historyIdx, setHistoryIdx] = useState(-1);
+
+    const saveSnapshot = useCallback(() => {
+        if (!ctxRef.current || !canvasRef.current) return;
+        const ctx = ctxRef.current;
+        const canvas = canvasRef.current;
+        const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        setHistory(prev => {
+            const next = prev.slice(0, historyIdx + 1);
+            next.push(snapshot);
+            if (next.length > 30) next.shift(); // Max 30 undo steps
+            return next;
+        });
+        setHistoryIdx(prev => Math.min(prev + 1, 29));
+    }, [historyIdx]);
+
+    const undo = useCallback(() => {
+        if (historyIdx < 0 || !ctxRef.current || !canvasRef.current) return;
+        
+        const canvas = canvasRef.current;
+        const ctx = ctxRef.current;
+        
+        const nextIdx = historyIdx - 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (nextIdx >= 0) {
+            ctx.putImageData(history[nextIdx], 0, 0);
+            setIsEmpty(false);
+        } else {
+            setIsEmpty(true);
+        }
+        setHistoryIdx(nextIdx);
+    }, [history, historyIdx]);
+
+    const redo = useCallback(() => {
+        if (historyIdx >= history.length - 1 || !ctxRef.current || !canvasRef.current) return;
+        
+        const canvas = canvasRef.current;
+        const ctx = ctxRef.current;
+        
+        const nextIdx = historyIdx + 1;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.putImageData(history[nextIdx], 0, 0);
+        
+        setHistoryIdx(nextIdx);
+        setIsEmpty(false);
+    }, [history, historyIdx]);
+
+    // Keyboard shortcuts
+    useEffect(() => {
+        const handleKeys = (e: KeyboardEvent) => {
+            if (activeTab !== "draw") return;
+            if ((e.ctrlKey || e.metaKey) && e.key === "z") {
+                e.preventDefault();
+                if (e.shiftKey) redo();
+                else undo();
+            } else if ((e.ctrlKey || e.metaKey) && e.key === "y") {
+                e.preventDefault();
+                redo();
+            }
+        };
+        window.addEventListener("keydown", handleKeys);
+        return () => window.removeEventListener("keydown", handleKeys);
+    }, [activeTab, undo, redo]);
 
     /* ── Canvas bootstrap with ResizeObserver ── */
     useEffect(() => {
@@ -176,6 +243,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
         ctxRef.current.shadowBlur  = 0;
         ctxRef.current.globalAlpha = 1;
         lastPosRef.current = null;
+        saveSnapshot();
     };
 
     const clear = () => {
@@ -183,11 +251,11 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
             const ctx = ctxRef.current;
             const canvas = canvasRef.current;
             if (!ctx || !canvas) return;
-            ctx.save();
-            ctx.globalCompositeOperation = "source-over";
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.restore();
             setIsEmpty(true);
+            setHistory([]);
+            setHistoryIdx(-1);
         } else if (activeTab === "type") {
             setTypedName("");
         } else {
@@ -411,13 +479,32 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                     <Eraser size={16} strokeWidth={1.8} />
                                     <span className="text-[8px] font-extrabold uppercase tracking-tight">Erase</span>
                                 </button>
-                                <div className="mt-auto">
+                                <div className="mt-auto flex flex-col items-center gap-1">
+                                    <div className="flex flex-col items-center border border-white/5 bg-white/[0.02] rounded-xl p-1 mb-2">
+                                        <button
+                                            onClick={undo}
+                                            disabled={historyIdx < 0}
+                                            title="Undo (Ctrl+Z)"
+                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
+                                        >
+                                            <RotateCcw size={16} className="scale-x-[-1]" />
+                                        </button>
+                                        <button
+                                            onClick={redo}
+                                            disabled={historyIdx >= history.length - 1}
+                                            title="Redo (Ctrl+Shift+Z)"
+                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
+                                        >
+                                            <RotateCcw size={16} />
+                                        </button>
+                                    </div>
                                     <button
                                         onClick={clear}
                                         disabled={isEmpty}
+                                        title="Clear All"
                                         className="w-10 h-10 rounded-full flex items-center justify-center text-zinc-600 hover:text-red-400 transition-colors"
                                     >
-                                        <RotateCcw size={16} />
+                                        <Trash2 size={16} />
                                     </button>
                                 </div>
                             </aside>

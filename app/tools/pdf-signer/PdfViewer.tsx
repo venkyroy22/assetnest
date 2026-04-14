@@ -30,6 +30,7 @@ interface PdfViewerProps {
     file: File;
     signatures: Signature[];
     setSignatures: (sigs: Signature[]) => void;
+    pushSignatures: (sigs: Signature[]) => void;
     onBoxSelected: (box: { pageIndex: number; x: number; y: number; w: number; h: number }) => void;
     applyToAllPages: (sig: Signature) => void;
     onLoadSuccess?: (numPages: number) => void;
@@ -38,7 +39,7 @@ interface PdfViewerProps {
     setActiveSigId: (id: string | null) => void;
 }
 
-export default function PdfViewer({ file, signatures, setSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, activeTool, activeSigId, setActiveSigId }: PdfViewerProps) {
+export default function PdfViewer({ file, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, activeTool, activeSigId, setActiveSigId }: PdfViewerProps) {
     const [pageCount, setPageCount] = useState(0);
     const [pdf, setPdf] = useState<any>(null);
     const [loadError, setLoadError] = useState<string | null>(null);
@@ -144,6 +145,25 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
                     </button>
                     <div className="w-px h-4 bg-zinc-700/60" />
                     <button onClick={zoomReset} className="h-7 px-2 rounded-lg text-[9px] font-black text-zinc-500 hover:text-white hover:bg-white/10 transition-all uppercase tracking-wider">Fit</button>
+                    
+                    {/* Floating Undo/Redo */}
+                    <div className="w-px h-4 bg-zinc-700/60" />
+                    <div className="flex items-center gap-0.5">
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); (window as any).undo?.(); }}
+                            title="Undo (Ctrl+Z)"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                        >
+                            <RotateCcw size={13} className="scale-x-[-1]" />
+                        </button>
+                        <button 
+                            onClick={(e) => { e.stopPropagation(); (window as any).redo?.(); }}
+                            title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                        >
+                            <RotateCcw size={13} />
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -166,6 +186,7 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
                             zoom={zoom}
                             signatures={signatures}
                             setSignatures={setSignatures}
+                            pushSignatures={pushSignatures}
                             onBoxSelected={onBoxSelected}
                             applyToAllPages={applyToAllPages}
                             activeTool={activeTool}
@@ -205,7 +226,7 @@ export default function PdfViewer({ file, signatures, setSignatures, onBoxSelect
 }
 
 /* ─── Single page ─── */
-function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, applyToAllPages, activeTool, activeSigId, setActiveSigId }: any) {
+function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, activeTool, activeSigId, setActiveSigId }: any) {
     const wrapperRef    = useRef<HTMLDivElement>(null);
     const containerRef  = useRef<HTMLDivElement>(null);
     const canvasRef     = useRef<HTMLCanvasElement>(null);
@@ -459,6 +480,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, a
                                 zoom={zoom}
                                 signatures={signatures}
                                 setSignatures={setSignatures}
+                                pushSignatures={pushSignatures}
                                 applyToAllPages={applyToAllPages}
                                 activeSigId={activeSigId}
                                 setActiveSigId={setActiveSigId}
@@ -496,9 +518,10 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, onBoxSelected, a
 }
 
 /* ─── Annotation overlay ─── */
-function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, applyToAllPages, activeSigId, setActiveSigId }: {
+function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, pushSignatures, applyToAllPages, activeSigId, setActiveSigId }: {
     sig: Signature; dimensions: { w: number; h: number }; zoom: number;
     signatures: Signature[]; setSignatures: (s: Signature[]) => void;
+    pushSignatures: (s: Signature[]) => void;
     applyToAllPages: (s: Signature) => void;
     activeSigId: string | null; setActiveSigId: (id: string | null) => void;
 }) {
@@ -542,7 +565,7 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, a
             const dyPct = dragData.current.dy / (dimensions.h * zoom);
             
             if (dxPct !== 0 || dyPct !== 0) {
-                setSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
+                pushSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
                     ...s,
                     x: Math.max(0, Math.min(s.x + dxPct, 1 - sig.width)),
                     y: Math.max(0, Math.min(s.y + dyPct, 1 - sig.height)),
@@ -584,7 +607,7 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, a
                     // Use a small timeout or requestAnimationFrame to defer the parent state update
                     // or simply call it outside the functional update of the local state.
                     setTimeout(() => {
-                        setSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
+                        pushSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
                             ...s,
                             width:  Math.max(0.005, Math.min(sig.width + finalW, 1 - sig.x)),
                             height: Math.max(0.005, Math.min(sig.height + finalH, 1 - sig.y)),
@@ -659,6 +682,9 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, a
                         onChange={e => {
                             setSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s));
                         }}
+                        onBlur={e => {
+                            pushSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s));
+                        }}
                         onPointerDown={(e) => {
                             if (isActive) e.stopPropagation();
                         }}
@@ -710,7 +736,7 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, a
                             All ✓
                         </button>
                     )}
-                    <button onClick={e => { e.stopPropagation(); setSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); setActiveSigId(null); }}
+                    <button onClick={e => { e.stopPropagation(); pushSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); setActiveSigId(null); }}
                         className="h-6 w-6 flex items-center justify-center hover:bg-red-600/30 hover:text-red-400 text-zinc-400 rounded transition-colors"
                         title="Delete">
                         <Trash2 size={11} />

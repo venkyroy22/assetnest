@@ -10,6 +10,22 @@ export type GuidePost = {
   toolLink?: { label: string; href: string };
 };
 
+export const GUIDE_CATEGORIES = [
+  "All",
+  "Image Optimization",
+  "AI & Prompts",
+  "PDF Tools",
+  "Business & Marketing",
+  "Image Editing",
+  "Productivity",
+  "Web Design",
+  "Business",
+  "Social Media",
+  "Games & Design"
+] as const;
+
+export type GuideCategory = (typeof GUIDE_CATEGORIES)[number];
+
 export const ALL_GUIDE_POSTS: GuidePost[] = [
   {
     slug: "how-to-compress-images-without-losing-quality",

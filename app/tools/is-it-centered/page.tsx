@@ -295,7 +295,7 @@ export default function IsItCenteredPage() {
         >
             {gameState === "game_over" && isSuccess && <Confetti />}
             
-            <div className="w-full max-w-6xl flex items-center justify-between mb-4 sm:mb-6">
+            <div className="w-full max-w-6xl flex items-center justify-between mb-4 sm:mb-6 relative z-50">
                 <div className="flex flex-col">
                     <div className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500 mb-1">AssetNest</div>
                     <div className="text-2xl font-black text-white leading-none tracking-tighter">Is It Centered?</div>
@@ -331,7 +331,7 @@ export default function IsItCenteredPage() {
             </div>
 
             {gameState === "intro" && (
-                <div className="flex-1 flex flex-col items-center justify-center max-w-xl text-center animate-in fade-in zoom-in -mt-20">
+                <div className="flex-1 flex flex-col items-center justify-center max-w-xl text-center animate-in fade-in zoom-in">
                     <div className="w-20 h-20 rounded-3xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-10">
                         <Maximize2 size={32} className="text-emerald-500" strokeWidth={1.5} />
                     </div>
@@ -352,7 +352,7 @@ export default function IsItCenteredPage() {
             {(gameState === "playing" || gameState === "result" || gameState === "game_over" || gameState === "fail_splat") && (
                 <>
                     {(gameState === "playing" || gameState === "result" || gameState === "fail_splat") && (
-                        <div className="flex-1 w-full flex items-center justify-between gap-4 max-w-6xl mx-auto -mt-24 md:-mt-32">
+                        <div className="flex-1 w-full flex items-center justify-between gap-4 max-w-6xl mx-auto">
                             
                             <div className="w-1/4 flex flex-col items-center">
                                 <button 

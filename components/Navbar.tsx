@@ -8,6 +8,8 @@ import { useMemo } from "react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS } from "@/lib/tools";
+import { ALL_ARTICLE_POSTS } from "@/data/articles";
+import { ALL_GUIDE_POSTS } from "@/data/guidePosts";
 import Tooltip from "./Tooltip";
 import { useSettings } from "./SettingsProvider";
 
@@ -23,11 +25,30 @@ const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
     keywords: t.tags,
 }));
 
+const ARTICLE_ENTRIES: SearchItem[] = ALL_ARTICLE_POSTS.map(a => ({
+    title: a.title,
+    desc: a.description,
+    href: `/articles/${a.slug}`,
+    tag: "Article",
+    keywords: a.tags,
+}));
+
+const GUIDE_ENTRIES: SearchItem[] = ALL_GUIDE_POSTS.map(g => ({
+    title: g.title,
+    desc: g.description,
+    href: `/guides/${g.slug}`,
+    tag: "Guide",
+    keywords: g.tags,
+}));
+
 const SEARCH_INDEX: SearchItem[] = [
     ...TOOL_ENTRIES,
+    ...ARTICLE_ENTRIES,
+    ...GUIDE_ENTRIES,
     // Keywords pages
     { title: "AI Image Prompts", desc: "Curated prompt lists for leading image generation models", href: "/prompts", tag: "Prompts" },
     // Static pages
+    { title: "Articles", desc: "Deep dives into business strategy, growth, and entrepreneurship", href: "/articles", tag: "Page" },
     { title: "Guides", desc: "Creator tips, AI guides, and productivity methods", href: "/guides", tag: "Page" },
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
@@ -38,6 +59,8 @@ const SEARCH_INDEX: SearchItem[] = [
 
 const TAG_COLORS: Record<string, string> = {
     Tool: "text-white",
+    Article: "text-amber-400",
+    Guide: "text-emerald-400",
     Prompts: "text-white",
     Page: "text-zinc-400",
 };
@@ -45,6 +68,7 @@ const TAG_COLORS: Record<string, string> = {
 const NAV_LINKS = [
     { name: "Tools", href: "/tools", icon: Wrench },
     { name: "AI Prompts", href: "/prompts", icon: Sparkles },
+    { name: "Articles", href: "/articles", icon: FileText },
 ];
 
 const Navbar = ({ className = "" }: { className?: string }) => {
@@ -62,18 +86,36 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const [isZoomOpen, setIsZoomOpen] = useState(false);
     const zoomRef = useRef<HTMLDivElement>(null);
 
-    // Filter results as user types
+    // Filter & rank results as user types
     useEffect(() => {
         const q = query.trim().toLowerCase();
         if (q.length < 2) { setResults([]); setShowResults(false); return; }
-        const found = SEARCH_INDEX.filter(
-            (item) =>
-                item.title.toLowerCase().includes(q) ||
-                item.desc.toLowerCase().includes(q) ||
-                item.tag.toLowerCase().includes(q) ||
-                item.keywords?.some(k => k.toLowerCase().includes(q))
-        ).slice(0, 8);
-        setResults(found);
+
+        const words = q.split(/\s+/).filter(w => w.length > 0);
+
+        const scored = SEARCH_INDEX.map((item) => {
+            let score = 0;
+            const title = item.title.toLowerCase();
+            const desc = item.desc.toLowerCase();
+            const tag = item.tag.toLowerCase();
+            const keywords = item.keywords?.map(k => k.toLowerCase()) || [];
+
+            for (const word of words) {
+                if (title === q) score += 100;
+                else if (title.startsWith(q)) score += 60;
+                if (title.includes(word)) score += 30;
+                if (tag.includes(word)) score += 15;
+                if (keywords.some(k => k.includes(word))) score += 20;
+                if (desc.includes(word)) score += 5;
+            }
+
+            return { item, score };
+        }).filter(r => r.score > 0)
+          .sort((a, b) => b.score - a.score)
+          .slice(0, 10)
+          .map(r => r.item);
+
+        setResults(scored);
         setShowResults(true);
     }, [query]);
 

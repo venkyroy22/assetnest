@@ -225,7 +225,8 @@ export default function PdfSignerPage() {
 
             if ((e.ctrlKey || e.metaKey) && e.key === "z") {
                 e.preventDefault();
-                undo();
+                if (e.shiftKey) redo();
+                else undo();
             } else if ((e.ctrlKey || e.metaKey) && e.key === "y") {
                 e.preventDefault();
                 redo();
@@ -237,7 +238,13 @@ export default function PdfSignerPage() {
             }
         };
         window.addEventListener("keydown", handleKeyDown);
-        return () => window.removeEventListener("keydown", handleKeyDown);
+        (window as any).undo = undo;
+        (window as any).redo = redo;
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+            delete (window as any).undo;
+            delete (window as any).redo;
+        };
     }, [undo, redo]);
 
     const handleFile = async (f: File) => {
@@ -932,6 +939,7 @@ export default function PdfSignerPage() {
                                     file={file}
                                     signatures={signatures}
                                     setSignatures={setSigsNoHistory}
+                                    pushSignatures={pushSignatures}
                                     onBoxSelected={handleBoxSelected}
                                     applyToAllPages={(sig: any) => toggleAllPages(sig.id)}
                                     onLoadSuccess={setPageCount}

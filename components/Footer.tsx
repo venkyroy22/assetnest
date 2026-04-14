@@ -15,11 +15,12 @@ const footerLinks = {
   Explore: [
     { name: "Smart Tools", href: "/tools" },
     { name: "AI Image Prompts", href: "/prompts" },
-    { name: "QR Generator", href: "/tools/qr" },
+    { name: "Industry Insights", href: "/articles" },
   ],
   Company: [
     { name: "About Us", href: "/about" },
     { name: "Guides", href: "/guides" },
+    { name: "Articles", href: "/articles" },
     { name: "Contact", href: "/contact" },
     { name: "Disclaimer", href: "/disclaimer" },
   ],

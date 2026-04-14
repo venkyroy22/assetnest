@@ -411,7 +411,7 @@ export default function BusinessCardPage() {
                         onMouseMove={onMouseMove}
                         onMouseUp={onMouseUp}
                         onMouseLeave={onMouseUp}
-                        className="relative group/canvas flex items-center justify-center transition-all duration-300"
+                        className="relative group/canvas flex items-center justify-center"
                         style={{ 
                             width: `${1050 * canvasScale}px`,
                             height: `${600 * canvasScale}px`,
@@ -432,7 +432,7 @@ export default function BusinessCardPage() {
                                 ref={cardRef}
                                 id="card-studio-render"
                                 style={{ width: "1050px", height: "600px", background: themeColor, overflow: "hidden", position: "relative" }} 
-                                className="rounded-[3rem] shadow-[0_100px_300px_rgba(0,0,0,1)] ring-1 ring-white/10 shrink-0 select-none animate-in fade-in zoom-in-95 duration-700"
+                                className="rounded-[3rem] shadow-[0_100px_300px_rgba(0,0,0,1)] ring-1 ring-white/10 shrink-0 select-none animate-in fade-in duration-700"
                             >
                             {activeTexture !== "none" && (
                                 <div className="absolute inset-0 pointer-events-none z-[1]" style={{ backgroundImage: `url("${getPatternSvg(activeTexture, patternColor)}")`, backgroundRepeat: "repeat", opacity: 0.8 }} />

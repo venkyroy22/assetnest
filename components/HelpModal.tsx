@@ -1,6 +1,6 @@
 "use client";
 
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { X, Info } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,7 +12,7 @@ interface HelpModalProps {
 }
 
 export default function HelpModal({ isOpen, onClose, title, children }: HelpModalProps) {
-    useLayoutEffect(() => {
+    useEffect(() => {
         if (isOpen) {
             // 1. Pause Lenis smooth scroll if it exists
             const lenis = (window as any).lenis;
