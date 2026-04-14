@@ -9,8 +9,8 @@ const H2 = ({ children }: { children: React.ReactNode }) => (
   </h2>
 );
 
-const P = ({ children }: { children: React.ReactNode }) => (
-  <p className="text-zinc-400 text-lg leading-relaxed mb-6">
+const P = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => (
+  <p className={`text-zinc-400 text-lg leading-relaxed mb-6 ${className}`}>
     {children}
   </p>
 );
