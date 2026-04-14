@@ -7,7 +7,7 @@ export type ArticlePost = {
   category: string;
   readTime: string;
   publishedAt: string;
-  icon: string;
+  icon?: string;
   tags: string[];
 };
 
@@ -26,6 +26,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     category: "Business Strategy",
     readTime: "10 min read",
     publishedAt: "2026-04-13",
+    icon: "TrendingUp",
     tags: ["Business", "Strategy", "Growth", "Productivity"]
   },
   {
