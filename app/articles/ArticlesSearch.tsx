@@ -58,9 +58,9 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
     return posts;
   }, [allPosts, query, selectedCategory, showBookmarks, savedSlugs]);
 
-  const getSmallIcon = (iconName: string) => {
+  const getSmallIcon = (iconName?: string) => {
     // @ts-ignore
-    const IconComponent = Icons[iconName] || Icons.FileText;
+    const IconComponent = Icons[iconName || ""] || Icons.FileText;
     return <IconComponent className="w-6 h-6 text-zinc-300 group-hover:text-white transition-colors" strokeWidth={1.5} />;
   };
 
@@ -126,7 +126,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
 
               <div className="relative z-10 flex flex-col h-full">
                 <div className="w-14 h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
-                  {getSmallIcon(post.icon)}
+                  {getSmallIcon(post.icon || "FileText")}
                 </div>
 
                 <div className="flex items-center gap-2 mb-4">

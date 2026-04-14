@@ -25,9 +25,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     notFound();
   }
 
-  const getIcon = (iconName: string) => {
+  const getIcon = (iconName?: string) => {
     // @ts-ignore
-    const IconComponent = Icons[iconName] || Icons.FileText;
+    const IconComponent = Icons[iconName || ""] || Icons.FileText;
     return <IconComponent size={24} className="text-white" strokeWidth={1.5} />;
   };
 
