@@ -379,8 +379,9 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 <div className="grid grid-cols-1 gap-2">
                                     {[
                                         { name: "Smart Tools", href: "/tools" },
+                                        { name: "Learning Journal", href: "/articles" },
+                                        { name: "Useful Guides", href: "/guides" },
                                         { name: "AI Image Prompts", href: "/prompts" },
-                                        { name: "QR Generator", href: "/tools/qr" },
                                     ].map((item) => (
                                         <Link key={item.href} href={item.href}
                                             className="flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all text-white/70 hover:text-white hover:bg-zinc-800/50"
