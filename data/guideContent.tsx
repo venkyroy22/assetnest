@@ -756,5 +756,62 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         At the end of your run, you'll receive a Final Precision Score based on how many levels you cleared. The game will even give you a sarcastic remark about your performance—because as designers, we're our own harshest critics.
       </P>
     </>
+  ),
+  "chess-masterclass-strategy-and-tactics": (
+    <>
+      <P>
+        Chess is not just a game of moving pieces; it's a battle of logic, pattern recognition, and psychological endurance. Whether you're playing against our built-in Computer Engine or a fellow human in "Pass & Play" mode, understanding the fundamental principles of the game is essential for consistent victory.
+      </P>
+
+      <H2>1. The Opening: Controlling the Center</H2>
+      <P>
+        The first 10-15 moves of a game are called the Opening. In 2026, competitive chess is dominated by several deeply analyzed systems, but they all share one core objective: <strong>Control the Center</strong>.
+      </P>
+      <UL>
+        <LI>
+          <strong className="text-white">The Center Squares:</strong> e4, e5, d4, and d5 are the most important squares on the board. Controlling them gives your pieces maximum mobility and prevents your opponent from coordinating an attack.
+        </LI>
+        <LI>
+          <strong className="text-white">Develop Your Pieces:</strong> Don't move the same piece twice in the opening. Get your knights and bishops out early to active squares.
+        </LI>
+        <LI>
+          <strong className="text-white">King Safety:</strong> Castle as soon as possible. A King left in the center is a primary target for tactical strikes.
+        </LI>
+      </UL>
+
+      <H2>2. Middle Game: Tactical Vision</H2>
+      <P>
+        Once the pieces are developed, the game enters the Middle Game. This is where most games are won or lost through <strong>Tactics</strong>—short-term sequences of moves that result in a material or positional advantage.
+      </P>
+      <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl mb-8">
+        <H3>Key Tactical Patterns</H3>
+        <UL>
+          <LI><strong className="text-white">Spoons & Forks:</strong> Attacking two or more enemy pieces simultaneously with one of your own (especially deadly with Knights).</LI>
+          <LI><strong className="text-white">Pins:</strong> Attacking a piece that cannot move without exposing a more valuable piece behind it.</LI>
+          <LI><strong className="text-white">Skewers:</strong> The reverse of a pin—attacking a piece of high value that, when moved, exposes a piece of lower value behind it.</LI>
+        </UL>
+      </div>
+
+      <H2>3. Using the Engine Trainer</H2>
+      <P>
+        Our <strong>Grandmaster Chess</strong> engine is designed to be a tireless practice partner. By default, it plays at an intermediate "Club Player" level, aimed at punishing tactical blunders and reinforcing solid positional play.
+      </P>
+      <Alert title="Pro Tip: The Analysis Loop">
+        After every game, look back at the move history. Identification of 'Check' states is highlighted in red on our board. If you find yourself in check often, it's a sign that your pieces aren't coordinating defensively.
+      </Alert>
+
+      <H2>4. Modern Etiquette: Resigning & Fullscreen</H2>
+      <P>
+        Chess is a game of focus. For the best experience, we recommend using our <strong>Fullscreen Mode</strong> to eliminate digital distractions. In professional play, if a position is completely lost, it is considered respectful to "Resign & Restart" rather than playing out a hopeless position until checkmate.
+      </P>
+
+      <P>
+        Ready to test your nerves? Head over to the{" "}
+        <Link href="/tools/chess" className="text-zinc-200 hover:text-white hover:underline font-medium">
+          Grandmaster Chess tool
+        </Link>{" "}
+        and make your opening move.
+      </P>
+    </>
   )
 };

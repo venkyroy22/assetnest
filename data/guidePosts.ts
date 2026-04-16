@@ -291,5 +291,16 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     icon: "Maximize2",
     tags: ["design", "alignment", "precision", "optical illusion", "game"],
     toolLink: { label: "Play Is It Centered?", href: "/tools/is-it-centered" }
+  },
+  {
+    slug: "chess-masterclass-strategy-and-tactics",
+    title: "Chess Masterclass: Essential Strategies for Modern Players",
+    description: "From the Sicilian Defense to end-game precision—level up your chess game. Learn how to think like a Grandmaster and utilize our Computer Engine to sharpen your tactical vision.",
+    category: "Games & Design",
+    readTime: "8 min read",
+    publishedAt: "2026-04-16",
+    icon: "Crown",
+    tags: ["chess", "strategy", "engine training", "game tactics", "productivity"],
+    toolLink: { label: "Practice Against Our Engine", href: "/tools/chess" }
   }
 ];
