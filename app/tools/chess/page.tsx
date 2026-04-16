@@ -368,7 +368,7 @@ export default function ChessPage() {
                 <Maximize size={20} className="text-amber-500" /> Play in Fullscreen
             </h4>
             <p className="text-sm font-medium mb-5 text-zinc-700">
-                For the ultimate, distraction-free grandmaster experience, we highly recommend switching to fullscreen mode!
+                For the ultimate, distraction-free grandmaster experience, we highly recommend switching to fullscreen mode! Find a button Go Full Screen.
             </p>
             <div className="flex gap-2">
                 <button 
