@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games" | "Design Training";
 
@@ -363,6 +363,17 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: Calculator,
         tags: ["game", "math", "arithmetic", "speed", "test", "brain", "training", "logic"],
+        accent: "#ffffff",
+        category: "Games",
+    },
+    {
+        id: "game-chess",
+        name: "Grandmaster Chess",
+        description: "Play against a powerful AI or challenge yourself. Analyze moves, practice openings, and sharpen your tactical vision on a clean, ad-free board.",
+        href: "/tools/chess",
+        badge: "Free",
+        icon: Crown,
+        tags: ["game", "chess", "strategy", "board", "ai", "tactics", "logic", "puzzle", "grandmaster"],
         accent: "#ffffff",
         category: "Games",
     },

@@ -58,5 +58,55 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-14",
     icon: "Brain",
     tags: ["Leadership", "Decision Making", "Mental Models", "CEO", "Strategy"]
+  },
+  {
+    slug: "art-of-saying-no-boundaries-business",
+    title: "The Art of Saying No: How Boundaries Drive Business Success",
+    description: "Every time you say yes to the wrong thing, you are automatically saying no to something better. Learn why the most successful business owners have mastered the art of saying no — clearly, kindly, and without apology.",
+    category: "Business Strategy",
+    readTime: "14 min read",
+    publishedAt: "2026-04-15",
+    icon: "ShieldCheck",
+    tags: ["Business", "Boundaries", "Leadership", "Productivity", "Growth"]
+  },
+  {
+    slug: "find-business-idea-saturated-market",
+    title: "How to Find a Business Idea in a Market That's Already Saturated",
+    description: "Every single market that exists today was once considered oversaturated. Learn the five proven angles to find a profitable gap in a crowded market and build something meaningfully different.",
+    category: "Business Strategy",
+    readTime: "12 min read",
+    publishedAt: "2026-04-15",
+    icon: "Lightbulb",
+    tags: ["Business Ideas", "Market Research", "Strategy", "Entrepreneurship", "Growth"]
+  },
+  {
+    slug: "content-strategy-readers-to-loyal-buyers",
+    title: "The Content Strategy That Turns Readers Into Loyal Buyers",
+    description: "Most business owners who try content marketing make the same mistake. Discover the framework that stops content from being a vanity exercise and turns it into a system that builds real trust and converts loyal customers.",
+    category: "Business Growth",
+    readTime: "16 min read",
+    publishedAt: "2026-04-16",
+    icon: "HandCoins",
+    tags: ["Content Marketing", "Growth", "Strategy", "Email Marketing", "Business"]
+  },
+  {
+    slug: "viral-by-design-word-of-mouth",
+    title: "Viral by Design: How Small Brands Create Word-of-Mouth Machines",
+    description: "Nobody accidentally goes viral. Learn the three elements viral brands share and how to engineer word-of-mouth growth for your small business without massive ad spend.",
+    category: "Business Growth",
+    readTime: "14 min read",
+    publishedAt: "2026-04-16",
+    icon: "Megaphone",
+    tags: ["Marketing", "Virality", "Word of Mouth", "Branding", "Growth"]
+  },
+  {
+    slug: "pricing-psychology-charging-more",
+    title: "Pricing Psychology: Why Charging More Can Actually Win You More Clients",
+    description: "There is a question that lives in the back of almost every business owner's mind: am I charging too much? Discover why lowering prices attracts the wrong clients and how premium pricing builds better businesses.",
+    category: "Business Strategy",
+    readTime: "18 min read",
+    publishedAt: "2026-04-16",
+    icon: "DollarSign",
+    tags: ["Pricing", "Psychology", "Business Strategy", "Growth", "Sales"]
   }
 ];

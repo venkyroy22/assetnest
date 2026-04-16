@@ -4,6 +4,8 @@ import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import CookieConsent from "@/components/CookieConsent";
 import SmoothScroll from "@/components/SmoothScroll";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -114,7 +116,8 @@ export default function RootLayout({
           </AppLayout>
         </SmoothScroll>
         <CookieConsent />
-
+        <SpeedInsights />
+        <Analytics />
 
         {/* JSON-LD Structured Data for Google */}
         <script

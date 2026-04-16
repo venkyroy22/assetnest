@@ -136,7 +136,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
                     <span className="text-[9px] font-bold text-zinc-700">{post.readTime}</span>
                 </div>
 
-                <h2 className="text-lg font-black text-white tracking-tight mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1">
+                <h2 className="text-lg font-black text-white tracking-normal mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1">
                   {post.title}
                 </h2>
                 <p className="text-zinc-600 text-sm leading-relaxed mb-6 line-clamp-2">
