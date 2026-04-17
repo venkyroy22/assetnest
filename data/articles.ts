@@ -108,5 +108,45 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-16",
     icon: "DollarSign",
     tags: ["Pricing", "Psychology", "Business Strategy", "Growth", "Sales"]
+  },
+  {
+    slug: "how-smart-founders-manage-cash-flow",
+    title: "How Smart Founders Manage Cash Flow (Before It Becomes a Crisis)",
+    description: "Most businesses fail not because of a bad product, but because they run out of cash. Learn the simple habits and the one tool that changes everything for founder financial stability.",
+    category: "Business Strategy",
+    readTime: "15 min read",
+    publishedAt: "2026-04-16",
+    icon: "Wallet",
+    tags: ["Cash Flow", "Finance", "Business Strategy", "Entrepreneurship"]
+  },
+  {
+    slug: "understanding-business-credit",
+    title: "Understanding Business Credit: What Most Entrepreneurs Learn Too Late",
+    description: "Business credit is the invisible foundation of your company's financial power. Discover why it’s separate from personal credit and how to build it from zero to unlock better rates and higher limits.",
+    category: "Business Strategy",
+    readTime: "16 min read",
+    publishedAt: "2026-04-16",
+    icon: "CreditCard",
+    tags: ["Credit", "Business Finance", "Strategy", "Entrepreneurship", "Founders"]
+  },
+  {
+    slug: "bootstrap-vs-funding-honest-comparison",
+    title: "Bootstrap vs. Funding: A Brutally Honest Comparison",
+    description: "Every founder faces the same question: bootstrap or raise? Discover the raw, unvarnished truth about both paths and how to decide what's right for your life and business.",
+    category: "Business Strategy",
+    readTime: "20 min read",
+    publishedAt: "2026-04-16",
+    icon: "Scale",
+    tags: ["Founders", "Strategy", "Funding", "Bootstrapping", "Business"]
+  },
+  {
+    slug: "hidden-costs-of-running-a-business",
+    title: "The Hidden Costs of Running a Business Nobody Talks About",
+    description: "Every business has costs you don't see on the balance sheet. Learn to spot the invisible drain on your time, money, and energy before they see you first.",
+    category: "Business Strategy",
+    readTime: "20 min read",
+    publishedAt: "2026-04-17",
+    icon: "Receipt",
+    tags: ["Business", "Strategy", "Finance", "Founder Tips", "Growth"]
   }
 ];
