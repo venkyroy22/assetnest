@@ -148,5 +148,35 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-17",
     icon: "Receipt",
     tags: ["Business", "Strategy", "Finance", "Founder Tips", "Growth"]
+  },
+  {
+    slug: "wish-i-knew-before-starting-business",
+    title: "What I Wish I Knew Before Starting My First Business",
+    description: "Beyond the tactics and business plans, there are lessons that can only be earned through experience. Discover the raw, unvarnished truths that first-time founders wish they knew before they began.",
+    category: "Business Strategy",
+    readTime: "22 min read",
+    publishedAt: "2026-04-17",
+    icon: "Lightbulb",
+    tags: ["Entrepreneurship", "Founders", "Business Strategy", "Mindset", "Life Lessons"]
+  },
+  {
+    slug: "5-businesses-that-failed-lessons",
+    title: "5 Businesses That Failed — And the Exact Lessons That Came Out of Them",
+    description: "Failure is the most honest teacher in business. Discover the specific, preventable reasons why five iconic companies collapsed and what you can learn to protect your own venture.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-17",
+    icon: "TrendingDown",
+    tags: ["Business Failure", "Case Study", "Strategy", "Lessons Learned", "Entrepreneurship"]
+  },
+  {
+    slug: "how-famous-brands-went-from-zero-to-icon",
+    title: "How Famous Brands Went from Zero to Icon: Lessons You Can Steal",
+    description: "Most people look at iconic brands and assume the story started with an advantage. Discover the raw, often messy origin stories of Nike, Apple, Starbucks, Amul, and Airbnb.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-17",
+    icon: "Trophy",
+    tags: ["Branding", "Case Study", "Business Strategy", "Founders", "Success"]
   }
 ];
