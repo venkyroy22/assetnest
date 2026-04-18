@@ -178,5 +178,65 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-17",
     icon: "Trophy",
     tags: ["Branding", "Case Study", "Business Strategy", "Founders", "Success"]
+  },
+  {
+    slug: "the-pivot-that-saved-the-company",
+    title: "The Pivot That Saved the Company: Real Stories of Business Transformation",
+    description: "A real pivot is what happens when a founder pays close enough attention to reality to see what the market is actually telling them. Discover the stories of YouTube, Slack, Netflix, and more.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-18",
+    icon: "RefreshCcw",
+    tags: ["Business Pivot", "Case Study", "Business Strategy", "Founders", "Success"]
+  },
+  {
+    slug: "how-to-run-a-business-in-4-hours-a-day",
+    title: "How to Run a Business in 4 Hours a Day (And Still Grow)",
+    description: "The four-hour business day is not a fantasy. It is about understanding which four hours of work actually drive results. Learn to protect, prioritize, and perform at the highest level.",
+    category: "Business Growth",
+    readTime: "22 min read",
+    publishedAt: "2026-04-18",
+    icon: "Clock",
+    tags: ["Productivity", "Business Strategy", "Growth", "Delegation", "Time Management"]
+  },
+  {
+    slug: "systems-over-hustle",
+    title: "Systems Over Hustle: Building a Business That Doesn't Need You 24/7",
+    description: "A business that depends on you is not a tribute to your capability. It is evidence that your capability has not yet been replicated. Learn how to build systems that scale.",
+    category: "Operational Excellence",
+    readTime: "28 min read",
+    publishedAt: "2026-04-18",
+    icon: "Settings",
+    tags: ["Systems", "Operations", "Efficiency", "Automation", "Founders"]
+  },
+  {
+    slug: "how-to-hire-your-first-employee",
+    title: "How to Hire Your First Employee Without Making Expensive Mistakes",
+    description: "Hiring your first employee is a milestone, but the cost of getting it wrong is high. Learn the specific things to look for, ask, and assess to find the right fit.",
+    category: "Talent & Culture",
+    readTime: "30 min read",
+    publishedAt: "2026-04-18",
+    icon: "Users",
+    tags: ["Hiring", "Recruitment", "Management", "Founders", "Culture"]
+  },
+  {
+    slug: "the-compounding-effect",
+    title: "The Compounding Effect: Why Small Daily Decisions Build Empires",
+    description: "Compounding is not just a financial principle. It works on knowledge, reputation, and habits. Learn how small, consistent decisions build empires over time.",
+    category: "Mindset & Strategy",
+    readTime: "35 min read",
+    publishedAt: "2026-04-18",
+    icon: "TrendingUp",
+    tags: ["Compounding", "Decision Making", "Habits", "Founders", "Strategy"]
+  },
+  {
+    slug: "why-your-business-needs-an-enemy",
+    title: "Why Your Business Needs an Enemy: The Power of Positioning Against Someone",
+    description: "Picking an enemy is not about aggression; it's about clarity. Learn why the most successful brands position themselves against a belief, behavior, or standard to build fierce loyalty.",
+    category: "Business Strategy",
+    readTime: "32 min read",
+    publishedAt: "2026-04-18",
+    icon: "ShieldAlert",
+    tags: ["Branding", "Positioning", "Strategy", "Marketing", "Founders"]
   }
 ];
