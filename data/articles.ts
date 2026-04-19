@@ -301,5 +301,65 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-19",
     icon: "Swords",
     tags: ["Competition", "Market Development", "Strategy", "Founders", "Business Strategy"]
+  },
+  {
+    slug: "stop-solving-problems-start-preventing-them",
+    title: "Stop Solving Problems. Start Preventing Them. The Shift That Changes Everything",
+    description: "The shift from reactive problem-solving to proactive problem prevention. Learn how to stop fighting fires and start building fire-resistant structures.",
+    category: "Operational Excellence",
+    readTime: "25 min read",
+    publishedAt: "2026-04-19",
+    icon: "ShieldAlert",
+    tags: ["Systems", "Operations", "Efficiency", "Founders", "Business Strategy"]
+  },
+  {
+    slug: "best-business-decisions-non-desperate",
+    title: "Why the Best Business Decisions Are Made When You Are Not Desperate",
+    description: "Desperation is one of the most reliably destructive forces in business. Learn how building a buffer of cash, time, and relationships protects your decision quality.",
+    category: "Mindset & Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-19",
+    icon: "Brain",
+    tags: ["Decision Making", "Mindset", "Strategy", "Founders", "Business Strategy"]
+  },
+  {
+    slug: "business-advice-sounds-right-almost-always-wrong",
+    title: "The Business Advice That Sounds Right but Is Almost Always Wrong",
+    description: "The business world is full of advice that achieves truth through repetition rather than evidence. Explore the conventional wisdom that causes the most damage when applied without critical examination.",
+    category: "Mindset & Strategy",
+    readTime: "30 min read",
+    publishedAt: "2026-04-19",
+    icon: "AlertTriangle",
+    tags: ["Business Advice", "Conventional Wisdom", "Strategy", "Mindset", "Decision Making"]
+  },
+  {
+    slug: "second-mover-beats-first-mover",
+    title: "Why Being the Second Mover Often Beats Being the First",
+    description: "The first mover advantage is often overstated. Discover why second movers, third movers, and smart followers frequently build larger, more durable, and more profitable businesses than the pioneers.",
+    category: "Business Strategy",
+    readTime: "28 min read",
+    publishedAt: "2026-04-19",
+    icon: "FastForward",
+    tags: ["First Mover", "Second Mover", "Strategy", "Competition", "Market Entry"]
+  },
+  {
+    slug: "growth-vs-scale-difference",
+    title: "The Difference Between a Business That Grows and One That Scales",
+    description: "Growing and scaling are not the same. Learn the fundamental distinction between revenue per unit of input and why understanding this relationship determines how you build, fund, and manage your business.",
+    category: "Business Growth",
+    readTime: "32 min read",
+    publishedAt: "2026-04-19",
+    icon: "TrendingUp",
+    tags: ["Growth", "Scale", "Business Strategy", "Business Model", "Founders"]
+  },
+  {
+    slug: "how-to-build-business-moat",
+    title: "How to Build a Moat: Protecting Your Business from Competitors Who Want What You Have",
+    description: "Success attracts competition. Explore the five genuine sources of competitive durability—from switching costs to network effects—and learn how to build structural protection that allows your business to compound its advantages.",
+    category: "Business Strategy",
+    readTime: "35 min read",
+    publishedAt: "2026-04-19",
+    icon: "Shield",
+    tags: ["Moat", "Competition", "Strategy", "Business Strategy", "Durability"]
   }
 ];
