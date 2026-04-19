@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown, Unlock } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games" | "Design Training";
 
@@ -369,11 +369,11 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "game-chess",
         name: "Grandmaster Chess",
-        description: "Play against a powerful AI or challenge yourself. Analyze moves, practice openings, and sharpen your tactical vision on a clean, ad-free board.",
+        description: "Play against a powerful Computer Engine or challenge yourself. Analyze moves, practice openings, and sharpen your tactical vision on a clean, ad-free board.",
         href: "/tools/chess",
         badge: "Free",
         icon: Crown,
-        tags: ["game", "chess", "strategy", "board", "ai", "tactics", "logic", "puzzle", "grandmaster"],
+        tags: ["game", "chess", "strategy", "board", "engine", "tactics", "logic", "puzzle", "grandmaster"],
         accent: "#ffffff",
         category: "Games",
     },
@@ -398,5 +398,16 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["ui", "training", "alignment", "design", "center"],
         accent: "from-fuchsia-500/20 to-pink-500/20",
         category: "Design Training"
+    },
+    {
+        id: "pdf-unlocker",
+        name: "PDF Password Remover",
+        description: "Instantly remove passwords from your PDF files. Unlock encrypted PDFs locally in your browser without uploading to any server for 100% privacy.",
+        href: "/tools/pdf-unlocker",
+        badge: "Free",
+        icon: Unlock,
+        tags: ["pdf", "unlock", "password", "remove", "decrypt", "security", "unprotect", "pdf password remover"],
+        accent: "#ffffff",
+        category: "PDF"
     }
 ];

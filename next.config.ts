@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdf-lib'],
+  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdf-lib', 'muhammara'],
 };
 
 export default nextConfig;

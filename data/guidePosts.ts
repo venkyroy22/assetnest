@@ -302,5 +302,16 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     icon: "Crown",
     tags: ["chess", "strategy", "engine training", "game tactics", "productivity"],
     toolLink: { label: "Practice Against Our Engine", href: "/tools/chess" }
+  },
+  {
+    slug: "how-to-unlock-pdf-passwords",
+    title: "How to Remove Passwords and Restrictions from PDFs",
+    description: "Whether you forgot an old password or are locked out of printing a document, here is how you can instantly and securely remove password protection from any PDF file.",
+    category: "PDF Tools",
+    readTime: "4 min read",
+    publishedAt: "2026-04-19",
+    icon: "Unlock",
+    tags: ["pdf", "password", "security", "documents", "unlock"],
+    toolLink: { label: "Unlock PDF Instantly", href: "/tools/pdf-unlocker" }
   }
 ];

@@ -180,8 +180,6 @@ export default function ChessPage() {
     setGame(new Chess());
     setGameStatus("Playing");
     setHistory([]);
-    setBoardOrientation("white");
-    setComputerColor("black");
   }
 
   function copyFEN() {

@@ -813,5 +813,59 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         and make your opening move.
       </P>
     </>
+  ),
+  "how-to-unlock-pdf-passwords": (
+    <>
+      <P>
+        We have all been there: you need to print a critical document or copy a paragraph for a report, but the PDF is locked. Or perhaps you found an old tax return from three years ago and completely forgot the password you used to encrypt it.
+      </P>
+      <P>
+        PDF security relies on encryption, but not all locks are created equal. Understanding the difference between how PDFs restrict access will dictate how you unlock them.
+      </P>
+
+      <H2>1. Owner Passwords (Permissions)</H2>
+      <P>
+        If you can double-click and <strong>open</strong> the document without being prompted for a password, but the "Print" or "Edit" buttons are grayed out, your document is protected by an <strong>Owner Password</strong>.
+      </P>
+      <P>
+        This type of protection does not actually encrypt the core data of the file; it simply acts as a digital flag telling your PDF viewer, "Hey, don't let the user print this." Because the data streams are not fully encrypted, advanced local processing tools can strip this flag away without any server intervention.
+      </P>
+
+      <H2>2. User Passwords (Viewing)</H2>
+      <P>
+        If you double-click the file and are immediately hit with a prompt that says "Enter Password to Open," the document is protected by a <strong>User Password</strong>. This means the actual byte-streams of the file are cryptographically locked.
+      </P>
+      <Alert title="Crucial Limitation">
+        There is no magic tool that can "hack" or instantly bypass a strong User Password. To unlock it, you absolutely must know the password.
+      </Alert>
+      <P>
+        If you know the password but simply want to <em>remove</em> it forever so you don't have to type it every time, that requires a decryption engine.
+      </P>
+
+      <H2>How to Securely Unlock Your Document</H2>
+      <P>
+        When you use standard online "PDF Unlock" websites, they often force you to upload your sensitive files to their servers, creating a massive data privacy risk.
+      </P>
+      <P>
+        Instead, you should use a hybrid engine that prioritizes your privacy:
+      </P>
+      <UL>
+        <LI>
+          Navigate to the{" "}
+          <Link href="/tools/pdf-unlocker" className="text-zinc-200 hover:text-white hover:underline font-medium">
+            Smart PDF Password Remover
+          </Link>.
+        </LI>
+        <LI>
+          Drop your locked file into the workspace. The tool will instantly check the encryption level locally.
+        </LI>
+        <LI>
+          If it's just an <strong>Owner Password</strong>, the tool will instantly strip it in your browser cache and prompt a download.
+        </LI>
+        <LI>
+          If it's a <strong>User Password</strong>, you will be prompted to type it in. The tool will then use a secure, high-speed backend engine to decrypt the file. Our strict <strong>Zero Data Retention</strong> policy guarantees that the file and the password are deleted from our server memory the exact millisecond the decryption finishes.
+        </LI>
+      </UL>
+    </>
   )
 };
