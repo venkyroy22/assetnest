@@ -7,6 +7,46 @@ import { PDFDocument } from "pdf-lib";
 import HelpModal from "@/components/HelpModal";
 import { Accordion, AccordionItem } from "@/components/Accordion";
 
+// Load qpdf-wasm at runtime from CDN to avoid Turbopack/Next.js bundling issues
+// with Emscripten modules that require('fs') and require('module')
+interface QpdfModule {
+    FS: {
+        writeFile(path: string, data: Uint8Array): void;
+        readFile(path: string): Uint8Array;
+        unlink(path: string): void;
+    };
+    callMain(args: string[]): void;
+}
+
+let qpdfModulePromise: Promise<QpdfModule> | null = null;
+
+function loadQpdfWasm(): Promise<QpdfModule> {
+    if (qpdfModulePromise) return qpdfModulePromise;
+    
+    qpdfModulePromise = new Promise<QpdfModule>((resolve, reject) => {
+        const script = document.createElement("script");
+        script.src = "https://unpkg.com/@jspawn/qpdf-wasm@0.0.2/qpdf.js";
+        script.onload = () => {
+            // The script sets a global `Module` factory
+            const createModule = (globalThis as any).Module;
+            if (!createModule) {
+                reject(new Error("Failed to load PDF decryption engine."));
+                return;
+            }
+            createModule().then((mod: QpdfModule) => {
+                resolve(mod);
+            }).catch(reject);
+        };
+        script.onerror = () => {
+            qpdfModulePromise = null;
+            reject(new Error("Failed to load PDF decryption engine. Check your internet connection."));
+        };
+        document.head.appendChild(script);
+    });
+    
+    return qpdfModulePromise;
+}
+
 const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -106,27 +146,40 @@ export default function PdfUnlockerPage() {
         setError(null);
 
         try {
-            const formData = new FormData();
-            formData.append("file", file);
-            formData.append("password", password);
+            // Load qpdf-wasm from CDN at runtime (avoids Turbopack bundling issues)
+            const qpdf = await loadQpdfWasm();
 
-            const response = await fetch("/api/unlock-pdf", {
-                method: "POST",
-                body: formData,
-            });
+            const inputData = new Uint8Array(await file.arrayBuffer());
+            const inputPath = "/input.pdf";
+            const outputPath = "/output.pdf";
 
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.error || "Failed to unlock document. Incorrect password.");
+            // Write to WASM virtual filesystem
+            qpdf.FS.writeFile(inputPath, inputData);
+
+            // Run qpdf --decrypt
+            try {
+                qpdf.callMain([
+                    "--decrypt",
+                    `--password=${password}`,
+                    inputPath,
+                    outputPath,
+                ]);
+            } catch {
+                try { qpdf.FS.unlink(inputPath); } catch {}
+                try { qpdf.FS.unlink(outputPath); } catch {}
+                throw new Error("Incorrect password or unsupported encryption.");
             }
 
-            const blob = await response.blob();
-            const arrayBuffer = await blob.arrayBuffer();
-            const bytes = new Uint8Array(arrayBuffer);
-            
-            createDownloadUrl(bytes, file.name);
+            // Read decrypted output
+            const decryptedData = qpdf.FS.readFile(outputPath);
+
+            // Clean up virtual filesystem
+            try { qpdf.FS.unlink(inputPath); } catch {}
+            try { qpdf.FS.unlink(outputPath); } catch {}
+
+            createDownloadUrl(decryptedData, file.name);
         } catch (err: any) {
-            console.error("Unlock API Error:", err);
+            console.error("Unlock Error:", err);
             setError(err.message || "Failed to unlock PDF.");
         } finally {
             setIsProcessing(false);
