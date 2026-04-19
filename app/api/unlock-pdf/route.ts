@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, readFile, unlink } from "fs/promises";
 import path from "path";
 import os from "os";
-import muhammara from "muhammara";
 import crypto from "crypto";
 
 export async function POST(req: NextRequest) {
@@ -29,12 +28,18 @@ export async function POST(req: NextRequest) {
         await writeFile(inputPath, buffer);
 
         try {
+            // Dynamically import muhammara at runtime to avoid Turbopack static analysis
+            const muhammara = (await import("muhammara")).default;
             // Decrypt using muhammara
             // recrypt throws an error if the password is wrong or encryption is unsupported
             muhammara.recrypt(inputPath, outputPath, { password });
         } catch (err: unknown) {
             await unlink(inputPath).catch(() => {});
             if (outputPath) await unlink(outputPath).catch(() => {});
+            const message = err instanceof Error ? err.message : "Unknown error";
+            if (message.includes("password") || message.includes("decrypt") || message.includes("encrypt")) {
+                return NextResponse.json({ error: "Incorrect password or unsupported encryption" }, { status: 400 });
+            }
             return NextResponse.json({ error: "Incorrect password or unsupported encryption" }, { status: 400 });
         }
 
