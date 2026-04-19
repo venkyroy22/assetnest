@@ -13,7 +13,10 @@ export type ArticlePost = {
 
 export const ARTICLE_CATEGORIES = [
   "Business Strategy",
-  "Business Growth"
+  "Business Growth",
+  "Operational Excellence",
+  "Talent & Culture",
+  "Mindset & Strategy"
 ] as const;
 
 export type ArticleCategory = (typeof ARTICLE_CATEGORIES)[number];
@@ -238,5 +241,65 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-18",
     icon: "ShieldAlert",
     tags: ["Branding", "Positioning", "Strategy", "Marketing", "Founders"]
+  },
+  {
+    slug: "the-one-metric-that-matters",
+    title: "The One Metric That Matters: How to Find the Single Number That Drives Your Entire Business",
+    description: "Most business owners are drowning in numbers. Discover how to identify the one metric that most directly reflects the health, momentum, and direction of your business.",
+    category: "Business Strategy",
+    readTime: "20 min read",
+    publishedAt: "2026-04-19",
+    icon: "Target",
+    tags: ["Metrics", "KPIs", "Business Strategy", "Growth", "Founders"]
+  },
+  {
+    slug: "dead-time-vs-alive-time",
+    title: "Dead Time vs. Alive Time: How Successful Founders Use Every Hour Differently",
+    description: "There is a distinction between dead time and alive time that determines the trajectory of every founder's career. Learn how to convert passive hours into compounding assets.",
+    category: "Mindset & Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-19",
+    icon: "Hourglass",
+    tags: ["Time Management", "Founders", "Strategy", "Productivity", "Mindset"]
+  },
+  {
+    slug: "second-order-thinking",
+    title: "Second-Order Thinking: How Top CEOs See Around Corners Others Cannot",
+    description: "The ability to think one step further than almost everyone else is what separates top CEOs. Learn how to look past the immediate and see the consequences of the consequences.",
+    category: "Mindset & Strategy",
+    readTime: "28 min read",
+    publishedAt: "2026-04-19",
+    icon: "Eye",
+    tags: ["Mental Models", "Strategy", "Decision Making", "CEOs", "Business Strategy"]
+  },
+  {
+    slug: "the-flywheel-effect",
+    title: "The Flywheel Effect: How Amazon, Apple and Everyday Businesses Create Unstoppable Momentum",
+    description: "The businesses that grow effortlessly are those that have built self-reinforcing cycles. Discover how flywheels work and how to build one for your business.",
+    category: "Business Growth",
+    readTime: "24 min read",
+    publishedAt: "2026-04-19",
+    icon: "RotateCcw",
+    tags: ["Flywheel", "Strategy", "Growth", "Amazon", "Apple", "Business Strategy"]
+  },
+  {
+    slug: "why-growing-too-fast-kills-businesses",
+    title: "Why Growing Too Fast Kills More Businesses Than Growing Too Slow",
+    description: "The narrative that faster is always better is a dangerous trap. Discover why premature scaling is one of the leading causes of business failure and how to grow sustainably.",
+    category: "Business Strategy",
+    readTime: "26 min read",
+    publishedAt: "2026-04-19",
+    icon: "TrendingDown",
+    tags: ["Growth", "Scaling", "Business Strategy", "Founders", "Strategy"]
+  },
+  {
+    slug: "the-counterintuitive-truth-about-competition",
+    title: "The Counterintuitive Truth About Competition: Why More Competitors Can Help You",
+    description: "The presence of competition is one of the most consistently misread signals in business. Learn why competitors can be a powerful accelerant for your growth.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-19",
+    icon: "Swords",
+    tags: ["Competition", "Market Development", "Strategy", "Founders", "Business Strategy"]
   }
 ];

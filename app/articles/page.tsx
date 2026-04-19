@@ -15,9 +15,11 @@ export default function ArticlesPage() {
       <Container>
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6">
-            <Newspaper size={12} className="text-zinc-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+            <Newspaper size={12} className="text-zinc-500" />
               The Learning Journal
+              <span className="w-1 h-1 rounded-full bg-zinc-700" />
+              {ALL_ARTICLE_POSTS.length} Articles
           </div>
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
             Perspective & <br />
