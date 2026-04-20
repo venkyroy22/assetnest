@@ -9,6 +9,7 @@ import { Suspense } from "react";
 
 import ArticleActions from "./ArticleActions";
 import ArticleTranslator from "@/components/ArticleTranslator";
+import ArticleBackButton from "./ArticleBackButton";
 
 export async function generateStaticParams() {
   return ALL_ARTICLE_POSTS.map((post) => ({
@@ -42,13 +43,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
         <Suspense fallback={null}>
           {/* Navigation / Actions Bar */}
           <div className="flex items-center justify-between py-10 mb-8 border-b border-white/[0.05]">
-            <Link
-              href="/articles"
+            <ArticleBackButton
               className="group flex items-center gap-2 text-zinc-500 hover:text-white transition-all text-xs font-black uppercase tracking-widest"
-            >
-              <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
-              Back to Articles
-            </Link>
+            />
             <ArticleActions title={post.title} slug={post.slug} />
           </div>
 
@@ -114,13 +111,12 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
                      "Knowledge is the only asset that grows when shared. We hope this perspective helps you build something meaningful today."
                   </p>
                   <div className="mt-12">
-                     <Link 
-                        href="/articles"
+                     <ArticleBackButton 
                         className="inline-flex items-center gap-2 px-8 py-4 bg-zinc-900 border border-zinc-800 rounded-full text-white text-xs font-black uppercase tracking-widest hover:bg-zinc-800 transition-all hover:scale-105 active:scale-95"
                      >
                         <ArrowLeft size={14} />
                         Explore More Perspectives
-                     </Link>
+                     </ArticleBackButton>
                   </div>
               </div>
             </div>

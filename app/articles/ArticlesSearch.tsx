@@ -2,15 +2,30 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { ArrowRight, Clock, Search, Bookmark } from "lucide-react";
 import * as Icons from "lucide-react";
 import { type ArticlePost, ARTICLE_CATEGORIES, type ArticleCategory } from "@/data/articles";
 
 export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }) {
-  const [query, setQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<ArticleCategory | "All">("All");
-  const [showBookmarks, setShowBookmarks] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const query = searchParams.get("q") || "";
+  const selectedCategory = (searchParams.get("category") as ArticleCategory | "All") || "All";
+  const showBookmarks = searchParams.get("bookmarks") === "true";
+  
   const [savedSlugs, setSavedSlugs] = useState<string[]>([]);
+
+  const updateParams = (updates: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString());
+    Object.entries(updates).forEach(([key, value]) => {
+      if (value === null) params.delete(key);
+      else params.set(key, value);
+    });
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+  };
 
   useEffect(() => {
     const saved = localStorage.getItem("saved_articles");
@@ -74,7 +89,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
           type="text"
           placeholder="Search articles, insights, or analysis..."
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => updateParams({ q: e.target.value || null })}
           className="w-full h-14 pl-12 pr-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-700 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
         />
       </div>
@@ -82,7 +97,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
       {/* Article Specific Category Tabs */}
       <div className="flex flex-wrap items-center justify-center gap-2 mb-16 overflow-x-auto pb-4 scrollbar-hide">
         <button
-          onClick={() => setShowBookmarks(!showBookmarks)}
+          onClick={() => updateParams({ bookmarks: showBookmarks ? null : "true", category: "All" })}
           className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border flex items-center gap-2 ${
             showBookmarks
               ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
@@ -99,8 +114,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
           <button
             key={category}
             onClick={() => {
-              setSelectedCategory(category as any);
-              setShowBookmarks(false);
+              updateParams({ category: category === "All" ? null : category, bookmarks: null });
             }}
             className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
               selectedCategory === category && !showBookmarks

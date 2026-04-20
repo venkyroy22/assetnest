@@ -361,5 +361,55 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-19",
     icon: "Shield",
     tags: ["Moat", "Competition", "Strategy", "Business Strategy", "Durability"]
+  },
+  {
+    slug: "the-product-market-fit-myth",
+    title: "The Product-Market Fit Myth: What It Really Means and How to Know When You Have It",
+    description: "Most founders who say they have product-market fit do not have it. Learn what it actually means, how it feels, and the genuine signals that indicate you've found it.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-20",
+    icon: "Target",
+    tags: ["Product-Market Fit", "Strategy", "Founders", "Growth", "Business"]
+  },
+  {
+    slug: "the-next-10x-growth-trap",
+    title: "Why Your Next 10X Growth Will Not Come From What Brought You the First 10X",
+    description: "The ladder that got you to this level does not reach the next one. Learn why growth strategies saturate and how to find the next engine while the first is still healthy.",
+    category: "Growth",
+    readTime: "30 min read",
+    publishedAt: "2026-04-20",
+    icon: "TrendingUp",
+    tags: ["Growth", "Scale", "Strategy", "Founders", "Business"]
+  },
+  {
+    slug: "network-effects-explained",
+    title: "Network Effects Explained: How Businesses Get More Valuable the More People Use Them",
+    description: "Discover why certain businesses become dominant and impregnable as they grow. A complete guide to the five types of network effects and how to build toward them.",
+    category: "Business Strategy",
+    readTime: "35 min read",
+    publishedAt: "2026-04-20",
+    icon: "Share2",
+    tags: ["Network Effects", "Strategy", "Founders", "Growth", "Business"]
+  },
+  {
+    slug: "the-niche-domination-strategy",
+    title: "The Niche Domination Strategy: Why Owning a Small Market Is Better Than Competing in a Big One",
+    description: "The path to building something significant runs through a specific, well-defined niche. Learn why owning a small market is the ultimate competitive advantage and how to execute it.",
+    category: "Business Strategy",
+    readTime: "32 min read",
+    publishedAt: "2026-04-20",
+    icon: "Target",
+    tags: ["Niche Strategy", "Strategy", "Founders", "Business Strategy", "Growth"]
+  },
+  {
+    slug: "the-wealth-triangle",
+    title: "The Wealth Triangle: How Smart Business Owners Build Income, Assets and Freedom Simultaneously",
+    description: "Discover the three distinct components of genuine wealth. Learn how to build income, assets, and freedom simultaneously so each dimension strengthens the others.",
+    category: "Business Strategy",
+    readTime: "38 min read",
+    publishedAt: "2026-04-20",
+    icon: "Triangle",
+    tags: ["Wealth Building", "Strategy", "Founders", "Business Strategy", "Growth"]
   }
 ];

@@ -1,6 +1,7 @@
 
 import Container from "@/components/Container";
 import { Newspaper, Tag } from "lucide-react";
+import { Suspense } from "react";
 import ArticlesSearch from "@/app/articles/ArticlesSearch";
 import { ALL_ARTICLE_POSTS } from "@/data/articles";
 
@@ -33,7 +34,9 @@ export default function ArticlesPage() {
         </div>
 
         {/* Interactive Search & Grid */}
-        <ArticlesSearch allPosts={ALL_ARTICLE_POSTS} />
+        <Suspense fallback={<div className="h-96 flex items-center justify-center text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Loading Articles...</div>}>
+          <ArticlesSearch allPosts={ALL_ARTICLE_POSTS} />
+        </Suspense>
 
         {/* Tags cloud */}
         <div className="mt-24 text-center">
