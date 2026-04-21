@@ -16,7 +16,8 @@ export const ARTICLE_CATEGORIES = [
   "Business Growth",
   "Operational Excellence",
   "Talent & Culture",
-  "Mindset & Strategy"
+  "Mindset & Strategy",
+  "Business Finance"
 ] as const;
 
 export type ArticleCategory = (typeof ARTICLE_CATEGORIES)[number];
@@ -451,5 +452,15 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-21",
     icon: "Activity",
     tags: ["Finance", "Accounting", "Metrics", "Strategy", "KPIs"]
+  },
+  {
+    slug: "profit-is-opinion-cash-flow-is-fact",
+    title: "Why Profit Is an Opinion but Cash Flow Is a Fact",
+    description: "Profit is an opinion. Cash flow is a fact. Discover why profitable businesses run out of money and the specific tools you need to stay financially healthy.",
+    category: "Business Finance",
+    readTime: "25 min read",
+    publishedAt: "2026-04-21",
+    icon: "Banknote",
+    tags: ["Finance", "Cash Flow", "Accounting", "Business Strategy", "Founders"]
   }
 ];
