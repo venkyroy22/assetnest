@@ -411,5 +411,45 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-20",
     icon: "Triangle",
     tags: ["Wealth Building", "Strategy", "Founders", "Business Strategy", "Growth"]
+  },
+  {
+    slug: "rich-on-paper-broke-in-reality",
+    title: "Why Most Business Owners Are Rich on Paper and Broke in Reality",
+    description: "Discover the specific mechanisms that create the gap between theoretical business valuation and actual cash in the bank, and learn how to bridge it.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-21",
+    icon: "Wallet",
+    tags: ["Business Finance", "Wealth", "Cash Flow", "Strategy", "Founders"]
+  },
+  {
+    slug: "true-cost-of-bad-decision",
+    title: "The True Cost of a Bad Decision: How to Calculate What Your Mistakes Are Really Costing You",
+    description: "Learn how to calculate the real, often hidden costs of business mistakes—from opportunity costs to momentum damage—and turn them into high-value lessons.",
+    category: "Mindset & Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-21",
+    icon: "AlertTriangle",
+    tags: ["Decision Making", "Strategy", "Finance", "Leadership", "Mindset"]
+  },
+  {
+    slug: "pay-yourself-properly",
+    title: "How to Pay Yourself Properly as a Business Owner Without Killing the Business",
+    description: "Stop guessing and start using a principled framework to set your owner compensation. Learn how to balance personal financial health with business resilience.",
+    category: "Business Finance",
+    readTime: "20 min read",
+    publishedAt: "2026-04-21",
+    icon: "Banknote",
+    tags: ["Finance", "Compensation", "Strategy", "Cash Flow", "Founders"]
+  },
+  {
+    slug: "financial-ratios-every-owner-should-know",
+    title: "The Financial Ratios Every Business Owner Should Know by Heart",
+    description: "Ratios are the vital signs of your business. Learn which metrics truly matter for tracking efficiency, liquidity, and long-term solvency.",
+    category: "Business Finance",
+    readTime: "25 min read",
+    publishedAt: "2026-04-21",
+    icon: "Activity",
+    tags: ["Finance", "Accounting", "Metrics", "Strategy", "KPIs"]
   }
 ];
