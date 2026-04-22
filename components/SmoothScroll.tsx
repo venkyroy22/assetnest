@@ -40,10 +40,18 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
         };
     }, []);
 
-    // Force scroll to top on route change
+    // Sync Lenis with the browser's scroll position after route changes
+    // This prevents the "jump to top" when scrolling after a back navigation
     useEffect(() => {
         if (lenisRef.current) {
-            lenisRef.current.scrollTo(0, { immediate: true });
+            // We use a small delay to allow Next.js/Browser scroll restoration to finish
+            const timer = setTimeout(() => {
+                if (lenisRef.current) {
+                    lenisRef.current.resize();
+                    lenisRef.current.scrollTo(window.scrollY, { immediate: true });
+                }
+            }, 100);
+            return () => clearTimeout(timer);
         }
     }, [pathname]);
 

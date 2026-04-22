@@ -60,21 +60,21 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
         }
     });
 
-    useEffect(() => {
-        // Enforce scroll-to-top on navigation to prevent the layout from preserving
-        // scroll state and accidentally hiding top portions of pages under the fixed Navbar.
-        // Skip if there's a hash (deep link) so the browser can scroll to the target.
-        if (typeof window !== 'undefined' && window.location.hash) return;
-
-        if (typeof window !== 'undefined') {
-            const lenis = (window as any).lenis;
-            if (lenis && typeof lenis.scrollTo === 'function') {
-                lenis.scrollTo(0, { immediate: true });
-            } else {
-                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-            }
-        }
-    }, [pathname]);
+    // useEffect(() => {
+    //     // Enforce scroll-to-top on navigation to prevent the layout from preserving
+    //     // scroll state and accidentally hiding top portions of pages under the fixed Navbar.
+    //     // Skip if there's a hash (deep link) so the browser can scroll to the target.
+    //     if (typeof window !== 'undefined' && window.location.hash) return;
+    //
+    //     if (typeof window !== 'undefined') {
+    //         const lenis = (window as any).lenis;
+    //         if (lenis && typeof lenis.scrollTo === 'function') {
+    //             lenis.scrollTo(0, { immediate: true });
+    //         } else {
+    //             window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    //         }
+    //     }
+    // }, [pathname]);
 
     useEffect(() => {
         const handleClick = (e: MouseEvent) => {

@@ -462,5 +462,45 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-21",
     icon: "Banknote",
     tags: ["Finance", "Cash Flow", "Accounting", "Business Strategy", "Founders"]
+  },
+  {
+    slug: "the-one-conversation-most-managers-are-afraid-to-have",
+    title: "The One Conversation Most Managers Are Afraid to Have and Why It Costs Them Everything",
+    description: "Discover why the avoided performance conversation is the single most expensive mistake a manager can make and the four-part framework to have it with clarity and compassion.",
+    category: "Talent & Culture",
+    readTime: "15 min read",
+    publishedAt: "2026-04-22",
+    icon: "MessageSquare",
+    tags: ["Management", "Leadership", "Performance", "Communication", "Talent"]
+  },
+  {
+    slug: "why-culture-is-not-what-you-say-it-is",
+    title: "Why Culture Is Not What You Say It Is. It Is What You Tolerate.",
+    description: "Culture is not defined by declarations or values on a wall. It is defined by the behaviors a leader allows to pass. Learn how tolerance shapes your organization's reality.",
+    category: "Talent & Culture",
+    readTime: "15 min read",
+    publishedAt: "2026-04-22",
+    icon: "ShieldCheck",
+    tags: ["Culture", "Leadership", "Management", "Accountability", "Talent"]
+  },
+  {
+    slug: "the-leadership-trap",
+    title: "The Leadership Trap: Why the Skills That Made You a Great Employee Make You a Poor Leader",
+    description: "The specific skills, habits, and orientations that made you an excellent individual contributor often work against you in leadership. Learn how to navigate the three transitions that define success.",
+    category: "Talent & Culture",
+    readTime: "18 min read",
+    publishedAt: "2026-04-22",
+    icon: "Trophy",
+    tags: ["Leadership", "Management", "Career Transition", "Performance"]
+  },
+  {
+    slug: "how-to-build-a-team-that-performs-without-you",
+    title: "How to Build a Team That Performs Without You Standing Over Them",
+    description: "A team that performs without supervision is a team that performs for the right reasons. Learn the specific practices that convert dependence into autonomous performance.",
+    category: "Talent & Culture",
+    readTime: "20 min read",
+    publishedAt: "2026-04-22",
+    icon: "Users",
+    tags: ["Team", "Leadership", "Management", "Autonomy", "Culture"]
   }
 ];
