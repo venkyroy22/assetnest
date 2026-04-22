@@ -502,5 +502,15 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-22",
     icon: "Users",
     tags: ["Team", "Leadership", "Management", "Autonomy", "Culture"]
+  },
+  {
+    slug: "hiring-mistake-growing-business",
+    title: "The Hiring Mistake Almost Every Growing Business Makes at the Worst Possible Time",
+    description: "Rapid growth creates pressure to hire quickly, but hurried hiring under stress is an expensive mistake. Learn how to maintain discipline and hire for the long term.",
+    category: "Talent & Culture",
+    readTime: "25 min read",
+    publishedAt: "2026-04-22",
+    icon: "Users",
+    tags: ["Hiring", "Growth", "Management", "Culture", "Founders"]
   }
 ];

@@ -67,14 +67,14 @@ export default function ArticleTranslator({ children }: { children: React.ReactN
   return (
     <div className="relative">
       {isTranslating && (
-        <div className="fixed bottom-10 right-10 z-[100] bg-white text-black px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-in slide-in-from-bottom-5 duration-300">
+        <div className="fixed top-1/2 -translate-y-1/2 right-10 z-[100] bg-white text-black px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 animate-in slide-in-from-right-5 duration-300">
           <Loader2 size={16} className="animate-spin" />
           <span className="text-xs font-black uppercase tracking-widest">Translating Article...</span>
         </div>
       )}
-
+ 
       {showDisclaimer && !isTranslating && (
-        <div className="fixed bottom-10 right-10 z-[90] max-w-xs bg-zinc-900 border border-white/10 p-5 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-bottom-5 duration-500 group">
+        <div className="fixed top-1/2 -translate-y-1/2 right-6 md:right-10 z-[90] max-w-xs bg-zinc-900 border border-white/10 p-5 rounded-3xl shadow-2xl animate-in fade-in slide-in-from-right-5 duration-500 group">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center shrink-0">
                <AlertCircle size={18} className="text-amber-500" />
