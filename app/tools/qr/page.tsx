@@ -383,7 +383,7 @@ export default function QRGeneratorPage() {
     };
 
     return (
-        <div className="py-8 lg:py-16 min-h-screen bg-black px-6 md:px-10 relative">
+        <div className="py-10 lg:py-16 min-h-screen bg-black px-6 md:px-10 relative">
             {/* Page-wide background grid to match Tools page */}
             <div
                 className="fixed inset-0 pointer-events-none z-0"
@@ -421,7 +421,7 @@ export default function QRGeneratorPage() {
                             transform: headerVisible ? "translateY(0)" : "translateY(20px)",
                             transition: "opacity 0.55s ease 0.06s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.06s",
                         }}
-                        className="text-5xl md:text-7xl font-black tracking-tight mb-4 text-white leading-none"
+                        className="text-3xl md:text-7xl font-black tracking-tight mb-4 text-white leading-none"
                     >
                         Custom <span className="italic text-zinc-700">QR Engine</span>
                     </h1>

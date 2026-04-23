@@ -212,7 +212,7 @@ export default function PdfUnlockerPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black py-20">
+        <div className="min-h-screen bg-black py-10 md:py-20">
             <Container>
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -229,7 +229,7 @@ export default function PdfUnlockerPage() {
                         <Unlock size={14} className="text-zinc-400" />
                         <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">PDF Tools</span>
                     </div>
-                    <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
                         PDF Password <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 to-zinc-600">Remover</span>
                     </h1>
                     <p className="text-zinc-400 text-lg leading-relaxed max-w-xl mx-auto">
@@ -255,7 +255,7 @@ export default function PdfUnlockerPage() {
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className="border-2 border-dashed border-zinc-800 hover:border-zinc-600 bg-zinc-950 rounded-[2rem] p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group relative overflow-hidden"
+                            className="border-2 border-dashed border-zinc-800 hover:border-zinc-600 bg-zinc-950 rounded-[2rem] p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group relative overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                             <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800 group-hover:scale-110 transition-transform">

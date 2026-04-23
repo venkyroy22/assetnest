@@ -128,40 +128,40 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
       </div>
 
       {/* Grid of articles */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
         {filteredPosts.length > 0 ? (
           filteredPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/articles/${post.slug}`}
-              className="group flex flex-col bg-zinc-950 border border-zinc-900 rounded-[1.5rem] p-6 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
+              className="group flex flex-col bg-zinc-950 border border-zinc-900 rounded-[1.2rem] sm:rounded-[1.5rem] p-4 sm:p-6 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
             >
                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-5 group-hover:scale-105 transition-transform duration-300">
+                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-105 transition-transform duration-300">
                   {getSmallIcon(post.icon || "FileText")}
                 </div>
 
-                <div className="flex items-center gap-2 mb-4">
-                    <span className="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-zinc-800/50 text-zinc-500 group-hover:bg-white/10 group-hover:text-zinc-300 transition-all border border-zinc-700/50">
+                <div className="flex items-center gap-2 mb-3 sm:mb-4">
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-zinc-800/50 text-zinc-500 group-hover:bg-white/10 group-hover:text-zinc-300 transition-all border border-zinc-700/50">
                     {post.category}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-700">{post.readTime}</span>
+                    <span className="text-[8px] sm:text-[9px] font-bold text-zinc-700">{post.readTime}</span>
                 </div>
 
-                <h2 className="text-lg font-black text-white tracking-normal mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1">
+                <h2 className="text-[13px] sm:text-lg font-black text-white tracking-normal mb-2 sm:mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1 line-clamp-2">
                   {post.title}
                 </h2>
-                <p className="text-zinc-600 text-sm leading-relaxed mb-6 line-clamp-2">
+                <p className="text-zinc-600 text-[11px] sm:text-sm leading-relaxed mb-4 sm:mb-6 line-clamp-2">
                   {post.description}
                 </p>
 
-                <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/[0.03]">
-                  <div className="text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
+                <div className="flex items-center justify-between mt-auto pt-3 sm:pt-4 border-t border-white/[0.03]">
+                  <div className="text-[9px] sm:text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
                     {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <div className="flex items-center gap-1.5 text-[10px] font-black text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all group-hover:gap-2.5">
+                  <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-black text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all group-hover:gap-2.5">
                     Read Article
                     <ArrowRight size={10} />
                   </div>

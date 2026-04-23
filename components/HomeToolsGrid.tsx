@@ -42,20 +42,20 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
                     transform: visible ? "translateY(0)" : "translateY(20px)",
                     transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
                 }}
-                className="relative overflow-hidden rounded-[2rem] bg-zinc-900/40 border border-white/5 backdrop-blur-md p-5 h-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60"
+                className="relative overflow-hidden rounded-[1.8rem] sm:rounded-[2rem] bg-zinc-900/40 border border-white/5 backdrop-blur-md p-4 sm:p-5 h-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60"
             >
                 {/* Content */}
-                <div className="relative z-10 flex flex-col h-full gap-4">
+                <div className="relative z-10 flex flex-col h-full gap-3 sm:gap-4">
                     <div className="flex items-start justify-between">
                         <div
-                            className="w-11 h-11 rounded-[14px] flex items-center justify-center border border-zinc-800 bg-zinc-900 transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700"
+                            className="w-10 h-10 sm:w-11 sm:h-11 rounded-[12px] sm:rounded-[14px] flex items-center justify-center border border-zinc-800 bg-zinc-900 transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700"
                         >
-                            <Icon size={18} className="text-zinc-500 group-hover:text-white transition-colors duration-300" />
+                            <Icon size={16} className="text-zinc-500 group-hover:text-white transition-colors duration-300 sm:w-[18px] sm:h-[18px]" />
                         </div>
 
                         <div className="flex items-center gap-1.5">
                             <span
-                                className="text-[10px] font-bold tracking-wide px-2 py-0.5 border border-white/10 bg-white/5 text-zinc-400 rounded-full group-hover:text-white transition-colors"
+                                className="text-[9px] sm:text-[10px] font-bold tracking-wide px-2 py-0.5 border border-white/10 bg-white/5 text-zinc-400 rounded-full group-hover:text-white transition-colors"
                             >
                                 {tool.category}
                             </span>
@@ -66,11 +66,11 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
                         </div>
                     </div>
 
-                    <div className="space-y-1.5">
-                        <h3 className="text-xs font-bold tracking-tight text-white">
+                    <div className="space-y-1 sm:space-y-1.5 mt-auto">
+                        <h3 className="text-[12px] sm:text-xs font-bold tracking-tight text-white leading-tight">
                             {tool.name}
                         </h3>
-                        <p className="text-[11px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
+                        <p className="text-[10px] sm:text-[11px] text-zinc-500 font-medium leading-relaxed line-clamp-2">
                             {tool.description}
                         </p>
                     </div>
@@ -87,7 +87,7 @@ export default function HomeToolsGrid() {
 
     return (
         <div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-3 gap-3 sm:gap-4">
                 {showcasedTools.map((tool, i) => (
                     <HomeToolCard key={tool.id} tool={tool} index={i} />
                 ))}

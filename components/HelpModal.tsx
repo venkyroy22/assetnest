@@ -69,7 +69,7 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                                 stiffness: 400,
                                 mass: 0.8
                             }}
-                            className="relative w-full max-w-4xl bg-zinc-950 border border-zinc-900 rounded-[2.5rem] p-8 sm:p-12 md:p-16 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
+                            className="relative w-full max-w-4xl bg-zinc-950 border border-zinc-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 md:p-16 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
                             onClick={(e) => e.stopPropagation()}
                         >
                             
@@ -87,20 +87,20 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                             {/* Simple Close Button */}
                             <button 
                                 onClick={onClose} 
-                                className="absolute top-6 right-6 md:top-8 md:right-8 p-3 text-zinc-500 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-full transition-all z-50 border border-zinc-800/50 hover:scale-110 active:scale-95"
+                                className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 p-3 text-zinc-500 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-full transition-all z-50 border border-zinc-800/50 hover:scale-110 active:scale-95"
                                 title="Close"
                             >
                                 <X size={20} />
                             </button>
 
                             {/* Standardized Header */}
-                            <div className="relative z-10 w-full">
+                            <div className="relative z-10 w-full mt-4 sm:mt-0">
                                 <motion.div 
                                     initial={{ opacity: 0, x: -15 }}
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 10 }}
                                     transition={{ duration: 0.2 }}
-                                    className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-8 shadow-inner"
+                                    className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6 sm:mb-8 shadow-inner"
                                 >
                                     <div className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-pulse" />
                                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Documentation</span>
@@ -111,7 +111,7 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.2 }}
-                                    className="text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-14 text-white leading-tight"
+                                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 sm:mb-14 text-white leading-tight pr-12 sm:pr-0"
                                 >
                                     {title}
                                 </motion.h1>

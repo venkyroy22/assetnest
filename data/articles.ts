@@ -542,5 +542,15 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-23",
     icon: "Shield",
     tags: ["Strategy", "Learning", "Psychology", "Data", "Decision Making"]
+  },
+  {
+    slug: "comfort-is-the-enemy-of-breakthrough",
+    title: "Why Comfort Is the Enemy of Every Business Breakthrough",
+    description: "The specific feeling that precedes every significant business breakthrough is not excitement or confidence—it is discomfort. Learn why comfort is the enemy of growth.",
+    category: "Mindset & Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-23",
+    icon: "ShieldAlert",
+    tags: ["Mindset", "Strategy", "Growth", "Leadership", "Business"]
   }
 ];

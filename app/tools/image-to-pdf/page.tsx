@@ -461,11 +461,11 @@ export default function ImageToPdfPage() {
                 <button
                     onClick={convert}
                     disabled={images.length === 0 || isConverting}
-                    className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-white hover:bg-white shadow-lg shadow-white/20"}`}
+                    className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${images.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-black hover:bg-zinc-200 shadow-lg shadow-white/20"}`}
                 >
                     {isConverting
                         ? <><RefreshCw size={18} className="animate-spin" /> Converting {images.length} image{images.length !== 1 ? "s" : ""}…</>
-                        : <><ImagePlus size={18} /> Preview & Download PDF ({images.length} image{images.length !== 1 ? "s" : ""})</>
+                        : <><ImagePlus size={18} /> <span className="hidden sm:inline">Preview & Download PDF</span><span className="sm:hidden">Download PDF</span> ({images.length})</>
                     }
                 </button>
             </div>
@@ -476,7 +476,7 @@ export default function ImageToPdfPage() {
                     <div className="w-full max-w-6xl max-h-[95vh] grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 overflow-hidden">
 
                         {/* Left: Embedded PDF Viewer */}
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col min-h-[500px] lg:min-h-0">
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col min-h-[400px] sm:min-h-[500px] lg:min-h-0">
                             <div className="flex items-center justify-between px-5 py-3 border-b border-zinc-800 shrink-0">
                                 <span className="text-sm font-semibold text-white tracking-wide">PDF Preview</span>
                                 <span className="text-[10px] text-zinc-500 font-medium">{images.length} page{images.length !== 1 ? "s" : ""} · {outputSize ? formatBytes(outputSize) : ""}</span>

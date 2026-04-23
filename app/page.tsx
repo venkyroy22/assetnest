@@ -344,22 +344,22 @@ export default function Home() {
             </p>
 
             {/* CTA Buttons */}
-            <div className="flex flex-wrap items-center justify-center gap-5">
+            <div className="flex flex-col sm:flex-row flex-wrap items-center justify-center gap-4 sm:gap-5">
               <Link
                 href="/tools"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-zinc-800/20 group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full shadow-2xl shadow-zinc-800/20 group w-[260px] max-w-full sm:w-auto"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
-                <span className="flex items-center gap-3">
+                <span className="flex items-center justify-center gap-3">
                   Explore Tools <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </span>
               </Link>
               <Link
                 href="/prompts"
-                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full group"
+                className="btn-pan px-10 py-4.5 text-[11px] font-black uppercase tracking-[0.3em] rounded-full group w-full max-w-[260px] sm:max-w-none sm:w-auto"
                 style={{ "--btn-bg": "#000" } as React.CSSProperties}
               >
-                <span className="flex items-center gap-3">
+                <span className="flex items-center justify-center gap-3">
                   AI Prompts <Sparkles size={14} className="group-hover:scale-110 transition-transform" />
                 </span>
               </Link>
@@ -408,9 +408,9 @@ export default function Home() {
       {/* ══════════════════════════ SMART TOOLS ══════════════════════════ */}
       <FadeReveal distance={50} threshold={0.05}>
         <section className="py-16 px-6 md:px-10 bg-black">
-          <div className="flex items-center justify-between mb-10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-zinc-900 shadow-inner border border-zinc-800 flex items-center justify-center">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5 sm:gap-0 mb-10">
+            <div className="flex items-center gap-3 pr-4">
+              <div className="w-10 h-10 rounded-xl bg-zinc-900 shadow-inner border border-zinc-800 flex items-center justify-center shrink-0">
                 <Wrench size={16} className="text-zinc-400" />
               </div>
               <div>
@@ -420,7 +420,7 @@ export default function Home() {
             </div>
             <Link
               href="/tools"
-              className="btn-pan px-4 py-2 rounded-full border border-zinc-800 text-xs font-semibold"
+              className="btn-pan shrink-0 whitespace-nowrap px-5 py-2.5 rounded-full border border-zinc-800 text-xs font-semibold"
               style={{ "--btn-bg": "transparent" } as React.CSSProperties}
             >
               <span className="flex items-center gap-2">

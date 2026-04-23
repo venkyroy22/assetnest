@@ -116,9 +116,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                     className={`flex-grow flex flex-col pt-20 transition-[padding-left] duration-500 ease-[cubic-bezier(0.23,1,0.32,1)]
                         ${isNavigating ? "!transition-none" : ""}`}
                     style={{
-                        paddingLeft: typeof window !== 'undefined' && window.innerWidth < 1024 
-                            ? '0px' 
-                            : (isBillingView || isHome ? '0px' : (isOpen ? '256px' : '64px'))
+                        paddingLeft: isBillingView || isHome ? '0px' : (isOpen ? '256px' : '64px')
                     }}
                 >
                     <div className="flex-grow">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, Home, ZoomIn, Check, RotateCcw, FileText } from "lucide-react";
+import { Menu, X, Search, ArrowRight, ArrowLeft, Wrench, Sparkles, ChevronRight, Home, ZoomIn, Check, RotateCcw, FileText } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Logo from "./Logo";
@@ -192,22 +192,42 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             </Link>
                         </div>
 
-                        {/* ── Breadcrumbs ── */}
-                        <div className="hidden lg:flex items-center gap-2 px-4 border-l border-zinc-800/50 h-8 shrink-0">
-                            <Link href="/" className="text-zinc-500 hover:text-white transition-colors">
-                                <Home size={16} />
+                        {/* ── Breadcrumbs & Back Navigation ── */}
+                        <div className={`${pathname === '/' ? 'hidden lg:flex' : 'flex'} items-center gap-1.5 md:gap-2 pl-2 md:px-4 md:border-l border-zinc-800/50 h-8 flex-1 lg:flex-none lg:shrink-0 overflow-x-auto scrollbar-hide whitespace-nowrap`}>
+                            {pathname !== "/" && (
+                                <button 
+                                    onClick={() => router.back()} 
+                                    className="text-zinc-400 hover:text-white transition-colors mr-1 md:mr-2 flex items-center justify-center w-8 h-8 md:w-9 md:h-9 bg-zinc-900 border border-zinc-800 rounded-xl shadow-sm active:scale-90"
+                                    title="Go Back"
+                                >
+                                    <ArrowLeft size={15} />
+                                </button>
+                            )}
+                            <Link href="/" className="text-zinc-500 hover:text-white transition-colors flex shrink-0">
+                                <Home size={14} className="md:w-4 md:h-4" />
                             </Link>
                             {pathname !== "/" && (
                                 <>
-                                    <ChevronRight size={12} className="text-zinc-700" />
+                                    <ChevronRight size={12} className="text-zinc-800 shrink-0" />
                                     {(() => {
                                         const segments = pathname?.split("/").filter(Boolean) || [];
                                         const currentTool = ALL_TOOLS.find(t => t.href === pathname);
                                         const categoryHash = currentTool ? `#${currentTool.category.toLowerCase().replace(/\s+/g, '-')}` : '';
 
+                                        // On mobile, if we have a lot of segments, we can hide the middle ones
+                                        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+                                        const displaySegments = (isMobile && segments.length > 2) ? [segments[0], '...', segments[segments.length-1]] : segments;
+
                                         return segments.map((segment, idx, arr) => {
                                             const href = "/" + arr.slice(0, idx + 1).join("/");
                                             const isLast = idx === arr.length - 1;
+                                            
+                                            // Simple logic for mobile: only show first and last if long
+                                            if (isMobile && arr.length > 2 && idx > 0 && !isLast) {
+                                                if (idx === 1) return <span key="ellipsis" className="text-zinc-700 font-bold px-1">...</span>;
+                                                return null;
+                                            }
+
                                             const tool = ALL_TOOLS.find(t => t.href === href);
                                             const label = tool ? tool.name : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, " ");
 
@@ -217,17 +237,17 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                             }
 
                                             return (
-                                                <div key={href} className="flex items-center gap-2">
+                                                <div key={href} className="flex items-center gap-1.5 md:gap-2 shrink-0">
                                                     <Link
                                                         href={finalHref}
-                                                        className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                                                        className={`text-[9px] md:text-[10px] font-black uppercase tracking-widest transition-colors ${
                                                             isLast ? "text-white cursor-default" : "text-zinc-500 hover:text-zinc-300"
                                                         }`}
                                                         onClick={(e) => isLast && e.preventDefault()}
                                                     >
                                                         {label}
                                                     </Link>
-                                                    {!isLast && <ChevronRight size={12} className="text-zinc-700" />}
+                                                    {!isLast && <ChevronRight size={12} className="text-zinc-700 shrink-0" />}
                                                 </div>
                                             );
                                         });
@@ -237,7 +257,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                         </div>
 
                         {/* ── Functional Search Bar ── */}
-                        <div ref={searchRef} className="flex items-center flex-1 lg:flex-grow lg:max-w-lg relative">
+                        <div ref={searchRef} className={`${pathname === '/' ? 'flex' : 'hidden lg:flex'} items-center flex-1 lg:flex-grow lg:max-w-lg relative`}>
                             <div className={`flex items-center bg-zinc-900/40 backdrop-blur-md border px-3 md:px-5 py-2 md:py-2.5 w-full rounded-2xl transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60 focus-within:shadow-[0_0_20px_rgba(255,255,255,0.03)] focus-within:border-zinc-500 ${showResults ? "border-zinc-600 rounded-b-none" : "border-zinc-800"}`}>
                                 <Search size={16} className="text-zinc-500 mr-2 lg:mr-3 shrink-0 group-focus-within:text-white" />
                                 <input
@@ -369,36 +389,48 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                         >
                             {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
                         </button>
-                    </div>
-
-                    {/* Mobile Menu Overlay */}
-                    <div className={`md:hidden absolute top-full left-0 w-full bg-background border-b border-border shadow-2xl transition-all duration-300 ease-in-out z-[100] ${mobileMenuOpen ? 'max-h-[90vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                        <div className="p-6 space-y-8">
+                    <div className={`md:hidden absolute top-full left-0 w-full bg-black/95 backdrop-blur-2xl border-b border-white/5 shadow-[0_20px_50px_rgba(0,0,0,0.8)] transition-all duration-500 ease-[cubic-bezier(0.23,1,0.32,1)] z-[100] ${mobileMenuOpen ? 'max-h-[90vh] opacity-100 overflow-y-auto' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+                        <div className="p-8 space-y-10">
                             <div className="space-y-6">
-                                <p className="text-xs font-semibold text-secondary/50 px-2">Discover</p>
-                                <div className="grid grid-cols-1 gap-2">
-                                    {[
-                                        { name: "Smart Tools", href: "/tools" },
-                                        { name: "Learning Journal", href: "/articles" },
-                                        { name: "Useful Guides", href: "/guides" },
-                                        { name: "AI Image Prompts", href: "/prompts" },
-                                    ].map((item) => (
-                                        <Link key={item.href} href={item.href}
-                                            className="flex items-center justify-between text-[13px] font-bold tracking-tight px-4 py-3 rounded-xl transition-all text-white/70 hover:text-white hover:bg-zinc-800/50"
-                                            onClick={() => setMobileMenuOpen(false)}
-                                        >
-                                            <span>{item.name}</span>
-                                            <ArrowRight size={14} className="opacity-40" />
-                                        </Link>
-                                    ))}
+                                <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.3em] px-2">Discover Hub</p>
+                                <div className="grid grid-cols-1 gap-3 px-2">
+                                    {NAV_LINKS.map((link) => {
+                                        const Icon = link.icon;
+                                        const isActive = (pathname ?? "") === link.href || (pathname ?? "").startsWith(link.href + "/");
+                                        return (
+                                            <Link
+                                                key={link.href}
+                                                href={link.href}
+                                                className={`flex items-center justify-between px-5 py-4 rounded-2xl text-sm font-bold transition-all duration-300 border
+                                                    ${isActive
+                                                        ? "bg-white text-black border-white shadow-xl shadow-white/10 translate-x-1"
+                                                        : "bg-zinc-900/50 text-zinc-400 border-white/5 hover:border-white/20 hover:text-white"}`}
+                                                onClick={() => setMobileMenuOpen(false)}
+                                            >
+                                                <div className="flex items-center gap-3">
+                                                    <Icon size={18} />
+                                                    {link.name}
+                                                </div>
+                                                <ChevronRight size={14} className={isActive ? "text-black/40" : "text-zinc-700"} />
+                                            </Link>
+                                        );
+                                    })}
                                 </div>
+                            </div>
+                            
+                            <div className="pt-6 border-t border-white/5 px-2">
+                                <p className="text-[9px] font-bold text-zinc-700 uppercase tracking-widest text-center">
+                                    AssetNest v2.4.0 • 2026 Professional Edition
+                                </p>
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
-        </nav>
-    );
+        </div>
+    </nav>
+);
 };
 
 export default Navbar;

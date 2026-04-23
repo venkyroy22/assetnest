@@ -327,7 +327,7 @@ export default function BusinessCardPage() {
                 
                 {/* LEFT DRAWER (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-zinc-950 border-r border-zinc-900 flex flex-col z-30 transition-transform duration-300
+                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-zinc-950 border-r border-zinc-900 flex flex-col z-50 transition-transform duration-300
                     ${leftPanelOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full lg:translate-x-0"}
                 `}>
                     <div className="flex items-center justify-between border-b border-white/5 p-2 bg-white/[0.02]">
@@ -484,7 +484,7 @@ export default function BusinessCardPage() {
 
                 {/* RIGHT PROPERTY INSPECTOR (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-zinc-950 border-l border-zinc-900 flex flex-col z-30 transition-transform duration-300
+                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-zinc-950 border-l border-zinc-900 flex flex-col z-50 transition-transform duration-300
                     ${rightPanelOpen ? "translate-x-0 shadow-[-20px_0_60px_rgba(0,0,0,0.8)]" : "translate-x-full lg:translate-x-0"}
                 `}>
                     {selectedElement ? (
@@ -624,44 +624,44 @@ export default function BusinessCardPage() {
                 onClose={() => setShowHelp(false)} 
                 title="Professional Design Infrastructure"
             >
-                <div className="max-w-6xl mx-auto space-y-24 text-left pb-24">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 text-center space-y-6 max-w-4xl mx-auto animate-in fade-in duration-1000">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                <div className="max-w-6xl mx-auto space-y-12 sm:space-y-24 text-left pb-12 sm:pb-24 px-2 sm:px-0">
+                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-[2rem] sm:rounded-3xl border border-zinc-800/50 text-center space-y-4 sm:space-y-6 max-w-4xl mx-auto animate-in fade-in duration-1000">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6">
                             The Future of Networking: Professional Business Card Studio
                         </h3>
-                        <p className="text-lg md:text-xl leading-relaxed text-zinc-500 font-medium">
+                        <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-zinc-500 font-medium">
                             Welcome to the AssetNest <strong>Business Card Design Studio</strong>—the world&apos;s most intuitive, browser-based professional design environment. Stop relying on generic templates and static creators. Our StudioMaster engine provides an interactive, layer-based workflow that allows you to drag, rotate, and scale every element with pixel perfection. Whether you are a corporate executive or a creative freelancer, our tool ensures your first impression is not just a card, but a piece of modern art.
                         </p>
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
-                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
-                                <PenTool size={28} />
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
+                        <div className="p-6 sm:p-10 bg-zinc-950/50 border border-zinc-900 rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <PenTool size={24} className="sm:w-7 sm:h-7" />
                             </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Layer-Based Workflow</h3>
-                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Full control over z-index and visibility. Manage your design like a pro in Photoshop, but without the complexity.</p>
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6">Layer-Based Workflow</h3>
+                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Full control over z-index and visibility. Manage your design like a pro in Photoshop, but without the complexity.</p>
                         </div>
-                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
-                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
-                                <Palette size={28} />
+                        <div className="p-6 sm:p-10 bg-zinc-950/50 border border-zinc-900 rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <Palette size={24} className="sm:w-7 sm:h-7" />
                             </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Texture Synthesis</h3>
-                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Apply organic textures like Linen, Mesh, and Carbon Fiber to your card surface for a premium physical feel.</p>
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6">Texture Synthesis</h3>
+                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Apply organic textures like Linen, Mesh, and Carbon Fiber to your card surface for a premium physical feel.</p>
                         </div>
-                        <div className="p-10 bg-zinc-950/50 border border-zinc-900 rounded-[3rem] space-y-6 group hover:border-zinc-700 transition-all">
-                            <div className="w-14 h-14 bg-zinc-900 rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
-                                <ShieldCheck size={28} />
+                        <div className="p-6 sm:p-10 bg-zinc-950/50 border border-zinc-900 rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-zinc-700 transition-all">
+                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-zinc-900 rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-white transition-colors">
+                                <ShieldCheck size={24} className="sm:w-7 sm:h-7" />
                             </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">100% Private Export</h3>
-                            <p className="text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">We never store your contact data. Everything is processed locally in your browser for absolute security.</p>
+                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6">100% Private Export</h3>
+                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">We never store your contact data. Everything is processed locally in your browser for absolute security.</p>
                         </div>
                     </div>
 
-                    <div className="bg-zinc-950/30 border border-zinc-900 rounded-[4rem] p-12 md:p-20">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-20">
-                            <div className="space-y-10">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Design Briefing & FAQ</h3>
+                    <div className="bg-zinc-950/30 border border-zinc-900 rounded-[2rem] sm:rounded-[4rem] p-6 sm:p-12 md:p-20">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
+                            <div className="space-y-6 sm:space-y-10">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6">Design Briefing & FAQ</h3>
                                 <Accordion>
                                     <AccordionItem title="What is the export resolution?">
                                         Our StudioMaster engine exports in Ultra-High Resolution (4x Scale), making it ready for professional offset or digital printing without loss of quality.
@@ -674,26 +674,26 @@ export default function BusinessCardPage() {
                                     </AccordionItem>
                                 </Accordion>
                             </div>
-                            <div className="space-y-10 flex flex-col justify-center bg-zinc-900/40 p-12 rounded-[3rem] border border-white/5">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <div className="space-y-6 sm:space-y-10 flex flex-col justify-center bg-zinc-900/40 p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-white/5">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-2 sm:mb-6 flex items-center gap-2">
                                     <Sparkles className="text-zinc-500" size={24} />
                                     Pro Tip: Studio Shortcuts
                                 </h3>
-                                <div className="space-y-4">
-                                     <div className="flex items-center justify-between py-3 border-b border-white/5">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Undo Change</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Ctrl + Z</kbd>
+                                <div className="space-y-2 sm:space-y-4">
+                                     <div className="flex items-center justify-between py-2 sm:py-3 border-b border-white/5">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Undo Change</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter whitespace-nowrap">Ctrl + Z</kbd>
                                      </div>
-                                     <div className="flex items-center justify-between py-3 border-b border-white/5">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Redo Change</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Ctrl + Y</kbd>
+                                     <div className="flex items-center justify-between py-2 sm:py-3 border-b border-white/5">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Redo Change</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter whitespace-nowrap">Ctrl + Y</kbd>
                                      </div>
-                                     <div className="flex items-center justify-between py-3">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Delete Layer</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter">Delete</kbd>
+                                     <div className="flex items-center justify-between py-2 sm:py-3">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Delete Layer</span>
+                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-white font-mono uppercase tracking-tighter whitespace-nowrap">Delete</kbd>
                                      </div>
                                 </div>
-                                <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-widest text-center mt-6 italic">© 2026 AssetNest Studio Solutions</p>
+                                <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-widest text-center mt-4 sm:mt-6 italic">© 2026 AssetNest Studio Solutions</p>
                             </div>
                         </div>
                     </div>
