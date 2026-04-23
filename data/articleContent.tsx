@@ -93,6 +93,20 @@ const Step = ({ num, title, text }: { num: string; title: string; text: string }
   </div>
 );
 
+const EditorialImage = ({ src, alt }: { src: string; alt: string }) => (
+  <div className="my-16 relative group">
+    <div className="absolute -inset-4 bg-gradient-to-r from-zinc-500/10 to-transparent blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+    <img 
+      src={src} 
+      alt={alt} 
+      className="w-full h-auto rounded-[2rem] sm:rounded-[3rem] border border-white/10 shadow-2xl relative z-10" 
+    />
+    <p className="mt-4 text-center text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+      {alt}
+    </p>
+  </div>
+);
+
 export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
   "80-20-rule-business-growth": (
     <>
@@ -12491,6 +12505,11 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       <IntroBox>
         "There is a specific feeling that precedes every significant business breakthrough. It is not excitement, though excitement sometimes accompanies it. It is not confidence, though confidence may come later. It is not the energizing clarity of knowing exactly what to do and how to do it. It is discomfort."
       </IntroBox>
+
+      <EditorialImage 
+        src="/images/articles/comfort-breakthrough.png" 
+        alt="The threshold of breakthrough: where discomfort meets expansion." 
+      />
 
       <section>
         <P>
