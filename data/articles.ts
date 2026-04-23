@@ -512,5 +512,35 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
     publishedAt: "2026-04-22",
     icon: "Users",
     tags: ["Hiring", "Growth", "Management", "Culture", "Founders"]
+  },
+  {
+    slug: "great-managers-first-90-days",
+    title: "What Great Managers Do in the First 90 Days That Average Managers Never Do at All",
+    description: "The first ninety days in a management role are a unique window of opportunity. Discover the specific practices that separate great managers from the average ones.",
+    category: "Talent & Culture",
+    readTime: "20 min read",
+    publishedAt: "2026-04-23",
+    icon: "Calendar",
+    tags: ["Management", "Leadership", "Accountability", "Talent", "Culture"]
+  },
+  {
+    slug: "sunk-cost-trap",
+    title: "The Sunk Cost Trap: Why Smart People Keep Investing in Things That Are Not Working",
+    description: "The sunk cost fallacy is a powerful cognitive bias that keeps us anchored to failing projects. Learn why smart people fall for it and how to escape.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-23",
+    icon: "Anchor",
+    tags: ["Strategy", "Decision Making", "Psychology", "Finance", "Leadership"]
+  },
+  {
+    slug: "survivorship-bias",
+    title: "Survivorship Bias: Why the Success Stories You Are Learning From May Be Teaching You the Wrong Lessons",
+    description: "Learning only from winners creates a distorted view of reality. Discover how survivorship bias contaminates business advice and how to see the full picture.",
+    category: "Business Strategy",
+    readTime: "25 min read",
+    publishedAt: "2026-04-23",
+    icon: "Shield",
+    tags: ["Strategy", "Learning", "Psychology", "Data", "Decision Making"]
   }
 ];
