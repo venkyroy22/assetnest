@@ -24,10 +24,10 @@ function useCountUp(target: number, duration = 2000, shouldStart = false) {
     const animate = (currentTime: number) => {
       if (!startTime) startTime = currentTime;
       const progress = Math.min((currentTime - startTime) / duration, 1);
-      
+
       // Easing function: outExpo
       const easedProgress = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
-      
+
       setCount(Math.floor(easedProgress * target));
 
       if (progress < 1) {
@@ -55,7 +55,7 @@ function useInView(threshold = 0.01) {
         setIsInView(true);
         if (ref.current) observer.unobserve(ref.current);
       }
-    }, { 
+    }, {
       threshold,
       rootMargin: "0px 0px 100px 0px" // Trigger 100px before it fits
     });
@@ -73,7 +73,7 @@ function StatCard({ value, suffix, label, delay }: {
 }) {
   const { ref, isInView } = useInView(0.1);
   const count = useCountUp(value, 2000, isInView);
-  
+
   return (
     <div
       ref={ref}
@@ -197,7 +197,7 @@ export default function Home() {
     setMounted(true);
     const handleScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", handleScroll, { passive: true });
-    
+
     const t = setTimeout(() => setHeroVisible(true), 80);
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -233,11 +233,11 @@ export default function Home() {
 
         {/* ── Animated orbs in the background ── */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <FloatingOrb size={500} color="rgba(255,255,255,0.12)"   x="-10%"  y="-20%" duration={12} delay={0}   />
-          <FloatingOrb size={420} color="rgba(255, 255, 255,0.12)"   x="68%"   y="-10%" duration={15} delay={2}   />
-          <FloatingOrb size={360} color="rgba(255, 255, 255,0.08)"   x="50%"   y="50%"  duration={10} delay={4}   />
-          <FloatingOrb size={300} color="rgba(255, 255, 255,0.1)"   x="-6%"   y="60%"  duration={13} delay={1}   />
-          <FloatingOrb size={220} color="rgba(255, 255, 255,0.06)"   x="38%"   y="15%"  duration={18} delay={6}   />
+          <FloatingOrb size={500} color="rgba(255,255,255,0.12)" x="-10%" y="-20%" duration={12} delay={0} />
+          <FloatingOrb size={420} color="rgba(255, 255, 255,0.12)" x="68%" y="-10%" duration={15} delay={2} />
+          <FloatingOrb size={360} color="rgba(255, 255, 255,0.08)" x="50%" y="50%" duration={10} delay={4} />
+          <FloatingOrb size={300} color="rgba(255, 255, 255,0.1)" x="-6%" y="60%" duration={13} delay={1} />
+          <FloatingOrb size={220} color="rgba(255, 255, 255,0.06)" x="38%" y="15%" duration={18} delay={6} />
         </div>
 
         {/* ── Grid dot pattern ── */}
@@ -264,9 +264,9 @@ export default function Home() {
 
         {/* ── Main Content Container ── */}
         <div className="relative z-10 w-full max-w-[1500px] min-h-[750px] flex flex-col items-center justify-center px-6 md:px-16 overflow-hidden">
-          
+
           {/* ── Giant Main Headline Layer (Behind Mask, then moves Front) ── */}
-          <div 
+          <div
             className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none select-none overflow-visible"
             style={{
               opacity: heroVisible ? 0.60 + (scrollProgress * 0.40) : 0,
@@ -275,11 +275,11 @@ export default function Home() {
               transition: heroVisible ? "opacity 1s ease, z-index 0s" : "none",
             }}
           >
-            <h1 
+            <h1
               className="text-[17vw] lg:text-[15vw] font-black tracking-[-0.08em] leading-none uppercase select-none drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] transition-all duration-75"
               style={{
                 color: "transparent",
-                backgroundImage: isDragging 
+                backgroundImage: isDragging
                   ? `radial-gradient(circle at calc(50% + ${dragOffset.x * 0.5}px) calc(50% + ${dragOffset.y * 0.5}px), #fff 0%, rgba(255,255,255,0.5) 25%, rgba(255,255,255,0.1) 50%)`
                   : "linear-gradient(to bottom, #fff, #fff)",
                 WebkitBackgroundClip: "text",
@@ -292,7 +292,7 @@ export default function Home() {
           </div>
 
           {/* ── Focal Mask Layer (Foreground, then moves Behind) ── */}
-          <div 
+          <div
             className={`relative w-full max-w-[650px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto z-10 group`}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
@@ -308,21 +308,21 @@ export default function Home() {
           >
             {/* Drag Indicator Tooltip - Only on Hover */}
             <div className={`absolute top-1/4 right-[10%] lg:right-[15%] z-[100] transition-opacity duration-300 opacity-0 group-hover:opacity-100`}
-                 style={{ transform: "translateY(-50%)" }}>
-                 <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl">
-                    <Move size={11} className="text-zinc-400" />
-                    <span className="text-[10px] font-black tracking-[0.2em] text-zinc-300 uppercase">Drag</span>
-                 </div>
+              style={{ transform: "translateY(-50%)" }}>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl">
+                <Move size={11} className="text-zinc-400" />
+                <span className="text-[10px] font-black tracking-[0.2em] text-zinc-300 uppercase">Drag</span>
+              </div>
             </div>
 
             <div className="relative w-full h-full">
               {/* Layered Glows radiating from behind the mask */}
               <div className="absolute inset-0 bg-white/20 blur-[130px] rounded-full scale-50 animate-pulse" />
               <div className="absolute inset-0 bg-white/5 blur-[160px] rounded-full scale-75" />
-              
-              <img 
-                src="/hero-mask.png" 
-                alt="AssetNest Interface" 
+
+              <img
+                src="/hero-mask.png"
+                alt="AssetNest Interface"
                 className="w-full h-full object-contain relative z-20 drop-shadow-[0_50px_100px_rgba(0,0,0,1)] brightness-[1.12] select-none pointer-events-none"
                 style={{ animation: isDragging ? "none" : "heroFloat 18s ease-in-out infinite" }}
               />
@@ -330,7 +330,7 @@ export default function Home() {
           </div>
 
           {/* ── Actions & Subtext Layer (In Front) ── */}
-          <div 
+          <div
             className="relative z-20 flex flex-col items-center text-center gap-10 -mt-10 lg:-mt-20 px-6 max-w-2xl"
             style={{
               opacity: heroVisible ? 1 : 0,
@@ -340,7 +340,7 @@ export default function Home() {
           >
             {/* Subtitle */}
             <p className="text-xs md:text-sm text-zinc-400 font-black tracking-[0.4em] uppercase leading-relaxed max-w-sm drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
-               The Hub for Intelligent creation
+              The Hub for Intelligent creation
             </p>
 
             {/* CTA Buttons */}
@@ -378,9 +378,9 @@ export default function Home() {
           }} />
           <div className="px-6 md:px-10 relative z-10">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 md:gap-12 max-w-5xl mx-auto">
-              <StatCard value={32}  suffix="+"    label="Free Tools"       delay={0} />
-              <StatCard value={100} suffix="%"    label="Browser-Based"    delay={100} />
-              <StatCard value={7}   suffix=" Cats" label="Tool Categories" delay={200} />
+              <StatCard value={32} suffix="+" label="Free Tools" delay={0} />
+              <StatCard value={100} suffix="%" label="Browser-Based" delay={100} />
+              <StatCard value={7} suffix=" Cats" label="Tool Categories" delay={200} />
             </div>
           </div>
         </section>
