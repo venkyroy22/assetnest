@@ -10,6 +10,7 @@ import {
 import HomeToolsGrid from "@/components/HomeToolsGrid";
 import { useState, useEffect, useRef } from "react";
 import FadeReveal from "@/components/FadeReveal";
+import Image from "next/image";
 
 // ── Animated counter hook ─────────────────────────────────────────────────────
 function useCountUp(target: number, duration = 2000, shouldStart = false) {
@@ -80,7 +81,7 @@ function StatCard({ value, suffix, label, delay }: {
       className="flex flex-col items-center gap-1 px-8 py-5 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="text-3xl font-black tracking-tight text-white stat-number">
+      <div className="text-3xl font-black tracking-tight text-white stat-number tabular-nums">
         {count.toLocaleString()}<span className="text-zinc-100">{suffix}</span>
       </div>
       <div className="text-[11px] font-semibold text-zinc-500 tracking-wide uppercase">{label}</div>
@@ -297,10 +298,10 @@ export default function Home() {
           {/* ── Focal Mask Layer (Foreground, then moves Behind) ── */}
           <div
             className={`relative w-full max-w-[650px] aspect-square flex items-center justify-center cursor-default lg:cursor-grab active:lg:cursor-grabbing pointer-events-auto z-10 group`}
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
+            onPointerDown={window.innerWidth >= 1024 ? handlePointerDown : undefined}
+            onPointerMove={window.innerWidth >= 1024 ? handlePointerMove : undefined}
+            onPointerUp={window.innerWidth >= 1024 ? handlePointerUp : undefined}
+            onPointerCancel={window.innerWidth >= 1024 ? handlePointerUp : undefined}
             style={{
               opacity: heroVisible ? 1 - (scrollProgress * 0.4) : 0,
               transform: `translate3d(${dragOffset.x}px, ${-20 + scrollProgress * 150 + dragOffset.y}px, 0) scale(${1.1 - scrollProgress * 0.3})`,
@@ -323,9 +324,12 @@ export default function Home() {
               <div className="absolute inset-0 bg-white/20 blur-[130px] rounded-full scale-50 animate-pulse" />
               <div className="absolute inset-0 bg-white/5 blur-[160px] rounded-full scale-75" />
 
-              <img
+              <Image
                 src="/hero-mask.png"
                 alt="AssetNest Interface"
+                width={650}
+                height={650}
+                priority
                 className="w-full h-full object-contain relative z-20 drop-shadow-[0_50px_100px_rgba(0,0,0,1)] brightness-[1.12] select-none pointer-events-none"
                 style={{ animation: isDragging ? "none" : "heroFloat 18s ease-in-out infinite" }}
               />

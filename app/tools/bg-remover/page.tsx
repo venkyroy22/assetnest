@@ -45,6 +45,7 @@ export default function BgRemoverPage() {
         progressMap.current.clear();
 
         try {
+            setProgress(5); // Show immediate activity
             const { removeBackground } = await import("@imgly/background-removal");
             const resultBlob = await removeBackground(file, {
                 debug: false,
@@ -225,7 +226,11 @@ export default function BgRemoverPage() {
                                             <RefreshCw size={64} className="text-white/20 animate-spin absolute inset-0" />
                                             <div className="absolute inset-0 flex items-center justify-center font-mono text-[10px] text-white font-bold">{progress}%</div>
                                         </div>
-                                        <p className="text-[11px] font-semibold tracking-wider text-zinc-400">Subject isolation in progress...</p>
+                                        {isLoading && progress < 10 ? (
+                                            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 animate-pulse">Initializing AI Models...</p>
+                                        ) : (
+                                            <p className="text-[11px] font-semibold tracking-wider text-zinc-400">Subject isolation in progress...</p>
+                                        )}
                                     </div>
                                 ) : (
                                     <img 
