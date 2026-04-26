@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import Container from "@/components/Container";
-import { Upload, Lock, Unlock, Download, FileText, ArrowRight, ShieldCheck, FileCheck, X, Loader2, Eye, EyeOff, Info, Zap, Check } from "lucide-react";
+import { Upload, Lock, Unlock, Download, FileText, ArrowRight, ShieldCheck, FileCheck, X, Loader2, Eye, EyeOff, Info, Zap, Check, RefreshCw } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import HelpModal from "@/components/HelpModal";
 import { Accordion, AccordionItem } from "@/components/Accordion";
