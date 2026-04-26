@@ -105,12 +105,12 @@ export default function ImageToTextPage() {
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full relative">
                     <Scan size={12} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">OCR Utility</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
                         title="What is this?"
                     >
                         <Info size={10} />
@@ -155,8 +155,22 @@ export default function ImageToTextPage() {
                             <Camera size={32} className="text-zinc-500" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white tracking-tight">Select an Image</h2>
-                            <p className="text-zinc-500 text-sm font-medium mt-1">Drag high-resolution images for better accuracy</p>
+                            <h2 className="text-xl font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <div className="flex flex-wrap justify-center gap-2 mt-3">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <ShieldCheck size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <Scan size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <Check size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                </div>
+                            </div>
+                            <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">High-Resolution Extraction</p>
                         </div>
                         <div className="flex flex-wrap justify-center gap-2 pt-4">
                             {['JPEG', 'PNG', 'WebP'].map(format => (
@@ -187,19 +201,17 @@ export default function ImageToTextPage() {
                            </button>
                         </div>
 
-                        {!extractedText && (
-                            <button
-                                onClick={extractText}
-                                disabled={isProcessing}
-                                className="w-full h-14 bg-white text-black font-black tracking-wide text-sm rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-white shadow-xl shadow-white/10 active:scale-[0.98] disabled:opacity-50"
-                            >
-                                {isProcessing ? (
-                                    <><RefreshCw size={18} className="animate-spin" /> Processing {progress > 0 ? `${progress}%` : ''}</>
-                                ) : (
-                                    <>Extract Text <FileText size={18} /></>
-                                )}
-                            </button>
-                        )}
+                                <button
+                                    onClick={extractText}
+                                    disabled={isProcessing}
+                                    className="w-full h-12 bg-white text-black font-black tracking-wide text-sm rounded-xl flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 shadow-xl shadow-white/10 active:scale-[0.98] disabled:opacity-50"
+                                >
+                                    {isProcessing ? (
+                                        <><RefreshCw size={18} className="animate-spin" /> Processing {progress > 0 ? `${progress}%` : ''}</>
+                                    ) : (
+                                        <>Extract Text <FileText size={18} /></>
+                                    )}
+                                </button>
                     </div>
 
                     {/* Right side: Result */}
@@ -244,14 +256,20 @@ export default function ImageToTextPage() {
                             </div>
 
                             {extractedText && (
-                                <div className="mt-8 animate-in fade-in duration-700">
-                                    <button
-                                        onClick={downloadText}
-                                        className="w-full h-14 px-8 bg-zinc-100 text-black font-black tracking-wide text-xs rounded-2xl flex items-center justify-center gap-3 transition-all hover:bg-white shadow-xl active:scale-[0.98]"
-                                    >
-                                        <Download size={18} /> Download TXT File
-                                    </button>
-                                </div>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
+                                        <button
+                                            onClick={downloadText}
+                                            className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                        >
+                                            <Download size={18} /> Download TXT
+                                        </button>
+                                        <button
+                                            onClick={reset}
+                                            className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                        >
+                                            <RefreshCw size={14} /> Scan Another
+                                        </button>
+                                    </div>
                             )}
                         </div>
                     </div>

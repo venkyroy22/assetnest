@@ -609,10 +609,10 @@ export default function PdfSignerPage() {
             <div className="text-center mb-8 px-2 relative group">
                 <button
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
                     title="View Information"
                 >
-                    <Info size={14} />
+                    <Info size={12} />
                 </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-white/10 bg-white/[0.03] mb-5 rounded-full max-w-full overflow-hidden">
                     <ShieldCheck size={11} className="text-emerald-400 shrink-0" />
@@ -667,11 +667,22 @@ export default function PdfSignerPage() {
 
                         <div className="space-y-3">
                             <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tighter leading-none">
-                                Drop your <span className="text-zinc-600">PDF</span>
+                                Drag & Drop or Click Here
                             </h2>
-                            <p className="text-zinc-600 text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em]">
-                                or click to browse · Secure local processing
-                            </p>
+                            <div className="flex flex-wrap items-center justify-center gap-2 mt-2">
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                                    <ShieldCheck size={12} className="text-emerald-400" />
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-zinc-300">100% Private</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                                    <Sparkles size={12} className="text-zinc-400" />
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-zinc-300">No Server Upload</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
+                                    <Check size={12} className="text-zinc-400" />
+                                    <span className="text-[10px] font-black uppercase tracking-wider text-zinc-300">Free Forever</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -889,27 +900,27 @@ export default function PdfSignerPage() {
                                     <h3 className="text-3xl font-black text-white tracking-tighter">Document Signed</h3>
                                     <p className="text-zinc-500 text-sm font-medium">Your finalized PDF is ready for download.</p>
                                 </div>
-                                <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm">
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-sm">
                                     <a
                                         href={outputUrl}
                                         download={`signed_${file?.name || "document.pdf"}`}
-                                        className="w-full h-12 rounded-xl bg-white text-black text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:bg-zinc-200 active:scale-[0.97]"
+                                        className="h-12 px-6 rounded-full bg-white text-black text-[10px] font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2 hover:bg-zinc-200 active:scale-[0.97] shadow-xl shadow-white/10"
                                     >
                                         <Download size={16} /> Download PDF
                                     </a>
                                     <button
                                         onClick={() => setIsSharing(true)}
-                                        className="w-full sm:w-12 h-12 rounded-xl bg-white/[0.03] border border-white/[0.06] text-white flex items-center justify-center transition-all hover:bg-white/[0.08]"
+                                        className="h-12 px-6 rounded-full bg-zinc-900 border border-zinc-800 text-white text-[10px] font-black uppercase tracking-wider flex items-center justify-center gap-2 transition-all hover:bg-zinc-800"
                                     >
-                                        <Share2 size={18} />
+                                        <Share2 size={16} /> Share File
+                                    </button>
+                                    <button
+                                        onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
+                                        className="sm:col-span-2 h-10 text-[9px] font-bold text-zinc-600 hover:text-zinc-300 uppercase tracking-wider transition-colors"
+                                    >
+                                        ← Back to Editor
                                     </button>
                                 </div>
-                                <button
-                                    onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                    className="text-[9px] font-bold text-zinc-600 hover:text-zinc-300 uppercase tracking-wider transition-colors"
-                                >
-                                    ← Back to Editor
-                                </button>
                             </div>
                         )}
 

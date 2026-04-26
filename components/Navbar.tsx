@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef } from "react";
-import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, ChevronLeft, Home, ZoomIn, Check, RotateCcw, FileText } from "lucide-react";
+import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, ChevronLeft, Home, ZoomIn, Check, RotateCcw, FileText, Settings } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Logo from "./Logo";
@@ -64,7 +64,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const mobileSearchRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const pathname = usePathname();
-    const { settings, updateSettings } = useSettings();
+    const { settings, updateSettings, setSettingsOpen } = useSettings();
     const [isZoomOpen, setIsZoomOpen] = useState(false);
     const zoomRef = useRef<HTMLDivElement>(null);
 
@@ -362,7 +362,13 @@ const Navbar = ({ className = "" }: { className?: string }) => {
             {mobileSearchOpen && (
                 <div className="fixed inset-0 z-[200] bg-black/95 backdrop-blur-xl flex flex-col md:hidden">
                     <div className="flex items-center gap-3 px-4 h-16 border-b border-zinc-800">
-                        <Search size={16} className="text-zinc-500 shrink-0" />
+                        <button
+                            onClick={() => { setMobileSearchOpen(false); setQuery(""); setShowResults(false); }}
+                            className="p-1.5 text-zinc-400 hover:text-white touch-manipulation"
+                        >
+                            <X size={20} />
+                        </button>
+                        <Search size={16} className="text-zinc-500 shrink-0 ml-1" />
                         <input
                             type="text"
                             value={query}
@@ -376,12 +382,6 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             spellCheck={false}
                             className="flex-1 bg-transparent text-sm text-white placeholder:text-zinc-600 font-medium focus:outline-none"
                         />
-                        <button
-                            onClick={() => { setMobileSearchOpen(false); setQuery(""); setShowResults(false); }}
-                            className="p-1.5 text-zinc-400 hover:text-white touch-manipulation"
-                        >
-                            <X size={20} />
-                        </button>
                     </div>
                     <div className="flex-1 overflow-y-auto p-3">
                         {query.length < 2 ? (
@@ -472,6 +472,26 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 </button>
                             ))}
                         </div>
+                    </div>
+
+                    {/* Divider */}
+                    <div className="h-px bg-zinc-800/60" />
+
+                    {/* Platform Settings Button */}
+                    <div className="pt-2">
+                        <button 
+                            onClick={() => { setSettingsOpen(true); setMobileMenuOpen(false); }}
+                            className="w-full flex items-center justify-between px-5 py-4 bg-zinc-900 border border-zinc-800 rounded-2xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-all active:scale-[0.98] group"
+                        >
+                            <div className="flex items-center gap-4">
+                                <Settings size={20} className="text-zinc-500 group-hover:rotate-45 transition-transform duration-500" />
+                                <div className="flex flex-col items-start">
+                                    <span className="text-sm font-black uppercase tracking-widest text-white">Platform Settings</span>
+                                    <span className="text-[10px] font-medium text-zinc-600">Customize your experience</span>
+                                </div>
+                            </div>
+                            <ChevronRight size={18} className="text-zinc-700" />
+                        </button>
                     </div>
                 </div>
             </div>

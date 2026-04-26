@@ -103,35 +103,39 @@ export default function ESignaturePage() {
             <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 lg:p-6 shadow-2xl animate-in fade-in slide-in-from-bottom duration-500 max-w-3xl mx-auto relative group">
                 {/* Tools Header */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-zinc-900">
-                    <div className="flex items-center gap-4 bg-zinc-900/50 px-4 py-2 rounded-xl border border-zinc-800">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4 bg-zinc-900/50 px-4 py-3 rounded-2xl border border-zinc-800 w-full sm:w-auto">
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-zinc-400 mr-1">Color:</span>
-                            {["#000000", "#1d4ed8", "#b91c1c", "#ffffff"].map((color) => (
-                                <button
-                                    key={color}
-                                    onClick={() => setPenColor(color)}
-                                    className={`w-6 h-6 rounded-full border-2 transition-all ${penColor === color ? "border-white scale-110" : "border-transparent hover:scale-105"} shadow-md`}
-                                    style={{ backgroundColor: color }}
-                                    title={`Select ${color}`}
-                                />
-                            ))}
+                            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mr-1">Color</span>
+                            <div className="flex items-center gap-2">
+                                {["#000000", "#1d4ed8", "#b91c1c", "#ffffff"].map((color) => (
+                                    <button
+                                        key={color}
+                                        onClick={() => setPenColor(color)}
+                                        className={`w-6 h-6 rounded-full border-2 transition-all ${penColor === color ? "border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]" : "border-transparent hover:scale-105 opacity-60 hover:opacity-100"}`}
+                                        style={{ backgroundColor: color }}
+                                        title={`Select ${color}`}
+                                    />
+                                ))}
+                            </div>
                         </div>
-                        <div className="w-px h-6 bg-zinc-800 mx-2"></div>
+                        <div className="hidden xs:block w-px h-6 bg-zinc-800 mx-1"></div>
                         <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-zinc-400 mr-1">Thickness:</span>
-                            {[
-                                { val: 1, size: "w-2 h-2" }, 
-                                { val: 2.5, size: "w-3 h-3" }, 
-                                { val: 4, size: "w-4 h-4" }
-                            ].map((w) => (
-                                <button
-                                    key={w.val}
-                                    onClick={() => setPenWidth(w.val)}
-                                    className="flex items-center justify-center w-6 h-6 rounded hover:bg-zinc-800 transition-colors"
-                                >
-                                    <div className={`bg-white rounded-full ${w.size} ${penWidth === w.val ? "bg-white" : "bg-zinc-500"}`}></div>
-                                </button>
-                            ))}
+                            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mr-1">Weight</span>
+                            <div className="flex items-center gap-1.5">
+                                {[
+                                    { val: 1, size: "w-1.5 h-1.5" }, 
+                                    { val: 2.5, size: "w-2.5 h-2.5" }, 
+                                    { val: 4, size: "w-3.5 h-3.5" }
+                                ].map((w) => (
+                                    <button
+                                        key={w.val}
+                                        onClick={() => setPenWidth(w.val)}
+                                        className={`flex items-center justify-center w-7 h-7 rounded-lg transition-all ${penWidth === w.val ? "bg-white/10 border border-white/20" : "hover:bg-zinc-800"}`}
+                                    >
+                                        <div className={`rounded-full ${w.size} ${penWidth === w.val ? "bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)]" : "bg-zinc-600"}`}></div>
+                                    </button>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     
@@ -186,18 +190,18 @@ export default function ESignaturePage() {
                 </div>
 
                 {/* Export Buttons */}
-                <div className="mt-6 flex flex-col sm:flex-row gap-3">
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button 
                         onClick={() => downloadSignature("png")}
                         disabled={!hasDrawn}
-                        className="h-14 px-8 bg-white text-black font-extrabold tracking-wide text-sm rounded-full flex flex-1 items-center justify-center gap-3 transition-all hover:bg-white shadow-lg shadow-white/20 disabled:opacity-50 disabled:grayscale"
+                        className="h-12 px-8 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 active:scale-[0.98] shadow-xl shadow-white/10 disabled:opacity-30 disabled:grayscale"
                     >
-                        <Download size={18} /> Download Transparent PNG
+                        <Download size={16} /> Download PNG
                     </button>
                     <button 
                         onClick={() => downloadSignature("svg")}
                         disabled={!hasDrawn}
-                        className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 disabled:opacity-50"
+                        className="h-12 px-8 bg-zinc-900 border border-zinc-800 text-white font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98] disabled:opacity-30"
                     >
                         Download SVG
                     </button>

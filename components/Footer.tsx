@@ -15,7 +15,6 @@ const footerLinks = {
   Explore: [
     { name: "Smart Tools", href: "/tools" },
     { name: "AI Image Prompts", href: "/prompts" },
-    { name: "Industry Insights", href: "/articles" },
   ],
   Company: [
     { name: "About Us", href: "/about" },

@@ -3,7 +3,7 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
     Upload, Download, RefreshCw, Crop, Info, X, Check,
-    ChevronLeft, ChevronRight, ShieldCheck, Layout, Share2, Eye
+    ChevronLeft, ChevronRight, ShieldCheck, Layout, Share2, Eye, Sparkles
 } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import { Accordion, AccordionItem } from "@/components/Accordion";
@@ -148,6 +148,7 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
     }, [onPointerMove]);
 
     const handlePointerDown = (e: React.PointerEvent) => {
+        e.preventDefault();
         e.currentTarget.setPointerCapture(e.pointerId);
         const { rx, ry } = getRelative(e);
         const h = getHandle(rx, ry, crop);
@@ -176,7 +177,7 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
             {/* Overlay */}
             <div
                 ref={overlayRef}
-                className="absolute inset-0"
+                className="absolute inset-0 touch-none"
                 style={{ cursor }}
                 onPointerDown={handlePointerDown}
                 onMouseMove={handleMouseMove}
@@ -397,10 +398,10 @@ export default function PdfCropperPage() {
             <div className="text-center mb-10 relative group">
                 <button
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
                     title="View Information"
                 >
-                    <Info size={14} />
+                    <Info size={12} />
                 </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Crop size={11} className="text-white" />
@@ -438,8 +439,21 @@ export default function PdfCropperPage() {
                             {isLoading ? <RefreshCw size={24} className="animate-spin text-zinc-500" /> : <Upload size={24} className="text-zinc-500" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white tracking-tight">Drop PDF Here</h2>
-                            <p className="text-zinc-500 text-xs font-medium mt-1">Or click to select a file</p>
+                            <h2 className="text-lg font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <ShieldCheck size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <Sparkles size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <Check size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -468,9 +482,9 @@ export default function PdfCropperPage() {
                             Apply crop to all pages
                         </button>
 
-                        <div className="ml-auto flex gap-2">
+                        <div className="flex gap-2">
+                            <button onClick={reset} className="h-9 px-3 text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors" title="Exit Editor"><X size={14} /></button>
                             <button onClick={resetCrop} className="h-9 px-4 text-xs font-semibold text-zinc-400 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">Reset Crop</button>
-                            <button onClick={reset} className="h-9 px-3 text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors"><X size={14} /></button>
                         </div>
                     </div>
 
@@ -582,30 +596,30 @@ export default function PdfCropperPage() {
                             }
                         </button>
                     ) : (
-                        <div className="flex flex-wrap lg:flex-nowrap gap-3">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button
                                 onClick={() => outputUrl && window.open(outputUrl, '_blank')}
-                                className="flex-1 h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 bg-white text-black hover:bg-zinc-100 shadow-lg shadow-white/10 transition-all min-w-[200px]"
+                                className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-100 shadow-lg shadow-white/10 transition-all active:scale-[0.98]"
                             >
-                                <Eye size={18} /> Preview PDF
+                                <Eye size={16} /> <span className="hidden sm:inline">Preview PDF</span><span className="sm:hidden">Preview</span>
                             </button>
                             <button
                                 onClick={download}
-                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98] transition-all basis-[calc(50%-6px)] lg:basis-auto"
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
                             >
-                                <Download size={18} /> Download
+                                <Download size={16} /> Download PDF
                             </button>
                             <button
                                 onClick={() => setIsSharing(true)}
-                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98] transition-all basis-[calc(50%-6px)] lg:basis-auto"
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
                             >
-                                <Share2 size={18} /> Share
+                                <Share2 size={16} /> Share to Mobile
                             </button>
                             <button
                                 onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                className="h-14 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-sm rounded-full flex items-center justify-center gap-2 hover:text-white hover:bg-zinc-800 transition-all w-full lg:w-auto"
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:text-white hover:bg-zinc-800 transition-all active:scale-[0.98]"
                             >
-                                <RefreshCw size={16} /> Re-crop
+                                <RefreshCw size={14} /> Re-crop PDF
                             </button>
                         </div>
                     )}

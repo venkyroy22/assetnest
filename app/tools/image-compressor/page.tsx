@@ -223,8 +223,8 @@ export default function ImageCompressorPage() {
                             <Upload size={28} className="text-zinc-400" />
                         </div>
                         <div>
-                            <p className="text-white font-bold tracking-tight text-sm mb-1">Drop your image here</p>
-                            <p className="text-zinc-500 text-xs font-medium">or click to browse — JPEG, PNG, WebP supported</p>
+                            <p className="text-white font-black tracking-tight text-xl mb-2">Drag & Drop or Click Here</p>
+                            <p className="text-zinc-500 text-sm font-medium">JPEG, PNG, WebP supported • No Server Upload</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold tracking-wide text-zinc-500">
                             <span className="px-2 py-1 border border-zinc-800">100% Private</span>
@@ -416,19 +416,21 @@ export default function ImageCompressorPage() {
 
                     {/* Download — only when we actually saved bytes */}
                     {hasCompressed && compressedUrl && !isCompressing && (
-                        <button
-                            onClick={handleDownload}
-                            className="w-full flex items-center justify-center gap-3 py-4 bg-white text-black text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-[0.99] transition-all shadow-xl mt-4"
-                        >
-                            <Download size={16} />
-                            Download ({formatBytes(compressedSize)}{savings > 0 ? ` — ${savings}% smaller` : " — same size"})
-                        </button>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
+                            <button
+                                onClick={handleDownload}
+                                className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                            >
+                                <Download size={18} /> Download ({formatBytes(compressedSize)})
+                            </button>
+                            <button
+                                onClick={reset}
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                            >
+                                <RefreshCw size={14} /> Compress Another
+                            </button>
+                        </div>
                     )}
-
-                    <button onClick={reset}
-                        className="w-full py-4 border border-zinc-800 rounded-full text-xs font-semibold tracking-wide text-zinc-400 hover:border-zinc-600 hover:text-zinc-200 transition-all mt-3">
-                        ← Upload a Different Image
-                    </button>
                 </div>
             )}
 

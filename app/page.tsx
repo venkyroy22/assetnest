@@ -168,6 +168,9 @@ export default function Home() {
   const dragStart = useRef({ x: 0, y: 0 });
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    // Restrict dragging to desktop devices only
+    if (window.innerWidth < 1024) return;
+    
     setIsDragging(true);
     dragStart.current = { x: e.clientX - dragOffset.x, y: e.clientY - dragOffset.y };
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
@@ -293,7 +296,7 @@ export default function Home() {
 
           {/* ── Focal Mask Layer (Foreground, then moves Behind) ── */}
           <div
-            className={`relative w-full max-w-[650px] aspect-square flex items-center justify-center cursor-grab active:cursor-grabbing pointer-events-auto z-10 group`}
+            className={`relative w-full max-w-[650px] aspect-square flex items-center justify-center cursor-default lg:cursor-grab active:lg:cursor-grabbing pointer-events-auto z-10 group`}
             onPointerDown={handlePointerDown}
             onPointerMove={handlePointerMove}
             onPointerUp={handlePointerUp}
@@ -306,8 +309,8 @@ export default function Home() {
               touchAction: "none"
             }}
           >
-            {/* Drag Indicator Tooltip - Only on Hover */}
-            <div className={`absolute top-1/4 right-[10%] lg:right-[15%] z-[100] transition-opacity duration-300 opacity-0 group-hover:opacity-100`}
+            {/* Drag Indicator Tooltip - Only on Hover and only for desktop */}
+            <div className={`absolute top-1/4 right-[10%] lg:right-[15%] z-[100] transition-opacity duration-300 opacity-0 lg:group-hover:opacity-100 hidden lg:block`}
               style={{ transform: "translateY(-50%)" }}>
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 backdrop-blur-3xl border border-white/10 shadow-2xl">
                 <Move size={11} className="text-zinc-400" />

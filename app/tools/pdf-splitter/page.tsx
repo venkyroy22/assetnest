@@ -155,10 +155,10 @@ export default function PdfSplitterPage() {
             <div className="text-center mb-10 relative group">
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                     title="View Information"
                 >
-                    <Info size={14} />
+                    <Info size={16} />
                 </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Scissors size={11} className="text-white" />
@@ -195,8 +195,8 @@ export default function PdfSplitterPage() {
                             {isLoading ? <RefreshCw size={24} className="animate-spin text-zinc-500" /> : <Upload size={24} className="text-zinc-500" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white tracking-tight">Drop PDF Here</h2>
-                            <p className="text-zinc-500 text-xs font-medium mt-1">Or click to select a file</p>
+                            <h2 className="text-lg font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <p className="text-zinc-500 text-xs font-medium mt-1">100% Private PDF Splitting • Extract Pages Securely</p>
                         </div>
                     </div>
                 </div>
@@ -230,10 +230,12 @@ export default function PdfSplitterPage() {
                             </button>
                         </div>
 
-                        <div className="flex gap-2 shrink-0 border-l border-zinc-800 pl-4 ml-2">
+                        <div className="flex gap-2 shrink-0 border-r border-zinc-800 pr-4 mr-2">
+                            <button onClick={reset} className="h-9 w-9 flex items-center justify-center text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors" title="Start Fresh">
+                                <X size={14} />
+                            </button>
                             <button onClick={selectAll} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-400 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">All</button>
                             <button onClick={clearAll} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-400 hover:text-red-400 border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">None</button>
-                            <button onClick={reset} className="h-9 px-4 text-xs font-semibold tracking-wide text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">✕</button>
                         </div>
                     </div>
 
@@ -263,10 +265,20 @@ export default function PdfSplitterPage() {
                                             : "border-zinc-800 bg-zinc-900 hover:border-zinc-700 opacity-50 hover:opacity-70"
                                     }`}
                                 >
-                                    {/* Selected indicator */}
-                                    <div className={`absolute top-1.5 left-1.5 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all z-10 ${p.selected ? "bg-white border-white" : "bg-zinc-800 border-zinc-700"}`}>
-                                        {p.selected && <div className="w-1.5 h-1.5 bg-white rounded-full" />}
+                                    {/* Selection indicator (Top Left) */}
+                                    <div className={`absolute top-2 left-2 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all z-10 ${p.selected ? "bg-white border-white text-black" : "bg-zinc-800 border-zinc-700 text-transparent"}`}>
+                                        <Check size={12} strokeWidth={4} />
                                     </div>
+                                    
+                                    {/* Cross symbol to deselect/remove (Top Right) */}
+                                    {p.selected && (
+                                        <div 
+                                            className="absolute top-2 right-2 w-5 h-5 bg-black/60 backdrop-blur-md text-white rounded-md flex items-center justify-center hover:bg-red-500 transition-colors z-10 border border-white/10"
+                                            onClick={(e) => { e.stopPropagation(); togglePage(p.index); }}
+                                        >
+                                            <X size={12} />
+                                        </div>
+                                    )}
 
                                     {/* Thumbnail */}
                                     <div className="flex-grow w-full relative overflow-hidden bg-white/5 rounded border border-white/5 mt-1">
@@ -287,26 +299,40 @@ export default function PdfSplitterPage() {
                         <button
                             onClick={exportPdf}
                             disabled={selectedCount === 0 || isExporting}
-                            className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-white hover:bg-white shadow-lg shadow-white/20"}`}
+                            className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${selectedCount === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-black hover:bg-white shadow-lg shadow-white/20"}`}
                         >
                             {isExporting
                                 ? <><RefreshCw size={18} className="animate-spin" /> Exporting...</>
-                                : <><Download size={18} /> Export {selectedCount} Page{selectedCount !== 1 ? "s" : ""} as PDF</>
+                                : <>
+                                    <Download size={18} /> 
+                                    <span className="hidden sm:inline">Export {selectedCount} Page{selectedCount !== 1 ? "s" : ""} as PDF</span>
+                                    <span className="sm:hidden">Export {selectedCount} Page{selectedCount !== 1 ? "s" : ""}</span>
+                                  </>
                             }
                         </button>
                     ) : (
-                        <div className="flex flex-col sm:flex-row gap-3 w-full">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
                             <button
                                 onClick={downloadPdf}
-                                className="flex-1 h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-white text-white hover:bg-white shadow-lg shadow-white/20"
+                                className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-xl shadow-white/10"
                             >
-                                <Download size={18} /> Download Split PDF
+                                <Download size={18} /> 
+                                <span className="hidden sm:inline">Download Split PDF</span>
+                                <span className="sm:hidden">Download PDF</span>
                             </button>
                             <button
                                 onClick={() => setIsSharing(true)}
-                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98]"
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 transition-all active:scale-[0.98] hover:bg-zinc-800"
                             >
-                                <Share2 size={18} className="text-white" /> Share to Mobile
+                                <Share2 size={18} /> 
+                                <span className="hidden sm:inline">Share to Mobile</span>
+                                <span className="sm:hidden">Share File</span>
+                            </button>
+                            <button
+                                onClick={reset}
+                                className="sm:col-span-2 h-12 px-6 bg-transparent border border-zinc-800 text-zinc-400 hover:text-white font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
+                            >
+                                <RefreshCw size={14} /> Split Another PDF
                             </button>
                         </div>
                     )}

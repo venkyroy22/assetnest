@@ -177,15 +177,15 @@ export default function ImageConverterPage() {
                 {/* ── Header ── */}
                 <div>
                     <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-4 relative group">
-                        <FileImage size={11} className="text-zinc-400" />
-                        <span className="text-xs font-semibold tracking-wide text-zinc-400">Image Converter</span>
                         <button 
                             onClick={() => setShowHelp(true)}
-                            className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                            className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl z-10"
                             title="What is this?"
                         >
                             <Info size={10} />
                         </button>
+                        <FileImage size={11} className="text-zinc-400 ml-4" />
+                        <span className="text-xs font-semibold tracking-wide text-zinc-400">Image Converter</span>
                     </div>
                     <h1 className="text-4xl font-black tracking-tight text-white mb-2">
                         Convert Images
@@ -201,33 +201,32 @@ export default function ImageConverterPage() {
                     {/* Mode selector */}
                     <div>
                         <p className="text-[10px] font-semibold text-zinc-500 mb-3">Conversion Mode</p>
-                        <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                             {MODES.map(m => (
-                                <button
-                                    key={m.value}
-                                    onClick={() => changeMode(m.value)}
-                                    className={`py-3 px-4 rounded-xl border text-sm font-black transition-all ${mode === m.value
-                                        ? "bg-white border-white text-black"
-                                        : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500"
-                                        }`}
-                                >
-                                    <span className="text-xs">{m.from}</span>
-                                    <ArrowRight size={12} className="inline mx-1.5" />
-                                    <span className="text-xs">{m.to}</span>
-                                </button>
+                                 <button
+                                     key={m.value}
+                                     onClick={() => changeMode(m.value)}
+                                     className={`py-3 px-3 sm:px-4 rounded-xl border text-[10px] sm:text-sm font-black transition-all ${mode === m.value
+                                         ? "bg-white border-white text-black shadow-lg shadow-white/10"
+                                         : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500"
+                                         }`}
+                                 >
+                                     <span className="text-[10px]">{m.from}</span>
+                                     <ArrowRight size={10} className="inline mx-1" />
+                                     <span className="text-[10px]">{m.to}</span>
+                                 </button>
                             ))}
                         </div>
                     </div>
 
                     {/* JPG→PNG size notice */}
                     {mode === "jpg-to-png" && (
-                        <div className="flex items-start gap-3 bg-white/10 border border-white/20 rounded-xl px-4 py-3">
-                            <span className="text-white text-base leading-none mt-0.5">⚠️</span>
+                        <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                            <span className="text-white text-sm leading-none mt-0.5">⚠️</span>
                             <div>
-                                <p className="text-[11px] font-black text-white mb-0.5">File size will be larger than the original</p>
-                                <p className="text-[11px] text-white/70 font-medium leading-relaxed">
-                                    PNG is <strong>lossless</strong> — it preserves every pixel without discarding data, so it&apos;s always larger than a JPG.
-                                    If you need a <em>smaller</em> file, switch to <strong>JPG → WebP</strong> instead.
+                                <p className="text-[10px] font-black text-white mb-0.5">File size will increase</p>
+                                <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">
+                                    PNG is lossless and usually larger than JPG. For <em>smaller</em> files, use <strong>JPG → WebP</strong>.
                                 </p>
                             </div>
                         </div>
@@ -237,20 +236,20 @@ export default function ImageConverterPage() {
                     {mode !== "jpg-to-png" && (
                         <div>
                             <div className="flex items-center justify-between mb-2">
-                                <p className="text-xs font-semibold tracking-wide text-zinc-500">
+                                <p className="text-[10px] font-semibold tracking-wide text-zinc-500 uppercase">
                                     WebP Quality
                                 </p>
-                                <span className="text-sm font-black text-white">{quality}%</span>
+                                <span className="text-xs font-black text-white">{quality}%</span>
                             </div>
                             <input
                                 type="range" min={10} max={100} step={5}
                                 value={quality}
                                 onChange={e => setQuality(Number(e.target.value))}
-                                className="w-full white h-1.5 rounded-full"
+                                className="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-white"
                             />
-                            <div className="flex justify-between text-[10px] text-zinc-600 mt-1">
-                                <span>Smallest file</span>
-                                <span>Best quality</span>
+                            <div className="flex justify-between text-[9px] text-zinc-600 mt-1">
+                                <span>Smallest</span>
+                                <span>Highest</span>
                             </div>
                         </div>
                     )}
@@ -262,21 +261,26 @@ export default function ImageConverterPage() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={handleDrop}
                     onClick={() => inputRef.current?.click()}
-                    className={`border-2 border-dashed rounded-2xl flex flex-col items-center justify-center py-14 cursor-pointer transition-all ${dragging
+                    className={`border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center py-10 sm:py-14 cursor-pointer transition-all ${dragging
                         ? "border-white bg-white/5"
-                        : "border-zinc-700 bg-zinc-900/30 hover:border-zinc-500 hover:bg-zinc-900/50"
+                        : "border-zinc-800 bg-zinc-950 hover:border-zinc-500 hover:bg-zinc-900/50"
                         }`}
                 >
-                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-4 transition-all ${dragging ? "bg-white/20 border border-white/30" : "bg-zinc-800 border border-zinc-700"
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 transition-all ${dragging ? "bg-white/20 border border-white/30" : "bg-zinc-900 border border-zinc-800 shadow-xl"
                         }`}>
-                        <Upload size={24} className={dragging ? "text-white" : "text-zinc-400"} />
+                        <Upload size={22} className={dragging ? "text-white" : "text-zinc-500"} />
                     </div>
-                    <p className="text-sm font-black text-zinc-300 mb-1">
-                        Drop {currentMode.from} files here
+                    <p className="text-lg sm:text-xl font-black text-white mb-2">
+                        Drag & Drop or Click Here
                     </p>
-                    <p className="text-xs text-zinc-600 font-medium">
-                        or click to browse — multiple files supported
+                    <p className="text-[10px] sm:text-xs text-zinc-500 font-medium mb-5">
+                        Multiple files supported • 100% Private Browser Conversion
                     </p>
+                    <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-semibold tracking-wide text-zinc-500">
+                        <span className="px-2 py-1 border border-zinc-800">100% Private</span>
+                        <span className="px-2 py-1 border border-zinc-800">No Server Upload</span>
+                        <span className="px-2 py-1 border border-zinc-800">Free Forever</span>
+                    </div>
                     <input
                         ref={inputRef}
                         type="file"
@@ -361,9 +365,9 @@ export default function ImageConverterPage() {
                                                 <CheckCircle2 size={16} className="text-white" />
                                                 <button
                                                     onClick={() => downloadOne(entry)}
-                                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white text-black rounded-full text-xs font-semibold tracking-wide hover:bg-white transition-all"
+                                                    className="h-10 px-4 bg-white text-black rounded-full text-xs font-bold hover:bg-zinc-200 transition-all active:scale-95"
                                                 >
-                                                    <Download size={12} />
+                                                    <Download size={14} className="inline mr-1" />
                                                     Save
                                                 </button>
                                             </>
@@ -389,7 +393,7 @@ export default function ImageConverterPage() {
                         {pendingCount > 0 && (
                             <button
                                 onClick={convertAll}
-                                className="w-full py-4 bg-white text-black rounded-full font-bold text-sm tracking-wide hover:bg-white active:scale-[0.98] transition-all shadow-lg shadow-white/20"
+                                className="w-full h-12 bg-white text-black rounded-full font-black text-xs sm:text-sm tracking-widest uppercase hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xl shadow-white/10"
                             >
                                 Convert {pendingCount} File{pendingCount !== 1 ? "s" : ""} to {currentMode.to}
                             </button>

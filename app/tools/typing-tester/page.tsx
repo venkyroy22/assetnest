@@ -951,132 +951,131 @@ export default function TypingTesterPage() {
                 </div>
             </header>
 
-            <main className={`max-w-5xl mx-auto px-4 sm:px-8 mt-6 sm:mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
+            <main className={`max-w-5xl mx-auto px-4 sm:px-8 mt-4 sm:mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
 
                 {/* ── Mode toolbar ───────────────────────────────────────────── */}
                 {!isActive && !isFinished && (
-                    <div className="flex justify-center mb-6 sm:mb-10">
+                    <div className="flex justify-center mb-4 sm:mb-10 px-2">
                         <div
-                            className="flex flex-wrap items-center justify-center gap-1 rounded-xl px-2 sm:px-3 py-2 text-sm font-semibold tracking-wide"
+                            className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-1 rounded-2xl sm:rounded-xl p-2 sm:py-2 text-sm font-semibold tracking-wide w-full sm:w-auto shadow-xl border border-white/5"
                             style={{ background: T.surface }}
                         >
-                            {/* Mode toggles */}
-                            <div className="flex items-center gap-1 pr-3" style={{ borderRight: `1px solid ${T.border}` }}>
-                                {(["time", "words", "both"] as TestMode[]).map(m => (
+                            {/* Group 1: Modes & Modifiers */}
+                            <div className="flex flex-wrap items-center justify-center gap-1">
+                                <div className="flex items-center gap-1 pr-1.5 sm:pr-3" style={{ borderRight: `1px solid ${T.border}` }}>
+                                    {(["time", "words", "both"] as TestMode[]).map(m => (
+                                        <button
+                                            key={m}
+                                            onClick={() => setTestMode(m)}
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
+                                            style={{
+                                                color: testMode === m ? T.accent : T.muted,
+                                                background: testMode === m ? `${T.accentHex}18` : "transparent",
+                                            }}
+                                        >
+                                            {m === "time" ? <Timer size={12} /> : m === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
+                                            {m}
+                                        </button>
+                                    ))}
+                                </div>
+
+                                <div className="flex items-center gap-1 px-1.5">
                                     <button
-                                        key={m}
-                                        onClick={() => setTestMode(m)}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all"
-                                        style={{
-                                            color: testMode === m ? T.accent : T.muted,
-                                            background: testMode === m ? `${T.accentHex}18` : "transparent",
-                                        }}
-                                    >
-                                        {m === "time" ? <Timer size={12} /> : m === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
-                                        {m}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
-
-                            {/* Punctuation / Numbers toggles */}
-                            <div className="flex items-center gap-1 px-2">
-                                <button
-                                    onClick={() => {
-                                        const next = !usePunctuation;
-                                        punctRef.current = next;
-                                        setUsePunctuation(next);
-                                    }}
-                                    className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
-                                    style={{
-                                        color: usePunctuation ? T.accent : T.muted,
-                                        background: usePunctuation ? `${T.accentHex}18` : "transparent",
-                                    }}
-                                    title="Toggle punctuation"
-                                >
-                                    <span className="text-sm">@</span>
-                                    <span className="hidden sm:inline">punctuation</span>
-                                </button>
-                                <button
-                                    onClick={() => {
-                                        const next = !useNumbers;
-                                        numsRef.current = next;
-                                        setUseNumbers(next);
-                                    }}
-                                    className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-lg transition-all font-mono"
-                                    style={{
-                                        color: useNumbers ? T.accent : T.muted,
-                                        background: useNumbers ? `${T.accentHex}18` : "transparent",
-                                    }}
-                                    title="Toggle numbers"
-                                >
-                                    <span className="text-sm">#</span>
-                                    <span className="hidden sm:inline">numbers</span>
-                                </button>
-                            </div>
-
-                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
-
-                            {/* Config presets */}
-                            <div className="flex items-center gap-1 px-3">
-                                {testMode !== "both" && (testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
-                                    <button
-                                        key={v}
                                         onClick={() => {
-                                            if (testMode === "time") setTimeConfig(v);
-                                            else setWordConfig(v);
+                                            const next = !usePunctuation;
+                                            punctRef.current = next;
+                                            setUsePunctuation(next);
+                                        }}
+                                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                        style={{
+                                            color: usePunctuation ? T.accent : T.muted,
+                                            background: usePunctuation ? `${T.accentHex}18` : "transparent",
+                                        }}
+                                        title="Toggle punctuation"
+                                    >
+                                        <span className="text-sm">@</span>
+                                        <span className="hidden sm:inline">punctuation</span>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            const next = !useNumbers;
+                                            numsRef.current = next;
+                                            setUseNumbers(next);
+                                        }}
+                                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                        style={{
+                                            color: useNumbers ? T.accent : T.muted,
+                                            background: useNumbers ? `${T.accentHex}18` : "transparent",
+                                        }}
+                                        title="Toggle numbers"
+                                    >
+                                        <span className="text-sm">#</span>
+                                        <span className="hidden sm:inline">numbers</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="hidden sm:block h-4 w-px mx-1" style={{ background: T.border }} />
+                            <div className="block sm:hidden h-px w-full mx-4 opacity-20" style={{ background: T.border }} />
+
+                            {/* Group 2: Presets & Duel */}
+                            <div className="flex flex-wrap items-center justify-center gap-1">
+                                <div className="flex items-center gap-1 px-1.5 sm:px-3" style={{ borderRight: `1px solid ${T.border}` }}>
+                                    {testMode !== "both" && (testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
+                                        <button
+                                            key={v}
+                                            onClick={() => {
+                                                if (testMode === "time") setTimeConfig(v);
+                                                else setWordConfig(v);
+                                            }}
+                                            className="px-3 py-1.5 rounded-lg transition-all"
+                                            style={{
+                                                color: activeConfig === v ? T.accent : T.muted,
+                                                background: activeConfig === v ? `${T.accentHex}18` : "transparent",
+                                            }}
+                                        >
+                                            {v}
+                                        </button>
+                                    ))}
+                                    <button
+                                        onClick={() => { 
+                                            if (testMode === "both") {
+                                                setCustomInput("");
+                                            } else {
+                                                setCustomInput(activeConfig.toString()); 
+                                            }
+                                            setSettingsModalOpen(true); 
+                                        }}
+                                        className="px-2 py-1.5 rounded-lg transition-all"
+                                        style={{
+                                            color: testMode === "both" ? T.accent : (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
+                                        }}
+                                        title="Custom Settings"
+                                    >
+                                        <Settings2 size={12} />
+                                    </button>
+                                </div>
+
+                                <div className="flex items-center gap-1 pl-1.5 sm:pl-3">
+                                    <button
+                                        onClick={leaveDuel}
+                                        className="px-3 py-1.5 rounded-lg transition-all"
+                                        style={{
+                                            color: !duelMode ? T.accent : T.muted,
+                                            background: !duelMode ? `${T.accentHex}18` : "transparent",
+                                        }}
+                                    >solo</button>
+                                    <button
+                                        onClick={() => {
+                                            if (!duelMode) setDuelMode(true);
                                         }}
                                         className="px-3 py-1.5 rounded-lg transition-all"
                                         style={{
-                                            color: activeConfig === v ? T.accent : T.muted,
-                                            background: activeConfig === v ? `${T.accentHex}18` : "transparent",
+                                            color: duelMode ? T.accent : T.muted,
+                                            background: duelMode ? `${T.accentHex}18` : "transparent",
                                         }}
-                                    >
-                                        {v}
-                                    </button>
-                                ))}
-                                <button
-                                    onClick={() => { 
-                                        if (testMode === "both") {
-                                            setCustomInput(""); // We don't populate for 'both' since it requires two values, let custom modal handle it separately or just open it
-                                        } else {
-                                            setCustomInput(activeConfig.toString()); 
-                                        }
-                                        setSettingsModalOpen(true); 
-                                    }}
-                                    className="px-2 py-1.5 rounded-lg transition-all"
-                                    style={{
-                                        color: testMode === "both" ? T.accent : (testMode === "time" ? !isPresetTime : !isPresetWords) ? T.accent : T.muted,
-                                    }}
-                                    title="Custom Settings"
-                                >
-                                    <Settings2 size={12} />
-                                </button>
-                            </div>
-
-                            <div className="h-4 w-px mx-1" style={{ background: T.border }} />
-
-                            {/* Duel */}
-                            <div className="flex items-center gap-1 pl-3">
-                                <button
-                                    onClick={leaveDuel}
-                                    className="px-3 py-1.5 rounded-lg transition-all"
-                                    style={{
-                                        color: !duelMode ? T.accent : T.muted,
-                                        background: !duelMode ? `${T.accentHex}18` : "transparent",
-                                    }}
-                                >solo</button>
-                                <button
-                                    onClick={() => {
-                                        if (!duelMode) setDuelMode(true);
-                                    }}
-                                    className="px-3 py-1.5 rounded-lg transition-all"
-                                    style={{
-                                        color: duelMode ? T.accent : T.muted,
-                                        background: duelMode ? `${T.accentHex}18` : "transparent",
-                                    }}
-                                >duel</button>
+                                    >duel</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1371,7 +1370,7 @@ export default function TypingTesterPage() {
                 </div>
 
                 {/* Bottom controls */}
-                <div className="flex items-center justify-center gap-8 mt-8 text-xs font-semibold tracking-wide" style={{ color: T.muted }}>
+                <div className="flex items-center justify-center gap-6 mt-6 text-xs font-semibold tracking-wide" style={{ color: T.muted }}>
                     <button
                         onClick={duelMode && duelStatus === "connected" ? restartDuel : resetTest}
                         className="flex items-center gap-2 transition-colors hover:opacity-100"

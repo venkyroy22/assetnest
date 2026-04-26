@@ -220,10 +220,10 @@ export default function PdfUnlockerPage() {
                 <div className="max-w-3xl mx-auto text-center mb-16 relative group">
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="absolute -top-2 right-0 md:-right-8 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                        className="absolute -top-2 left-0 md:-left-8 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                         title="View Information"
                     >
-                        <Info size={14} />
+                        <Info size={16} />
                     </button>
                     <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6">
                         <Unlock size={14} className="text-zinc-400" />
@@ -261,8 +261,8 @@ export default function PdfUnlockerPage() {
                             <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800 group-hover:scale-110 transition-transform">
                                 <Upload size={32} className="text-zinc-400" />
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">Upload Encrypted PDF</h3>
-                            <p className="text-zinc-500 text-sm">Drag and drop your file here, or click to browse</p>
+                            <h3 className="text-xl font-black text-white mb-2">Drag & Drop or Click Here</h3>
+                            <p className="text-zinc-500 text-sm font-medium">100% Private PDF Decryption • Instant Unlock</p>
                             <input
                                 type="file"
                                 ref={fileInputRef}
@@ -276,46 +276,46 @@ export default function PdfUnlockerPage() {
                     {/* Step 2: Password Input or Success */}
                     {file && (
                         <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8">
-                            <div className="flex items-center gap-4 mb-8 pb-8 border-b border-zinc-800/50">
-                                <div className="w-12 h-12 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800 shrink-0">
-                                    <FileText size={24} className="text-zinc-400" />
+                            <div className="flex items-center gap-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-zinc-800/50">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800 shrink-0">
+                                    <FileText size={20} className="text-zinc-400 sm:size-24" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-white font-medium truncate">{file.name}</h3>
-                                    <p className="text-zinc-500 text-sm">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                    <h3 className="text-white font-medium text-sm sm:text-base truncate">{file.name}</h3>
+                                    <p className="text-zinc-500 text-xs">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                                 {!successUrl && (
                                     <button 
                                         onClick={handleReset}
-                                        className="text-zinc-500 hover:text-white transition-colors text-sm font-medium"
+                                        className="text-zinc-500 hover:text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                                     >
-                                        Change File
+                                        Change
                                     </button>
                                 )}
                             </div>
 
                             {successUrl && (
-                                <div className="text-center py-6">
-                                    <div className="w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-6 mx-auto border border-green-500/20">
-                                        <Unlock size={32} className="text-green-500" />
+                                <div className="text-center py-4 sm:py-6">
+                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 sm:mb-6 mx-auto border border-green-500/20">
+                                        <Unlock size={28} className="text-green-500 sm:size-32" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">Successfully Unlocked!</h3>
-                                    <p className="text-zinc-400 mb-8">Password protection has been completely removed from your document.</p>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Unlocked!</h3>
+                                    <p className="text-zinc-400 text-xs sm:text-base mb-6 sm:mb-8">Password protection has been removed.</p>
                                     
-                                    <div className="flex flex-col gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <a
                                             href={successUrl}
                                             download={unlockedFileName}
-                                            className="w-full h-14 bg-white text-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors"
+                                            className="h-12 px-6 bg-white text-black rounded-full font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors shadow-xl"
                                         >
-                                            <Download size={20} />
-                                            Download Unlocked PDF
+                                            <Download size={18} />
+                                            Download PDF
                                         </a>
                                         <button
                                             onClick={handleReset}
-                                            className="w-full h-14 bg-zinc-900 text-white rounded-xl font-bold hover:bg-zinc-800 transition-colors border border-zinc-800"
+                                            className="h-12 px-6 bg-zinc-900 text-white rounded-full font-bold text-xs sm:text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
                                         >
-                                            Unlock Another File
+                                            <RefreshCw size={14} /> Unlock Another
                                         </button>
                                     </div>
                                 </div>

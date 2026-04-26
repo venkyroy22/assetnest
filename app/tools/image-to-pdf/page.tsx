@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import {
     Upload, Download, X, RefreshCw, ImageIcon, Undo, Redo,
     ChevronLeft, ChevronRight, Trash2, Settings2, ImagePlus, Share2, Check, ShieldCheck
@@ -11,6 +11,27 @@ import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { Accordion, AccordionItem } from "@/components/Accordion";
 import { Info } from "lucide-react";
 import { PDFDocument, PageSizes } from "pdf-lib";
+import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent,
+  DragEndEvent,
+  defaultDropAnimationSideEffects
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -148,19 +169,29 @@ export default function ImageToPdfPage() {
     };
 
     // ─── Drag reorder ───────────────────────────────────────────────────────────
-    const onDragStart = (e: React.DragEvent, index: number) => {
-        setDraggedIdx(index);
-        e.dataTransfer.effectAllowed = "move";
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+        useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
+
+    const onDragStartAction = (event: DragStartEvent) => {
+        const { active } = event;
+        const activeIdx = images.findIndex(img => img.id === active.id);
+        setDraggedIdx(activeIdx);
     };
 
-    const onDropCard = (e: React.DragEvent, targetIdx: number) => {
-        e.preventDefault();
-        if (draggedIdx === null || draggedIdx === targetIdx) { setDraggedIdx(null); return; }
-        const next = [...images];
-        const [moved] = next.splice(draggedIdx, 1);
-        next.splice(targetIdx, 0, moved);
-        setImages(next);
+    const onDragEndAction = (event: DragEndEvent) => {
+        const { active, over } = event;
         setDraggedIdx(null);
+
+        if (over && active.id !== over.id) {
+            setImages(prev => {
+                const oldIndex = prev.findIndex(img => img.id === active.id);
+                const newIndex = prev.findIndex(img => img.id === over.id);
+                return arrayMove(prev, oldIndex, newIndex);
+            });
+        }
     };
 
     // ─── Convert ────────────────────────────────────────────────────────────────
@@ -264,6 +295,15 @@ export default function ImageToPdfPage() {
         return `${(b / 1048576).toFixed(1)} MB`;
     };
 
+    // ─── Scroll Lock for Preview ───
+    useEffect(() => {
+        if (previewUrl) {
+            const originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            return () => { document.body.style.overflow = originalOverflow; };
+        }
+    }, [previewUrl]);
+
     return (
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
@@ -275,10 +315,10 @@ export default function ImageToPdfPage() {
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
-                        title="What is this?"
+                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
+                        title="View Information"
                     >
-                        <Info size={10} />
+                        <Info size={12} />
                     </button>
                 </div>
                 <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
@@ -312,8 +352,22 @@ export default function ImageToPdfPage() {
                         <Upload size={20} className="text-zinc-500" />
                     </div>
                     <div className="text-center">
-                        <h2 className="text-sm font-bold text-white tracking-tight">{images.length > 0 ? "Add More Images" : "Drop Images Here"}</h2>
-                        <p className="text-zinc-500 text-[11px] font-semibold tracking-wider mt-1">JPG · PNG · WebP · GIF</p>
+                        <h2 className="text-xl font-black text-white tracking-tight">{images.length > 0 ? "Add More Images" : "Drag & Drop or Click Here"}</h2>
+                        <div className="flex flex-wrap justify-center gap-2 mt-3">
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                <ShieldCheck size={10} className="text-white" />
+                                <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                <ImageIcon size={10} className="text-white" />
+                                <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                <Check size={10} className="text-white" />
+                                <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                            </div>
+                        </div>
+                        <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">Secure PDF Assembly</p>
                     </div>
                 </div>
 
@@ -333,14 +387,14 @@ export default function ImageToPdfPage() {
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-1 sm:pb-0">
+                                <button onClick={() => { images.forEach(i => URL.revokeObjectURL(i.previewUrl)); resetHistory([]); }} className="px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-500/30 transition-all whitespace-nowrap">
+                                    Clear All
+                                </button>
                                 <button
                                     onClick={() => setShowSettings(s => !s)}
                                     className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border transition-all whitespace-nowrap ${showSettings ? "border-white/50 bg-white/10 text-white" : "border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-600"}`}
                                 >
                                     <Settings2 size={14} /> Settings
-                                </button>
-                                <button onClick={() => { images.forEach(i => URL.revokeObjectURL(i.previewUrl)); resetHistory([]); }} className="px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide border border-zinc-800 text-zinc-500 hover:text-red-400 hover:border-red-500/30 transition-all whitespace-nowrap">
-                                    Clear All
                                 </button>
                             </div>
                         </div>
@@ -406,53 +460,37 @@ export default function ImageToPdfPage() {
 
                         {/* ── Image Grid ── */}
                         <div className="p-6">
-                            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
-                                {images.map((img, index) => (
-                                    <div
-                                        key={img.id}
-                                        draggable
-                                        onDragStart={e => onDragStart(e, index)}
-                                        onDragOver={e => e.preventDefault()}
-                                        onDrop={e => onDropCard(e, index)}
-                                        className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-grab active:cursor-grabbing ${draggedIdx === index ? "opacity-30 border-white border-dashed" : "border-zinc-800 hover:border-white/40 hover:-translate-y-1"}`}
-                                    >
-                                        {/* Preview */}
-                                        <div className="aspect-[3/4] bg-zinc-900 relative">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img
-                                                src={img.previewUrl}
-                                                alt={img.name}
-                                                className="w-full h-full object-cover"
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCorners}
+                                onDragStart={onDragStartAction}
+                                onDragEnd={onDragEndAction}
+                            >
+                                <SortableContext items={images.map(img => img.id)} strategy={rectSortingStrategy}>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+                                        {images.map((img, index) => (
+                                            <SortableImageCard 
+                                                key={img.id}
+                                                img={img}
+                                                index={index}
+                                                imagesCount={images.length}
+                                                removeImage={removeImage}
+                                                moveImage={moveImage}
+                                                formatBytes={formatBytes}
+                                                isDragging={draggedIdx === index}
                                             />
-                                            {/* Page number badge */}
-                                            <div className="absolute top-1.5 left-1.5 bg-black/70 text-white text-[9px] font-black px-1.5 py-0.5 rounded backdrop-blur-sm">
-                                                {index + 1}
-                                            </div>
-                                        </div>
-
-                                        {/* Hover overlay */}
-                                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2">
-                                            <button onClick={() => removeImage(img.id)} className="p-2 bg-red-500/90 text-white rounded-xl hover:bg-red-500 transition-colors">
-                                                <Trash2 size={14} />
-                                            </button>
-                                            <div className="flex gap-1">
-                                                <button onClick={() => moveImage(index, -1)} disabled={index === 0} className="p-1.5 bg-white/10 text-white rounded-lg disabled:opacity-30 hover:bg-white/20 transition-colors">
-                                                    <ChevronLeft size={12} />
-                                                </button>
-                                                <button onClick={() => moveImage(index, 1)} disabled={index === images.length - 1} className="p-1.5 bg-white/10 text-white rounded-lg disabled:opacity-30 hover:bg-white/20 transition-colors">
-                                                    <ChevronRight size={12} />
-                                                </button>
-                                            </div>
-                                        </div>
-
-                                        {/* Name + size */}
-                                        <div className="px-2 py-2 bg-zinc-900">
-                                            <p className="text-[9px] font-medium text-zinc-400 truncate">{img.name}</p>
-                                            <p className="text-[9px] text-zinc-600">{formatBytes(img.file.size)}</p>
-                                        </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                </SortableContext>
+                                
+                                <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
+                                    {draggedIdx !== null ? (
+                                        <div className="aspect-[3/4] w-32 bg-zinc-900 border border-zinc-700 rounded-2xl overflow-hidden opacity-80 shadow-2xl scale-105">
+                                            <img src={images[draggedIdx].previewUrl} alt="Dragging" className="w-full h-full object-cover" />
+                                        </div>
+                                    ) : null}
+                                </DragOverlay>
+                            </DndContext>
                         </div>
                     </div>
                 )}
@@ -472,8 +510,8 @@ export default function ImageToPdfPage() {
 
             {/* ── Preview Screen ── */}
             {previewUrl && (
-                <div className="fixed inset-0 z-50 bg-zinc-950/95 backdrop-blur-md flex items-center justify-center p-4 animate-in fade-in duration-300">
-                    <div className="w-full max-w-6xl max-h-[95vh] grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 overflow-hidden">
+                <div className="fixed inset-0 z-50 bg-zinc-950/95 backdrop-blur-md flex items-start justify-center p-4 overflow-y-auto animate-in fade-in duration-300">
+                    <div className="w-full max-w-6xl my-auto grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5 pt-12 pb-12 lg:py-0">
 
                         {/* Left: Embedded PDF Viewer */}
                         <div className="bg-zinc-900 border border-zinc-800 rounded-[2rem] overflow-hidden flex flex-col min-h-[500px] lg:min-h-0">
@@ -500,39 +538,39 @@ export default function ImageToPdfPage() {
 
                             <div className="grid grid-cols-2 gap-3 py-4 border-y border-zinc-900">
                                 <div className="text-center">
-                                    <span className="block text-2xl font-black text-white">{images.length}</span>
-                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Pages</span>
+                                    <span className="block text-xl sm:text-2xl font-black text-white leading-tight">{images.length}</span>
+                                    <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Pages</span>
                                 </div>
                                 <div className="text-center">
-                                    <span className="block text-2xl font-black text-white">{outputSize ? formatBytes(outputSize) : "—"}</span>
-                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500">File Size</span>
+                                    <span className="block text-xl sm:text-2xl font-black text-white leading-tight">{outputSize ? formatBytes(outputSize) : "—"}</span>
+                                    <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">File Size</span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 <button
                                     onClick={handleDownload}
-                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
+                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
                                 >
                                     <Download size={16} /> Download PDF
                                 </button>
                                 <button
                                     onClick={() => setIsSharing(true)}
-                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all hover:-translate-y-0.5"
+                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
                                 >
-                                    <Share2 size={16} className="text-white" /> Share to Mobile
+                                    <Share2 size={16} /> Share to Mobile
                                 </button>
                                 <button
                                     onClick={() => setPreviewUrl(null)}
-                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
+                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
                                     ← Go Back & Edit
                                 </button>
                                 <button
                                     onClick={reset}
-                                    className="h-9 text-xs text-zinc-500 hover:text-red-400 font-semibold tracking-wide transition-colors mt-2"
+                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-500 hover:text-red-400 font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
-                                    Start Fresh
+                                    <RefreshCw size={14} /> Start Fresh
                                 </button>
                             </div>
                         </div>
@@ -620,3 +658,94 @@ export default function ImageToPdfPage() {
         </div>
     );
 }
+
+// ---------------- SORTABLE COMPONENT ----------------
+
+interface SortableImageCardProps {
+    img: ImageItem;
+    index: number;
+    imagesCount: number;
+    removeImage: (id: string) => void;
+    moveImage: (index: number, direction: -1 | 1) => void;
+    formatBytes: (b: number) => string;
+    isDragging: boolean;
+}
+
+function SortableImageCard({ img, index, imagesCount, removeImage, moveImage, formatBytes, isDragging }: SortableImageCardProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: img.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className={`group relative rounded-2xl overflow-hidden border-2 transition-all duration-200 cursor-grab active:cursor-grabbing touch-none ${isDragging ? "opacity-30 border-white border-dashed" : "border-zinc-800 hover:border-white/40 hover:-translate-y-1"}`}
+        >
+            {/* Preview */}
+            <div className="aspect-[3/4] bg-zinc-900 relative">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                    src={img.previewUrl}
+                    alt={img.name}
+                    className="w-full h-full object-cover"
+                />
+                {/* Page number badge */}
+                <div className="absolute top-1.5 right-1.5 bg-black/70 text-white text-[9px] font-black px-1.5 py-0.5 rounded backdrop-blur-sm">
+                    {index + 1}
+                </div>
+
+                {/* Top Left Delete Button */}
+                <div className="absolute top-1.5 left-1.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10">
+                    <button
+                        onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                        onPointerDown={(e) => e.stopPropagation()}
+                        className="w-7 h-7 bg-red-500 text-white rounded-lg flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
+                    >
+                        <Trash2 size={14} />
+                    </button>
+                </div>
+
+                {/* Navigation controls overlay at bottom */}
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity px-2">
+                    <div className="flex gap-1 bg-black/60 backdrop-blur-md p-1 rounded-xl border border-white/10">
+                        <button
+                            onClick={(e) => { e.stopPropagation(); moveImage(index, -1); }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            disabled={index === 0}
+                            className="p-1.5 text-white rounded-lg disabled:opacity-30 hover:bg-white/20 transition-colors"
+                        >
+                            <ChevronLeft size={14} />
+                        </button>
+                        <button
+                            onClick={(e) => { e.stopPropagation(); moveImage(index, 1); }}
+                            onPointerDown={(e) => e.stopPropagation()}
+                            disabled={index === imagesCount - 1}
+                            className="p-1.5 text-white rounded-lg disabled:opacity-30 hover:bg-white/20 transition-colors"
+                        >
+                            <ChevronRight size={14} />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Name + size */}
+            <div className="px-2 py-2 bg-zinc-900">
+                <p className="text-[9px] font-medium text-zinc-400 truncate">{img.name}</p>
+                <p className="text-[9px] text-zinc-600">{formatBytes(img.file.size)}</p>
+            </div>
+        </div>
+    );
+}
+

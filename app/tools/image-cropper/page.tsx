@@ -301,19 +301,19 @@ export default function ImageCropperPage() {
                     <ArrowLeft size={16} /> back to tools
                 </Link>
                 <div className="flex items-center gap-3 relative mr-8 sm:mr-0 z-10">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)]" style={{ background: "linear-gradient(135deg, #2563eb 0%, #ffffff 100%)" }}>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl z-10"
+                        title="What is this?"
+                    >
+                        <Info size={14} />
+                    </button>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)] ml-6" style={{ background: "linear-gradient(135deg, #2563eb 0%, #ffffff 100%)" }}>
                         <CropIcon size={16} />
                     </div>
                     <span className="text-lg font-bold tracking-tight text-white hidden sm:block">
                         Advanced Image Cropper
                     </span>
-                    <button 
-                        onClick={() => setShowHelp(true)}
-                        className="p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
-                        title="What is this?"
-                    >
-                        <Info size={14} />
-                    </button>
                 </div>
             </header>
 
@@ -327,13 +327,25 @@ export default function ImageCropperPage() {
                             <div className="w-20 h-20 rounded-2xl bg-white/10 border-2 border-dashed border-white/30 flex items-center justify-center mb-6 text-white group-hover:border-white/60 transition-colors">
                                 <CropIcon size={32} />
                             </div>
-                            <h2 className="text-white font-black text-2xl tracking-tight mb-3">
-                                Upload an image to crop
+                            <h2 className="text-white font-black text-2xl tracking-tight mb-2">
+                                Drag & Drop or Click Here
                             </h2>
-                            <p className="text-zinc-500 text-sm max-w-sm mx-auto mb-8">
-                                Drag and drop your photo, or click the button below to browse. We support ultra-high resolution images.
-                            </p>
-                            <label className="flex items-center gap-2 px-8 py-4 bg-white hover:bg-white active:scale-95 transition-all text-white font-bold rounded-xl cursor-pointer shadow-lg shadow-white/20">
+                            <div className="flex flex-wrap justify-center gap-2 mt-3">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <ShieldCheck size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <ImageIcon size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                    <Check size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                </div>
+                            </div>
+                            <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">Professional Grade Local Cropping</p>
+                            <label className="flex items-center gap-2 px-8 py-4 bg-white hover:bg-white active:scale-95 transition-all text-black font-bold rounded-xl cursor-pointer shadow-lg shadow-white/20">
                                 <UploadCloud size={20} />
                                 Browse Files
                                 <input
@@ -417,7 +429,7 @@ export default function ImageCropperPage() {
                                                 key={ratio.label}
                                                 onClick={() => handleAspectChange(ratio.value)}
                                                 className={`py-2 text-[11px] font-bold rounded-lg border transition-all ${aspect === ratio.value
-                                                    ? "bg-white border-white text-white shadow-lg shadow-white/20"
+                                                    ? "bg-white border-white text-black shadow-lg shadow-white/20"
                                                     : "bg-zinc-950 border-zinc-800 text-zinc-400 hover:bg-zinc-800 hover:text-white"
                                                     }`}
                                             >
@@ -596,7 +608,7 @@ export default function ImageCropperPage() {
                     <button
                         onClick={generatePreview}
                         disabled={!crop || !imgSrc}
-                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white disabled:opacity-50 border border-white"
+                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-black transition-all bg-white hover:bg-white disabled:opacity-50 border border-white"
                     >
                         <CropIcon size={18} />
                         Crop Image
@@ -686,15 +698,15 @@ export default function ImageCropperPage() {
             {previewModalOpen && previewUrl && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
                     <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
-                        <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-black text-xl text-white flex items-center gap-3">
-                                <Check size={24} /> Crop Successful
-                            </h3>
+                        <div className="flex items-center justify-between mb-4 sm:mb-6 shrink-0 relative">
                             <button onClick={() => {
                                 setPreviewModalOpen(false);
-                            }} className="text-zinc-500 hover:text-white p-2">
-                                <X size={24} />
+                            }} className="absolute -top-1 -left-1 text-zinc-500 hover:text-white p-2 bg-zinc-900 rounded-full border border-zinc-800 shadow-xl z-20">
+                                <X size={20} />
                             </button>
+                            <h3 className="font-black text-lg sm:text-xl text-white flex items-center gap-3 pl-12">
+                                <Check size={20} className="text-white" /> Crop Successful
+                            </h3>
                         </div>
 
                         <div className="overflow-y-auto space-y-6 pb-4">
@@ -705,13 +717,20 @@ export default function ImageCropperPage() {
                                 <p className="text-xs text-zinc-500 mt-4 text-center">Looking good! This is your final high-resolution crop preview.</p>
                             </div>
 
-                            <button
-                                onClick={downloadFinalImage}
-                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white border border-white shadow-xl"
-                            >
-                                <Download size={18} />
-                                Download Final Image
-                            </button>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                                <button
+                                    onClick={downloadFinalImage}
+                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl shadow-white/10"
+                                >
+                                    <Download size={18} /> Download Image
+                                </button>
+                                <button
+                                    onClick={() => setPreviewModalOpen(false)}
+                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                >
+                                    <RefreshCw size={14} /> Back to Editor
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

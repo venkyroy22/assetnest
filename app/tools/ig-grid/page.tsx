@@ -428,7 +428,7 @@ export default function IGGridPlannerPage() {
 
                         <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-white hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-zinc-950">
                             <UploadCloud className="text-zinc-600 group-hover:text-white transition-colors mb-2" size={28} />
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors">Click to upload</span>
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors">Drag & Drop or Click Here</span>
                             <span className="text-xs font-semibold text-zinc-600 mt-1 tracking-wide">JPG, PNG, HEIC</span>
                             <input
                                 ref={fileInputRef}
@@ -630,7 +630,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitCols(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-white text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -644,7 +644,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitRows(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-white text-white" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -684,7 +684,7 @@ export default function IGGridPlannerPage() {
                                                     <img src={img.url} className="w-full h-full object-cover rounded shadow-md" />
                                                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
                                                         <span className="text-[10px] font-bold text-white mb-1">Post Order</span>
-                                                        <span className="w-6 h-6 rounded-full bg-white text-white font-bold flex items-center justify-center text-xs">
+                                                        <span className="w-6 h-6 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs">
                                                             {splitResults.length - i}
                                                         </span>
                                                     </div>

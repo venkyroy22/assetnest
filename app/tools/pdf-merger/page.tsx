@@ -9,6 +9,27 @@ import {
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import dynamic from "next/dynamic";
+import {
+  DndContext,
+  DragOverlay,
+  closestCorners,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+  DragStartEvent,
+  DragEndEvent,
+  defaultDropAnimationSideEffects
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  arrayMove,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+  useSortable
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const PdfPageThumbnail = dynamic(() => import("./PdfPreviewThumbnail"), { ssr: false });
 import ShareModal from "@/components/ShareModal";
@@ -133,33 +154,32 @@ export default function PdfMergerPage() {
         });
     };
 
-    const onDragStart = (e: React.DragEvent, index: number) => {
-        setDraggedIdx(index);
-        e.dataTransfer.effectAllowed = "move";
-        // To make the ghost image cleaner:
-        // const el = e.target as HTMLElement;
-        // e.dataTransfer.setDragImage(el, el.clientWidth / 2, el.clientHeight / 2);
+    const sensors = useSensors(
+        useSensor(PointerSensor, { activationConstraint: { distance: 8 } }),
+        useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
+        useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+    );
+
+    const onDragStartAction = (event: DragStartEvent) => {
+        const { active } = event;
+        const activeIdx = pages.findIndex(p => p.id === active.id);
+        setDraggedIdx(activeIdx);
     };
 
-    const onDragOver = (e: React.DragEvent) => {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "move";
-    };
-
-    const onDropPage = (e: React.DragEvent, targetIdx: number) => {
-        e.preventDefault();
-        if (draggedIdx === null || draggedIdx === targetIdx) {
-            setDraggedIdx(null);
-            return;
-        }
-        
-        setHistoryState(prev => {
-            const newPages = [...prev.pages];
-            const [draggedItem] = newPages.splice(draggedIdx, 1);
-            newPages.splice(targetIdx, 0, draggedItem);
-            return { ...prev, pages: newPages };
-        });
+    const onDragEndAction = (event: DragEndEvent) => {
+        const { active, over } = event;
         setDraggedIdx(null);
+
+        if (over && active.id !== over.id) {
+            setHistoryState(prev => {
+                const oldIndex = prev.pages.findIndex(p => p.id === active.id);
+                const newIndex = prev.pages.findIndex(p => p.id === over.id);
+                return {
+                    ...prev,
+                    pages: arrayMove(prev.pages, oldIndex, newIndex)
+                };
+            });
+        }
     };
 
     const mergePdfs = async () => {
@@ -242,10 +262,10 @@ export default function PdfMergerPage() {
             <div className="text-center mb-8 relative group">
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                     title="View Information"
                 >
-                    <Info size={14} />
+                    <Info size={16} />
                 </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Combine size={11} className="text-red-400" />
@@ -284,8 +304,8 @@ export default function PdfMergerPage() {
                                 {isLoading ? <RefreshCw className="animate-spin text-zinc-500" size={20} /> : <Upload size={20} className="text-zinc-500" />}
                             </div>
                             <div>
-                                <h2 className="text-sm font-bold text-white tracking-tight">{isLoading ? "Loading Pages..." : "Add PDFs to Merge"}</h2>
-                                <p className="text-zinc-500 text-[10px] font-medium">Drag &amp; Drop or Click Here</p>
+                                <h2 className="text-sm font-bold text-white tracking-tight">{isLoading ? "Loading Pages..." : "Drag & Drop or Click Here"}</h2>
+                                <p className="text-zinc-500 text-[10px] font-medium">100% Private PDF Merging • Arrange Pages Visually</p>
                             </div>
                         </div>
                     </div>
@@ -301,67 +321,52 @@ export default function PdfMergerPage() {
                                     <h3 className="text-sm font-bold text-white tracking-tight">Arrange Pages ({pages.length})</h3>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1 mr-2 bg-zinc-900/80 p-1 rounded-xl border border-zinc-800">
+                                    <div className="flex items-center gap-1.5 mr-2 bg-zinc-900/80 p-1.5 rounded-xl border border-zinc-800">
                                         <Tooltip content="Undo (Ctrl+Z)">
-                                            <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Undo size={14} /></button>
+                                            <button onClick={undo} disabled={!canUndo} className="p-2 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Undo size={16} /></button>
                                         </Tooltip>
                                         <Tooltip content="Redo (Ctrl+Y)">
-                                            <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Redo size={14} /></button>
+                                            <button onClick={redo} disabled={!canRedo} className="p-2 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Redo size={16} /></button>
                                         </Tooltip>
                                     </div>
-                                    <span className="text-[10px] font-semibold tracking-wider text-zinc-500 hidden sm:inline">Drag to reorder • Click X to delete</span>
+                                    <span className="text-[10px] font-semibold tracking-wider text-zinc-500 block sm:inline mt-1 sm:mt-0">Drag or use arrows to reorder • Click X to delete</span>
                                 </div>
                             </div>
                             
                             {/* Draggable Grid */}
-                            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                                {pages.map((p, index) => (
-                                    <div 
-                                        key={p.id}
-                                        draggable
-                                        onDragStart={(e) => onDragStart(e, index)}
-                                        onDragOver={onDragOver}
-                                        onDrop={(e) => onDropPage(e, index)}
-                                        className={`group relative h-40 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center p-3 cursor-grab active:cursor-grabbing hover:border-red-500/50 hover:bg-zinc-800/80 hover:-translate-y-1 transition-all ${draggedIdx === index ? 'opacity-30 border-dashed border-red-500' : ''}`}
-                                    >
-                                        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                                            <button 
-                                                onClick={(e) => removePage(p.id, e)} 
-                                                className="w-6 h-6 bg-black/60 backdrop-blur-md text-red-400 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors border border-white/10"
-                                            >
-                                                <X size={12}/>
-                                            </button>
-                                        </div>
-
-                                        <div className="flex-grow flex items-center justify-center pointer-events-none w-full relative overflow-hidden bg-white/5 rounded border border-white/5" style={{height: 96}}>
-                                            {files.find(f => f.id === p.fileId) && (
-                                                <PdfPageThumbnail 
-                                                    file={files.find(f => f.id === p.fileId)!.file} 
-                                                    pageIndex={p.pageIndex} 
-                                                />
-                                            )}
-                                            <div className="absolute top-1 right-1 z-10 bg-black/60 px-1.5 py-0.5 rounded text-[8px] font-bold text-white shadow-md backdrop-blur-sm border border-white/10">
-                                                Pg {p.pageIndex + 1}
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-2 text-center w-full pointer-events-none">
-                                            <div className="text-[10px] text-zinc-500 truncate px-1">
-                                                {p.name.length > 12 ? p.name.substring(0,10) + '...' : p.name}
-                                            </div>
-                                            <div className="text-xs font-black text-white px-1">
-                                                Page {p.pageIndex + 1}
-                                            </div>
-                                        </div>
-
-                                        {/* Mobile arrows (hidden on desktop hover) */}
-                                        <div className="absolute bottom-0 inset-x-0 p-2 flex justify-between md:hidden z-20">
-                                            <button onClick={(e) => movePage(index, -1, e)} disabled={index === 0} className="p-1.5 bg-zinc-800 text-zinc-300 rounded disabled:opacity-0"><ChevronLeft size={12}/></button>
-                                            <button onClick={(e) => movePage(index, 1, e)} disabled={index === pages.length - 1} className="p-1.5 bg-zinc-800 text-zinc-300 rounded disabled:opacity-0"><ChevronRight size={12}/></button>
-                                        </div>
+                            <DndContext
+                                sensors={sensors}
+                                collisionDetection={closestCorners}
+                                onDragStart={onDragStartAction}
+                                onDragEnd={onDragEndAction}
+                            >
+                                <SortableContext items={pages.map(p => p.id)} strategy={rectSortingStrategy}>
+                                    <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                                        {pages.map((p, index) => (
+                                            <SortablePageCard 
+                                                key={p.id}
+                                                p={p}
+                                                index={index}
+                                                files={files}
+                                                pagesCount={pages.length}
+                                                removePage={removePage}
+                                                movePage={movePage}
+                                                isDragging={draggedIdx === index}
+                                            />
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
+                                </SortableContext>
+                                
+                                <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
+                                    {draggedIdx !== null ? (
+                                        <div className="h-44 w-32 bg-zinc-900 border border-zinc-700 rounded-2xl flex flex-col items-center p-3 opacity-80 shadow-2xl scale-105">
+                                            <div className="flex-grow flex items-center justify-center w-full bg-white/5 rounded border border-white/5">
+                                                <div className="text-[10px] font-bold text-zinc-500">Moving Page {draggedIdx + 1}</div>
+                                            </div>
+                                        </div>
+                                    ) : null}
+                                </DragOverlay>
+                            </DndContext>
 
                             <div className="mt-6 pt-6 border-t border-zinc-900 flex flex-col md:flex-row gap-4 items-center justify-between">
                                 <span className="text-xs font-semibold tracking-wider text-zinc-400">
@@ -377,7 +382,7 @@ export default function PdfMergerPage() {
                                     <button 
                                         onClick={mergePdfs}
                                         disabled={pages.length === 0 || isLoading}
-                                        className={`h-14 px-8 font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-red-500 text-white hover:bg-red-600 shadow-lg shadow-red-500/20"}`}
+                                        className={`h-14 px-8 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-black hover:bg-zinc-200 shadow-xl shadow-white/5"}`}
                                     >
                                         {isLoading ? (
                                             <><RefreshCw size={18} className="animate-spin" /> Merging...</>
@@ -394,61 +399,65 @@ export default function PdfMergerPage() {
                 <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Left: Preview */}
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 shadow-2xl flex flex-col">
-                            <h3 className="text-sm font-bold text-white mb-4 px-2">Merged Preview</h3>
-                            <div className="flex-grow bg-zinc-900 rounded-xl overflow-hidden min-h-[400px]">
-                                <object data={outputUrl} type="application/pdf" className="w-full h-full min-h-[400px]">
-                                    <iframe src={outputUrl} className="w-full h-full min-h-[400px] border-none" title="PDF Preview" />
+                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 shadow-2xl flex flex-col min-h-[300px] sm:min-h-[450px]">
+                            <h3 className="text-xs sm:text-sm font-bold text-white mb-3 sm:mb-4 px-2">Merged Preview</h3>
+                            <div className="flex-grow bg-zinc-900 rounded-xl overflow-hidden min-h-[250px] sm:min-h-[400px]">
+                                <object data={outputUrl} type="application/pdf" className="w-full h-full min-h-[250px] sm:min-h-[400px]">
+                                    <iframe src={outputUrl} className="w-full h-full min-h-[250px] sm:min-h-[400px] border-none" title="PDF Preview" />
                                 </object>
                             </div>
                         </div>
 
                         {/* Right: Actions */}
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl flex flex-col justify-center text-center space-y-8">
-                            <div className="w-20 h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto shadow-xl">
-                                <Combine size={32} className="text-red-500" />
+                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-6 sm:p-8 shadow-2xl flex flex-col justify-center text-center space-y-6 sm:space-y-8">
+                            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto shadow-xl">
+                                <Combine size={28} className="text-red-500 sm:size-32" />
                             </div>
                             <div>
-                                <h2 className="text-2xl font-black text-white tracking-tight mb-2">Success!</h2>
-                                <p className="text-zinc-400 text-sm font-medium">Your custom PDF has been generated.</p>
+                                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">Success!</h2>
+                                <p className="text-zinc-400 text-xs sm:text-sm font-medium">Your custom PDF has been generated.</p>
                             </div>
                             
-                            <div className="flex items-center justify-center gap-4 py-6 border-y border-zinc-900">
-                                <div className="text-center px-4">
-                                    <span className="block text-3xl font-black text-white">{pages.length}</span>
-                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500 mt-1">Pages Compiled</span>
+                            <div className="flex items-center justify-center gap-3 sm:gap-4 py-4 sm:py-6 border-y border-zinc-900">
+                                <div className="text-center px-3 sm:px-4">
+                                    <span className="block text-2xl sm:text-3xl font-black text-white">{pages.length}</span>
+                                    <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 mt-1 uppercase">Pages</span>
                                 </div>
-                                <div className="w-px h-12 bg-zinc-900"></div>
-                                <div className="text-center px-4">
-                                    <span className="block text-3xl font-black text-white">{outputSize ? formatSize(outputSize) : "---"}</span>
-                                    <span className="text-[11px] font-semibold tracking-wider text-zinc-500 mt-1">Output Size</span>
+                                <div className="w-px h-10 sm:h-12 bg-zinc-900"></div>
+                                <div className="text-center px-3 sm:px-4">
+                                    <span className="block text-2xl sm:text-3xl font-black text-white">{outputSize ? formatSize(outputSize) : "---"}</span>
+                                    <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 mt-1 uppercase">Size</span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-col gap-3 pt-2">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                                 <button 
                                     onClick={handleDownload}
-                                    className="h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl"
+                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
                                 >
-                                    <Download size={18} /> Download Custom PDF
+                                    <Download size={18} /> 
+                                    <span className="hidden sm:inline">Download Custom PDF</span>
+                                    <span className="sm:hidden">Download PDF</span>
                                 </button>
                                 <button 
                                     onClick={() => setIsSharing(true)}
-                                    className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 transition-all hover:-translate-y-0.5"
+                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
                                 >
-                                    <Share2 size={16} className="text-red-400" /> Share to Mobile
+                                    <Share2 size={16} className="text-red-400" /> 
+                                    <span className="hidden sm:inline">Share to Mobile</span>
+                                    <span className="sm:hidden">Share File</span>
                                 </button>
                                 <button 
                                     onClick={() => setOutputUrl(null)}
-                                    className="h-14 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all"
+                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
-                                    <ArrowLeft size={16} /> Go Back & Edit Pages
+                                    <ArrowLeft size={16} /> Edit Pages
                                 </button>
                                 <button 
                                     onClick={reset}
-                                    className="h-10 text-xs bg-transparent text-zinc-500 hover:text-red-400 font-semibold tracking-wide rounded-full transition-colors mt-2"
+                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-500 hover:text-red-400 font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
                                 >
-                                    Start Fresh (Delete All)
+                                    <RefreshCw size={14} /> Start Fresh
                                 </button>
                             </div>
                         </div>
@@ -547,3 +556,92 @@ export default function PdfMergerPage() {
         </div>
     );
 }
+
+// ---------------- SORTABLE COMPONENT ----------------
+
+interface SortablePageCardProps {
+    p: PageItem;
+    index: number;
+    files: UploadedFile[];
+    pagesCount: number;
+    removePage: (id: string, e?: React.MouseEvent) => void;
+    movePage: (index: number, direction: -1 | 1, e?: React.MouseEvent) => void;
+    isDragging: boolean;
+}
+
+function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, isDragging }: SortablePageCardProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+    } = useSortable({ id: p.id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
+
+    return (
+        <div
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
+            className={`group relative h-44 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center p-3 cursor-grab active:cursor-grabbing hover:border-red-500/50 hover:bg-zinc-800/80 transition-all touch-none ${isDragging ? 'opacity-30 border-dashed border-red-500' : ''}`}
+        >
+            <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10">
+                <button
+                    onClick={(e) => { e.stopPropagation(); removePage(p.id, e); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    className="w-6 h-6 bg-black/60 backdrop-blur-md text-red-400 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors border border-white/10"
+                >
+                    <X size={12} />
+                </button>
+            </div>
+
+            <div className="flex-grow flex items-center justify-center pointer-events-none w-full relative overflow-hidden bg-white/5 rounded border border-white/5" style={{ height: 96 }}>
+                {files.find(f => f.id === p.fileId) && (
+                    <PdfPageThumbnail
+                        file={files.find(f => f.id === p.fileId)!.file}
+                        pageIndex={p.pageIndex}
+                    />
+                )}
+                <div className="absolute top-1 right-1 z-10 bg-black/60 px-1.5 py-0.5 rounded text-[8px] font-bold text-white shadow-md backdrop-blur-sm border border-white/10">
+                    Pg {p.pageIndex + 1}
+                </div>
+            </div>
+
+            <div className="mt-2 text-center w-full pointer-events-none">
+                <div className="text-[10px] text-zinc-500 truncate px-1">
+                    {p.name.length > 12 ? p.name.substring(0, 10) + '...' : p.name}
+                </div>
+                <div className="text-xs font-black text-white px-1">
+                    Page {p.pageIndex + 1}
+                </div>
+            </div>
+
+            {/* Mobile arrows (hidden on desktop hover) */}
+            <div className="absolute bottom-2 inset-x-2 flex justify-between md:hidden z-20">
+                <button
+                    onClick={(e) => { e.stopPropagation(); movePage(index, -1, e); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    disabled={index === 0}
+                    className="w-8 h-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
+                >
+                    <ChevronLeft size={16} />
+                </button>
+                <button
+                    onClick={(e) => { e.stopPropagation(); movePage(index, 1, e); }}
+                    onPointerDown={(e) => e.stopPropagation()}
+                    disabled={index === pagesCount - 1}
+                    className="w-8 h-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
+                >
+                    <ChevronRight size={16} />
+                </button>
+            </div>
+        </div>
+    );
+}
+

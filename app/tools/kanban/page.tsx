@@ -7,6 +7,7 @@ import {
   closestCorners, 
   KeyboardSensor, 
   PointerSensor, 
+  TouchSensor,
   useSensor, 
   useSensors, 
   DragStartEvent, 
@@ -87,7 +88,8 @@ export default function KanbanPage() {
   const columnsId = useMemo(() => columns.map((col) => col.id), [columns]);
 
   const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 3 } }),
+    useSensor(PointerSensor, { activationConstraint: { distance: 10 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } }),
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
@@ -194,17 +196,15 @@ export default function KanbanPage() {
       {/* Header */}
       <div className="w-full mb-8 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center px-2">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-4 rounded-full relative group">
-              <Zap size={11} className="text-white" />
-              <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Productivity</span>
               <button 
                   onClick={() => setShowHelp(true)}
-                  className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl popup-trigger"
+                  className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl z-30"
                   title="Help & FAQ"
               >
                   <Info size={10} className="pointer-events-none" />
               </button>
-          </div>
+              <Zap size={11} className="text-white ml-6" />
+              <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Productivity</span>
           <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2">Kanban Board</h1>
           <p className="text-zinc-500 font-medium tracking-wide text-sm">Organize tasks, track progress. 100% local and private.</p>
         </div>
@@ -225,20 +225,21 @@ export default function KanbanPage() {
           onDragOver={onDragOver}
           onDragEnd={onDragEnd}
         >
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full items-start px-2 py-2 pb-24">
+          <div className="flex overflow-x-auto pb-10 gap-6 w-full items-start px-2 py-2 snap-x subtle-scrollbar lg:grid lg:grid-cols-3">
             <SortableContext items={columnsId} strategy={rectSortingStrategy}>
               {columns.map((col) => (
-                <ColumnContainer 
-                  key={col.id} 
-                  column={col} 
-                  deleteColumn={deleteColumn}
-                  updateColumn={updateColumn}
-                  createTask={createTask}
-                  deleteTask={deleteTask}
-                  updateTask={updateTask}
-                  updateTaskColor={updateTaskColor}
-                  tasks={tasks.filter((t) => t.columnId === col.id)}
-                />
+                <div key={col.id} className="min-w-[85vw] md:min-w-[45vw] lg:min-w-0 snap-center">
+                  <ColumnContainer 
+                    column={col} 
+                    deleteColumn={deleteColumn}
+                    updateColumn={updateColumn}
+                    createTask={createTask}
+                    deleteTask={deleteTask}
+                    updateTask={updateTask}
+                    updateTaskColor={updateTaskColor}
+                    tasks={tasks.filter((t) => t.columnId === col.id)}
+                  />
+                </div>
               ))}
             </SortableContext>
           </div>
@@ -358,13 +359,19 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
     >
       {/* Column Header */}
       <div 
-        className="flex items-center justify-between p-4 px-5 border-b border-zinc-800/50 group bg-zinc-900/40 rounded-t-3xl cursor-grab"
+        className="flex items-center justify-between p-4 px-5 border-b border-zinc-800/50 group bg-zinc-900/40 rounded-t-3xl cursor-grab touch-none"
         {...attributes}
         {...listeners}
       >
-        <div className="flex items-center gap-3 w-full">
-          <GripHorizontal size={16} className="text-zinc-600 group-hover:text-white transition-colors cursor-grab" />
-          <div className="bg-zinc-950 border border-zinc-800 text-zinc-400 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md whitespace-nowrap">
+        <button 
+          onClick={(e) => { e.stopPropagation(); deleteColumn(column.id); }}
+          className="text-zinc-500 hover:text-red-500 hover:bg-red-500/10 p-2 text-sm rounded-xl transition-colors cursor-pointer shrink-0 mr-2 border border-transparent hover:border-red-500/20"
+        >
+          <Trash2 size={16} />
+        </button>
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <GripHorizontal size={16} className="text-zinc-600 group-hover:text-white transition-colors cursor-grab shrink-0" />
+          <div className="bg-zinc-950 border border-zinc-800 text-zinc-400 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md whitespace-nowrap shrink-0">
             {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
           </div>
           <input 
@@ -375,15 +382,9 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
               e.stopPropagation();
               if (e.key === 'Enter') e.currentTarget.blur();
             }}
-            className="bg-transparent focus:bg-zinc-950 text-white font-bold outline-none flex-1 truncate transition-colors rounded px-1.5 focus:border focus:ring-1 focus:ring-zinc-700/50 -ml-1.5"
+            className="bg-transparent focus:bg-zinc-950 text-white font-bold outline-none flex-1 truncate transition-colors rounded px-1.5 focus:border focus:ring-1 focus:ring-zinc-700/50 -ml-1.5 min-w-0"
           />
         </div>
-        <button 
-          onClick={() => deleteColumn(column.id)}
-          className="text-zinc-600 hover:text-red-500 hover:bg-red-500/10 p-2 text-sm rounded-xl transition-colors cursor-pointer"
-        >
-          <Trash2 size={16} />
-        </button>
       </div>
 
       {/* Task List container */}
@@ -427,6 +428,7 @@ interface TaskProps {
 function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: TaskProps) {
   const [mouseIsOver, setMouseIsOver] = useState(false);
   const [editMode, setEditMode] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   const { setNodeRef, attributes, listeners, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -441,6 +443,7 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
   const toggleEditMode = () => {
     setEditMode(prev => !prev);
     setMouseIsOver(false);
+    setShowOptions(false);
   };
 
   if (isDragging && !isOverlay) {
@@ -467,7 +470,7 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
     <div 
       ref={setNodeRef}
       style={style}
-      className={`border p-4 rounded-2xl cursor-grab active:cursor-grabbing shadow-sm relative group flex flex-col gap-2 transition-all min-h-[80px]
+      className={`border p-4 rounded-2xl cursor-grab active:cursor-grabbing shadow-sm relative group flex flex-col gap-2 transition-all min-h-[80px] touch-none
           ${currentColorStyle}
           ${isOverlay ? 'shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-95 ring-2 ring-white/20 z-50' : ''}
           ${editMode ? 'ring-2 ring-zinc-500 bg-zinc-900 border-zinc-700' : ''}`}
@@ -497,15 +500,24 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
       ) : (
         <p 
           className="whitespace-pre-wrap text-[15px] font-medium leading-relaxed min-h-[40px]"
-          onClick={toggleEditMode}
+          onClick={(e) => {
+            if (window.innerWidth < 768 && !showOptions) {
+              setShowOptions(true);
+            } else {
+              toggleEditMode();
+            }
+          }}
         >
           {task.content || <span className="text-zinc-600 font-normal italic pointer-events-none">New note...</span>}
         </p>
       )}
 
-      {/* Hover Toolbar */}
-      {mouseIsOver && !editMode && (
-        <div className="absolute right-3 top-3 bg-zinc-900 border border-zinc-700 rounded-lg flex items-center shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      {/* Hover/Tap Toolbar */}
+      {(mouseIsOver || showOptions) && !editMode && (
+        <div 
+          className="absolute left-3 top-3 bg-zinc-900 border border-zinc-700 rounded-lg flex items-center shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50"
+          onClick={(e) => e.stopPropagation()}
+        >
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleEditMode(); }}
             className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
@@ -528,7 +540,7 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
 
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); deleteTask(task.id); }}
-            className="p-1.5 text-zinc-400 hover:text-red-500 hover:bg-zinc-800 transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
             title="Delete task"
           >
             <Trash2 size={14} />

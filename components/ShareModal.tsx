@@ -17,6 +17,14 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
     const [copied, setCopied] = useState(false);
 
     useEffect(() => {
+        if (isOpen) {
+            const originalOverflow = document.body.style.overflow;
+            document.body.style.overflow = "hidden";
+            return () => { document.body.style.overflow = originalOverflow; };
+        }
+    }, [isOpen]);
+
+    useEffect(() => {
         if (!isOpen) {
             // Reset state when closed
             setTimeout(() => {

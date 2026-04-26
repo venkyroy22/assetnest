@@ -24,15 +24,10 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
             document.body.style.overflow = "hidden";
             document.documentElement.style.overflow = "hidden";
             
-            // 3. Prevent touch-move for mobile
-            const preventDefault = (e: TouchEvent) => e.preventDefault();
-            document.addEventListener('touchmove', preventDefault, { passive: false });
-            
             return () => {
                 lenis?.start();
                 document.body.style.overflow = originalBodyOverflow || "unset";
                 document.documentElement.style.overflow = originalHtmlOverflow || "unset";
-                document.removeEventListener('touchmove', preventDefault);
             };
         }
     }, [isOpen]);
@@ -45,7 +40,7 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.1 } }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="fixed inset-0 z-[1000] overflow-y-auto overscroll-behavior-contain bg-black/60 backdrop-blur-3xl py-10 md:py-20 px-4 md:px-0"
+                    className="fixed inset-0 z-[1000] overflow-y-auto overscroll-behavior-contain bg-black/80 backdrop-blur-3xl py-6 md:py-20 px-4 md:px-0"
                     onWheel={(e) => e.stopPropagation()}
                     onClick={onClose}
                 >
@@ -87,7 +82,7 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                             {/* Simple Close Button */}
                             <button 
                                 onClick={onClose} 
-                                className="absolute top-4 right-4 sm:top-6 sm:right-6 md:top-8 md:right-8 p-3 text-zinc-500 hover:text-white bg-zinc-900/50 hover:bg-zinc-800 rounded-full transition-all z-50 border border-zinc-800/50 hover:scale-110 active:scale-95"
+                                className="absolute top-4 right-4 sm:top-8 sm:right-8 p-3 text-zinc-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-all z-50 border border-white/5 hover:scale-110 active:scale-95 shadow-2xl"
                                 title="Close"
                             >
                                 <X size={20} />

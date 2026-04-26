@@ -399,10 +399,10 @@ export default function QRGeneratorPage() {
                 <header className="mb-8 lg:mb-16 text-center relative group">
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
                         title="View Information"
                     >
-                        <Info size={14} />
+                        <Info size={12} />
                     </button>
                     <div
                         style={{
@@ -451,6 +451,20 @@ export default function QRGeneratorPage() {
                             <h3 className="text-xs font-semibold text-zinc-500 mb-4 lg:mb-6 flex items-center gap-2">
                                 <Wand2 size={12} /> Configuration Options
                             </h3>
+                            <div className="flex flex-wrap gap-2 mb-6">
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black border border-zinc-800">
+                                    <ShieldCheck size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black border border-zinc-800">
+                                    <Sparkles size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                </div>
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black border border-zinc-800">
+                                    <Check size={10} className="text-white" />
+                                    <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                </div>
+                            </div>
 
                             <div className="space-y-5 lg:space-y-8">
                                 {/* Destination URL */}
@@ -810,9 +824,9 @@ export default function QRGeneratorPage() {
                                     <div className="lg:hidden text-[11px] font-semibold tracking-wider text-zinc-400 mb-2">Live Preview</div>
                                     <button
                                         onClick={() => renderQR(true)}
-                                        className="w-full flex items-center justify-center gap-2 lg:gap-3 bg-white text-black py-2.5 lg:py-4 rounded-full text-xs font-bold tracking-wide hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                        className="w-full h-12 flex items-center justify-center gap-2 bg-white text-black rounded-full text-xs sm:text-sm font-bold tracking-wide hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
                                     >
-                                        <Download size={14} className="shrink-0" /> <span className="hidden sm:inline">Export PNG</span><span className="sm:hidden">Export</span>
+                                        <Download size={18} /> <span className="hidden sm:inline">Export PNG</span><span className="sm:hidden">Export</span>
                                     </button>
                                 </div>
                             </div>
@@ -929,9 +943,9 @@ export default function QRGeneratorPage() {
                                 a.download = "assetnest-custom-qr.png";
                                 a.click();
                             }}
-                            className="w-full flex items-center justify-center gap-2 bg-white text-black py-3.5 rounded-full text-sm font-bold tracking-wide hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xl"
+                            className="w-full h-12 flex items-center justify-center gap-2 bg-white text-black rounded-full text-xs sm:text-sm font-bold tracking-wide hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xl"
                         >
-                            <Download size={15} /> Download QR Code
+                            <Download size={18} /> Download QR Code
                         </button>
                     </div>
                 </div>

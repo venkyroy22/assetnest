@@ -295,46 +295,49 @@ export default function BillingPage() {
         <div className="min-h-screen bg-zinc-950 text-white pb-32">
 
             {/* ── Header ── */}
-            <div className="bg-zinc-900 border-b border-zinc-800 sticky top-0 z-30">
-                <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div className="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-30">
+                <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center shrink-0">
-                            <Receipt size={16} className="text-black" />
-                        </div>
+                        <button 
+                            onClick={() => setShowHelp(true)}
+                            className="p-2 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                            title="Information"
+                        >
+                            <Info size={14} />
+                        </button>
+                        
+                        <div className="h-8 w-px bg-zinc-800 hidden xs:block" />
+
                         <div className="flex flex-col">
-                            <div className="flex items-center gap-2">
-                                <p className="text-[10px] font-bold tracking-[0.15em] text-zinc-500 uppercase">Smart Billing</p>
-                                <button 
-                                    onClick={() => setShowHelp(true)}
-                                    className="p-1 px-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-zinc-400 hover:text-white transition-all flex items-center gap-1.5 shadow-xl"
-                                    title="Information"
-                                >
-                                    <Info size={11} strokeWidth={2.5} />
-                                    <span className="text-[9px] font-black uppercase tracking-widest hidden sm:inline">Info</span>
-                                </button>
-                            </div>
-                            <p className="text-xs font-black text-white leading-tight truncate max-w-[160px]">
+                            <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">
+                                Smart Billing
+                            </span>
+                            <h2 className="text-sm font-black text-white leading-none truncate max-w-[140px] sm:max-w-none">
                                 {shopInfo.name || "Configure Shop" }
-                            </p>
+                            </h2>
                         </div>
                     </div>
+
                     <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold tracking-wide text-zinc-600 hidden sm:inline">
+                        <span className="text-[10px] font-bold text-zinc-700 hidden sm:inline uppercase tracking-tighter">
                             {invoiceNo}
                         </span>
-                        <button
-                            onClick={() => { setTmpShop(shopInfo); setShopOpen(true); }}
-                            className="p-2 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-lg"
-                        >
-                            <Settings size={15} />
-                        </button>
-                        <button
-                            onClick={newBill}
-                            className="p-2 border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white transition-all rounded-lg"
-                            title="New Bill"
-                        >
-                            <RefreshCw size={15} />
-                        </button>
+                        <div className="flex items-center gap-1.5 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
+                            <button
+                                onClick={() => { setTmpShop(shopInfo); setShopOpen(true); }}
+                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all"
+                                title="Shop Settings"
+                            >
+                                <Settings size={16} />
+                            </button>
+                            <button
+                                onClick={newBill}
+                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all"
+                                title="New Bill"
+                            >
+                                <RefreshCw size={16} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -503,14 +506,14 @@ export default function BillingPage() {
                         <button
                             onClick={addItem}
                             disabled={!formName.trim() || !formPrice}
-                            className="flex-1 flex items-center justify-center gap-2 bg-white text-white py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-lg shadow-white/10"
+                            className="h-12 flex-1 flex items-center justify-center gap-2 bg-white text-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xl shadow-white/10"
                         >
                             {editId ? <><Check size={14} /> Update Item</> : <><Plus size={14} /> Add Item</>}
                         </button>
                         {(editId || formName || formBarcode) && (
                             <button
                                 onClick={resetForm}
-                                className="p-3 border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white transition-all rounded-xl"
+                                className="w-12 h-12 flex items-center justify-center border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-full"
                             >
                                 <X size={16} />
                             </button>
@@ -605,10 +608,10 @@ export default function BillingPage() {
                 {items.length > 0 && (
                     <button
                         onClick={generateQR}
-                        className="w-full flex items-center justify-center gap-3 bg-white text-white py-5 rounded-full text-sm font-bold tracking-wide hover:bg-white active:scale-[0.98] transition-all shadow-2xl shadow-white/20"
+                        className="h-12 w-full flex items-center justify-center gap-3 bg-white text-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all shadow-2xl shadow-white/10"
                     >
-                        <Smartphone size={20} />
-                        Generate Customer QR Code
+                        <Smartphone size={18} />
+                        Generate Customer QR
                     </button>
                 )}
 
@@ -782,7 +785,7 @@ export default function BillingPage() {
                             ))}
                         </div>
                         <button onClick={saveShop}
-                            className="mt-5 w-full flex items-center justify-center gap-2 bg-white text-white py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white transition-all shadow-lg shadow-white/10">
+                            className="mt-5 w-full flex items-center justify-center gap-2 bg-white text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white transition-all shadow-lg shadow-white/10">
                             <Check size={13} /> Save Shop Info
                         </button>
                     </div>

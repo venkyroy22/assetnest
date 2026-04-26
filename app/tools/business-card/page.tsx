@@ -188,9 +188,12 @@ export default function BusinessCardPage() {
         }, 500);
     };
 
-    const onMouseDown = (e: React.MouseEvent, id: string) => {
+    const onPointerDown = (e: React.PointerEvent, id: string) => {
         const el = elements.find(el => el.id === id);
         if (el?.locked) return;
+        
+        // Use setPointerCapture to ensure move/up events are caught even if finger leaves the element
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
         
         setSelectedId(id);
         setDraggedId(id);
@@ -201,7 +204,7 @@ export default function BusinessCardPage() {
         });
     };
 
-    const onMouseMove = (e: React.MouseEvent) => {
+    const onPointerMove = (e: React.PointerEvent) => {
         if (draggedId && cardRef.current) {
             const cardRect = cardRef.current.getBoundingClientRect();
             let x = (e.clientX - cardRect.left) / canvasScale - dragOffset.x;
@@ -210,8 +213,12 @@ export default function BusinessCardPage() {
         }
     };
 
-    const onMouseUp = () => {
-        if (draggedId) saveToHistory(elements);
+    const onPointerUp = (e: React.PointerEvent) => {
+        if (draggedId) {
+            saveToHistory(elements);
+            // Release capture
+            try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+        }
         setDraggedId(null);
     };
 
@@ -230,87 +237,71 @@ export default function BusinessCardPage() {
         <div className="relative flex flex-col bg-black text-white font-sans select-none overflow-hidden" style={{ height: "calc(100vh - 80px)" }}>
             
             {/* STICKY TOOL HEADER */}
-            <div className="h-16 border-b border-white/5 px-4 sm:px-8 flex items-center justify-between bg-black/80 backdrop-blur-3xl shrink-0 z-40">
-                <div className="flex items-center gap-3 sm:gap-6">
+            <div className="h-16 border-b border-white/5 px-3 sm:px-6 flex items-center justify-between bg-black/80 backdrop-blur-3xl shrink-0 z-40">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
                     {/* MOBILE LEFT TOGGLE */}
                     <button 
                         onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-                        className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-white"
+                        className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-white shrink-0"
                     >
-                        <SlidersHorizontal size={16} />
+                        <SlidersHorizontal size={14} />
                     </button>
 
-                    {/* EXIT BUTTON */}
-                    <Link href="/tools" className="flex items-center gap-2 group transition-colors">
-                        <X size={14} className="text-zinc-500 group-hover:text-white group-hover:rotate-90 transition-all duration-300" /> 
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Exit</span>
-                    </Link>
+                    <button 
+                        onClick={() => setShowHelp(true)}
+                        className="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-full text-zinc-500 hover:text-white transition-all shrink-0"
+                        title="Information"
+                    >
+                        <Info size={14} />
+                    </button>
 
-                    <div className="h-6 w-px bg-white/10 hidden sm:block" />
-                    
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 hidden sm:flex items-center justify-center bg-white/10 rounded-xl text-white border border-white/20">
-                            <CreditCard size={18} />
-                        </div>
-                        <div className="flex flex-col relative group">
-                            <div className="flex items-center gap-2">
-                                <span className="text-[11px] font-black tracking-widest text-white uppercase leading-none">StudioMaster</span>
-                                <button 
-                                    onClick={() => setShowHelp(true)}
-                                    className="p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
-                                    title="What is this?"
-                                >
-                                    <Info size={10} />
-                                </button>
-                            </div>
-                            <span className="hidden sm:flex text-[8px] text-zinc-500 font-bold uppercase tracking-tight mt-1 items-center gap-1.5">
-                                <div className="w-1 h-1 rounded-full bg-white animate-pulse" /> AssetNest // Pro
-                            </span>
-                        </div>
+                    <div className="flex flex-col min-w-0">
+                        <span className="text-[8px] font-black tracking-widest text-zinc-600 uppercase leading-none mb-1 truncate hidden xs:block">StudioMaster</span>
+                        <h1 className="text-[10px] font-black text-white uppercase leading-none tracking-[0.1em] truncate">Studio</h1>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-2 sm:gap-4">
-                     <div className="hidden lg:flex items-center gap-2">
-                        <button onClick={undo} disabled={history.length === 0} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
-                            <Undo2 size={16} />
+                <div className="flex items-center gap-1 sm:gap-3">
+                    <div className="flex items-center gap-1 bg-zinc-900/40 p-1 rounded-xl border border-white/5">
+                        <button 
+                            onClick={undo} 
+                            disabled={history.length === 0} 
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-white disabled:opacity-20 transition-all hover:bg-white/5"
+                            title="Undo"
+                        >
+                            <Undo2 size={14} />
                         </button>
-                        <button onClick={redo} disabled={redoStack.length === 0} className="w-10 h-10 flex items-center justify-center rounded-full bg-white/5 border border-white/10 text-zinc-400 hover:text-white disabled:opacity-20 transition-all hover:bg-white/10">
-                            <Redo2 size={16} />
+                        <button 
+                            onClick={redo} 
+                            disabled={redoStack.length === 0} 
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-white disabled:opacity-20 transition-all hover:bg-white/5"
+                            title="Redo"
+                        >
+                            <Redo2 size={14} />
                         </button>
                     </div>
 
-                    <div className="h-6 w-px bg-white/10 hidden lg:block" />
-
-                     <div className="hidden sm:flex items-center gap-6">
-                         <button onClick={() => addElement("text", "New Layer")} className="flex items-center gap-2 group transition-colors">
-                            <Plus size={14} className="text-zinc-500 group-hover:text-white group-hover:scale-125 transition-all"/>
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Element</span>
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => addElement("text", "New Layer")} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-zinc-500 hover:text-white hover:border-white/20 transition-all" title="Add Element">
+                            <Plus size={14} />
                         </button>
-                        <label className="flex items-center gap-2 cursor-pointer group transition-colors">
-                            <Upload size={14} className="text-zinc-500 group-hover:text-white group-hover:-translate-y-0.5 transition-all" />
-                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 group-hover:text-white transition-colors">Image</span>
+                        <label className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-zinc-500 hover:text-white hover:border-white/20 transition-all cursor-pointer" title="Upload Image">
+                            <Upload size={14} />
                             <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, "logo")} />
                         </label>
                     </div>
 
+                    <div className="h-6 w-px bg-white/5 hidden sm:block" />
+
                     <button 
                         onClick={handleGenerate} 
                         disabled={isGenerating} 
-                        className="flex items-center gap-2 group transition-colors disabled:opacity-20 ml-2"
+                        className="h-9 px-3 sm:px-4 bg-white text-black rounded-full flex items-center gap-2 hover:bg-zinc-200 transition-all disabled:opacity-20 active:scale-95 shadow-xl shadow-white/10 shrink-0"
                     >
-                        <Download size={15} className="text-white group-hover:text-white group-hover:translate-y-0.5 transition-all" />
-                        <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white group-hover:text-white transition-colors">
-                            {isGenerating ? "Processing..." : "Save"}
+                        {isGenerating ? <RotateCcw size={12} className="animate-spin" /> : <Download size={12} />}
+                        <span className="text-[9px] font-black uppercase tracking-widest hidden xs:inline">
+                            {isGenerating ? "Wait" : "Save"}
                         </span>
-                    </button>
-
-                    {/* MOBILE RIGHT TOGGLE */}
-                    <button 
-                        onClick={() => setRightPanelOpen(!rightPanelOpen)}
-                        className={`lg:hidden w-10 h-10 flex items-center justify-center rounded-full border transition-all ${selectedId ? "bg-white border-white text-black animate-pulse" : "bg-white/5 border-white/10 text-white opacity-40"}`}
-                    >
-                        <Settings size={16} />
                     </button>
                 </div>
             </div>
@@ -408,10 +399,10 @@ export default function BusinessCardPage() {
                     </div>
 
                     <div 
-                        onMouseMove={onMouseMove}
-                        onMouseUp={onMouseUp}
-                        onMouseLeave={onMouseUp}
-                        className="relative group/canvas flex items-center justify-center"
+                        onPointerMove={onPointerMove}
+                        onPointerUp={onPointerUp}
+                        onPointerLeave={onPointerUp}
+                        className="relative group/canvas flex items-center justify-center touch-none"
                         style={{ 
                             width: `${1050 * canvasScale}px`,
                             height: `${600 * canvasScale}px`,
@@ -441,7 +432,7 @@ export default function BusinessCardPage() {
                             {elements.filter(el => el.visible).sort((a,b) => a.zIndex - b.zIndex).map((el) => (
                                 <div 
                                     key={el.id}
-                                    onMouseDown={(e) => onMouseDown(e, el.id)}
+                                    onPointerDown={(e) => onPointerDown(e, el.id)}
                                     style={{ 
                                         left: el.x, top: el.y, opacity: el.opacity,
                                         transform: `rotate(${el.rotation}deg)`,
@@ -556,19 +547,17 @@ export default function BusinessCardPage() {
                                 )}
 
                                 <section className="pt-12 border-t border-white/5">
-                                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><AlignLeft size={14}/> Studio Align</h3>
-                                    <div className="space-y-4">
-                                        <button onClick={() => updateElement(selectedElement.id, { x: 525 - (elWidth(selectedElement)/2) }, true)} className="btn-pan w-full h-14 rounded-2xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                                            <span className="flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.2em]">
-                                                <AlignCenter size={14} className="group-hover:scale-110 transition-transform"/> Align Horizontal
-                                            </span>
+                                    <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><AlignLeft size={14}/> Studio Align</h3>                                     <div className="space-y-3">
+                                        <button onClick={() => updateElement(selectedElement.id, { x: 525 - (elWidth(selectedElement)/2) }, true)} className="w-full h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all flex items-center justify-center gap-3">
+                                            <AlignCenter size={14} />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">Align Horizontal</span>
                                         </button>
-                                        <button onClick={() => updateElement(selectedElement.id, { y: 300 - (selectedElement.size/2) }, true)} className="btn-pan w-full h-14 rounded-2xl border border-white/10 group" style={{ "--btn-bg": "#000" } as React.CSSProperties}>
-                                            <span className="flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.2em]">
-                                                <AlignLeft size={14} className="rotate-90 group-hover:scale-110 transition-transform"/> Align Vertical
-                                            </span>
+                                        <button onClick={() => updateElement(selectedElement.id, { y: 300 - (selectedElement.size/2) }, true)} className="w-full h-12 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-700 transition-all flex items-center justify-center gap-3">
+                                            <AlignLeft size={14} className="rotate-90" />
+                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">Align Vertical</span>
                                         </button>
                                     </div>
+
                                 </section>
                              </div>
                         </div>

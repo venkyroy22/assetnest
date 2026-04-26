@@ -119,10 +119,10 @@ export default function PdfCompressorPage() {
             <div className="text-center mb-10 relative group">
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -right-2 p-2 rounded-full bg-zinc-900/50 border border-zinc-800 text-zinc-500 hover:text-white transition-all opacity-0 group-hover:opacity-100"
+                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                     title="View Information"
                 >
-                    <Info size={14} />
+                    <Info size={16} />
                 </button>
                 <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
                     <Minimize2 size={11} className="text-white" />
@@ -188,8 +188,22 @@ export default function PdfCompressorPage() {
                                     <Upload size={24} className="text-zinc-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-lg font-bold text-white tracking-tight">Drop PDF Here</h2>
-                                    <p className="text-zinc-500 text-xs font-medium mt-1">Or click to select a file</p>
+                                    <h2 className="text-lg font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                                    <div className="flex flex-wrap justify-center gap-2 mt-3">
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <ShieldCheck size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <Zap size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <Check size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">Reduce PDF File Size</p>
                                 </div>
                             </div>
                         )}
@@ -198,32 +212,32 @@ export default function PdfCompressorPage() {
                     <button
                         onClick={compress}
                         disabled={!file || isLoading}
-                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${!file || isLoading ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-white hover:bg-white shadow-lg shadow-white/20"}`}
+                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${!file || isLoading ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-black hover:bg-white shadow-lg shadow-white/20"}`}
                     >
                         {isLoading ? <><RefreshCw size={18} className="animate-spin" /> Compressing...</> : <>Compress PDF</>}
                     </button>
                 </div>
             ) : (
-                <div className="space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
+                <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
                     {/* Stats */}
-                    <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8 shadow-2xl">
-                        <div className="flex items-center gap-3 mb-8">
-                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                    <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-5 sm:p-8 shadow-2xl">
+                        <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
                                 <CheckCircle size={20} className="text-white" />
                             </div>
-                            <div>
-                                <h2 className="text-lg font-bold text-white tracking-tight">Compression Done!</h2>
-                                <p className="text-xs text-zinc-500 font-medium">{file?.name}</p>
+                            <div className="min-w-0">
+                                <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">Compression Done!</h2>
+                                <p className="text-[10px] sm:text-xs text-zinc-500 font-medium truncate max-w-[200px] sm:max-w-md">{file?.name}</p>
                             </div>
                         </div>
 
                         {/* Progress bar visual */}
-                        <div className="space-y-3 mb-8">
-                            <div className="flex justify-between text-[11px] font-semibold tracking-wider text-zinc-400">
+                        <div className="space-y-3 mb-6 sm:mb-8">
+                            <div className="flex justify-between text-[10px] sm:text-[11px] font-semibold tracking-wider text-zinc-400">
                                 <span>Original</span>
                                 <span>Compressed</span>
                             </div>
-                            <div className="relative h-3 bg-zinc-900 rounded-full overflow-hidden">
+                            <div className="relative h-2.5 sm:h-3 bg-zinc-900 rounded-full overflow-hidden">
                                 <div className="absolute inset-y-0 left-0 bg-zinc-700 rounded-full" style={{ width: "100%" }} />
                                 <div
                                     className="absolute inset-y-0 left-0 bg-gradient-to-r from-white to-white rounded-full transition-all duration-1000"
@@ -231,41 +245,45 @@ export default function PdfCompressorPage() {
                                 />
                             </div>
                             <div className="flex justify-between">
-                                <span className="text-xs font-bold text-zinc-500">{formatSize(result.originalSize)}</span>
-                                <span className="text-xs font-bold text-white">{formatSize(result.compressedSize)}</span>
+                                <span className="text-[10px] sm:text-xs font-bold text-zinc-500">{formatSize(result.originalSize)}</span>
+                                <span className="text-[10px] sm:text-xs font-bold text-white">{formatSize(result.compressedSize)}</span>
                             </div>
                         </div>
 
                         {/* Stat boxes */}
-                        <div className="grid grid-cols-3 gap-4 mb-8 pb-8 border-b border-zinc-900">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8 pb-4 sm:pb-8 border-b border-zinc-900">
                             <div className="text-center">
-                                <span className="block text-2xl font-black text-white">{formatSize(result.originalSize)}</span>
-                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Original</span>
+                                <span className="block text-lg sm:text-2xl font-black text-white leading-tight">{formatSize(result.originalSize)}</span>
+                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Original</span>
                             </div>
                             <div className="text-center">
-                                <span className="block text-2xl font-black text-white">{savingsPercent}%</span>
-                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">Saved</span>
+                                <span className="block text-lg sm:text-2xl font-black text-white leading-tight">{savingsPercent}%</span>
+                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Saved</span>
                             </div>
                             <div className="text-center">
-                                <span className="block text-2xl font-black text-white">{formatSize(result.compressedSize)}</span>
-                                <span className="text-[11px] font-semibold tracking-wider text-zinc-500">New Size</span>
+                                <span className="block text-lg sm:text-2xl font-black text-white leading-tight">{formatSize(result.compressedSize)}</span>
+                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">New Size</span>
                             </div>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3">
-                            <button onClick={download} className="flex-1 h-14 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-200 transition-all hover:scale-[1.02] shadow-xl">
-                                <Download size={18} /> Download Compressed PDF
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <button onClick={download} className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl">
+                                <Download size={18} /> 
+                                <span className="hidden sm:inline">Download Compressed PDF</span>
+                                <span className="sm:hidden">Download PDF</span>
                             </button>
                             <button 
                                 onClick={() => setIsSharing(true)} 
-                                className="h-14 px-8 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-800 transition-all active:scale-[0.98] shadow-xl"
+                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98] shadow-xl"
                             >
-                                <Share2 size={18} className="text-white" /> Share to Mobile
+                                <Share2 size={18} /> 
+                                <span className="hidden sm:inline">Share to Mobile</span>
+                                <span className="sm:hidden">Share File</span>
+                            </button>
+                            <button onClick={reset} className="sm:col-span-2 h-12 px-6 bg-transparent border border-zinc-800 text-zinc-400 hover:text-white font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all">
+                                <RefreshCw size={14} /> Compress Another PDF
                             </button>
                         </div>
-                        <button onClick={reset} className="w-full h-14 px-8 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 hover:bg-zinc-900 transition-all">
-                            Compress Another PDF
-                        </button>
                     </div>
 
                     {savingsPercent < 5 && (

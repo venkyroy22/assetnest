@@ -120,12 +120,12 @@ export default function BgRemoverPage() {
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
             <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 relative">
                     <Sparkles size={11} className="text-white" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Pure Background Removal</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg text-zinc-500 hover:text-white transition-all"
+                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
                         title="Help & Details"
                     >
                         <Info size={12} />
@@ -163,8 +163,22 @@ export default function BgRemoverPage() {
                                     <Upload size={32} className="text-zinc-500" />
                                 </div>
                                 <div>
-                                    <h2 className="text-xl font-black text-white tracking-tight mb-2">Select an image</h2>
-                                    <p className="text-zinc-500 text-sm font-medium">Drag & drop or click to browse</p>
+                                    <h2 className="text-xl font-black text-white tracking-tight mb-2">Drag & Drop or Click Here</h2>
+                                    <div className="flex flex-wrap justify-center gap-2 mt-3">
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <ShieldCheck size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <Sparkles size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
+                                        </div>
+                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
+                                            <Check size={10} className="text-white" />
+                                            <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
+                                        </div>
+                                    </div>
+                                    <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">AI Subject Isolation</p>
                                 </div>
                             </div>
                         </div>
@@ -224,17 +238,23 @@ export default function BgRemoverPage() {
                         </div>
 
                         {outputUrl && !isLoading && (
-                            <div className="flex flex-col md:flex-row items-center justify-center gap-6 mt-6">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
                                 <button 
                                     onClick={handleDownload}
-                                    className="group relative h-14 w-full md:w-auto px-8 bg-white text-black text-sm font-bold tracking-wide hover:bg-zinc-200 transition-all rounded-full flex items-center justify-center gap-3 overflow-hidden whitespace-nowrap shadow-xl"
+                                    className="h-12 px-6 bg-white text-black text-xs sm:text-sm font-bold tracking-wide hover:bg-zinc-200 transition-all rounded-full flex items-center justify-center gap-2 shadow-xl active:scale-[0.98]"
                                 >
-                                    <Download size={18} /> Download Transparent PNG
+                                    <Download size={18} /> Download PNG
+                                </button>
+                                <button 
+                                    onClick={reset}
+                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white text-xs sm:text-sm font-bold tracking-wide transition-all rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 active:scale-[0.98]"
+                                >
+                                    <RefreshCw size={14} /> Remove Another
                                 </button>
                                 
-                                <div className="max-w-xs text-left bg-zinc-900/40 border border-zinc-800/50 rounded-xl p-4">
+                                <div className="sm:col-span-2 text-center bg-zinc-900/40 border border-zinc-800/50 rounded-2xl p-4">
                                     <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">
-                                        <strong className="text-zinc-300">Note:</strong> AI runs in-browser. For best results, use sharp images with high contrast. Intricate borders may occasionally require cleanup.
+                                        <strong className="text-zinc-300">Note:</strong> AI runs in-browser. For best results, use sharp images with high contrast. Intricate borders may occasionally require manual cleanup.
                                     </p>
                                 </div>
                             </div>
@@ -316,7 +336,7 @@ export default function BgRemoverPage() {
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm p-4 animate-in fade-in">
                     <button 
                         onClick={() => setIsPreviewOpen(false)}
-                        className="absolute top-6 right-6 z-[60] w-12 h-12 bg-zinc-900/80 hover:bg-zinc-800 text-white rounded-full flex items-center justify-center border border-white/10 transition-colors"
+                        className="absolute top-6 left-6 z-[60] w-12 h-12 bg-zinc-900/80 hover:bg-zinc-800 text-white rounded-full flex items-center justify-center border border-zinc-800 transition-colors shadow-2xl"
                     >
                         <X size={24} />
                     </button>

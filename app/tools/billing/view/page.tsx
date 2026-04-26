@@ -249,7 +249,7 @@ function BillViewer() {
                     <div className="bg-white rounded-3xl overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] border border-zinc-200">
                         {/* Shop Header */}
                         <div className="bg-white px-8 pt-10 pb-6 text-center border-b border-zinc-100">
-                            <div className="inline-block px-3 py-1 bg-white text-white rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
+                            <div className="inline-block px-3 py-1 bg-white text-black rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
                             <p className="text-2xl font-bold text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
                             {bill.a && <p className="text-xs text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">{bill.a}</p>}
                             <div className="flex items-center justify-center gap-5 mt-4 flex-wrap">
