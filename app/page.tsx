@@ -306,7 +306,7 @@ export default function Home() {
               transform: `translate3d(${dragOffset.x}px, ${-20 + scrollProgress * 150 + dragOffset.y}px, 0) scale(${1.1 - scrollProgress * 0.3})`,
               zIndex: scrollProgress > 0.5 ? 0 : 30,
               transition: isDragging ? "none" : (heroVisible ? "opacity 0.8s ease-out, transform 0.6s cubic-bezier(0.23,1,0.32,1)" : "none"),
-              touchAction: "none"
+              touchAction: "pan-y"
             }}
           >
             {/* Drag Indicator Tooltip - Only on Hover and only for desktop */}
