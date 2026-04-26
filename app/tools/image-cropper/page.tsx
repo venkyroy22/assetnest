@@ -21,11 +21,14 @@ import {
     X,
     ChevronDown,
     ChevronUp,
-    ShieldCheck
+    ShieldCheck,
+    RefreshCw,
+    Sparkles,
+    ArrowLeft,
+    Info
 } from "lucide-react";
 import { Accordion, AccordionItem } from "@/components/Accordion";
 import Link from "next/link";
-import { ArrowLeft, Info } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 
 // Helper to center an aspect ratio crop on init
