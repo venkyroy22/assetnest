@@ -22,12 +22,10 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
             const originalBodyOverflow = document.body.style.overflow;
             const originalHtmlOverflow = document.documentElement.style.overflow;
             document.body.style.overflow = "hidden";
-            document.documentElement.style.overflow = "hidden";
             
             return () => {
                 lenis?.start();
                 document.body.style.overflow = originalBodyOverflow || "unset";
-                document.documentElement.style.overflow = originalHtmlOverflow || "unset";
             };
         }
     }, [isOpen]);
@@ -40,12 +38,14 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.1 } }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="fixed inset-0 z-[1000] overflow-y-auto overscroll-behavior-contain bg-black/80 backdrop-blur-3xl py-6 md:py-20 px-4 md:px-0"
+                    className="fixed inset-0 z-[1000] overflow-y-auto overscroll-contain bg-black/80 backdrop-blur-3xl py-4 sm:py-10 md:py-20 px-4 md:px-0"
                     onWheel={(e) => e.stopPropagation()}
                     onClick={onClose}
+                    data-lenis-prevent
+                    data-lenis-prevent-touch
                 >
                     {/* Modal Wrapper */}
-                    <div className="flex flex-col items-center justify-start min-h-full pointer-events-none">
+                    <div className="flex flex-col items-center justify-start min-h-full">
                         <div className="flex-1 min-h-[2rem]" />
                         
                         {/* Modal Container */}
