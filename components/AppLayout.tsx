@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
@@ -131,9 +131,11 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
             <SettingsProvider>
                 <SidebarProvider>
                     <PinProvider>
-                        <AppLayoutContent isBillingView={isBillingView}>
-                            {children}
-                        </AppLayoutContent>
+                        <Suspense fallback={null}>
+                            <AppLayoutContent isBillingView={isBillingView}>
+                                {children}
+                            </AppLayoutContent>
+                        </Suspense>
                         <SettingsModal />
                     </PinProvider>
                 </SidebarProvider>
