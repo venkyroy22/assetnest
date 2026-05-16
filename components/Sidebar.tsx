@@ -188,7 +188,7 @@ const Sidebar = () => {
 
     return (
         <aside
-            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-40 hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-x-hidden
+            className={`h-[calc(100vh-5rem)] fixed top-20 left-0 z-[1000] hidden lg:block bg-zinc-950/60 backdrop-blur-3xl border-r border-white/5 ease-[cubic-bezier(0.23,1,0.32,1)] overflow-x-hidden
                 ${isNavigating ? "!transition-none" : "transition-[width,opacity] duration-500"}
                 ${isOpen ? "w-64" : isHome ? "w-0 opacity-0" : "w-16"}`}
         >

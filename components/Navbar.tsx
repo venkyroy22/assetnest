@@ -146,7 +146,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
     if (!mounted) {
         return (
-            <nav className={`${settings.fixedNavbar ? "sticky" : "absolute"} top-0 z-50 w-full bg-background h-16 md:h-20`}>
+            <nav className={`${settings.fixedNavbar ? "sticky" : "absolute"} top-0 z-[1000] w-full bg-background h-16 md:h-20`}>
                 <div className="px-4 md:px-10 h-full">
                     <div className="flex justify-between items-center h-full">
                         <div className="text-xl font-bold tracking-tight shrink-0">AssetNest</div>
@@ -159,7 +159,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
     return (
         <>
-            <nav className={`${settings.fixedNavbar ? "fixed" : "absolute"} top-0 left-0 w-full z-50 transition-[background-color,border-color,backdrop-filter] duration-500 h-16 md:h-20 transform-gpu ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-zinc-800/50" : "bg-transparent border-b border-transparent"} ${className}`}>
+            <nav className={`w-full transition-[background-color,border-color,backdrop-filter] duration-500 h-16 md:h-20 transform-gpu ${scrolled ? "bg-black/95 backdrop-blur-xl border-b border-zinc-800/50" : "bg-transparent border-b border-transparent"} ${className}`}>
                 <div className="flex h-full items-center relative">
 
                     {/* Sidebar Toggle — desktop only */}

@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown, Unlock } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown, Unlock, Brain } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games" | "Design Training";
 
@@ -281,6 +281,17 @@ export const ALL_TOOLS: Tool[] = [
         badge: "Free",
         icon: NotebookPen,
         tags: ["notes", "workspace", "editor", "markdown", "write", "draft", "document", "text"],
+        accent: "#ffffff",
+        category: "Productivity",
+    },
+    {
+        id: "brainflow",
+        name: "BrainFlow Canvas",
+        description: "An infinite canvas for brainstorming. Create sticky notes, draw connections, freehand sketch, and organize your ideas visually with templates and AI assist.",
+        href: "/tools/brainflow",
+        badge: "Free",
+        icon: Brain,
+        tags: ["brainstorm", "canvas", "infinite", "whiteboard", "mind map", "sticky notes", "flowchart", "ideas", "diagram", "planning"],
         accent: "#ffffff",
         category: "Productivity",
     },

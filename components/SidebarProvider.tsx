@@ -8,6 +8,9 @@ interface SidebarContextType {
     isOpen: boolean;
     setIsOpen: (val: boolean) => void;
     toggle: () => void;
+    isAppFullscreen: boolean;
+    setIsAppFullscreen: (val: boolean) => void;
+    toggleFullscreen: () => void;
     isNavigating: boolean;
 }
 
@@ -17,6 +20,7 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
     const pathname = usePathname();
     const { settings } = useSettings();
     const [isOpen, setIsOpen] = useState(false);
+    const [isAppFullscreen, setIsAppFullscreen] = useState(false);
 
     // Track layout changes to disable CSS transitions precisely during navigation
     const [prevPath, setPrevPath] = useState(pathname);
@@ -35,12 +39,15 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
         if (pathname === "/") {
             setIsOpen(false);
         }
+        // Always exit fullscreen layout when navigating to a new tool/page
+        setIsAppFullscreen(false);
     }, [pathname]);
 
     const toggle = () => setIsOpen((prev) => !prev);
+    const toggleFullscreen = () => setIsAppFullscreen((prev) => !prev);
 
     return (
-        <SidebarContext.Provider value={{ isOpen, setIsOpen, toggle, isNavigating }}>
+        <SidebarContext.Provider value={{ isOpen, setIsOpen, toggle, isAppFullscreen, setIsAppFullscreen, toggleFullscreen, isNavigating }}>
             {children}
         </SidebarContext.Provider>
     );

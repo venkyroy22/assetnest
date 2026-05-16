@@ -30,7 +30,7 @@ const CX = 160;
 const CY = 160;
 const CIRC = 2 * Math.PI * RADIUS;
 
-const FOCUS_Q_COLORS = ["#60a5fa", "#ffffff", "#ffffff", "#c084fc"];
+const FOCUS_Q_COLORS = ["#22d3ee", "#34d399", "#fbbf24", "#fb7185"];
 
 function lerpColor(a: string, b: string, t: number): string {
     const ah = parseInt(a.slice(1), 16);
@@ -429,9 +429,9 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
                             </div>
                             <button 
                                 onClick={() => setWr(!wr)}
-                                className={`w-10 h-5 rounded-full transition-colors relative ${wr ? 'bg-white' : 'bg-zinc-700'}`}
+                                className={`w-10 h-5 rounded-full transition-colors relative ${wr ? 'bg-blue-500' : 'bg-zinc-700'}`}
                             >
-                                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${wr ? 'left-6' : 'left-1'}`} />
+                                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all shadow-sm ${wr ? 'left-6' : 'left-1'}`} />
                             </button>
                         </div>
                         {wr && (
@@ -492,11 +492,15 @@ export default function PomodoroPage() {
     const [waterInterval, setWaterInterval] = useState(30);
     const durations = { focus: focusMins * 60, short: shortMins * 60, long: longMins * 60 };
 
-    const COLORS: Record<Mode, string> = { focus: "#ffffff", short: "#ffffff", long: "#ffffff" };
-    const BG: Record<Mode, string> = { focus: "from-zinc-900 to-zinc-950", short: "from-white to-zinc-950", long: "from-white to-zinc-950" };
+    const COLORS: Record<Mode, string> = { focus: "#22d3ee", short: "#10b981", long: "#3b82f6" };
+    const BG: Record<Mode, string> = { 
+        focus: "from-zinc-900 to-zinc-950", 
+        short: "from-emerald-900/40 to-zinc-950", 
+        long: "from-blue-900/40 to-zinc-950" 
+    };
     const LABELS: Record<Mode, string> = { focus: "Focus", short: "Short Break", long: "Long Break" };
 
-    const CYCLE_COLORS = ["#60a5fa", "#ffffff", "#ffffff", "#c084fc"] as const;
+    const CYCLE_COLORS = ["#22d3ee", "#10b981", "#fbbf24", "#f43f5e"] as const;
     const QUARTER_LABELS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
     const [mode, setMode] = useState<Mode>("focus");
@@ -543,8 +547,10 @@ export default function PomodoroPage() {
     const color = COLORS[mode];
 
     const modeRef = useRef<Mode>("focus");
+    const pomodoroInCycleRef = useRef<number>(0);
     useEffect(() => { modeRef.current = mode; }, [mode]);
     useEffect(() => { totalSecsRef.current = totalSecs; }, [totalSecs]);
+    useEffect(() => { pomodoroInCycleRef.current = pomodoroInCycle; }, [pomodoroInCycle]);
 
     useEffect(() => {
         if (!musicAudioRef.current) {
@@ -631,7 +637,8 @@ export default function PomodoroPage() {
             if (endTimeMsRef.current !== null) {
                 const remaining = Math.max(0, (endTimeMsRef.current - Date.now()) / 1000);
                 const p = totalSecsRef.current > 0 ? remaining / totalSecsRef.current : 0;
-                const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : modeRef.current === "short" ? "#ffffff" : "#ffffff";
+                const cycleIdx = modeRef.current === "long" ? 3 : pomodoroInCycleRef.current;
+                const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : CYCLE_COLORS[cycleIdx];
                 applyProgress(p, ringRef.current, dotRef.current, glowRef.current, strokeColor);
                 if (glowRef.current) glowRef.current.setAttribute("opacity", "0.12");
             }
@@ -705,7 +712,9 @@ export default function PomodoroPage() {
         } else {
             endTimeMsRef.current = null;
             const p = totalSecsRef.current > 0 ? secondsLeft / totalSecsRef.current : 0;
-            applyProgress(p, ringRef.current, dotRef.current, glowRef.current);
+            const cycleIdx = modeRef.current === "long" ? 3 : pomodoroInCycleRef.current;
+            const strokeColor = modeRef.current === "focus" ? getFocusColor(p) : CYCLE_COLORS[cycleIdx];
+            applyProgress(p, ringRef.current, dotRef.current, glowRef.current, strokeColor);
             clearInterval(intervalRef.current!);
         }
         return () => clearInterval(intervalRef.current!);

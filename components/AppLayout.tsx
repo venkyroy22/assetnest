@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useState, useRef } from "react";
 import { ArrowUp } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -9,12 +9,15 @@ import Footer from "@/components/Footer";
 import { SidebarProvider, useSidebar } from "@/components/SidebarProvider";
 import { PinProvider } from "@/components/PinProvider";
 import { MusicProvider } from "@/components/MusicProvider";
-import { SettingsProvider } from "@/components/SettingsProvider";
+import { SettingsProvider, useSettings } from "@/components/SettingsProvider";
 import SettingsModal from "@/components/SettingsModal";
 
 function AppLayoutContent({ children, isBillingView }: { children: React.ReactNode; isBillingView: boolean }) {
-    const { isOpen, isNavigating } = useSidebar();
+    const { isOpen, isNavigating, isAppFullscreen } = useSidebar();
+    const { settings } = useSettings();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const isEmbed = searchParams.get("embed") === "true";
     const isHome = pathname === "/";
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -59,25 +62,33 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
         return () => document.removeEventListener("click", handleClick, true);
     }, []);
 
+    const hideUI = isBillingView || isAppFullscreen || isEmbed;
+
     return (
         <div className="flex flex-col min-h-screen bg-black text-white">
 
-            {/* Header */}
-            {!isBillingView && (
-                <header className="sticky top-0 z-50">
-                    <Navbar />
-                </header>
+            {/* Header Placeholder (takes space in flow) */}
+            {!hideUI && (
+                <div className="h-16 md:h-20 shrink-0">
+                    <header className={`${settings.fixedNavbar ? "fixed" : "absolute"} top-0 left-0 w-full z-[1000] bg-black`}>
+                        <Navbar />
+                    </header>
+                </div>
             )}
 
             {/* Body */}
             <div className="flex flex-1">
 
-                {!isBillingView && <Sidebar />}
+                {!hideUI && (
+                    <div className="z-[1000]">
+                        <Sidebar />
+                    </div>
+                )}
 
                 <main
-                    className={`flex flex-col flex-1 w-full pt-16 md:pt-20 transition-[padding-left] duration-500
-                    ${isNavigating ? "!transition-none" : ""}
-                    ${(isBillingView || isHome)
+                    className={`flex flex-col flex-1 w-full transition-[padding-left] duration-500 
+                    ${isNavigating ? "!transition-none" : ""} 
+                    ${(hideUI || isHome)
                         ? "pl-0"
                         : (isOpen ? "lg:pl-[256px]" : "lg:pl-[64px]")}`}
                 >
@@ -85,7 +96,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                         {children}
                     </div>
 
-                    <Footer />
+                    {isHome && <Footer />}
                 </main>
             </div>
 
