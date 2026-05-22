@@ -31,7 +31,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     slug: "how-to-compress-images-without-losing-quality",
     title: "How to Compress Images Without Losing Quality (Complete 2026 Guide)",
     description:
-      "Heavy images slow down your website and hurt your SEO ranking. Learn the exact techniques professionals use to reduce image file size by up to 80% — without any visible quality loss.",
+      "Heavy images slow down your website and hurt your SEO ranking. Learn the exact techniques professionals use to reduce image file size by up to 80% - without any visible quality loss.",
     category: "Image Optimization",
     readTime: "6 min read",
     publishedAt: "2026-03-02",
@@ -53,7 +53,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
   },
   {
     slug: "how-to-merge-pdf-files-free",
-    title: "How to Merge PDF Files for Free — No Software, No Sign-Up",
+    title: "How to Merge PDF Files for Free - No Software, No Sign-Up",
     description:
       "Whether you're combining contracts, reports, or presentations, merging PDFs doesn't require expensive software. Here's how to do it in seconds, 100% free, right in your browser.",
     category: "PDF Tools",
@@ -61,13 +61,13 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     publishedAt: "2026-03-04",
     icon: "FileText",
     tags: ["PDF merge", "combine PDF", "free PDF tools", "productivity"],
-    toolLink: { label: "Merge PDFs Instantly — Free", href: "/tools/pdf-merger" },
+    toolLink: { label: "Merge PDFs Instantly - Free", href: "/tools/pdf-merger" },
   },
   {
     slug: "qr-codes-for-business-complete-guide",
     title: "QR Codes for Business: The Complete 2026 Guide",
     description:
-      "From restaurant menus to product packaging — QR codes are everywhere. Learn how to create, customize, and track QR codes that actually drive results for your business.",
+      "From restaurant menus to product packaging - QR codes are everywhere. Learn how to create, customize, and track QR codes that actually drive results for your business.",
     category: "Business & Marketing",
     readTime: "8 min read",
     publishedAt: "2026-03-05",
@@ -79,7 +79,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     slug: "how-to-remove-background-from-image-free",
     title: "How to Remove Background from Any Image (Free & Instant)",
     description:
-      "Professional background removal used to cost money and time. Now it takes seconds. Learn how to remove photo backgrounds for product listings, social media, and design projects — for free.",
+      "Professional background removal used to cost money and time. Now it takes seconds. Learn how to remove photo backgrounds for product listings, social media, and design projects - for free.",
     category: "Image Editing",
     readTime: "5 min read",
     publishedAt: "2026-03-06",
@@ -91,7 +91,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     slug: "pomodoro-technique-boost-productivity",
     title: "The Pomodoro Technique: How 25 Minutes Can Transform Your Productivity",
     description:
-      "Procrastination meets its match with the Pomodoro Technique. Discover why this simple time-management method is used by students, developers, and executives worldwide — and how to start today.",
+      "Procrastination meets its match with the Pomodoro Technique. Discover why this simple time-management method is used by students, developers, and executives worldwide - and how to start today.",
     category: "Productivity",
     readTime: "7 min read",
     publishedAt: "2026-03-07",
@@ -295,7 +295,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
   {
     slug: "chess-masterclass-strategy-and-tactics",
     title: "Chess Masterclass: Essential Strategies for Modern Players",
-    description: "From the Sicilian Defense to end-game precision—level up your chess game. Learn how to think like a Grandmaster and utilize our Computer Engine to sharpen your tactical vision.",
+    description: "From the Sicilian Defense to end-game precision-level up your chess game. Learn how to think like a Grandmaster and utilize our Computer Engine to sharpen your tactical vision.",
     category: "Games & Design",
     readTime: "8 min read",
     publishedAt: "2026-04-16",

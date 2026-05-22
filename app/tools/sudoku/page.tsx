@@ -138,18 +138,18 @@ export default function SudokuPage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-5 rounded-full relative group">
                     <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="Help & FAQ"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[#f0ede8] mb-4">
                     Sudoku Pro
                 </h1>
                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
@@ -159,26 +159,26 @@ export default function SudokuPage() {
 
             {/* Controls */}
             <div className="flex flex-col sm:flex-row items-center gap-4 mb-10 w-full max-w-2xl justify-center">
-                <div className="flex bg-zinc-900 border border-zinc-800 p-1 rounded-2xl w-full sm:w-auto">
+                <div className="flex bg-[#1c1c1c] border border-white/[0.07] p-1 rounded-2xl w-full sm:w-auto">
                     {(["Easy", "Medium", "Hard"] as Difficulty[]).map(d => (
                         <button 
                             key={d} 
                             onClick={() => { setDifficulty(d); startNewGame(d); }}
-                            className={`flex-1 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${difficulty === d ? 'bg-white text-black' : 'text-zinc-500 hover:text-white'}`}
+                            className={`flex-1 px-5 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${difficulty === d ? 'bg-[#f0ede8] text-[#141414]' : 'text-zinc-500 hover:text-[#f0ede8]'}`}
                         >
                             {d}
                         </button>
                     ))}
                 </div>
 
-                <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 px-5 py-2.5 rounded-2xl h-[46px]">
+                <div className="flex items-center gap-2 bg-[#1c1c1c] border border-white/[0.07] px-5 py-2.5 rounded-2xl h-[46px]">
                     <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 mr-2">Mistakes:</span>
                     <span className="text-sm font-black text-red-500 tracking-wider">
                         {mistakes}/3
                     </span>
                 </div>
 
-                <button onClick={() => startNewGame(difficulty)} className="w-full sm:w-auto h-[46px] px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl flex items-center justify-center gap-2">
+                <button onClick={() => startNewGame(difficulty)} className="w-full sm:w-auto h-[46px] px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white transition-all rounded-2xl flex items-center justify-center gap-2">
                     <RotateCcw size={16} />
                     <span className="text-[10px] font-black uppercase tracking-wider">New</span>
                 </button>
@@ -186,8 +186,8 @@ export default function SudokuPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-[auto_200px] gap-12 items-start">
                 {/* Board */}
-                <div className="p-1 bg-zinc-900 border-2 border-zinc-800 rounded-3xl overflow-hidden shadow-2xl relative">
-                    <div className="grid grid-cols-9 bg-zinc-800 gap-px">
+                <div className="p-1 bg-[#1c1c1c] border-2 border-white/[0.07] rounded-3xl overflow-hidden shadow-2xl relative">
+                    <div className="grid grid-cols-9 bg-white/[0.06] gap-px">
                         {puzzle.map((row, r) => (
                             row.map((cell, c) => {
                                 const isSelected = selected?.r === r && selected?.c === c;
@@ -205,9 +205,9 @@ export default function SudokuPage() {
                                         key={`${r}-${c}`}
                                         onClick={() => setSelected({ r, c })}
                                         className={`w-10 h-10 sm:w-14 sm:h-14 flex items-center justify-center text-sm sm:text-lg font-bold transition-all
-                                            ${isSelected ? 'bg-white text-black z-10 scale-105 shadow-xl !rounded-lg' : 
+                                            ${isSelected ? 'bg-[#f0ede8] text-[#141414] z-10 scale-105 shadow-xl !rounded-lg' : 
                                               isSuccess ? 'bg-emerald-500/20 text-emerald-400' :
-                                              isRelated ? 'bg-zinc-800/50 text-zinc-300' : 'bg-zinc-950 text-zinc-400'}
+                                              isRelated ? 'bg-white/[0.06] text-zinc-300' : 'bg-[#1c1c1c] text-zinc-400'}
                                             ${isInitial ? 'font-black' : 'font-medium'}
                                             ${isInitial && !isSelected && !isSuccess ? 'text-zinc-100' : ''}
                                             ${isError && !isSelected ? '!text-red-500 !bg-red-500/10' : ''}
@@ -223,27 +223,27 @@ export default function SudokuPage() {
                     </div>
 
                     {gameOver && (
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500 z-50">
+                        <div className="absolute inset-0 bg-[#141414]/80 backdrop-blur-md flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500 z-50">
                             <Trophy size={48} className="text-amber-400 mb-4 animate-bounce" />
-                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Solved!</h2>
+                            <h2 className="text-3xl font-black text-[#f0ede8] mb-2 uppercase tracking-tighter">Solved!</h2>
                             <p className="text-sm text-zinc-400 mb-8">Impressive speed. Want to try a harder one?</p>
-                            <button onClick={() => startNewGame(difficulty)} className="px-10 py-4 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">
+                            <button onClick={() => startNewGame(difficulty)} className="px-10 py-4 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2 uppercase tracking-widest">
                                 <RefreshCw size={14} /> NEW GAME
                             </button>
                         </div>
                     )}
 
                     {mistakes >= 3 && !gameOver && (
-                        <div className="absolute inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-500 z-50">
+                        <div className="absolute inset-0 bg-[#141414]/90 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-500 z-50">
                             <HeartCrack size={48} className="text-red-500 mb-4 animate-pulse" />
-                            <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Game Over</h2>
+                            <h2 className="text-3xl font-black text-[#f0ede8] mb-2 uppercase tracking-tighter">Game Over</h2>
                             <p className="text-sm text-zinc-400 mb-8 max-w-xs leading-relaxed">You have made 3 mistakes. Watch a short ad to revive and get 1 extra chance.</p>
                             
                             <div className="flex flex-col gap-3 w-full max-w-[280px]">
                                 <button 
                                     onClick={watchAdToRevive}
                                     disabled={isWatchingAd}
-                                    className="w-full py-4 px-6 bg-white text-black text-xs font-black rounded-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:hover:scale-100 disabled:pointer-events-none"
+                                    className="w-full py-4 px-6 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-xl hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:hover:scale-100 disabled:pointer-events-none"
                                 >
                                     {isWatchingAd ? <RefreshCw size={14} className="animate-spin" /> : <Play size={14} />} 
                                     {isWatchingAd ? "Watching Ad..." : "Watch Ad to Revive"}
@@ -252,7 +252,7 @@ export default function SudokuPage() {
                                 <button 
                                     onClick={() => startNewGame(difficulty)} 
                                     disabled={isWatchingAd}
-                                    className="w-full py-4 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white text-xs font-black rounded-xl hover:bg-zinc-800 transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:pointer-events-none"
+                                    className="w-full py-4 px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white text-xs font-black rounded-xl hover:bg-white/[0.06] transition-all flex items-center justify-center gap-2 uppercase tracking-widest disabled:opacity-50 disabled:pointer-events-none"
                                 >
                                     <RotateCcw size={14} /> NEW GAME
                                 </button>
@@ -263,12 +263,12 @@ export default function SudokuPage() {
 
                 {/* Numpad */}
                 <div className="space-y-6">
-                    <div className="grid grid-cols-3 gap-3 p-4 bg-zinc-900 border border-zinc-800 rounded-3xl">
+                    <div className="grid grid-cols-3 gap-3 p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-3xl">
                         {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
                             <button 
                                 key={n}
                                 onClick={() => handleInput(n)}
-                                className="w-12 h-12 flex items-center justify-center bg-zinc-950 border border-zinc-800 text-white font-black rounded-xl hover:border-white hover:scale-105 active:scale-95 transition-all"
+                                className="w-12 h-12 flex items-center justify-center bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-black rounded-xl hover:border-white hover:scale-105 active:scale-95 transition-all"
                             >
                                 {n}
                             </button>
@@ -281,20 +281,20 @@ export default function SudokuPage() {
                         </button>
                     </div>
 
-                    <div className="p-6 bg-zinc-900/50 border border-zinc-800 rounded-3xl">
+                    <div className="p-6 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-3xl">
                         <div className="flex items-center gap-2 mb-3">
                             <Info size={14} className="text-zinc-500" />
                             <span className="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Hints</span>
                         </div>
                         <ul className="space-y-3">
                             <li className="flex gap-2 text-[10px] text-zinc-500 font-medium leading-relaxed">
-                                <span className="text-white">•</span> Use keyboard numbers 1-9 to fill cells.
+                                <span className="text-[#f0ede8]">•</span> Use keyboard numbers 1-9 to fill cells.
                             </li>
                             <li className="flex gap-2 text-[10px] text-zinc-500 font-medium leading-relaxed">
-                                <span className="text-white">•</span> Arrows to navigate the grid.
+                                <span className="text-[#f0ede8]">•</span> Arrows to navigate the grid.
                             </li>
                             <li className="flex gap-2 text-[10px] text-zinc-500 font-medium leading-relaxed">
-                                <span className="text-white">•</span> Highlighted cells share the same row, col, or block.
+                                <span className="text-[#f0ede8]">•</span> Highlighted cells share the same row, col, or block.
                             </li>
                         </ul>
                     </div>
@@ -307,55 +307,55 @@ export default function SudokuPage() {
                 title="Sudoku Intelligence Briefing"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Play Sudoku: The Ultimate Brain Training Puzzle</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Play Sudoku: The Ultimate Brain Training Puzzle</h3>
                         <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
                             Welcome to <strong>Sudoku Pro</strong>, a premium, browser-based edition of the classic number-placement puzzle. Sudoku is globally recognized as one of the best cognitive exercises to enhance logical deduction, concentration, and pattern recognition. Our dark-themed version is designed for a focused, distraction-free environment, allowing you to immerse yourself in the grid. Whether you are a beginner looking for an Easy starting point or a logic master seeking a Hard challenge, Sudoku Pro provides a seamless interface with zero ads, zero tracking, and absolute privacy.
                         </p>
                     </section>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">!</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[10px] font-black italic">!</span>
                                 The Rules of the Grid
                             </h3>
                             <ul className="space-y-4 text-sm leading-relaxed text-zinc-400 font-medium pb-6">
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">◇</span>
+                                    <span className="text-[#f0ede8] shrink-0">◇</span>
                                     <div><strong className="text-zinc-200">The 9x9 Grid:</strong> The puzzle consists of 81 cells, divided into nine 3x3 subgrids or "blocks".</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">◇</span>
+                                    <span className="text-[#f0ede8] shrink-0">◇</span>
                                     <div><strong className="text-zinc-200">The 1-9 Objective:</strong> Every row, column, and 3x3 block must contain the numbers from 1 to 9 exactly once. No repeats allowed!</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">◇</span>
+                                    <span className="text-[#f0ede8] shrink-0">◇</span>
                                     <div><strong className="text-zinc-200">Logic Only:</strong> Every valid Sudoku puzzle has a unique solution that can be reached purely through logic—no guessing required.</div>
                                 </li>
                             </ul>
                         </section>
                         
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">?</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[10px] font-black italic">?</span>
                                 Pro Strategies
                             </h3>
                             <div className="space-y-4">
-                                <div className="p-5 bg-zinc-950/50 border border-zinc-900 rounded-2xl">
-                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Cross-Hatching</h4>
+                                <div className="p-5 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-2xl">
+                                    <h4 className="text-sm font-black text-[#f0ede8] mb-2 uppercase tracking-wide">Cross-Hatching</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed font-semibold">Examine a specific number and scan its rows and columns to find the only possible spot for it within a 3x3 block.</p>
                                 </div>
-                                <div className="p-5 bg-zinc-950/50 border border-zinc-900 rounded-2xl">
-                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Naked Singles</h4>
+                                <div className="p-5 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-2xl">
+                                    <h4 className="text-sm font-black text-[#f0ede8] mb-2 uppercase tracking-wide">Naked Singles</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed font-semibold">When a cell has only one possible candidate remaining based on its row, column, and block neighbors, fill it in immediately!</p>
                                 </div>
                             </div>
                         </section>
                     </div>
                     
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[3rem] p-10 md:p-14">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Sudoku Intelligence (FAQ)</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] bg-[#1c1c1c]/30 border border-white/[0.05] rounded-[3rem] p-10 md:p-14">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Sudoku Intelligence (FAQ)</h3>
                         <Accordion>
                             <AccordionItem title="Why is Sudoku good for your brain?">
                                 Solving puzzles regularly improves mental agility, memory, and can help reduce stress by providing a meditative &quot;flow state&quot; focus.

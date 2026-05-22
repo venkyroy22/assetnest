@@ -80,8 +80,6 @@ export default function Tooltip({
             className={`relative inline-block ${className}`}
             onMouseEnter={showTooltip}
             onMouseLeave={hideTooltip}
-            onFocus={showTooltip}
-            onBlur={hideTooltip}
             onClick={hideTooltip}
         >
             {children}

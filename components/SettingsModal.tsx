@@ -23,17 +23,19 @@ export default function SettingsModal() {
       {/* Modal Content */}
       <div 
         data-lenis-prevent
-        className="relative w-full max-w-2xl bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 flex flex-col max-h-[85vh]"
+        className="relative w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-300 flex flex-col max-h-[85vh]"
+        style={{ background: "#141414", border: "1px solid rgba(255,255,255,0.08)" }}
       >
         
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-900 bg-zinc-950/50">
-          <h2 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-            <LayoutTemplate size={20} className="text-zinc-400" /> Platform Settings
+        <div className="flex items-center justify-between px-6 py-4" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)", background: "#111111" }}>
+          <h2 className="text-lg font-black tracking-tight flex items-center gap-2" style={{ color: "#f0ede8" }}>
+            <LayoutTemplate size={20} style={{ color: "#707070" }} /> Platform Settings
           </h2>
           <button 
             onClick={() => setSettingsOpen(false)}
-            className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-900 rounded-full transition-colors"
+            className="p-2 hover:text-[#f0ede8] rounded-full transition-colors"
+            style={{ color: "#555" }}
           >
             <X size={18} />
           </button>
@@ -44,7 +46,7 @@ export default function SettingsModal() {
           
           {/* Section: Eye Protect */}
           <section className="space-y-4 pt-2">
-            <div className="flex items-center justify-between p-5 rounded-3xl border border-amber-500/20 bg-amber-500/5">
+            <div className="flex items-center justify-between p-5 rounded-3xl" style={{ border: "1px solid rgba(217,163,50,0.2)", background: "rgba(217,163,50,0.05)" }}>
                 <div className="flex gap-4 items-center">
                     <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
                         <EyeOff size={22} className="text-amber-500" />
@@ -67,22 +69,22 @@ export default function SettingsModal() {
 
           {/* Section: Motion */}
           <section className="space-y-4 pt-2">
-             <div className="flex items-center justify-between p-5 rounded-3xl border border-zinc-800 bg-zinc-900/30">
+             <div className="flex items-center justify-between p-5 rounded-3xl" style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.03)" }}>
                  <div className="flex gap-4 items-center">
-                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                         <MousePointer2 size={20} className="text-zinc-400" />
+                     <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                         <MousePointer2 size={20} style={{ color: "#707070" }} />
                      </div>
                      <div>
-                         <h4 className="text-sm font-bold text-white">Reduce Motion</h4>
-                         <p className="text-xs text-zinc-500 mt-1 pr-4 leading-relaxed font-medium">Disable heavy interface animations and spotlight effects for a faster layout.</p>
+                         <h4 className="text-sm font-bold" style={{ color: "#f0ede8" }}>Reduce Motion</h4>
+                         <p className="text-xs mt-1 pr-4 leading-relaxed font-medium" style={{ color: "#555" }}>Disable heavy interface animations and spotlight effects for a faster layout.</p>
                      </div>
                  </div>
                  
                  <button 
                      onClick={() => updateSettings({ reduceMotion: !settings.reduceMotion })}
-                     className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ${settings.reduceMotion ? "bg-white" : "bg-zinc-800"}`}
+                     className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ${settings.reduceMotion ? "bg-[#f0ede8]" : "bg-white/[0.08]"}`}
                  >
-                     <div className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-transform duration-300 ${settings.reduceMotion ? "translate-x-6 bg-black" : "bg-white"}`} />
+                     <div className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-transform duration-300 ${settings.reduceMotion ? "translate-x-6 bg-[#141414]" : "bg-[#f0ede8]"}`} />
                  </button>
              </div>
           </section>
@@ -90,35 +92,35 @@ export default function SettingsModal() {
 
           {/* Section: Sticky Navbar */}
           <section className="space-y-4 pt-2">
-             <div className="flex items-center justify-between p-5 rounded-3xl border border-zinc-800 bg-zinc-900/30">
+             <div className="flex items-center justify-between p-5 rounded-3xl" style={{ border: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.03)" }}>
                  <div className="flex gap-4 items-center">
-                     <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center shrink-0">
-                         <Monitor size={20} className="text-zinc-400" />
+                     <div className="w-12 h-12 rounded-full flex items-center justify-center shrink-0" style={{ background: "rgba(255,255,255,0.06)" }}>
+                         <Monitor size={20} style={{ color: "#707070" }} />
                      </div>
                      <div>
-                         <h4 className="text-sm font-bold text-white">Sticky Navigation Bar</h4>
-                         <p className="text-xs text-zinc-500 mt-1 pr-4 leading-relaxed font-medium">Keep the top header visible at all times while scrolling down the page.</p>
+                         <h4 className="text-sm font-bold" style={{ color: "#f0ede8" }}>Sticky Navigation Bar</h4>
+                         <p className="text-xs mt-1 pr-4 leading-relaxed font-medium" style={{ color: "#555" }}>Keep the top header visible at all times while scrolling down the page.</p>
                      </div>
                  </div>
                  
                  <button 
                      onClick={() => updateSettings({ fixedNavbar: !settings.fixedNavbar })}
-                     className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ${settings.fixedNavbar ? "bg-white" : "bg-zinc-800"}`}
+                     className={`relative shrink-0 w-12 h-6 rounded-full transition-colors duration-300 ${settings.fixedNavbar ? "bg-[#f0ede8]" : "bg-white/[0.08]"}`}
                  >
-                     <div className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-transform duration-300 ${settings.fixedNavbar ? "translate-x-6 bg-black" : "bg-white"}`} />
+                     <div className={`absolute top-1 left-1 w-4 h-4 rounded-full transition-transform duration-300 ${settings.fixedNavbar ? "translate-x-6 bg-[#141414]" : "bg-[#f0ede8]"}`} />
                  </button>
              </div>
           </section>
 
           {/* Section: Data Wipe */}
-          <section className="space-y-4 pt-4 border-t border-red-500/10">
-            <div className="p-6 rounded-3xl border border-red-500/20 bg-red-500/5 group">
+          <section className="space-y-4 pt-4" style={{ borderTop: "1px solid rgba(239,68,68,0.1)" }}>
+            <div className="p-6 rounded-3xl group" style={{ border: "1px solid rgba(239,68,68,0.2)", background: "rgba(239,68,68,0.05)" }}>
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
                     <div>
                         <h4 className="text-sm font-bold text-red-500 flex items-center gap-2">
                             <X size={16} /> Danger Zone
                         </h4>
-                        <p className="text-xs text-zinc-500 mt-2 pr-4 leading-relaxed font-medium">Wipe all local storage, pins, and platform settings. This action is permanent and will refresh the application.</p>
+                    <p className="text-xs mt-2 pr-4 leading-relaxed font-medium" style={{ color: "#555" }}>Wipe all local storage, pins, and platform settings. This action is permanent and will refresh the application.</p>
                     </div>
                     <button 
                         onClick={() => {

@@ -212,7 +212,7 @@ export default function PdfUnlockerPage() {
     };
 
     return (
-        <div className="min-h-screen bg-black py-10 md:py-20">
+        <div className="min-h-screen bg-[#141414] py-10 md:py-20">
             <Container>
                 <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
@@ -220,16 +220,16 @@ export default function PdfUnlockerPage() {
                 <div className="max-w-3xl mx-auto text-center mb-16 relative group">
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="absolute -top-2 left-0 md:-left-8 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
+                        className="absolute -top-2 left-0 md:-left-8 p-2 rounded-full bg-zinc-900/80 border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                         title="View Information"
                     >
                         <Info size={16} />
                     </button>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 rounded-full mb-6">
                         <Unlock size={14} className="text-zinc-400" />
                         <span className="text-xs font-bold uppercase tracking-widest text-zinc-400">PDF Tools</span>
                     </div>
-                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
+                    <h1 className="text-3xl sm:text-5xl md:text-6xl font-black tracking-tight text-[#f0ede8] mb-6 leading-[1.1]">
                         PDF Password <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 to-zinc-600">Remover</span>
                     </h1>
                     <p className="text-zinc-400 text-lg leading-relaxed max-w-xl mx-auto">
@@ -255,13 +255,13 @@ export default function PdfUnlockerPage() {
                             onDragOver={(e) => e.preventDefault()}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className="border-2 border-dashed border-zinc-800 hover:border-zinc-600 bg-zinc-950 rounded-[2rem] p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group relative overflow-hidden"
+                            className="border-2 border-dashed border-white/[0.07] hover:border-white/[0.15] bg-[#1c1c1c] rounded-[2rem] p-8 md:p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-colors group relative overflow-hidden"
                         >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-                            <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800 group-hover:scale-110 transition-transform">
+                            <div className="w-20 h-20 bg-[#1c1c1c] rounded-full flex items-center justify-center mb-6 border border-white/[0.07] group-hover:scale-110 transition-transform">
                                 <Upload size={32} className="text-zinc-400" />
                             </div>
-                            <h3 className="text-xl font-black text-white mb-2">Drag & Drop or Click Here</h3>
+                            <h3 className="text-xl font-black text-[#f0ede8] mb-2">Drag & Drop or Click Here</h3>
                             <p className="text-zinc-500 text-sm font-medium">100% Private PDF Decryption • Instant Unlock</p>
                             <input
                                 type="file"
@@ -275,19 +275,19 @@ export default function PdfUnlockerPage() {
 
                     {/* Step 2: Password Input or Success */}
                     {file && (
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-8">
-                            <div className="flex items-center gap-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-zinc-800/50">
-                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-zinc-900 rounded-xl flex items-center justify-center border border-zinc-800 shrink-0">
+                        <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] p-8">
+                            <div className="flex items-center gap-4 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-white/[0.06]">
+                                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#1c1c1c] rounded-xl flex items-center justify-center border border-white/[0.07] shrink-0">
                                     <FileText size={20} className="text-zinc-400 sm:size-24" />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <h3 className="text-white font-medium text-sm sm:text-base truncate">{file.name}</h3>
+                                    <h3 className="text-[#f0ede8] font-medium text-sm sm:text-base truncate">{file.name}</h3>
                                     <p className="text-zinc-500 text-xs">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                                 </div>
                                 {!successUrl && (
                                     <button 
                                         onClick={handleReset}
-                                        className="text-zinc-500 hover:text-white transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
+                                        className="text-zinc-500 hover:text-[#f0ede8] transition-colors text-xs sm:text-sm font-medium whitespace-nowrap"
                                     >
                                         Change
                                     </button>
@@ -299,21 +299,21 @@ export default function PdfUnlockerPage() {
                                     <div className="w-16 h-16 sm:w-20 sm:h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 sm:mb-6 mx-auto border border-green-500/20">
                                         <Unlock size={28} className="text-green-500 sm:size-32" />
                                     </div>
-                                    <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">Unlocked!</h3>
+                                    <h3 className="text-xl sm:text-2xl font-bold text-[#f0ede8] mb-2">Unlocked!</h3>
                                     <p className="text-zinc-400 text-xs sm:text-base mb-6 sm:mb-8">Password protection has been removed.</p>
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                         <a
                                             href={successUrl}
                                             download={unlockedFileName}
-                                            className="h-12 px-6 bg-white text-black rounded-full font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors shadow-xl"
+                                            className="h-12 px-6 bg-[#f0ede8] text-[#141414] rounded-full font-bold text-xs sm:text-sm flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-colors shadow-xl"
                                         >
                                             <Download size={18} />
                                             Download PDF
                                         </a>
                                         <button
                                             onClick={handleReset}
-                                            className="h-12 px-6 bg-zinc-900 text-white rounded-full font-bold text-xs sm:text-sm hover:bg-zinc-800 transition-colors border border-zinc-800"
+                                            className="h-12 px-6 bg-[#1c1c1c] text-[#f0ede8] rounded-full font-bold text-xs sm:text-sm hover:bg-white/[0.06] transition-colors border border-white/[0.07]"
                                         >
                                             <RefreshCw size={14} /> Unlock Another
                                         </button>
@@ -336,7 +336,7 @@ export default function PdfUnlockerPage() {
                                                 id="password"
                                                 value={password}
                                                 onChange={(e) => setPassword(e.target.value)}
-                                                className="w-full h-14 bg-zinc-900 border border-zinc-800 rounded-xl pl-12 pr-12 text-white placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
+                                                className="w-full h-14 bg-[#1c1c1c] border border-white/[0.07] rounded-xl pl-12 pr-12 text-[#f0ede8] placeholder:text-zinc-600 focus:outline-none focus:border-zinc-600 transition-colors"
                                                 placeholder="Document password"
                                                 autoFocus
                                                 required
@@ -344,7 +344,7 @@ export default function PdfUnlockerPage() {
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-white transition-colors focus:outline-none"
+                                                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-[#f0ede8] transition-colors focus:outline-none"
                                             >
                                                 {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                                             </button>
@@ -353,7 +353,7 @@ export default function PdfUnlockerPage() {
                                     <button
                                         type="submit"
                                         disabled={isProcessing || !password}
-                                        className="w-full h-14 bg-white text-black rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-zinc-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full h-14 bg-[#f0ede8] text-[#141414] rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
                                         {isProcessing ? (
                                             <>
@@ -386,24 +386,24 @@ export default function PdfUnlockerPage() {
                 {/* Features Section */}
                 <div className="max-w-4xl mx-auto mt-32 grid grid-cols-1 md:grid-cols-3 gap-8 text-center mb-20">
                     <div>
-                        <div className="w-12 h-12 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="w-12 h-12 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <ShieldCheck className="text-zinc-400" size={24} />
                         </div>
-                        <h4 className="text-white font-bold mb-2">Secure & Private</h4>
+                        <h4 className="text-[#f0ede8] font-bold mb-2">Secure & Private</h4>
                         <p className="text-zinc-500 text-sm leading-relaxed">Files are processed instantly. If a server is used for decryption, the file is deleted from memory the exact millisecond it finishes.</p>
                     </div>
                     <div>
-                        <div className="w-12 h-12 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="w-12 h-12 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <Unlock className="text-zinc-400" size={24} />
                         </div>
-                        <h4 className="text-white font-bold mb-2">Instant Unlock</h4>
+                        <h4 className="text-[#f0ede8] font-bold mb-2">Instant Unlock</h4>
                         <p className="text-zinc-500 text-sm leading-relaxed">Remove passwords instantly using hybrid client/server processing.</p>
                     </div>
                     <div>
-                        <div className="w-12 h-12 bg-zinc-900/50 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="w-12 h-12 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <FileCheck className="text-zinc-400" size={24} />
                         </div>
-                        <h4 className="text-white font-bold mb-2">Original Quality</h4>
+                        <h4 className="text-[#f0ede8] font-bold mb-2">Original Quality</h4>
                         <p className="text-zinc-500 text-sm leading-relaxed">Your PDF structure, images, and text remain exactly as they were, just without the lock.</p>
                     </div>
                 </div>
@@ -411,8 +411,8 @@ export default function PdfUnlockerPage() {
 
             <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Unlocker Info">
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Security Abstraction Infrastructure
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -421,25 +421,25 @@ export default function PdfUnlockerPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Zap size={20} className="text-zinc-500" />
                                 How Encryption is Stripped
                             </h3>
                             <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Owner Passwords (Permissions):</strong> If your PDF restricts printing, copying, or editing, it has an Owner Password. Our tool strips this instantly in your local browser cache without server intervention.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>User Passwords (Viewing):</strong> If your PDF asks for a password to open, it has a User Password. You must provide the password. We securely process the decryption using our ultra-fast backend engine.</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy Infrastructure
                             </h3>
@@ -455,8 +455,8 @@ export default function PdfUnlockerPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Can this hack a forgotten password?">
                                 Absolutely not. This is not a hacking or brute-force tool. We cannot recover lost or forgotten User Passwords. You must know the password to remove the protection.

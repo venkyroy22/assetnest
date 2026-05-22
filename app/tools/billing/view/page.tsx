@@ -161,10 +161,10 @@ function BillViewer() {
 
     // ── Error ─────────────────────────────────────────────────────────────────
     if (error) return (
-        <div className="min-h-screen bg-zinc-950 flex items-center justify-center p-6">
+        <div className="min-h-screen bg-[#1c1c1c] flex items-center justify-center p-6">
             <div className="text-center">
                 <div className="text-5xl mb-4">🧾</div>
-                <p className="text-white font-black text-lg mb-2">{t.noData}</p>
+                <p className="text-[#f0ede8] font-black text-lg mb-2">{t.noData}</p>
                 <p className="text-zinc-500 text-sm">{t.noDataSub}</p>
             </div>
         </div>
@@ -218,7 +218,7 @@ function BillViewer() {
                                 className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${
                                     lang === l.code
                                         ? "bg-white border-white text-black"
-                                        : "bg-zinc-900 border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
+                                        : "bg-[#1c1c1c] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-[#f0ede8]"
                                 }`}
                             >
                                 {l.native}
@@ -240,8 +240,8 @@ function BillViewer() {
 
                     {/* Badge */}
                     <div className="no-print flex items-center justify-center gap-2 mb-5">
-                        <div className="w-7 h-7 bg-black rounded-lg flex items-center justify-center border border-white/10">
-                            <span className="text-white text-sm font-black">₹</span>
+                        <div className="w-7 h-7 bg-[#141414] rounded-lg flex items-center justify-center border border-white/10">
+                            <span className="text-[#f0ede8] text-sm font-black">₹</span>
                         </div>
                         <span className="text-xs font-semibold tracking-wide text-zinc-400">{t.title}</span>
                     </div>
@@ -249,7 +249,7 @@ function BillViewer() {
                     <div className="bg-white rounded-3xl overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] border border-zinc-200">
                         {/* Shop Header */}
                         <div className="bg-white px-8 pt-10 pb-6 text-center border-b border-zinc-100">
-                            <div className="inline-block px-3 py-1 bg-white text-black rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
+                            <div className="inline-block px-3 py-1 bg-[#f0ede8] text-[#141414] rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
                             <p className="text-2xl font-bold text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
                             {bill.a && <p className="text-xs text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">{bill.a}</p>}
                             <div className="flex items-center justify-center gap-5 mt-4 flex-wrap">
@@ -325,12 +325,12 @@ function BillViewer() {
                                 )}
                             </div>
                             {/* Grand Total */}
-                            <div className="bg-black rounded-[1.25rem] px-6 py-5 flex items-center justify-between shadow-xl shadow-black/10 transition-transform active:scale-[0.98]">
+                            <div className="bg-[#141414] rounded-[1.25rem] px-6 py-5 flex items-center justify-between shadow-xl shadow-black/10 transition-transform active:scale-[0.98]">
                                 <div>
                                     <p className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-0.5">{t.totalAmount}</p>
                                     <p className="text-[10px] text-zinc-500 font-bold">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
                                 </div>
-                                <p className="text-3xl font-black text-white">{fmtINR(grandTotal)}</p>
+                                <p className="text-3xl font-black text-[#f0ede8]">{fmtINR(grandTotal)}</p>
                             </div>
                         </div>
                         {/* Footer */}
@@ -338,8 +338,8 @@ function BillViewer() {
                             <p className="text-xs font-black text-black mb-1.5">{t.thank}</p>
                             <p className="text-xs text-zinc-400 font-semibold tracking-wide mb-6">{t.generated}</p>
                             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-2xl shadow-sm">
-                                <div className="w-5 h-5 bg-black rounded-lg flex items-center justify-center">
-                                    <span className="text-white text-[9px] font-black">A</span>
+                                <div className="w-5 h-5 bg-[#141414] rounded-lg flex items-center justify-center">
+                                    <span className="text-[#f0ede8] text-[9px] font-black">A</span>
                                 </div>
                                 <span className="text-xs font-semibold text-zinc-600 tracking-wide">{t.poweredBy}</span>
                             </div>
@@ -349,7 +349,7 @@ function BillViewer() {
                     {/* Download button */}
                     <button
                         onClick={() => window.print()}
-                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-black text-white py-4 rounded-full text-sm font-bold tracking-wide hover:bg-zinc-900 active:scale-[0.98] transition-all shadow-lg shadow-black/20"
+                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-[#141414] text-[#f0ede8] py-4 rounded-full text-sm font-bold tracking-wide hover:bg-[#1c1c1c] active:scale-[0.98] transition-all shadow-lg shadow-black/20"
                     >
                         <Download size={16} />
                         {t.download}
@@ -480,7 +480,7 @@ function BillViewer() {
 export default function BillViewPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+            <div className="min-h-screen bg-[#1c1c1c] flex items-center justify-center">
                 <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
             </div>
         }>

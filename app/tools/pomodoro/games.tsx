@@ -103,16 +103,16 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
             <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Score</span>
-                    <span className="text-2xl font-black text-white">{score}</span>
+                    <span className="text-2xl font-black text-[#f0ede8]">{score}</span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Hi-Score</span>
-                    <span className="text-2xl font-black text-white">{highScore}</span>
+                    <span className="text-2xl font-black text-[#f0ede8]">{highScore}</span>
                 </div>
             </div>
 
             <div 
-                className="relative bg-zinc-950 border border-zinc-800 shadow-2xl overflow-hidden"
+                className="relative bg-[#1c1c1c] border border-white/[0.07] shadow-2xl overflow-hidden"
                 style={{ width: CANVAS_SIZE, height: CANVAS_SIZE }}
             >
                 {/* Grid Pattern */}
@@ -151,13 +151,13 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
                 ))}
 
                 {gameOver && (
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-300">
-                        <Trophy size={40} className="text-white mb-4" />
-                        <h3 className="text-xl font-bold text-white mb-2">Game Over!</h3>
+                    <div className="absolute inset-0 bg-[#141414]/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center animate-in fade-in zoom-in duration-300">
+                        <Trophy size={40} className="text-[#f0ede8] mb-4" />
+                        <h3 className="text-xl font-bold text-[#f0ede8] mb-2">Game Over!</h3>
                         <p className="text-sm text-zinc-400 mb-6">You scored {score} points. Ready to beat your high score?</p>
                         <button 
                             onClick={reset}
-                            className="bg-white text-black text-xs font-black py-3 px-8 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                            className="bg-[#f0ede8] text-[#141414] text-xs font-black py-3 px-8 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
                         >
                             <RefreshCw size={14} /> PLAY AGAIN
                         </button>
@@ -167,11 +167,11 @@ function SnakeGame({ onExit }: { onExit: () => void }) {
 
             <div className="grid grid-cols-3 gap-2 w-full max-w-[180px]">
                 <div />
-                <button onMouseDown={() => { if (dirRef.current.y === 0) { setDir({ x: 0, y: -1 }); dirRef.current = { x: 0, y: -1 }; } }} className="aspect-square bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 active:bg-zinc-800 active:scale-90 transition-all font-bold">↑</button>
+                <button onMouseDown={() => { if (dirRef.current.y === 0) { setDir({ x: 0, y: -1 }); dirRef.current = { x: 0, y: -1 }; } }} className="aspect-square bg-[#1c1c1c] border border-white/[0.07] rounded-xl flex items-center justify-center text-zinc-400 active:bg-white/[0.06] active:scale-90 transition-all font-bold">↑</button>
                 <div />
-                <button onMouseDown={() => { if (dirRef.current.x === 0) { setDir({ x: -1, y: 0 }); dirRef.current = { x: -1, y: 0 }; } }} className="aspect-square bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 active:bg-zinc-800 active:scale-90 transition-all font-bold">←</button>
-                <button onMouseDown={() => { if (dirRef.current.y === 0) { setDir({ x: 0, y: 1 }); dirRef.current = { x: 0, y: 1 }; } }} className="aspect-square bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 active:bg-zinc-800 active:scale-90 transition-all font-bold">↓</button>
-                <button onMouseDown={() => { if (dirRef.current.x === 0) { setDir({ x: 1, y: 0 }); dirRef.current = { x: 1, y: 0 }; } }} className="aspect-square bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center text-zinc-400 active:bg-zinc-800 active:scale-90 transition-all font-bold">→</button>
+                <button onMouseDown={() => { if (dirRef.current.x === 0) { setDir({ x: -1, y: 0 }); dirRef.current = { x: -1, y: 0 }; } }} className="aspect-square bg-[#1c1c1c] border border-white/[0.07] rounded-xl flex items-center justify-center text-zinc-400 active:bg-white/[0.06] active:scale-90 transition-all font-bold">←</button>
+                <button onMouseDown={() => { if (dirRef.current.y === 0) { setDir({ x: 0, y: 1 }); dirRef.current = { x: 0, y: 1 }; } }} className="aspect-square bg-[#1c1c1c] border border-white/[0.07] rounded-xl flex items-center justify-center text-zinc-400 active:bg-white/[0.06] active:scale-90 transition-all font-bold">↓</button>
+                <button onMouseDown={() => { if (dirRef.current.x === 0) { setDir({ x: 1, y: 0 }); dirRef.current = { x: 1, y: 0 }; } }} className="aspect-square bg-[#1c1c1c] border border-white/[0.07] rounded-xl flex items-center justify-center text-zinc-400 active:bg-white/[0.06] active:scale-90 transition-all font-bold">→</button>
             </div>
         </div>
     );
@@ -218,7 +218,7 @@ function MemoryGame({ onExit }: { onExit: () => void }) {
              <div className="flex items-center justify-between w-full">
                 <div className="flex flex-col">
                     <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">Moves</span>
-                    <span className="text-2xl font-black text-white">{moves}</span>
+                    <span className="text-2xl font-black text-[#f0ede8]">{moves}</span>
                 </div>
             </div>
 
@@ -230,13 +230,13 @@ function MemoryGame({ onExit }: { onExit: () => void }) {
                             key={i}
                             disabled={isOpen || flipped.length >= 2}
                             onClick={() => setFlipped(f => [...f, i])}
-                            className={`w-16 h-16 rounded-xl border-2 transition-all duration-300 relative preserve-3d ${isOpen ? 'rotate-y-180 border-white/50 bg-white/10' : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'}`}
+                            className={`w-16 h-16 rounded-xl border-2 transition-all duration-300 relative preserve-3d ${isOpen ? 'rotate-y-180 border-white/50 bg-white/10' : 'border-white/[0.07] bg-[#1c1c1c] hover:border-white/[0.15]'}`}
                         >
                             <div className={`absolute inset-0 flex items-center justify-center transition-all ${isOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
-                                <card.Icon size={24} className="text-white" />
+                                <card.Icon size={24} className="text-[#f0ede8]" />
                             </div>
                             <div className={`absolute inset-0 flex items-center justify-center transition-all ${isOpen ? 'opacity-0' : 'opacity-100'}`}>
-                                <div className="w-2 h-2 rounded-full bg-zinc-800" />
+                                <div className="w-2 h-2 rounded-full bg-white/[0.06]" />
                             </div>
                         </button>
                     );
@@ -245,10 +245,10 @@ function MemoryGame({ onExit }: { onExit: () => void }) {
 
              {win && (
                 <div className="mt-6 animate-in fade-in zoom-in flex flex-col items-center gap-4">
-                    <p className="text-white font-bold">Puzzle Solved! ✨</p>
+                    <p className="text-[#f0ede8] font-bold">Puzzle Solved! ✨</p>
                     <button 
                         onClick={reset}
-                        className="bg-white text-black text-[10px] font-black py-2.5 px-6 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
+                        className="bg-[#f0ede8] text-[#141414] text-[10px] font-black py-2.5 px-6 rounded-full flex items-center gap-2 hover:scale-105 active:scale-95 transition-all"
                     >
                         <RefreshCw size={12} /> PLAY AGAIN
                     </button>
@@ -294,44 +294,44 @@ function ReactionGame({ onExit }: { onExit: () => void }) {
     return (
         <div className="flex flex-col items-center gap-8 p-4 w-full">
             <div className="text-center">
-                <h3 className="text-xs font-black text-white uppercase tracking-widest mb-2">Reaction Test</h3>
+                <h3 className="text-xs font-black text-[#f0ede8] uppercase tracking-widest mb-2">Reaction Test</h3>
                 <p className="text-[10px] text-zinc-500">Tap when the screen turns emerald</p>
             </div>
 
             <div 
                 onClick={handleClickRoute}
                 className={`w-full aspect-[4/3] rounded-[2.5rem] flex flex-col items-center justify-center cursor-pointer transition-all duration-300 border-2 shadow-2xl ${
-                    state === "idle" ? "bg-zinc-950 border-zinc-900" :
+                    state === "idle" ? "bg-[#1c1c1c] border-white/[0.05]" :
                     state === "waiting" ? "bg-red-500/10 border-red-500/20" :
                     state === "ready" ? "bg-white border-white scale-[1.02]" :
-                    "bg-zinc-900 border-zinc-800"
+                    "bg-[#1c1c1c] border-white/[0.07]"
                 }`}
             >
                 {state === "idle" && (
-                    <button onClick={(e) => { e.stopPropagation(); start(); }} className="bg-white text-black text-xs font-black px-10 py-4 rounded-full shadow-2xl hover:scale-105 transition-all outline-none">
+                    <button onClick={(e) => { e.stopPropagation(); start(); }} className="bg-[#f0ede8] text-[#141414] text-xs font-black px-10 py-4 rounded-full shadow-2xl hover:scale-105 transition-all outline-none">
                         START TEST
                     </button>
                 )}
                 {state === "waiting" && <span className="text-2xl animate-pulse font-black text-red-500/50">WAIT...</span>}
-                {state === "ready" && <span className="text-4xl font-black text-white">TAP!</span>}
+                {state === "ready" && <span className="text-4xl font-black text-[#f0ede8]">TAP!</span>}
                 {state === "result" && (
                     <div className="text-center space-y-4">
                         {result === -1 ? (
                             <>
                                 <X size={40} className="text-red-500 mx-auto" />
-                                <h4 className="text-xl font-black text-white">TOO EARLY!</h4>
+                                <h4 className="text-xl font-black text-[#f0ede8]">TOO EARLY!</h4>
                                 <p className="text-[10px] text-zinc-500">Wait for the color change.</p>
                             </>
                         ) : (
                             <>
-                                <Zap size={40} className="text-white mx-auto" strokeWidth={3} />
-                                <h4 className="text-4xl font-black text-white tabular-nums">{result}ms</h4>
+                                <Zap size={40} className="text-[#f0ede8] mx-auto" strokeWidth={3} />
+                                <h4 className="text-4xl font-black text-[#f0ede8] tabular-nums">{result}ms</h4>
                                 <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">
                                     {result < 200 ? "SUPERHUMAN! ⚡" : result < 300 ? "Fast! 🔥" : "Classic ☕"}
                                 </p>
                             </>
                         )}
-                        <button onClick={(e) => { e.stopPropagation(); reset(); }} className="text-[10px] font-black text-white flex items-center gap-2 mx-auto pt-4 group">
+                        <button onClick={(e) => { e.stopPropagation(); reset(); }} className="text-[10px] font-black text-[#f0ede8] flex items-center gap-2 mx-auto pt-4 group">
                            <RefreshCw size={12} className="group-hover:rotate-180 transition-all duration-500" /> TRY AGAIN
                         </button>
                     </div>
@@ -349,21 +349,21 @@ export function MiniGames({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
     return (
         <div className="fixed inset-0 z-[600] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/90 backdrop-blur-xl animate-in fade-in duration-500" onClick={onClose} />
+            <div className="absolute inset-0 bg-[#141414]/90 backdrop-blur-xl animate-in fade-in duration-500" onClick={onClose} />
             
-            <div className="relative w-full max-w-lg bg-zinc-950 border border-zinc-800 rounded-[3rem] shadow-[0_0_100px_-20px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
-                <div className="p-8 pb-4 flex items-center justify-between border-b border-zinc-900 bg-zinc-950/50 backdrop-blur-sm sticky top-0 z-20">
+            <div className="relative w-full max-w-lg bg-[#1c1c1c] border border-white/[0.07] rounded-[3rem] shadow-[0_0_100px_-20px_rgba(255,255,255,0.1)] overflow-hidden animate-in zoom-in-95 slide-in-from-bottom-10 duration-500">
+                <div className="p-8 pb-4 flex items-center justify-between border-b border-white/[0.05] bg-[#1c1c1c]/50 backdrop-blur-sm sticky top-0 z-20">
                     <div className="flex items-center gap-4">
                         {activeGame && (
                             <button 
                                 onClick={() => setActiveGame(null)}
-                                className="p-2 text-zinc-500 hover:text-white bg-zinc-900 border border-zinc-800 rounded-xl transition-all"
+                                className="p-2 text-zinc-500 hover:text-[#f0ede8] bg-[#1c1c1c] border border-white/[0.07] rounded-xl transition-all"
                             >
                                 <ChevronLeft size={20} />
                             </button>
                         )}
                         <div>
-                            <h2 className="text-lg font-black text-white tracking-widest uppercase">
+                            <h2 className="text-lg font-black text-[#f0ede8] tracking-widest uppercase">
                                 {activeGame ? activeGame : "Break Games"}
                             </h2>
                             <p className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">
@@ -371,7 +371,7 @@ export function MiniGames({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                             </p>
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-3 bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white rounded-2xl transition-all shadow-xl">
+                    <button onClick={onClose} className="p-3 bg-[#1c1c1c] border border-white/[0.07] text-zinc-500 hover:text-[#f0ede8] rounded-2xl transition-all shadow-xl">
                         <X size={20} />
                     </button>
                 </div>
@@ -380,23 +380,23 @@ export function MiniGames({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
                     {!activeGame ? (
                         <div className="grid grid-cols-1 gap-4">
                             {[
-                                { id: "snake", title: "Snake Pro", desc: "The classic arcade survival game. Beat your records.", icon: <Gamepad2 className="text-white" /> },
-                                { id: "memory", title: "Recall", desc: "A fast-paced memory matching puzzle.", icon: <Brain className="text-white" /> },
-                                { id: "clicker", title: "Reflex", desc: "Test your reaction time with millisecond precision.", icon: <Zap className="text-white" /> },
+                                { id: "snake", title: "Snake Pro", desc: "The classic arcade survival game. Beat your records.", icon: <Gamepad2 className="text-[#f0ede8]" /> },
+                                { id: "memory", title: "Recall", desc: "A fast-paced memory matching puzzle.", icon: <Brain className="text-[#f0ede8]" /> },
+                                { id: "clicker", title: "Reflex", desc: "Test your reaction time with millisecond precision.", icon: <Zap className="text-[#f0ede8]" /> },
                             ].map((g) => (
                                 <button 
                                     key={g.id}
                                     onClick={() => setActiveGame(g.id as GameType)}
-                                    className="group relative flex items-center gap-6 p-6 bg-zinc-900/40 border border-zinc-800 rounded-[2rem] text-left hover:bg-zinc-900 hover:border-zinc-500 transition-all duration-300"
+                                    className="group relative flex items-center gap-6 p-6 bg-[#1c1c1c]/40 border border-white/[0.07] rounded-[2rem] text-left hover:bg-[#1c1c1c] hover:border-zinc-500 transition-all duration-300"
                                 >
-                                    <div className="w-16 h-16 rounded-2xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-500">
+                                    <div className="w-16 h-16 rounded-2xl bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-2xl shadow-inner group-hover:scale-110 transition-transform duration-500">
                                         {g.icon}
                                     </div>
                                     <div className="flex-grow">
-                                        <h3 className="font-bold text-white text-lg">{g.title}</h3>
+                                        <h3 className="font-bold text-[#f0ede8] text-lg">{g.title}</h3>
                                         <p className="text-xs text-zinc-500 font-medium leading-relaxed">{g.desc}</p>
                                     </div>
-                                    <div className="w-10 h-10 rounded-full border border-zinc-800 flex items-center justify-center text-zinc-700 group-hover:text-white group-hover:border-zinc-500 transition-all">
+                                    <div className="w-10 h-10 rounded-full border border-white/[0.07] flex items-center justify-center text-zinc-700 group-hover:text-[#f0ede8] group-hover:border-zinc-500 transition-all">
                                         →
                                     </div>
                                 </button>
@@ -413,7 +413,7 @@ export function MiniGames({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 
                 {!activeGame && (
                     <div className="p-8 pt-0 text-center">
-                        <div className="inline-flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] bg-zinc-950 border border-zinc-900 px-4 py-2 rounded-full">
+                        <div className="inline-flex items-center gap-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.3em] bg-[#1c1c1c] border border-white/[0.05] px-4 py-2 rounded-full">
                             ✨ Take a short breather
                         </div>
                     </div>

@@ -105,19 +105,19 @@ export default function ImageToTextPage() {
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-5xl mx-auto">
             {/* Header */}
             <div className="text-center mb-10">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full relative">
-                    <Scan size={12} className="text-white" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6 rounded-full relative">
+                    <Scan size={12} className="text-[#f0ede8]" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">OCR Utility</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
+                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-white/[0.06] border border-white/[0.07] rounded-full text-zinc-400 hover:text-[#f0ede8] transition-all shadow-xl z-20"
                         title="What is this?"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    Image to <span className="text-white">Text</span>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
+                    Image to <span className="text-[#f0ede8]">Text</span>
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium max-w-xl mx-auto leading-relaxed">
                     Instantly extract text from screenshots, documents, and photos. Fast, zero-logs, and processed locally for complete privacy.
@@ -129,7 +129,7 @@ export default function ImageToTextPage() {
                 <div className="mb-6 p-4 border border-red-500/20 bg-red-500/5 flex items-center gap-3 rounded-2xl animate-in fade-in">
                     <Info size={16} className="text-red-400 shrink-0" />
                     <span className="text-xs font-medium text-red-100">{error}</span>
-                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-white"><X size={16} /></button>
+                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-[#f0ede8]"><X size={16} /></button>
                 </div>
             )}
 
@@ -140,7 +140,7 @@ export default function ImageToTextPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`min-h-[350px] border-2 border-dashed rounded-[2.5rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
-                        isDragging ? "border-white bg-white/5 scale-[0.99]" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
+                        isDragging ? "border-white bg-white/5 scale-[0.99]" : "border-white/[0.07] bg-[#1c1c1c] hover:bg-[#1e1e1e]/50"
                     }`}
                 >
                     <input 
@@ -151,22 +151,22 @@ export default function ImageToTextPage() {
                         onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} 
                     />
                     <div className="text-center px-8 space-y-6">
-                        <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
+                        <div className="w-20 h-20 bg-[#1c1c1c] border border-white/[0.07] rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
                             <Camera size={32} className="text-zinc-500" />
                         </div>
                         <div>
-                            <h2 className="text-xl font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <h2 className="text-xl font-bold text-[#f0ede8] tracking-tight">Drag & Drop or Click Here</h2>
                             <div className="flex flex-wrap justify-center gap-2 mt-3">
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <ShieldCheck size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <ShieldCheck size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <Scan size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <Scan size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <Check size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <Check size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
                                 </div>
                             </div>
@@ -174,7 +174,7 @@ export default function ImageToTextPage() {
                         </div>
                         <div className="flex flex-wrap justify-center gap-2 pt-4">
                             {['JPEG', 'PNG', 'WebP'].map(format => (
-                                <span key={format} className="px-3 py-1 bg-zinc-900 border border-zinc-800 text-zinc-400 text-[10px] font-bold rounded-lg">{format}</span>
+                                <span key={format} className="px-3 py-1 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 text-[10px] font-bold rounded-lg">{format}</span>
                             ))}
                         </div>
                     </div>
@@ -182,8 +182,8 @@ export default function ImageToTextPage() {
             ) : (
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom duration-500">
                     {/* Left side: Image Preview */}
-                    <div className="bg-zinc-950 border border-zinc-900 p-4 lg:p-6 rounded-[2.5rem] flex flex-col gap-6 h-fit sticky top-24">
-                        <div className="relative aspect-auto min-h-[200px] max-h-[500px] w-full bg-zinc-900 rounded-3xl overflow-hidden border border-zinc-800 shadow-inner group">
+                    <div className="bg-[#1c1c1c] border border-white/[0.05] p-4 lg:p-6 rounded-[2.5rem] flex flex-col gap-6 h-fit sticky top-24">
+                        <div className="relative aspect-auto min-h-[200px] max-h-[500px] w-full bg-[#1c1c1c] rounded-3xl overflow-hidden border border-white/[0.07] shadow-inner group">
                             <img 
                                 src={previewUrl!} 
                                 alt="Preview" 
@@ -193,10 +193,10 @@ export default function ImageToTextPage() {
 
                         <div className="flex items-center justify-between px-2">
                            <div className="space-y-1">
-                                <h3 className="text-sm font-bold text-white truncate max-w-[200px]">{image.name}</h3>
+                                <h3 className="text-sm font-bold text-[#f0ede8] truncate max-w-[200px]">{image.name}</h3>
                                 <p className="text-[10px] text-zinc-500 font-bold uppercase">{(image.size / 1024 / 1024).toFixed(2)} MB • IMAGE</p>
                            </div>
-                           <button onClick={reset} className="p-2.5 bg-zinc-900 text-zinc-400 hover:text-white rounded-xl border border-zinc-800 transition-colors">
+                           <button onClick={reset} className="p-2.5 bg-[#1c1c1c] text-zinc-400 hover:text-[#f0ede8] rounded-xl border border-white/[0.07] transition-colors">
                                 <RefreshCw size={18} />
                            </button>
                         </div>
@@ -204,7 +204,7 @@ export default function ImageToTextPage() {
                                 <button
                                     onClick={extractText}
                                     disabled={isProcessing}
-                                    className="w-full h-12 bg-white text-black font-black tracking-wide text-sm rounded-xl flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 shadow-xl shadow-white/10 active:scale-[0.98] disabled:opacity-50"
+                                    className="w-full h-12 bg-[#f0ede8] text-[#141414] font-black tracking-wide text-sm rounded-xl flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 shadow-xl shadow-white/10 active:scale-[0.98] disabled:opacity-50"
                                 >
                                     {isProcessing ? (
                                         <><RefreshCw size={18} className="animate-spin" /> Processing {progress > 0 ? `${progress}%` : ''}</>
@@ -216,19 +216,19 @@ export default function ImageToTextPage() {
 
                     {/* Right side: Result */}
                     <div className="flex flex-col gap-6">
-                        <div className="bg-zinc-950 border border-zinc-900 p-6 lg:p-8 rounded-[2.5rem] flex flex-col min-h-[400px] h-full relative overflow-hidden">
+                        <div className="bg-[#1c1c1c] border border-white/[0.05] p-6 lg:p-8 rounded-[2.5rem] flex flex-col min-h-[400px] h-full relative overflow-hidden">
                            
                             <div className="relative flex-grow flex flex-col">
                                 <div className="flex items-center justify-between mb-6">
-                                    <h3 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-                                        Extracted <span className="text-white">Result</span>
+                                    <h3 className="text-lg font-bold text-[#f0ede8] tracking-tight flex items-center gap-2">
+                                        Extracted <span className="text-[#f0ede8]">Result</span>
                                     </h3>
                                     {extractedText && (
                                         <div className="flex items-center gap-2">
                                             <button 
                                                 onClick={copyToClipboard}
                                                 className={`p-2 rounded-lg border transition-all ${
-                                                    copied ? "bg-white/20 border-white/40 text-white" : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                                                    copied ? "bg-white/20 border-white/40 text-[#f0ede8]" : "bg-[#1c1c1c] border-white/[0.07] text-zinc-400 hover:text-[#f0ede8]"
                                                 }`}
                                                 title="Copy to clipboard"
                                             >
@@ -238,7 +238,7 @@ export default function ImageToTextPage() {
                                     )}
                                 </div>
 
-                                <div className="flex-grow w-full bg-black/40 border border-zinc-900 rounded-3xl p-6 font-mono text-sm leading-relaxed text-zinc-300 overflow-y-auto max-h-[500px] scrollbar-hide">
+                                <div className="flex-grow w-full bg-[#141414]/40 border border-white/[0.05] rounded-3xl p-6 font-mono text-sm leading-relaxed text-zinc-300 overflow-y-auto max-h-[500px] scrollbar-hide">
                                     {isProcessing ? (
                                         <div className="h-full flex flex-col items-center justify-center space-y-4 animate-pulse">
                                             <Scan size={40} className="text-white/20" />
@@ -259,13 +259,13 @@ export default function ImageToTextPage() {
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8">
                                         <button
                                             onClick={downloadText}
-                                            className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                            className="h-12 px-6 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-all active:scale-[0.98] shadow-xl"
                                         >
                                             <Download size={18} /> Download TXT
                                         </button>
                                         <button
                                             onClick={reset}
-                                            className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                            className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                                         >
                                             <RefreshCw size={14} /> Scan Another
                                         </button>
@@ -282,8 +282,8 @@ export default function ImageToTextPage() {
                 title="Visual Character Infrastructure"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Visual Optical Character Infrastructure
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -292,29 +292,29 @@ export default function ImageToTextPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Scan size={20} className="text-zinc-500" />
                                 How to Extract Safely
                             </h3>
                             <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Universal Support:</strong> Drop JPG, PNG, and WebP files. Our engine automatically handles noise reduction for cleaner scans.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Client-Side Engine:</strong> We utilize Tesseract.js to run character recognition entirely in your browser memory.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>One-Click Export:</strong> Instantly copy results to your clipboard or download as a raw .txt container for further processing.</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy Infrastructure
                             </h3>
@@ -330,8 +330,8 @@ export default function ImageToTextPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Portrait vs Landscape?">
                                 Our engine handles all orientations. Straightening your photo yields the highest character accuracy.

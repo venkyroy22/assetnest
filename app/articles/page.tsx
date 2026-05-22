@@ -12,17 +12,17 @@ export const metadata = {
 
 export default function ArticlesPage() {
   return (
-    <div className="min-h-screen bg-black py-20">
+    <div className="min-h-screen bg-[#141414] py-20">
       <Container>
         {/* Header */}
         <div className="max-w-3xl mx-auto text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 rounded-full mb-6 text-[10px] font-bold uppercase tracking-widest text-zinc-400">
             <Newspaper size={12} className="text-zinc-500" />
               The Learning Journal
               <span className="w-1 h-1 rounded-full bg-zinc-700" />
               {ALL_ARTICLE_POSTS.length} Articles
           </div>
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 leading-[1.1]">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-[#f0ede8] mb-6 leading-[1.1]">
             Perspective & <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-300 to-zinc-600">
               Knowledge Base
@@ -51,7 +51,7 @@ export default function ArticlesPage() {
               Array.from(new Set(ALL_ARTICLE_POSTS.flatMap((p) => p.tags))).map((tag) => (
                 <span
                   key={tag}
-                  className="px-3 py-1 text-xs font-medium text-zinc-500 border border-zinc-800 rounded-full hover:border-zinc-700 hover:text-zinc-300 transition-colors cursor-default"
+                  className="px-3 py-1 text-xs font-medium text-zinc-500 border border-white/[0.07] rounded-full hover:border-white/[0.12] hover:text-zinc-300 transition-colors cursor-default"
                 >
                   {tag}
                 </span>

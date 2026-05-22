@@ -9,33 +9,64 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Prepare FormData for the temporary file sharing API (Catbox.moe)
-    const uploadForm = new FormData();
-    uploadForm.append("reqtype", "fileupload");
-    uploadForm.append("userhash", ""); // Anonymous upload
-    uploadForm.append("fileToUpload", file);
+    const apiKey = process.env.STREAMLET_API_KEY;
+    const accountNumber = process.env.STREAMLET_ACCOUNT_NUMBER;
 
-    // Upload the file via fetch directly to the service
-    const apiResponse = await fetch("https://catbox.moe/user/api.php", {
+    if (!apiKey || !accountNumber) {
+      console.error("Streamlet credentials are not configured in environment variables.");
+      return NextResponse.json(
+        { error: "Image storage service is not properly configured." },
+        { status: 500 }
+      );
+    }
+
+    const fileName = file.name || "";
+    const fileType = file.type || "";
+
+    const isImage = fileType.startsWith("image/") || /\.(jpg|jpeg|png|webp|gif|avif)$/i.test(fileName);
+    const isPdf = fileType === "application/pdf" || /\.pdf$/i.test(fileName);
+
+    const uploadForm = new FormData();
+    let endpoint = "";
+
+    if (isImage) {
+      endpoint = "https://api.streamlet.in/api-key/upload-image";
+      uploadForm.append("image", file);
+    } else if (isPdf) {
+      endpoint = "https://api.streamlet.in/api-key/upload-document";
+      uploadForm.append("document", file);
+    } else {
+      return NextResponse.json(
+        { error: "Unsupported file type. Only images and PDF documents are supported by our storage service." },
+        { status: 400 }
+      );
+    }
+
+    // Call Streamlet API
+    const apiResponse = await fetch(endpoint, {
       method: "POST",
+      headers: {
+        "x-streamlet-api-key": apiKey,
+        "x-streamlet-account-number": accountNumber,
+      },
       body: uploadForm,
     });
 
     if (!apiResponse.ok) {
-      throw new Error(`Upload API error: ${apiResponse.status} ${apiResponse.statusText}`);
+      const errorText = await apiResponse.text();
+      throw new Error(`Streamlet API error: ${apiResponse.status} - ${errorText}`);
     }
 
-    // The API returns the raw URL directly as a plain text string
-    const finalUrl = await apiResponse.text();
+    const data = await apiResponse.json();
 
-    if (!finalUrl || !finalUrl.startsWith("http")) {
-      throw new Error(`Invalid response from upload service: ${finalUrl}`);
+    if (!data.success || !data.cdnUrl) {
+      throw new Error(data.error || "Invalid response from storage service - missing CDN URL.");
     }
     
-    // Return the clean URL for the QR Code
-    return NextResponse.json({ url: finalUrl.trim() });
+    // Return the clean CDN URL for compatibility with client components
+    return NextResponse.json({ url: data.cdnUrl });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Failed to upload file for sharing" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to upload file to cloud storage" }, { status: 500 });
   }
 }

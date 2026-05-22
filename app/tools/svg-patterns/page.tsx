@@ -59,18 +59,18 @@ export default function SvgPatterns() {
         
         {/* Header */}
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-3 relative group w-max">
-              <ImagePlus size={11} className="text-white" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-3 relative group w-max">
+              <ImagePlus size={11} className="text-[#f0ede8]" />
               <span className="text-xs font-semibold tracking-wide text-zinc-300">Asset Library</span>
               <button 
                   onClick={() => setShowHelp(true)}
-                  className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                  className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                   title="What is this?"
               >
                   <Info size={10} />
               </button>
           </div>
-          <h1 className="text-2xl font-black text-white flex items-center gap-2 tracking-tight">
+          <h1 className="text-2xl font-black text-[#f0ede8] flex items-center gap-2 tracking-tight">
             <Shapes size={24} className="text-zinc-400" /> SVG Pattern Backgrounds
           </h1>
           <p className="text-zinc-500 text-sm mt-3 font-medium">A curated library of beautiful, seamless geometric SVG backgrounds ready to copy.</p>
@@ -81,7 +81,7 @@ export default function SvgPatterns() {
           {patterns.map((pattern) => (
             <div 
                 key={pattern.id} 
-                className="group flex flex-col bg-zinc-900/40 rounded-3xl border border-zinc-800/60 overflow-hidden hover:border-zinc-700 hover:shadow-2xl transition-all"
+                className="group flex flex-col bg-[#1c1c1c]/40 rounded-3xl border border-white/[0.06] overflow-hidden hover:border-white/[0.12] hover:shadow-2xl transition-all"
             >
               {/* Pattern Canvas */}
               <div 
@@ -89,10 +89,10 @@ export default function SvgPatterns() {
                 style={{ backgroundImage: pattern.svgUrl }}
               >
                   {/* Hover Overlay */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+                  <div className="absolute inset-0 bg-[#141414]/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
                      <button
                         onClick={() => copyCode(pattern.id, pattern.css)}
-                        className="bg-white text-black px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-2xl hover:scale-105 active:scale-95 transition-all"
+                        className="bg-[#f0ede8] text-[#141414] px-6 py-3 rounded-full font-bold text-sm flex items-center gap-2 shadow-2xl hover:scale-105 active:scale-95 transition-all"
                      >
                         {copiedId === pattern.id ? <CheckCircle2 size={16} className="text-green-500" /> : <Copy size={16} />} 
                         {copiedId === pattern.id ? "Copied!" : "Copy CSS"}
@@ -101,8 +101,8 @@ export default function SvgPatterns() {
               </div>
               
               {/* Card Footer */}
-              <div className="p-5 flex items-center justify-between border-t border-zinc-800/60">
-                <span className="text-sm font-bold text-white tracking-wide">{pattern.name}</span>
+              <div className="p-5 flex items-center justify-between border-t border-white/[0.06]">
+                <span className="text-sm font-bold text-[#f0ede8] tracking-wide">{pattern.name}</span>
               </div>
             </div>
           ))}
@@ -116,8 +116,8 @@ export default function SvgPatterns() {
           title="SVG Pattern Infrastructure"
       >
           <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-              <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+              <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                       SVG Pattern Backgrounds
                   </h3>
                   <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -126,29 +126,29 @@ export default function SvgPatterns() {
               </section>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <ImagePlus size={20} className="text-zinc-500" />
                           Features
                       </h3>
                       <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Ultra-Lightweight:</strong> Encoded directly in CSS, bypassing network requests entirely.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Infinite Scale:</strong> Mathematical shapes retain perfect clarity at any retina resolution.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Seamless Tiles:</strong> Expert-crafted bounds ensure a perfect wrapping edge.</span>
                           </li>
                       </ul>
                   </section>
 
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <ShieldCheck size={20} className="text-zinc-500" />
                           Implementation
                       </h3>

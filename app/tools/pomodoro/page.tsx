@@ -332,7 +332,7 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
                     <button 
                         onClick={handleHydrated}
                         disabled={isHydrating}
-                        className="mt-8 px-10 py-4 bg-gradient-to-r from-white to-white hover:from-white hover:to-white text-white text-sm font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_-10px_rgba(255, 255, 255,0.6)] border border-white/50 flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[200px]"
+                        className="mt-8 px-10 py-4 bg-gradient-to-r from-white to-white hover:from-white hover:to-white text-[#f0ede8] text-sm font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_-10px_rgba(255, 255, 255,0.6)] border border-white/50 flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[200px]"
                     >
                         <Check size={18} strokeWidth={3} />
                         <span>I'M HYDRATED</span>
@@ -398,33 +398,33 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
             <label className="text-[10px] font-semibold text-zinc-400">{label}</label>
             <div className="flex items-center gap-2">
                 <button onClick={() => onChange(Math.max(min, value - 1))}
-                    className="w-8 h-8 border border-zinc-700 text-white hover:border-white transition-all font-black text-lg flex items-center justify-center">−</button>
+                    className="w-8 h-8 border border-zinc-700 text-[#f0ede8] hover:border-white transition-all font-black text-lg flex items-center justify-center">−</button>
                 <input type="number" min={min} max={max} value={value}
                     onChange={e => onChange(Math.max(min, Math.min(max, Number(e.target.value))))}
-                    className="w-16 text-center bg-zinc-800 border border-zinc-700 text-white font-black text-sm py-1.5 focus:outline-none focus:border-white" />
+                    className="w-16 text-center bg-white/[0.06] border border-zinc-700 text-[#f0ede8] font-black text-sm py-1.5 focus:outline-none focus:border-white" />
                 <button onClick={() => onChange(Math.min(max, value + 1))}
-                    className="w-8 h-8 border border-zinc-700 text-white hover:border-white transition-all font-black text-lg flex items-center justify-center">+</button>
+                    className="w-8 h-8 border border-zinc-700 text-[#f0ede8] hover:border-white transition-all font-black text-lg flex items-center justify-center">+</button>
                 <span className="text-[10px] text-zinc-500 font-medium">min</span>
             </div>
         </div>
     );
 
     return (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center bg-black/70 backdrop-blur-sm" onClick={onClose}>
-            <div className="bg-zinc-900 border border-zinc-700 p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[400] flex items-center justify-center bg-[#141414]/70 backdrop-blur-sm" onClick={onClose}>
+            <div className="bg-[#1c1c1c] border border-zinc-700 p-8 w-full max-w-sm shadow-2xl" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-sm font-bold text-white">Timer Settings</h2>
-                    <button onClick={onClose} className="text-zinc-500 hover:text-white transition-colors"><X size={18} /></button>
+                    <h2 className="text-sm font-bold text-[#f0ede8]">Timer Settings</h2>
+                    <button onClick={onClose} className="text-zinc-500 hover:text-[#f0ede8] transition-colors"><X size={18} /></button>
                 </div>
                 <div className="space-y-6">
                     <NumInput label="Focus Duration" value={f} onChange={setF} min={1} max={120} />
                     <NumInput label="Short Break" value={s} onChange={setS} min={1} max={60} />
                     <NumInput label="Long Break" value={l} onChange={setL} min={1} max={60} />
                     
-                    <div className="pt-4 border-t border-zinc-800 space-y-4">
+                    <div className="pt-4 border-t border-white/[0.07] space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="flex flex-col gap-0.5">
-                                <span className="text-xs font-bold text-white">Drink Water Reminder</span>
+                                <span className="text-xs font-bold text-[#f0ede8]">Drink Water Reminder</span>
                                 <span className="text-[10px] text-zinc-500">Get notified to stay hydrated</span>
                             </div>
                             <button 
@@ -440,7 +440,7 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
                     </div>
                 </div>
                 <button onClick={() => { onSave(f, s, l, wr, wi); onClose(); }}
-                    className="mt-8 w-full py-4 bg-white text-black text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-xl">
+                    className="mt-8 w-full py-4 bg-[#f0ede8] text-[#141414] text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-[0.99] transition-all flex items-center justify-center gap-2 shadow-xl">
                     <Check size={14} /> Save & Apply
                 </button>
             </div>
@@ -453,27 +453,27 @@ function BreakDialog({ isOpen, onClose, onOpenGames }: { isOpen: boolean; onClos
     if (!isOpen) return null;
     return (
         <div className="fixed inset-0 z-[550] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose} />
-            <div className="relative w-full max-w-sm bg-zinc-950 border border-zinc-800 rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 text-center overflow-hidden">
+            <div className="absolute inset-0 bg-[#141414]/80 backdrop-blur-sm animate-in fade-in duration-300" onClick={onClose} />
+            <div className="relative w-full max-w-sm bg-[#1c1c1c] border border-white/[0.07] rounded-[3rem] p-10 shadow-2xl animate-in zoom-in-95 slide-in-from-bottom-10 duration-500 text-center overflow-hidden">
                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-white/10 blur-[80px]" />
                  <div className="relative z-10">
-                    <div className="w-20 h-20 bg-zinc-900 border border-zinc-800 rounded-3xl flex items-center justify-center text-white mx-auto mb-8 shadow-inner group">
+                    <div className="w-20 h-20 bg-[#1c1c1c] border border-white/[0.07] rounded-3xl flex items-center justify-center text-[#f0ede8] mx-auto mb-8 shadow-inner group">
                         <Gamepad2 size={36} className="group-hover:scale-110 transition-transform duration-500" />
                     </div>
-                    <h2 className="text-2xl font-black text-white mb-3 uppercase tracking-tighter">Time for a Break!</h2>
+                    <h2 className="text-2xl font-black text-[#f0ede8] mb-3 uppercase tracking-tighter">Time for a Break!</h2>
                     <p className="text-xs text-zinc-500 font-medium leading-relaxed mb-10 px-4">
                         Great work. Your mind needs a quick recharge. How about a mini-game to stay sharp?
                     </p>
                     <div className="flex flex-col gap-3">
                         <button 
                             onClick={() => { onOpenGames(); onClose(); }}
-                            className="w-full py-4 bg-white text-black text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-200 active:scale-95 transition-all shadow-xl"
+                            className="w-full py-4 bg-[#f0ede8] text-[#141414] text-xs font-black uppercase tracking-widest rounded-2xl hover:bg-[#e8e5e0] active:scale-95 transition-all shadow-xl"
                         >
                             Play Mini Games
                         </button>
                         <button 
                             onClick={onClose}
-                            className="w-full py-3 text-zinc-600 hover:text-white text-[10px] font-black uppercase tracking-[0.3em] transition-all"
+                            className="w-full py-3 text-zinc-600 hover:text-[#f0ede8] text-[10px] font-black uppercase tracking-[0.3em] transition-all"
                         >
                             Maybe Later
                         </button>
@@ -769,12 +769,12 @@ export default function PomodoroPage() {
 
             {/* ── Header (Centered & Balanced) ── */}
             <div className="max-w-5xl mx-auto mb-10 flex flex-col items-center justify-center gap-6 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-black/30 w-fit relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#141414]/30 w-fit relative group">
                     <Brain size={11} className="text-zinc-400" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Productivity Tool</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="What is Pomodoro?"
                     >
                         <Info size={10} />
@@ -782,17 +782,17 @@ export default function PomodoroPage() {
                 </div>
 
                 <div className="flex flex-col items-center gap-8">
-                    <h1 className="text-5xl font-black tracking-tight text-white">Pomodoro Timer</h1>
+                    <h1 className="text-5xl font-black tracking-tight text-[#f0ede8]">Pomodoro Timer</h1>
 
                     <div className="flex flex-col items-center gap-6">
                         {/* Functional Mini Player Bar */}
-                        <div className="flex items-center gap-4 bg-zinc-900/80 border border-zinc-800 p-2 pr-5 rounded-2xl shadow-2xl relative backdrop-blur-xl border-t-zinc-700/30">
+                        <div className="flex items-center gap-4 bg-zinc-900/80 border border-white/[0.07] p-2 pr-5 rounded-2xl shadow-2xl relative backdrop-blur-xl border-t-zinc-700/30">
                             {currentYoutubeEmbed ? (
                                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 animate-in fade-in slide-in-from-left-4 duration-700">
-                                    <div id="music-player-dock" className="w-full sm:w-56 h-32 rounded-xl bg-black/40 border border-zinc-800/50 shadow-inner relative shrink-0 overflow-hidden flex flex-col items-center justify-center gap-2 group/placeholder">
+                                    <div id="music-player-dock" className="w-full sm:w-56 h-32 rounded-xl bg-[#141414]/40 border border-white/[0.06] shadow-inner relative shrink-0 overflow-hidden flex flex-col items-center justify-center gap-2 group/placeholder">
                                         <div className="absolute inset-0 bg-gradient-to-tr from-white/[0.02] to-transparent pointer-events-none" />
                                         <div className="relative flex flex-col items-center gap-2 px-6 text-center">
-                                            <div className="w-10 h-10 rounded-full bg-zinc-800/50 flex items-center justify-center border border-zinc-700/30 group-hover/placeholder:scale-110 transition-transform duration-500">
+                                            <div className="w-10 h-10 rounded-full bg-white/[0.06] flex items-center justify-center border border-zinc-700/30 group-hover/placeholder:scale-110 transition-transform duration-500">
                                                 <Music size={16} className="text-zinc-500" />
                                             </div>
                                             <span className="text-[10px] font-semibold tracking-wider text-zinc-500">Active Viewport</span>
@@ -806,25 +806,25 @@ export default function PomodoroPage() {
                                                     <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-20" />
                                                     <div className="relative h-2 w-2 rounded-full bg-red-500" />
                                                 </div>
-                                                <span className="text-xs font-bold tracking-wide text-white">Live</span>
+                                                <span className="text-xs font-bold tracking-wide text-[#f0ede8]">Live</span>
                                             </div>
-                                            <div className="flex items-center gap-2 group/vol bg-white/5 px-2 py-1 rounded-md border border-zinc-800">
+                                            <div className="flex items-center gap-2 group/vol bg-white/5 px-2 py-1 rounded-md border border-white/[0.07]">
                                                 <Volume2 size={10} className="text-zinc-500" />
                                                 <input type="range" min="0" max="100" value={ytVolume} onChange={(e) => adjustYTVolume(Number(e.target.value))}
-                                                    className="w-16 h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-red-500" />
+                                                    className="w-16 h-1 bg-white/[0.06] rounded-lg appearance-none cursor-pointer accent-red-500" />
                                             </div>
                                         </div>
                                         <div className="flex flex-col gap-2">
                                             <div className="flex items-center gap-1.5">
-                                                <button onClick={() => prevYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Previous Track"><SkipBack size={12} /></button>
-                                                <button onClick={() => toggleYT()} className={`flex-[2] flex items-center justify-center gap-2 text-xs font-bold transition-all px-3 py-1.5 rounded-lg border ${isYTPlaying ? "bg-white/5 text-zinc-400 border-zinc-800 hover:text-white" : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"}`} title={isYTPlaying ? "Pause Session" : "Resume Session"}>
+                                                <button onClick={() => prevYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-white/[0.07] rounded-lg text-zinc-500 hover:text-[#f0ede8] transition-all hover:bg-white/10" title="Previous Track"><SkipBack size={12} /></button>
+                                                <button onClick={() => toggleYT()} className={`flex-[2] flex items-center justify-center gap-2 text-xs font-bold transition-all px-3 py-1.5 rounded-lg border ${isYTPlaying ? "bg-white/5 text-zinc-400 border-white/[0.07] hover:text-[#f0ede8]" : "bg-red-500/10 text-red-500 border-red-500/30 hover:bg-red-500/20"}`} title={isYTPlaying ? "Pause Session" : "Resume Session"}>
                                                     {isYTPlaying ? <Pause size={10} fill="currentColor" /> : <Play size={10} fill="currentColor" />}
                                                     <span>{isYTPlaying ? "Pause" : "Resume"}</span>
                                                 </button>
-                                                <button onClick={() => skipYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-zinc-800 rounded-lg text-zinc-500 hover:text-white transition-all hover:bg-white/10" title="Next Track"><SkipForward size={12} /></button>
+                                                <button onClick={() => skipYoutubeTrack()} className="flex-1 flex items-center justify-center p-1.5 bg-white/5 border border-white/[0.07] rounded-lg text-zinc-500 hover:text-[#f0ede8] transition-all hover:bg-white/10" title="Next Track"><SkipForward size={12} /></button>
                                             </div>
                                             <div className="flex items-center gap-1.5">
-                                                <button onClick={() => window.open(youtubeUrl, '_blank')} className="flex-1 flex items-center justify-center gap-2 text-[11px] font-bold text-zinc-400 hover:text-red-400 transition-all bg-white/5 px-2 py-1.5 rounded-lg border border-zinc-800 hover:border-zinc-700" title="Open on YouTube"><ExternalLink size={10} className="text-zinc-500" /><span>Source</span></button>
+                                                <button onClick={() => window.open(youtubeUrl, '_blank')} className="flex-1 flex items-center justify-center gap-2 text-[11px] font-bold text-zinc-400 hover:text-red-400 transition-all bg-white/5 px-2 py-1.5 rounded-lg border border-white/[0.07] hover:border-white/[0.12]" title="Open on YouTube"><ExternalLink size={10} className="text-zinc-500" /><span>Source</span></button>
                                                 <button onClick={() => resetPlayer()} className="flex-1 flex items-center justify-center gap-2 text-[11px] font-bold text-red-500 hover:text-red-400 transition-all bg-red-500/5 px-2 py-1.5 rounded-lg border border-red-500/10 hover:border-red-500/20" title="Clear URL & Reset"><Trash2 size={10} /><span>Reset</span></button>
                                             </div>
                                         </div>
@@ -832,21 +832,21 @@ export default function PomodoroPage() {
                                 </div>
                             ) : (
                                 <div className="flex items-center gap-4 h-12 px-2">
-                                    <div className="w-10 h-10 rounded-xl bg-zinc-800 flex items-center justify-center text-zinc-600 shrink-0 border border-zinc-700/30">
+                                    <div className="w-10 h-10 rounded-xl bg-white/[0.06] flex items-center justify-center text-zinc-600 shrink-0 border border-zinc-700/30">
                                         <Music size={16} />
                                     </div>
                                     <div className="flex flex-col gap-1">
                                         <div className="relative flex items-center gap-3">
                                             <input type="text" value={youtubeUrl} onChange={(e) => setYoutubeUrl(e.target.value)} placeholder="PASTE YOUTUBE URL..."
                                                 className="bg-transparent border-none text-xs font-semibold tracking-wider text-zinc-400 focus:outline-none w-44 placeholder:text-zinc-700" />
-                                            <button onClick={() => playYoutube()} className="p-1.5 bg-red-500 text-white rounded-lg shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all hover:scale-105 active:scale-95" title="Start Playing"><Play size={12} fill="currentColor" /></button>
+                                            <button onClick={() => playYoutube()} className="p-1.5 bg-red-500 text-[#f0ede8] rounded-lg shadow-lg shadow-red-500/20 hover:bg-red-600 transition-all hover:scale-105 active:scale-95" title="Start Playing"><Play size={12} fill="currentColor" /></button>
                                         </div>
                                     </div>
                                 </div>
                             )}
                         </div>
 
-                        <button onClick={() => setSettingsOpen(true)} className="p-3 bg-zinc-900 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-xl shadow-xl hover:shadow-white/5" title="Timer Settings"><Settings size={20} /></button>
+                        <button onClick={() => setSettingsOpen(true)} className="p-3 bg-[#1c1c1c] border border-zinc-700 text-zinc-400 hover:border-white hover:text-[#f0ede8] transition-all rounded-xl shadow-xl hover:shadow-white/5" title="Timer Settings"><Settings size={20} /></button>
                     </div>
                 </div>
             </div>
@@ -854,7 +854,7 @@ export default function PomodoroPage() {
             <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_auto_280px] gap-8 lg:gap-10 items-start">
                 {/* ── LEFT: Cycle + Sessions ── */}
                 <div className="flex flex-col gap-6 lg:pt-14">
-                    <div className="p-5 border border-zinc-800 bg-zinc-900/30">
+                    <div className="p-5 border border-white/[0.07] bg-[#1c1c1c]/30">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-semibold text-zinc-400">Current Cycle</span>
                             <div className="flex items-center gap-1.5">
@@ -873,14 +873,14 @@ export default function PomodoroPage() {
                         </div>
                     </div>
 
-                    <div className="p-5 border border-zinc-800 bg-zinc-900/30">
+                    <div className="p-5 border border-white/[0.07] bg-[#1c1c1c]/30">
                         <div className="flex items-center justify-between mb-4">
                             <span className="text-[10px] font-semibold text-zinc-400">Total Sessions</span>
-                            <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-white" : "text-zinc-600"} /><span className="text-sm font-black text-white">{sessions}</span></div>
+                            <div className="flex items-center gap-1.5"><Flame size={13} className={sessions >= 3 ? "text-[#f0ede8]" : "text-zinc-600"} /><span className="text-sm font-black text-[#f0ede8]">{sessions}</span></div>
                         </div>
                         <div className="flex flex-wrap gap-1.5">
                             {Array.from({ length: Math.max(8, sessions + 2) }).map((_, i) => (
-                                <div key={i} className={`h-2.5 w-2.5 rounded-sm transition-all duration-500 ${i < sessions ? "bg-white" : "bg-zinc-800"}`} />
+                                <div key={i} className={`h-2.5 w-2.5 rounded-sm transition-all duration-500 ${i < sessions ? "bg-white" : "bg-white/[0.06]"}`} />
                             ))}
                         </div>
                     </div>
@@ -890,7 +890,7 @@ export default function PomodoroPage() {
                 <div className="flex flex-col items-center max-w-xl mx-auto w-full">
                     <div className="flex gap-2 mb-8">
                         {(["focus", "short", "long"] as Mode[]).map(m => (
-                            <button key={m} onClick={() => switchMode(m)} className={`px-5 py-2 text-xs font-semibold tracking-wide border rounded-full transition-all duration-300 ${mode === m ? "border-white bg-white text-black" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"}`}>{LABELS[m]}</button>
+                            <button key={m} onClick={() => switchMode(m)} className={`px-5 py-2 text-xs font-semibold tracking-wide border rounded-full transition-all duration-300 ${mode === m ? "border-white bg-[#f0ede8] text-[#141414]" : "border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-[#f0ede8]"}`}>{LABELS[m]}</button>
                         ))}
                     </div>
 
@@ -905,12 +905,12 @@ export default function PomodoroPage() {
                     </div>
 
                     <div className="flex items-center gap-4">
-                        <button onClick={reset} title="Reset" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95"><RotateCcw size={18} /></button>
+                        <button onClick={reset} title="Reset" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-[#f0ede8] transition-all active:scale-95"><RotateCcw size={18} /></button>
                         <button onClick={() => setRunning(r => !r)} className="w-20 h-20 flex items-center justify-center border-2 transition-all duration-300 active:scale-95 relative overflow-hidden group" style={{ borderColor: color, boxShadow: running ? `0 0 28px ${color}44` : "none" }}>
                             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{ background: `${color}15` }} />
                             {running ? <Pause size={28} style={{ color }} /> : <Play size={28} style={{ color }} className="translate-x-0.5" />}
                         </button>
-                        <button onClick={skip} title="Skip" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all active:scale-95"><SkipForward size={18} /></button>
+                        <button onClick={skip} title="Skip" className="p-3 border border-zinc-700 text-zinc-400 hover:border-white hover:text-[#f0ede8] transition-all active:scale-95"><SkipForward size={18} /></button>
                     </div>
                 </div>
 
@@ -922,10 +922,10 @@ export default function PomodoroPage() {
                             {ACHIEVEMENTS.map(a => {
                                 const done = unlocked.includes(a.id);
                                 return (
-                                    <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-white/50 bg-white/10" : "border-zinc-800 bg-zinc-950/30 opacity-40 grayscale"}`}>
-                                        <div className={done ? "text-white" : "text-zinc-600"}>{a.icon}</div>
-                                        <div><p className="text-[10px] font-bold text-white leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
-                                        {done && <span className="text-[10px] font-bold tracking-wide text-white border border-white/30 bg-white/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
+                                    <div key={a.id} className={`p-4 border flex flex-col gap-3 transition-all duration-500 ${done ? "border-white/50 bg-white/10" : "border-white/[0.07] bg-[#1c1c1c]/30 opacity-40 grayscale"}`}>
+                                        <div className={done ? "text-[#f0ede8]" : "text-zinc-600"}>{a.icon}</div>
+                                        <div><p className="text-[10px] font-bold text-[#f0ede8] leading-tight">{a.title}</p><p className="text-[9px] text-zinc-500 font-medium mt-1 leading-relaxed">{a.desc}</p></div>
+                                        {done && <span className="text-[10px] font-bold tracking-wide text-[#f0ede8] border border-white/30 bg-white/10 px-2 py-0.5 rounded-full w-fit">Unlocked</span>}
                                     </div>
                                 );
                             })}
@@ -933,18 +933,18 @@ export default function PomodoroPage() {
                     </div>
                     
                     {/* Game Break Suggestion */}
-                    <div className={`p-6 bg-zinc-900/40 border border-zinc-800 rounded-2xl flex flex-col items-center text-center gap-4 transition-all duration-700 ${mode !== 'focus' ? 'opacity-100 scale-100' : 'opacity-40 grayscale shadow-inner'}`}>
-                        <div className="w-12 h-12 rounded-xl bg-zinc-950 border border-zinc-800 flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
+                    <div className={`p-6 bg-[#1c1c1c]/40 border border-white/[0.07] rounded-2xl flex flex-col items-center text-center gap-4 transition-all duration-700 ${mode !== 'focus' ? 'opacity-100 scale-100' : 'opacity-40 grayscale shadow-inner'}`}>
+                        <div className="w-12 h-12 rounded-xl bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-zinc-400 group-hover:scale-110 transition-transform">
                              <Gamepad2 size={24} />
                         </div>
                         <div>
-                             <h3 className="text-xs font-bold text-white mb-1 uppercase tracking-widest">Gamer Break</h3>
+                             <h3 className="text-xs font-bold text-[#f0ede8] mb-1 uppercase tracking-widest">Gamer Break</h3>
                              <p className="text-[10px] text-zinc-500 font-medium">Relax your mind with a quick game during your break.</p>
                         </div>
                         <button 
                             onClick={() => setGamesOpen(true)}
                             disabled={mode === 'focus'}
-                            className="w-full py-3 bg-white text-black text-[10px] font-black uppercase rounded-xl hover:bg-zinc-200 active:scale-95 transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed"
+                            className="w-full py-3 bg-[#f0ede8] text-[#141414] text-[10px] font-black uppercase rounded-xl hover:bg-[#e8e5e0] active:scale-95 transition-all shadow-xl disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                             Open Game Mini
                         </button>
@@ -958,8 +958,8 @@ export default function PomodoroPage() {
                 title="The Ultimate Pomodoro Guide"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">The Ultimate Pomodoro Focus Timer</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">The Ultimate Pomodoro Focus Timer</h3>
                         <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
                             <p>
                                 Supercharge your studying, coding, or reading sessions with the AssetNest Productivity Pomodoro Timer. Based on the proven Pomodoro Technique, this tool alternates defined blocks of intense focus with automated short breaks to maximize your brain's endurance and prevent burnout.
@@ -971,33 +971,33 @@ export default function PomodoroPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Brain size={18} className="text-zinc-500" />
                                 How the Method Works
                             </h3>
                             <ol className="space-y-3 text-sm text-zinc-400">
                                 <li className="flex gap-3">
-                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">1</span>
+                                    <span className="font-black text-[#f0ede8] bg-white/[0.06] w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">1</span>
                                     <span><strong>Deep Focus:</strong> Work uninterrupted for 25 minutes. No phones, no emails. Just the task at hand.</span>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">2</span>
+                                    <span className="font-black text-[#f0ede8] bg-white/[0.06] w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">2</span>
                                     <span><strong>Short Break:</strong> Take a 5-minute breather. Stand up, stretch, and step away from the screen entirely.</span>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">3</span>
+                                    <span className="font-black text-[#f0ede8] bg-white/[0.06] w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">3</span>
                                     <span><strong>Repeat the Cycle:</strong> Perform 4 focus cycles consecutively (amounting to approx. 2 hours).</span>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="font-black text-white bg-zinc-800 w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">4</span>
+                                    <span className="font-black text-[#f0ede8] bg-white/[0.06] w-6 h-6 rounded-full flex items-center justify-center shrink-0 text-[10px]">4</span>
                                     <span><strong>Long Break:</strong> Reward yourself with a 15-30 minute deep break to recharge neurologically before starting again.</span>
                                 </li>
                             </ol>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Settings size={18} className="text-zinc-500" />
                                 Advanced Customization
                             </h3>
@@ -1018,8 +1018,8 @@ export default function PomodoroPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 pt-12 border-t border-zinc-900 font-sans">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Pomodoro Intelligence (FAQ)</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] pt-12 border-t border-white/[0.05] font-sans">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Pomodoro Intelligence (FAQ)</h3>
                         <Accordion>
                             <AccordionItem title="Can I customize the timer durations?">
                                 Absolutely. Click the settings gear icon to adjust your Focus, Short Break, and Long Break durations to fit your personal productivity rhythm.
@@ -1038,10 +1038,10 @@ export default function PomodoroPage() {
             {/* Achievement Toast */}
             <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[300] transition-all duration-500 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8 pointer-events-none"}`}>
                 {toast && (
-                    <div className="flex items-center gap-4 px-6 py-4 bg-zinc-900 border border-white/50 shadow-2xl shadow-white/10 min-w-[300px]">
-                        <div className="text-white shrink-0">{toast.icon}</div>
-                        <div><p className="text-[11px] font-bold tracking-wide text-white mb-1">Achievement Unlocked!</p><p className="text-sm font-black text-white">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
-                        <Trophy size={18} className="text-white shrink-0 ml-2 animate-bounce" />
+                    <div className="flex items-center gap-4 px-6 py-4 bg-[#1c1c1c] border border-white/50 shadow-2xl shadow-white/10 min-w-[300px]">
+                        <div className="text-[#f0ede8] shrink-0">{toast.icon}</div>
+                        <div><p className="text-[11px] font-bold tracking-wide text-[#f0ede8] mb-1">Achievement Unlocked!</p><p className="text-sm font-black text-[#f0ede8]">{toast.title}</p><p className="text-[11px] text-zinc-400 font-medium">{toast.desc}</p></div>
+                        <Trophy size={18} className="text-[#f0ede8] shrink-0 ml-2 animate-bounce" />
                     </div>
                 )}
             </div>

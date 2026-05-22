@@ -31,7 +31,7 @@ const footerLinks = {
 
 const Footer = ({ className = "" }: { className?: string }) => {
   return (
-    <footer className={`relative bg-black overflow-hidden ${className}`}>
+    <footer className={`relative overflow-hidden ${className}`} style={{ background: "#141414", color: "#f0ede8" }}>
       {/* Primary gradient glow at top */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent" />
       <div className="absolute top-0 left-1/4 right-1/4 h-px bg-gradient-to-r from-transparent via-zinc-300/20 to-transparent" />
@@ -49,9 +49,9 @@ const Footer = ({ className = "" }: { className?: string }) => {
 
       <div className="relative z-10 px-6 md:px-10 pt-16 pb-8">
         {/* Main grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12">
           {/* Brand column */}
-          <div className="md:col-span-5">
+          <div className="md:col-span-4">
             <Link href="/" className="mb-6 block group w-fit">
               <div className="relative">
                 <div className="absolute inset-0 bg-white/10 blur-xl rounded-full scale-150 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -80,38 +80,39 @@ const Footer = ({ className = "" }: { className?: string }) => {
             </div>
           </div>
 
-          {/* Popular Tools */}
-          <div className="md:col-span-3">
-            <h4 className="font-bold mb-5 text-zinc-200 text-xs tracking-widest uppercase">Popular Tools</h4>
-            <ul className="space-y-3">
-              {footerTools.map((tool) => (
-                <li key={tool.href}>
-                  <Link
-                    href={tool.href}
-                    className="group flex items-center gap-1.5 text-sm text-zinc-500 hover:text-white transition-colors duration-200 font-medium"
-                  >
-                    <span>{tool.name}</span>
-                    <ArrowUpRight
-                      size={11}
-                      className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-zinc-100"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Links and Categories columns */}
+          <div className="md:col-span-8 grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Popular Tools */}
+            <div>
+              <h4 className="font-bold mb-5 text-[#39ae66] text-xs tracking-widest uppercase">Popular Tools</h4>
+              <ul className="space-y-3">
+                {footerTools.map((tool) => (
+                  <li key={tool.href}>
+                    <Link
+                      href={tool.href}
+                      className="group flex items-center gap-1.5 text-sm text-zinc-500 hover:text-[#39ae66] transition-colors duration-200 font-medium"
+                    >
+                      <span>{tool.name}</span>
+                      <ArrowUpRight
+                        size={11}
+                        className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all duration-200 text-[#39ae66]"
+                      />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          {/* Links columns */}
-          <div className="md:col-span-4 grid grid-cols-2 gap-8">
+            {/* Explore, Company, Legal */}
             {Object.entries(footerLinks).map(([section, links]) => (
               <div key={section}>
-                <h4 className="font-bold mb-5 text-zinc-200 text-xs tracking-widest uppercase">{section}</h4>
+                <h4 className="font-bold mb-5 text-[#39ae66] text-xs tracking-widest uppercase">{section}</h4>
                 <ul className="space-y-3">
                   {links.map((link) => (
                     <li key={link.href}>
                       <Link
                         href={link.href}
-                        className="text-sm text-zinc-500 hover:text-white transition-colors duration-200 font-medium"
+                        className="text-sm text-zinc-500 hover:text-[#39ae66] transition-colors duration-200 font-medium"
                       >
                         {link.name}
                       </Link>

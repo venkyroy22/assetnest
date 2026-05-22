@@ -138,7 +138,7 @@ export default function PromptsPage() {
     };
 
     return (
-        <div className="py-20 min-h-screen bg-black px-4 md:px-10 relative overflow-hidden">
+        <div className="py-20 min-h-screen bg-[#141414] px-4 md:px-10 relative overflow-hidden">
             <div className="absolute top-0 right-0 text-white/5 pointer-events-none rotate-12 -z-0 translate-x-32 -translate-y-20">
                 <Sparkles size={700} strokeWidth={0.5} />
             </div>
@@ -154,11 +154,11 @@ export default function PromptsPage() {
                     }}
                     className="text-center space-y-4"
                 >
-                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full backdrop-blur-sm">
-                        <Sparkles size={11} className="text-white" />
+                    <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-full backdrop-blur-sm">
+                        <Sparkles size={11} className="text-[#f0ede8]" />
                         <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-zinc-400">Premium AI Prompts</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-black text-white uppercase tracking-tighter">
+                    <h1 className="text-3xl md:text-5xl font-black text-[#f0ede8] uppercase tracking-tighter">
                         AI Image <span className="text-zinc-700">Prompts</span>
                     </h1>
                 </div>
@@ -173,13 +173,13 @@ export default function PromptsPage() {
                         <div key={item.slug} className="group relative">
                             
                             {/* The Compact Poster Container */}
-                            <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden border border-zinc-900 shadow-2xl transition-all duration-500 hover:border-zinc-500 hover:scale-[1.02] bg-zinc-950">
+                            <div className="relative aspect-[3/4] rounded-[1.5rem] overflow-hidden border border-white/[0.05] shadow-2xl transition-all duration-500 hover:border-zinc-500 hover:scale-[1.02] bg-[#1c1c1c]">
                                 
                                 {/* Carousel Images */}
                                 <CarouselImage images={item.images} title={item.title} />
 
                                 {/* Overlays (Lightened for brightness) */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent pointer-events-none" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-[#141414]/80 via-[#141414]/10 to-transparent pointer-events-none" />
                                 
                                 {/* Labels (Condensed) */}
                                 <div className="absolute top-6 left-6 right-6 flex justify-between items-start z-20">
@@ -187,12 +187,12 @@ export default function PromptsPage() {
                                         <div className="flex items-center gap-2">
                                             <span className="text-[8px] font-black uppercase tracking-[0.3em] text-white/40">#{idx + 1} Made with {item.author}</span>
                                             {idx === 0 && likesCount > 0 && (
-                                                <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 bg-white text-black rounded-full shadow-[0_0_15px_rgba(255, 255, 255,0.3)]">Most Popular</span>
+                                                <span className="text-[7px] font-black uppercase tracking-widest px-2 py-0.5 bg-[#f0ede8] text-[#141414] rounded-full shadow-[0_0_15px_rgba(255, 255, 255,0.3)]">Most Popular</span>
                                             )}
                                         </div>
                                         {likesCount > 0 && (
                                             <div className="flex items-center gap-1 px-2 py-0.5 bg-white/5 border border-white/5 rounded-full backdrop-blur-md">
-                                                <Heart size={8} className="text-white fill-white" />
+                                                <Heart size={8} className="text-[#f0ede8] fill-white" />
                                                 <span className="text-[8px] font-black text-white/60">{likesCount} Liked</span>
                                             </div>
                                         )}
@@ -202,7 +202,7 @@ export default function PromptsPage() {
                                         <Tooltip content={copiedIndex === idx ? "Copied!" : "Copy Prompt"} position="left">
                                             <button 
                                                 onClick={() => copyToClipboard(item.sections.map(s => `${s.label.toUpperCase()}:\n${s.content}`).join('\n\n'), idx)}
-                                                className="p-3 bg-white/10 backdrop-blur-2xl border border-white/10 text-white rounded-xl hover:bg-white hover:text-black hover:scale-110 transition-all duration-300 active:scale-90 shadow-2xl relative overflow-hidden group/btn"
+                                                className="p-3 bg-white/10 backdrop-blur-2xl border border-white/10 text-[#f0ede8] rounded-xl hover:bg-[#f0ede8] hover:text-[#141414] hover:scale-110 transition-all duration-300 active:scale-90 shadow-2xl relative overflow-hidden group/btn"
                                             >
                                                 {copiedIndex === idx ? <Check size={16} /> : <Copy size={16} />}
                                                 {/* Pulse effect */}
@@ -215,8 +215,8 @@ export default function PromptsPage() {
                                                 onClick={() => handleLike(item.slug)}
                                                 className={`p-3 backdrop-blur-2xl border transition-all duration-300 active:scale-90 rounded-xl flex items-center justify-center hover:scale-110 ${
                                                     isLiked 
-                                                    ? "bg-white/20 border-white/40 text-white" 
-                                                    : "bg-white/10 border-white/10 text-white hover:bg-white hover:text-white hover:border-white"
+                                                    ? "bg-white/20 border-white/40 text-[#f0ede8]" 
+                                                    : "bg-white/10 border-white/10 text-[#f0ede8] hover:bg-white hover:text-[#f0ede8] hover:border-white"
                                                 }`}
                                             >
                                                 <Heart size={16} className={isLiked ? "fill-current" : ""} />
@@ -247,9 +247,9 @@ export default function PromptsPage() {
                                 </div>
 
                                 {/* Hover Reveal "Full View" (Optional Aesthetic) */}
-                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none flex items-center justify-center">
+                                <div className="absolute inset-0 bg-[#141414]/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none flex items-center justify-center">
                                     <div className="p-3 rounded-full bg-white/20 backdrop-blur-md border border-white/20">
-                                        <ZoomIn size={20} className="text-white" />
+                                        <ZoomIn size={20} className="text-[#f0ede8]" />
                                     </div>
                                 </div>
                             </div>
@@ -262,60 +262,60 @@ export default function PromptsPage() {
                 <div className="mt-40 space-y-24">
                     <Container>
                         <div className="max-w-4xl mx-auto space-y-20">
-                            <section className="bg-zinc-950 border border-zinc-900 p-8 sm:p-16 rounded-[3rem] shadow-2xl relative overflow-hidden">
+                            <section className="bg-[#1c1c1c] border border-white/[0.05] p-8 sm:p-16 rounded-[3rem] shadow-2xl relative overflow-hidden">
                                 <div className="absolute top-0 right-0 p-8 opacity-5">
                                     <Sparkles size={120} />
                                 </div>
-                                <h2 className="text-3xl md:text-5xl font-black text-white mb-8 tracking-tight leading-tight">Mastering the Art of <span className="text-zinc-600">AI Prompting</span></h2>
+                                <h2 className="text-3xl md:text-5xl font-black text-[#f0ede8] mb-8 tracking-tight leading-tight">Mastering the Art of <span className="text-zinc-600">AI Prompting</span></h2>
                                 <div className="space-y-8 text-zinc-400 leading-relaxed text-[17px]">
                                     <p>
                                         In the rapidly evolving landscape of generative AI, the difference between a generic output and a professional masterpiece often lies in the precision of the prompt. Our **AI Image Prompts** gallery is more than just a list—it's a curated archive designed to provide creators with high-fidelity starting points for leading AI image generation models.
                                     </p>
                                     
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-12 py-12 border-y border-zinc-900/50">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 mt-12 py-12 border-y border-white/[0.05]/50">
                                         <div className="space-y-3">
-                                            <h4 className="text-white font-bold text-xl">Style Consistency</h4>
+                                            <h4 className="text-[#f0ede8] font-bold text-xl">Style Consistency</h4>
                                             <p className="text-sm">Achieve a uniform visual language across entire projects by utilizing our tested stylistic keywords and established lighting parameters.</p>
                                         </div>
                                         <div className="space-y-3">
-                                            <h4 className="text-white font-bold text-xl">Cinematic Precision</h4>
+                                            <h4 className="text-[#f0ede8] font-bold text-xl">Cinematic Precision</h4>
                                             <p className="text-sm">We focus on professional terminology—from *chiaroscuro* to *volumetric fog*—ensuring the AI understands complex physics and textures.</p>
                                         </div>
                                     </div>
 
-                                    <h3 className="text-2xl font-bold text-white mt-12 mb-6">Why Use Structured Prompts?</h3>
+                                    <h3 className="text-2xl font-bold text-[#f0ede8] mt-12 mb-6">Why Use Structured Prompts?</h3>
                                     <p>
                                         AI models are trained on billions of images, but they require specific linguistic cues to narrow down their output. By using structured prompts like those in our "Editorial Style" or "Cinematic Portrait" series, you control critical variables:
                                     </p>
                                     <ul className="grid grid-cols-1 gap-4 text-sm font-medium">
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Lighting: Low-key, Golden Hour, Rim Lighting</li>
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Composition: Dutch Tilt, Close-up Profile, 35mm Lens</li>
-                                        <li className="flex items-center gap-3 py-3 px-5 bg-zinc-900/50 rounded-2xl border border-zinc-800/50"><div className="w-2 h-2 rounded-full bg-white" /> Detail: Pores, fabric texture, metallic reflections</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-[#1e1e1e]/50 rounded-2xl border border-white/[0.06]"><div className="w-2 h-2 rounded-full bg-white" /> Lighting: Low-key, Golden Hour, Rim Lighting</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-[#1e1e1e]/50 rounded-2xl border border-white/[0.06]"><div className="w-2 h-2 rounded-full bg-white" /> Composition: Dutch Tilt, Close-up Profile, 35mm Lens</li>
+                                        <li className="flex items-center gap-3 py-3 px-5 bg-[#1e1e1e]/50 rounded-2xl border border-white/[0.06]"><div className="w-2 h-2 rounded-full bg-white" /> Detail: Pores, fabric texture, metallic reflections</li>
                                     </ul>
                                 </div>
                             </section>
 
                             <section className="px-4">
-                                <h2 className="text-3xl font-black text-white mb-12 tracking-tight">Pro Tips for Best Results</h2>
+                                <h2 className="text-3xl font-black text-[#f0ede8] mb-12 tracking-tight">Pro Tips for Best Results</h2>
                                 <div className="grid grid-cols-1 gap-12">
                                     <div className="flex gap-8 group">
-                                        <div className="w-16 h-16 rounded-[2rem] bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0 text-white font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">01</div>
+                                        <div className="w-16 h-16 rounded-[2rem] bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center shrink-0 text-[#f0ede8] font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">01</div>
                                         <div>
-                                            <h4 className="text-white font-bold text-xl mb-3">Lighting Defines the Mood</h4>
+                                            <h4 className="text-[#f0ede8] font-bold text-xl mb-3">Lighting Defines the Mood</h4>
                                             <p className="text-zinc-500 text-[15px] leading-relaxed">Don't just describe the subject. Describe the light hitting the subject. Terms like "saturated deep-green monochromatic lighting" instantly transform a flat image into a high-fashion music video aesthetic.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-8 group">
-                                        <div className="w-16 h-16 rounded-[2rem] bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0 text-white font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">02</div>
+                                        <div className="w-16 h-16 rounded-[2rem] bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center shrink-0 text-[#f0ede8] font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">02</div>
                                         <div>
-                                            <h4 className="text-white font-bold text-xl mb-3">Lens & Camera Specs Matter</h4>
+                                            <h4 className="text-[#f0ede8] font-bold text-xl mb-3">Lens & Camera Specs Matter</h4>
                                             <p className="text-zinc-500 text-[15px] leading-relaxed">Adding "captured on 35mm film" or "85mm f/1.8 lens" signals to the AI to apply realistic depth of field and color grain common in photography and cinema.</p>
                                         </div>
                                     </div>
                                     <div className="flex gap-8 group">
-                                        <div className="w-16 h-16 rounded-[2rem] bg-zinc-900 border border-zinc-800 flex items-center justify-center shrink-0 text-white font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">03</div>
+                                        <div className="w-16 h-16 rounded-[2rem] bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center shrink-0 text-[#f0ede8] font-black text-xl group-hover:bg-white group-hover:text-black transition-all duration-500">03</div>
                                         <div>
-                                            <h4 className="text-white font-bold text-xl mb-3">Iterative Refining</h4>
+                                            <h4 className="text-[#f0ede8] font-bold text-xl mb-3">Iterative Refining</h4>
                                             <p className="text-zinc-500 text-[15px] leading-relaxed">Use our prompts as a base, then swap one keyword at a time. Change "emerald" to "cyberpunk red" to see how the lighting physics react to different color wavelengths.</p>
                                         </div>
                                     </div>
@@ -324,7 +324,7 @@ export default function PromptsPage() {
                         </div>
                     </Container>
 
-                    <footer className="pt-20 border-t border-zinc-900 text-center pb-20">
+                    <footer className="pt-20 border-t border-white/[0.05] text-center pb-20">
                         <p className="text-xs font-bold text-zinc-700 uppercase tracking-widest">Part of the AssetNest Creator Ecosystem • Free to Use • 2026</p>
                     </footer>
                 </div>

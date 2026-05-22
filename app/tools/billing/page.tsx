@@ -292,27 +292,27 @@ export default function BillingPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white pb-32">
+        <div className="min-h-screen bg-[#1c1c1c] text-[#f0ede8] pb-32">
 
             {/* ── Header ── */}
-            <div className="bg-zinc-950/80 backdrop-blur-md border-b border-zinc-900 sticky top-0 z-30">
+            <div className="bg-[#1c1c1c]/80 backdrop-blur-md border-b border-white/[0.05] sticky top-0 z-30">
                 <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
                     <div className="flex items-center gap-3">
                         <button 
                             onClick={() => setShowHelp(true)}
-                            className="p-2 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                            className="p-2 bg-[#1c1c1c] border border-white/[0.07] rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                             title="Information"
                         >
                             <Info size={14} />
                         </button>
                         
-                        <div className="h-8 w-px bg-zinc-800 hidden xs:block" />
+                        <div className="h-8 w-px bg-white/[0.06] hidden xs:block" />
 
                         <div className="flex flex-col">
                             <span className="text-[10px] font-black text-zinc-600 uppercase tracking-widest leading-none mb-1">
                                 Smart Billing
                             </span>
-                            <h2 className="text-sm font-black text-white leading-none truncate max-w-[140px] sm:max-w-none">
+                            <h2 className="text-sm font-black text-[#f0ede8] leading-none truncate max-w-[140px] sm:max-w-none">
                                 {shopInfo.name || "Configure Shop" }
                             </h2>
                         </div>
@@ -322,17 +322,17 @@ export default function BillingPage() {
                         <span className="text-[10px] font-bold text-zinc-700 hidden sm:inline uppercase tracking-tighter">
                             {invoiceNo}
                         </span>
-                        <div className="flex items-center gap-1.5 bg-zinc-900/50 p-1 rounded-xl border border-zinc-800">
+                        <div className="flex items-center gap-1.5 bg-[#1e1e1e]/50 p-1 rounded-xl border border-white/[0.07]">
                             <button
                                 onClick={() => { setTmpShop(shopInfo); setShopOpen(true); }}
-                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all"
+                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-lg transition-all"
                                 title="Shop Settings"
                             >
                                 <Settings size={16} />
                             </button>
                             <button
                                 onClick={newBill}
-                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-all"
+                                className="w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-lg transition-all"
                                 title="New Bill"
                             >
                                 <RefreshCw size={16} />
@@ -345,16 +345,16 @@ export default function BillingPage() {
             <div className="max-w-4xl mx-auto px-4 pt-6 space-y-6">
 
                 {/* ── Barcode Scanner — ZXing (works on all browsers) ── */}
-                <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl overflow-hidden">
+                <div className="border border-white/[0.07] bg-[#1c1c1c]/40 rounded-2xl overflow-hidden">
                     <button
                         onClick={scanning ? stopScanner : startScanner}
-                        className={`w-full flex items-center justify-between p-4 transition-all ${scanning ? "text-red-400" : "text-zinc-300 hover:text-white"
+                        className={`w-full flex items-center justify-between p-4 transition-all ${scanning ? "text-red-400" : "text-zinc-300 hover:text-[#f0ede8]"
                             }`}
                     >
                         <div className="flex items-center gap-3">
                             <div className={`p-2 rounded-xl border ${scanning ? "bg-red-500/10 border-red-500/30" :
                                 scanStatus === "error" ? "bg-white/10 border-white/30" :
-                                    "bg-zinc-800 border-zinc-700"
+                                    "bg-white/[0.06] border-zinc-700"
                                 }`}>
                                 {scanning ? <CameraOff size={18} /> : <Camera size={18} />}
                             </div>
@@ -376,7 +376,7 @@ export default function BillingPage() {
                     {/* Video feed — always in DOM so videoRef is always valid.
                          CSS visibility toggled by scanning state. */}
                     <div className={scanning ? "px-4 pb-4" : "hidden"}>
-                        <div className="relative bg-black rounded-xl overflow-hidden aspect-video">
+                        <div className="relative bg-[#141414] rounded-xl overflow-hidden aspect-video">
                             <video
                                 ref={videoRef}
                                 className="w-full h-full object-cover"
@@ -405,7 +405,7 @@ export default function BillingPage() {
 
                     {scanStatus === "error" && scanError && !scanning && (
                         <div className="px-4 pb-4 pt-0">
-                            <p className="text-[11px] text-white font-medium bg-white/10 border border-white/20 rounded-xl px-3 py-2">
+                            <p className="text-[11px] text-[#f0ede8] font-medium bg-white/10 border border-white/20 rounded-xl px-3 py-2">
                                 {scanError}
                             </p>
                         </div>
@@ -413,7 +413,7 @@ export default function BillingPage() {
                 </div>
 
                 {/* ── Add Item Form ── */}
-                <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl p-5 space-y-4">
+                <div className="border border-white/[0.07] bg-[#1c1c1c]/40 rounded-2xl p-5 space-y-4">
                     <div className="flex items-center gap-2 mb-2">
                         <Package size={14} className="text-zinc-400" />
                         <span className="text-sm font-semibold tracking-wide text-zinc-400">
@@ -439,10 +439,10 @@ export default function BillingPage() {
                                 }
                             }}
                             placeholder="Scan or type barcode number"
-                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm font-mono text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                            className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm font-mono text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                         />
                         {formBarcode && catalog[formBarcode.trim()] && (
-                            <p className="text-[10px] text-white font-black mt-1">
+                            <p className="text-[10px] text-[#f0ede8] font-black mt-1">
                                 ✓ Found in catalog — auto-filled
                             </p>
                         )}
@@ -459,7 +459,7 @@ export default function BillingPage() {
                             onChange={e => setFormName(e.target.value)}
                             onKeyDown={e => e.key === "Enter" && addItem()}
                             placeholder="e.g. Tata Tea 500g"
-                            className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                            className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                         />
                     </div>
 
@@ -477,7 +477,7 @@ export default function BillingPage() {
                                 onChange={e => setFormPrice(e.target.value)}
                                 onKeyDown={e => e.key === "Enter" && addItem()}
                                 placeholder="0.00"
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                                className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                             />
                         </div>
                         <div>
@@ -487,7 +487,7 @@ export default function BillingPage() {
                                 min="1"
                                 value={formQty}
                                 onChange={e => setFormQty(e.target.value)}
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all"
+                                className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-3 py-2.5 text-sm text-zinc-200 outline-none transition-all"
                             />
                         </div>
                         <div>
@@ -495,7 +495,7 @@ export default function BillingPage() {
                             <select
                                 value={formGst}
                                 onChange={e => setFormGst(Number(e.target.value) as GstRate)}
-                                className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-2 py-2.5 text-sm text-zinc-200 outline-none transition-all cursor-pointer"
+                                className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-2 py-2.5 text-sm text-zinc-200 outline-none transition-all cursor-pointer"
                             >
                                 {GST_RATES.map(r => <option key={r} value={r}>{r}%</option>)}
                             </select>
@@ -506,14 +506,14 @@ export default function BillingPage() {
                         <button
                             onClick={addItem}
                             disabled={!formName.trim() || !formPrice}
-                            className="h-12 flex-1 flex items-center justify-center gap-2 bg-white text-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xl shadow-white/10"
+                            className="h-12 flex-1 flex items-center justify-center gap-2 bg-[#f0ede8] text-[#141414] rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all disabled:opacity-30 disabled:cursor-not-allowed shadow-xl shadow-white/10"
                         >
                             {editId ? <><Check size={14} /> Update Item</> : <><Plus size={14} /> Add Item</>}
                         </button>
                         {(editId || formName || formBarcode) && (
                             <button
                                 onClick={resetForm}
-                                className="w-12 h-12 flex items-center justify-center border border-zinc-700 text-zinc-400 hover:border-white hover:text-white transition-all rounded-full"
+                                className="w-12 h-12 flex items-center justify-center border border-zinc-700 text-zinc-400 hover:border-white hover:text-[#f0ede8] transition-all rounded-full"
                             >
                                 <X size={16} />
                             </button>
@@ -523,8 +523,8 @@ export default function BillingPage() {
 
                 {/* ── Bill Items ── */}
                 {items.length > 0 && (
-                    <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl overflow-hidden">
-                        <div className="px-5 py-3 border-b border-zinc-800 flex items-center justify-between">
+                    <div className="border border-white/[0.07] bg-[#1c1c1c]/40 rounded-2xl overflow-hidden">
+                        <div className="px-5 py-3 border-b border-white/[0.07] flex items-center justify-between">
                             <div className="flex items-center gap-2">
                                 <Receipt size={14} className="text-zinc-400" />
                                 <span className="text-xs font-semibold tracking-wide text-zinc-400">
@@ -544,20 +544,20 @@ export default function BillingPage() {
                                     <div key={item.id} className="flex items-start gap-3 px-4 py-3 hover:bg-zinc-800/30 transition-all">
                                         <span className="text-[10px] font-black text-zinc-700 mt-1 w-4 shrink-0">{idx + 1}</span>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-bold text-white truncate">{item.name}</p>
+                                            <p className="text-sm font-bold text-[#f0ede8] truncate">{item.name}</p>
                                             <p className="text-[10px] text-zinc-500 font-medium mt-0.5">
                                                 {fmtINR(item.unitPrice)} × {item.qty}
                                                 {item.gstRate > 0 && ` + GST ${item.gstRate}%`}
                                             </p>
                                         </div>
                                         <div className="text-right shrink-0">
-                                            <p className="text-sm font-black text-white">{fmtINR(total)}</p>
+                                            <p className="text-sm font-black text-[#f0ede8]">{fmtINR(total)}</p>
                                             {item.gstRate > 0 && (
                                                 <p className="text-[10px] text-zinc-500">tax {fmtINR(tax)}</p>
                                             )}
                                         </div>
                                         <div className="flex flex-col gap-1 shrink-0">
-                                            <button onClick={() => startEdit(item)} className="p-1.5 text-zinc-600 hover:text-white transition-colors rounded-lg">
+                                            <button onClick={() => startEdit(item)} className="p-1.5 text-zinc-600 hover:text-[#f0ede8] transition-colors rounded-lg">
                                                 <Edit3 size={13} />
                                             </button>
                                             <button onClick={() => removeItem(item.id)} className="p-1.5 text-zinc-600 hover:text-red-400 transition-colors rounded-lg">
@@ -570,10 +570,10 @@ export default function BillingPage() {
                         </div>
 
                         {/* Bill Summary */}
-                        <div className="border-t border-zinc-800 bg-zinc-900/60 px-5 py-4 space-y-2">
+                        <div className="border-t border-white/[0.07] bg-[#1e1e1e]/60 px-5 py-4 space-y-2">
                             <div className="flex justify-between text-sm text-zinc-400">
                                 <span>Subtotal (before tax)</span>
-                                <span className="font-bold text-white">{fmtINR(subtotal)}</span>
+                                <span className="font-bold text-[#f0ede8]">{fmtINR(subtotal)}</span>
                             </div>
 
                             {gstBreakdown.map(g => (
@@ -592,13 +592,13 @@ export default function BillingPage() {
                             {totalTax > 0 && (
                                 <div className="flex justify-between text-sm text-zinc-400">
                                     <span>Total Tax</span>
-                                    <span className="font-bold text-white">{fmtINR(totalTax)}</span>
+                                    <span className="font-bold text-[#f0ede8]">{fmtINR(totalTax)}</span>
                                 </div>
                             )}
 
                             <div className="flex justify-between pt-2 border-t border-zinc-700">
-                                <span className="text-sm font-semibold tracking-wide text-white">Grand Total</span>
-                                <span className="text-xl font-black text-white">{fmtINR(grandTotal)}</span>
+                                <span className="text-sm font-semibold tracking-wide text-[#f0ede8]">Grand Total</span>
+                                <span className="text-xl font-black text-[#f0ede8]">{fmtINR(grandTotal)}</span>
                             </div>
                         </div>
                     </div>
@@ -608,7 +608,7 @@ export default function BillingPage() {
                 {items.length > 0 && (
                     <button
                         onClick={generateQR}
-                        className="h-12 w-full flex items-center justify-center gap-3 bg-white text-black rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all shadow-2xl shadow-white/10"
+                        className="h-12 w-full flex items-center justify-center gap-3 bg-[#f0ede8] text-[#141414] rounded-full text-xs font-black uppercase tracking-widest hover:bg-zinc-100 active:scale-[0.98] transition-all shadow-2xl shadow-white/10"
                     >
                         <Smartphone size={18} />
                         Generate Customer QR
@@ -618,7 +618,7 @@ export default function BillingPage() {
                 {/* ── Empty state ── */}
                 {items.length === 0 && (
                     <div className="text-center py-16">
-                        <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto mb-4">
                             <Receipt size={28} className="text-zinc-700" />
                         </div>
                         <p className="text-sm font-semibold tracking-wide text-zinc-600 mb-1">No Items Yet</p>
@@ -641,8 +641,8 @@ export default function BillingPage() {
                 title="Digital Invoicing Infrastructure"
             >
                 <div className="max-w-4xl mx-auto space-y-16 pb-16 text-left">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Digital Billing for the Modern Merchant
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -651,8 +651,8 @@ export default function BillingPage() {
                     </section>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ScanLine size={18} className="text-zinc-500" />
                                 Barcode Intelligence
                             </h3>
@@ -665,8 +665,8 @@ export default function BillingPage() {
                             </div>
                         </section>
                         
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Smartphone size={18} className="text-zinc-500" />
                                 Contactless Receipts
                             </h3>
@@ -681,8 +681,8 @@ export default function BillingPage() {
                         </section>
                     </div>
 
-                    <div className="pt-10 border-t border-zinc-900">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                    <div className="pt-10 border-t border-white/[0.05]">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Frequently Asked Questions</h3>
                         <Accordion>
                             <AccordionItem title="Privacy-First Coding">
                                 We never see your sales data. All inventory and shop details are stored in your device&apos;s local memory, ensuring absolute confidentiality.
@@ -700,18 +700,18 @@ export default function BillingPage() {
 
             {/* ── QR Modal ── */}
             {showQR && qrDataUrl && (
-                <div className="fixed inset-0 z-[500] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4"
+                <div className="fixed inset-0 z-[500] flex items-center justify-center bg-[#141414]/90 backdrop-blur-sm p-4"
                     onClick={() => setShowQR(false)}>
-                    <div className="bg-zinc-900 border border-zinc-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl"
+                    <div className="bg-[#1c1c1c] border border-zinc-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl"
                         onClick={e => e.stopPropagation()}>
 
                         <div className="flex items-center justify-between mb-5">
                             <div>
-                                <p className="text-xs font-semibold tracking-wide text-white mb-0.5">Customer Bill QR</p>
-                                <p className="text-sm font-black text-white">Scan to view digital receipt</p>
+                                <p className="text-xs font-semibold tracking-wide text-[#f0ede8] mb-0.5">Customer Bill QR</p>
+                                <p className="text-sm font-black text-[#f0ede8]">Scan to view digital receipt</p>
                             </div>
                             <button onClick={() => setShowQR(false)}
-                                className="p-2 border border-zinc-700 text-zinc-400 hover:text-white rounded-xl transition-all">
+                                className="p-2 border border-zinc-700 text-zinc-400 hover:text-[#f0ede8] rounded-xl transition-all">
                                 <X size={16} />
                             </button>
                         </div>
@@ -726,7 +726,7 @@ export default function BillingPage() {
                         <div className="flex items-center justify-between mb-5 px-2">
                             <div>
                                 <p className="text-xs font-semibold tracking-wide text-zinc-500">{items.length} item{items.length !== 1 ? "s" : ""}</p>
-                                <p className="text-2xl font-black text-white">{fmtINR(grandTotal)}</p>
+                                <p className="text-2xl font-black text-[#f0ede8]">{fmtINR(grandTotal)}</p>
                             </div>
                             <div className="text-right">
                                 <p className="text-[10px] text-zinc-600 font-medium">{invoiceNo}</p>
@@ -742,7 +742,7 @@ export default function BillingPage() {
 
                         {/* Copy link */}
                         <button onClick={copyLink}
-                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-white hover:text-white rounded-full text-xs font-bold tracking-wide transition-all">
+                            className="w-full flex items-center justify-center gap-2 py-3 border border-zinc-700 text-zinc-300 hover:border-white hover:text-[#f0ede8] rounded-full text-xs font-bold tracking-wide transition-all">
                             {copied ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Bill Link</>}
                         </button>
                     </div>
@@ -751,17 +751,17 @@ export default function BillingPage() {
 
             {/* ── Shop Settings Modal ── */}
             {shopOpen && (
-                <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+                <div className="fixed inset-0 z-[600] flex items-end sm:items-center justify-center bg-[#141414]/80 backdrop-blur-sm p-4"
                     onClick={() => setShopOpen(false)}>
-                    <div className="bg-zinc-900 border border-zinc-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl"
+                    <div className="bg-[#1c1c1c] border border-zinc-700 rounded-3xl p-6 w-full max-w-sm shadow-2xl"
                         onClick={e => e.stopPropagation()}>
                         <div className="flex items-center justify-between mb-5">
                             <div className="flex items-center gap-2">
-                                <Store size={16} className="text-white" />
-                                <p className="text-sm font-black text-white">Shop Details</p>
+                                <Store size={16} className="text-[#f0ede8]" />
+                                <p className="text-sm font-black text-[#f0ede8]">Shop Details</p>
                             </div>
                             <button onClick={() => setShopOpen(false)}
-                                className="p-1.5 text-zinc-600 hover:text-white transition-colors">
+                                className="p-1.5 text-zinc-600 hover:text-[#f0ede8] transition-colors">
                                 <X size={16} />
                             </button>
                         </div>
@@ -779,13 +779,13 @@ export default function BillingPage() {
                                         value={tmpShop[f.key as keyof ShopInfo]}
                                         onChange={e => setTmpShop(p => ({ ...p, [f.key]: e.target.value }))}
                                         placeholder={f.placeholder}
-                                        className="w-full bg-zinc-800 border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
+                                        className="w-full bg-white/[0.06] border border-zinc-700 focus:border-white rounded-xl px-4 py-2.5 text-sm text-zinc-200 outline-none transition-all placeholder:text-zinc-600"
                                     />
                                 </div>
                             ))}
                         </div>
                         <button onClick={saveShop}
-                            className="mt-5 w-full flex items-center justify-center gap-2 bg-white text-black py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white transition-all shadow-lg shadow-white/10">
+                            className="mt-5 w-full flex items-center justify-center gap-2 bg-[#f0ede8] text-[#141414] py-3 rounded-full text-xs font-bold tracking-wide hover:bg-white transition-all shadow-lg shadow-white/10">
                             <Check size={13} /> Save Shop Info
                         </button>
                     </div>

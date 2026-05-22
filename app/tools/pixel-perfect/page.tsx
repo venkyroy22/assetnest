@@ -265,13 +265,13 @@ export default function PixelPerfectPage() {
                 <div className="w-1/3 flex justify-start">
                     {gameState !== "intro" && (
                         <div className="text-zinc-400 text-sm md:text-base font-medium">
-                            Round: <span className="text-white">{round}/{MAX_ROUNDS}</span>
+                            Round: <span className="text-[#f0ede8]">{round}/{MAX_ROUNDS}</span>
                         </div>
                     )}
                 </div>
 
                 <div className="w-1/3 flex justify-center">
-                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+                    <h1 className="text-2xl md:text-3xl font-black tracking-tight text-[#f0ede8]">
                         Pixel Perfect
                     </h1>
                 </div>
@@ -279,7 +279,7 @@ export default function PixelPerfectPage() {
                 <div className="w-1/3 flex justify-end gap-3 items-center">
                     <button 
                         onClick={() => setIsHelpOpen(true)}
-                        className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-900 rounded-full transition-all border border-transparent hover:border-zinc-800"
+                        className="p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-[#1c1c1c] rounded-full transition-all border border-transparent hover:border-white/[0.07]"
                         title="How to play"
                     >
                         <Info size={20} />
@@ -299,8 +299,8 @@ export default function PixelPerfectPage() {
                 <div className="w-1/3 flex justify-center gap-8">
                     {gameState !== "intro" && (
                         <div className="text-zinc-300 text-sm md:text-base font-medium items-center flex gap-6 tracking-wide">
-                            <span>Width: <strong className="text-white">{targetW}px</strong></span>
-                            <span>Height: <strong className="text-white">{targetH}px</strong></span>
+                            <span>Width: <strong className="text-[#f0ede8]">{targetW}px</strong></span>
+                            <span>Height: <strong className="text-[#f0ede8]">{targetH}px</strong></span>
                         </div>
                     )}
                 </div>
@@ -308,7 +308,7 @@ export default function PixelPerfectPage() {
                 <div className="w-1/3 flex justify-end">
                     {(gameState !== "intro" || bestScore !== null) && (
                         <div className="text-zinc-500 text-[10px] md:text-xs font-bold uppercase tracking-wider text-right">
-                            Best: <span className="text-white ml-1">{bestScore ?? '-'}</span>
+                            Best: <span className="text-[#f0ede8] ml-1">{bestScore ?? '-'}</span>
                             <div className="text-[8px] opacity-40 mt-0.5 tracking-[0.2em]">Lower is better</div>
                         </div>
                     )}
@@ -318,11 +318,11 @@ export default function PixelPerfectPage() {
             {gameState === "intro" && (
                 <div className="flex-1 flex flex-col items-center justify-center text-center max-w-2xl mx-auto animate-in fade-in zoom-in duration-700 -mt-24">
                     <div className="relative mb-8">
-                        <Maximize size={64} className="text-white" strokeWidth={1} />
+                        <Maximize size={64} className="text-[#f0ede8]" strokeWidth={1} />
                         <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse" />
                     </div>
                     
-                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-6 leading-tight">
+                    <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-[#f0ede8] mb-6 leading-tight">
                         Measure by Eye. <br/> Draw by Hand.
                     </h2>
                     <p className="text-zinc-400 text-lg font-medium tracking-wide mb-12">
@@ -332,7 +332,7 @@ export default function PixelPerfectPage() {
                     <div className="flex flex-col md:flex-row gap-4 w-full">
                         <button 
                             onClick={() => startGame("training")}
-                            className="flex-1 px-8 py-5 bg-zinc-900 border border-zinc-800 text-white font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-zinc-800 transition-all flex flex-col items-center gap-2 group"
+                            className="flex-1 px-8 py-5 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-black uppercase tracking-[0.2em] rounded-2xl hover:bg-white/[0.06] transition-all flex flex-col items-center gap-2 group"
                         >
                             <span className="text-sm">Training Mode</span>
                             <span className="text-[10px] text-zinc-500 lowercase font-normal group-hover:text-zinc-300">Guided sizes & visual aids</span>
@@ -340,7 +340,7 @@ export default function PixelPerfectPage() {
 
                         <button 
                             onClick={() => startGame("classic")}
-                            className="flex-1 px-8 py-5 bg-white text-black font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
+                            className="flex-1 px-8 py-5 bg-[#f0ede8] text-[#141414] font-black uppercase tracking-[0.2em] rounded-2xl hover:scale-105 active:scale-95 transition-all flex flex-col items-center gap-2 shadow-[0_0_40px_rgba(255,255,255,0.1)]"
                         >
                             <span className="text-sm">Classic Challenge</span>
                             <span className="text-[10px] text-zinc-500 lowercase font-normal">Pure estimation. 5 rounds.</span>
@@ -352,7 +352,7 @@ export default function PixelPerfectPage() {
             {(gameState === "playing" || gameState === "result" || gameState === "game_over") && (
                 <>
                     {/* Massive Full-Bleed Drawing Canvas */}
-                    <div className="w-full flex-1 min-h-[500px] relative border-t border-zinc-900 rounded-none bg-black overflow-hidden">
+                    <div className="w-full flex-1 min-h-[500px] relative border-t border-white/[0.05] rounded-none bg-[#141414] overflow-hidden">
                         
                         {/* Training Grid Overlay */}
                         {gameMode === "training" && gameState === "playing" && (
@@ -432,7 +432,7 @@ export default function PixelPerfectPage() {
                         <div className="absolute inset-0 flex flex-col items-center justify-center z-50 pointer-events-auto animate-in fade-in zoom-in duration-500">
                             
                             <div className="relative z-10 text-center flex flex-col items-center gap-1 max-w-xl mx-auto -mt-72">
-                                <h3 className="text-3xl md:text-5xl font-serif text-white tracking-tight leading-tight">
+                                <h3 className="text-3xl md:text-5xl font-serif text-[#f0ede8] tracking-tight leading-tight">
                                     {getSarcasticComment(score).text}
                                 </h3>
                                 <div className="text-6xl md:text-7xl my-2">
@@ -445,13 +445,13 @@ export default function PixelPerfectPage() {
                                 
                                 <div className="flex gap-8 text-xs font-bold text-zinc-500 mb-8 uppercase tracking-widest">
                                     <span>
-                                        Width: <strong className="text-white ml-1">{drawnW}px</strong> 
+                                        Width: <strong className="text-[#f0ede8] ml-1">{drawnW}px</strong> 
                                         <span className={`ml-2 ${drawnW - targetW === 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                             ({drawnW - targetW > 0 ? '+' : ''}{drawnW - targetW})
                                         </span>
                                     </span>
                                     <span>
-                                        Height: <strong className="text-white ml-1">{drawnH}px</strong> 
+                                        Height: <strong className="text-[#f0ede8] ml-1">{drawnH}px</strong> 
                                         <span className={`ml-2 ${drawnW - targetW === 0 ? 'text-emerald-400' : 'text-red-400'}`}>
                                             ({drawnH - targetH > 0 ? '+' : ''}{drawnH - targetH})
                                         </span>
@@ -467,7 +467,7 @@ export default function PixelPerfectPage() {
                                             setGameState("game_over");
                                         }
                                     }}
-                                    className="px-14 py-4 bg-[#1a1a1a] hover:bg-white hover:text-black border border-zinc-800 hover:border-white text-white font-black uppercase tracking-widest rounded-md transition-all"
+                                    className="px-14 py-4 bg-[#1a1a1a] hover:bg-[#f0ede8] hover:text-[#141414] border border-white/[0.07] hover:border-white text-[#f0ede8] font-black uppercase tracking-widest rounded-md transition-all"
                                 >
                                     {round < MAX_ROUNDS ? "Next" : "See Results"}
                                 </button>
@@ -477,15 +477,15 @@ export default function PixelPerfectPage() {
 
                     {/* Game Over Screen matching Pixactly */}
                     {gameState === "game_over" && (
-                        <div className="fixed inset-0 bg-black/60 z-50 flex flex-col items-center justify-center animate-in fade-in zoom-in p-8 text-center">
+                        <div className="fixed inset-0 bg-[#141414]/60 z-50 flex flex-col items-center justify-center animate-in fade-in zoom-in p-8 text-center">
                             <h2 className="text-xl md:text-2xl font-medium text-zinc-400 mb-2 uppercase tracking-[0.2em]">Your total score is</h2>
                             
                             <div className="relative group">
-                                <div className="text-8xl md:text-[10rem] font-serif italic text-white mb-12">
+                                <div className="text-8xl md:text-[10rem] font-serif italic text-[#f0ede8] mb-12">
                                     {totalScore}!
                                 </div>
                                 {isNewRecord && (
-                                    <div className="absolute -top-12 -right-12 bg-white text-black px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] animate-bounce">
+                                    <div className="absolute -top-12 -right-12 bg-[#f0ede8] text-[#141414] px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] animate-bounce">
                                         New Record
                                     </div>
                                 )}
@@ -501,8 +501,8 @@ export default function PixelPerfectPage() {
                             
                             <div className="flex flex-col items-center gap-2 mb-16">
                                 <p className="text-zinc-400 text-lg md:text-xl font-medium tracking-wide">
-                                    You&apos;re more pixact in <strong className="text-white uppercase mx-1">{totalHDiff <= totalWDiff ? 'height' : 'width'}</strong> ({Math.min(totalHDiff, totalWDiff)}) 
-                                    than <strong className="text-white uppercase mx-1">{totalHDiff > totalWDiff ? 'height' : 'width'}</strong> ({Math.max(totalHDiff, totalWDiff)}).
+                                    You&apos;re more pixact in <strong className="text-[#f0ede8] uppercase mx-1">{totalHDiff <= totalWDiff ? 'height' : 'width'}</strong> ({Math.min(totalHDiff, totalWDiff)}) 
+                                    than <strong className="text-[#f0ede8] uppercase mx-1">{totalHDiff > totalWDiff ? 'height' : 'width'}</strong> ({Math.max(totalHDiff, totalWDiff)}).
                                 </p>
                                 <p className="text-zinc-600 text-sm font-bold uppercase tracking-[0.3em]">
                                     Pixel practice makes perfect.
@@ -512,13 +512,13 @@ export default function PixelPerfectPage() {
                             <div className="flex gap-4">
                                 <button 
                                     onClick={() => startGame(gameMode)}
-                                    className="px-12 py-5 bg-white text-black border border-white font-black uppercase tracking-[0.3em] rounded-md transition-all flex items-center gap-4 text-xs active:scale-95"
+                                    className="px-12 py-5 bg-[#f0ede8] text-[#141414] border border-white font-black uppercase tracking-[0.3em] rounded-md transition-all flex items-center gap-4 text-xs active:scale-95"
                                 >
                                     Play again
                                 </button>
                                 <button 
                                     onClick={() => setGameState("intro")}
-                                    className="px-12 py-5 bg-transparent hover:bg-zinc-900 border border-zinc-800 text-zinc-500 hover:text-white font-black uppercase tracking-[0.3em] rounded-md transition-all flex items-center gap-4 text-xs"
+                                    className="px-12 py-5 bg-transparent hover:bg-[#1c1c1c] border border-white/[0.07] text-zinc-500 hover:text-[#f0ede8] font-black uppercase tracking-[0.3em] rounded-md transition-all flex items-center gap-4 text-xs"
                                 >
                                     Home
                                 </button>
@@ -535,36 +535,36 @@ export default function PixelPerfectPage() {
             >
                 <div className="space-y-8">
                     <section>
-                        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Challenge Your Eye</h3>
+                        <h3 className="text-xl font-bold text-[#f0ede8] mb-3 tracking-tight">Challenge Your Eye</h3>
                         <p className="text-zinc-400 leading-relaxed text-lg">
                             Pixel Perfect is a game of visual estimation. You are tasked with drawing a box that matches the exact width and height provided in pixels.
                         </p>
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-4">
-                        <div className="bg-zinc-900/50 p-6 rounded-3xl border border-zinc-800">
-                            <h4 className="text-white font-bold mb-2">Classic Challenge</h4>
+                        <div className="bg-[#1e1e1e]/50 p-6 rounded-3xl border border-white/[0.07]">
+                            <h4 className="text-[#f0ede8] font-bold mb-2">Classic Challenge</h4>
                             <p className="text-zinc-500 text-sm">Pure estimation across 5 rounds. No guides, no training wheels. Just you and the pixels.</p>
                         </div>
-                        <div className="bg-zinc-900/50 p-6 rounded-3xl border border-zinc-800">
-                            <h4 className="text-white font-bold mb-2">Training Mode</h4>
+                        <div className="bg-[#1e1e1e]/50 p-6 rounded-3xl border border-white/[0.07]">
+                            <h4 className="text-[#f0ede8] font-bold mb-2">Training Mode</h4>
                             <p className="text-zinc-500 text-sm">Includes a ghost reference and a 100px grid to help you calibrate your eyes.</p>
                         </div>
                     </div>
 
                     <section>
-                        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">How to Play</h3>
+                        <h3 className="text-xl font-bold text-[#f0ede8] mb-3 tracking-tight">How to Play</h3>
                         <ul className="space-y-4 text-zinc-400 list-none p-0">
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">1</span>
-                                <span>Look at the target <strong className="text-white">Width</strong> and <strong className="text-white">Height</strong> in the header area.</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">1</span>
+                                <span>Look at the target <strong className="text-[#f0ede8]">Width</strong> and <strong className="text-[#f0ede8]">Height</strong> in the header area.</span>
                             </li>
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">2</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">2</span>
                                 <span>Click and drag on the canvas to draw your estimated box.</span>
                             </li>
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">3</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">3</span>
                                 <span>Release to see how close you were. Lower scores (total pixels off) are better!</span>
                             </li>
                         </ul>

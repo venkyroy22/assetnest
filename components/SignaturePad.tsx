@@ -332,7 +332,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
         /* ── Full-screen overlay ── */
         <div className="fixed inset-0 z-[200] flex items-end sm:items-center justify-center animate-in fade-in duration-300">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-2xl" onClick={onCancel} />
+            <div className="absolute inset-0 bg-[#141414]/80 backdrop-blur-2xl" onClick={onCancel} />
 
             {/* ── Sheet — slides up on mobile, centered card on desktop ── */}
             <div className="
@@ -352,14 +352,14 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                 <PenLine size={17} className="text-black" strokeWidth={2.5} />
                             </div>
                             <div>
-                                <h2 className="text-base sm:text-xl font-black text-white tracking-tighter leading-none">Signature Studio</h2>
+                                <h2 className="text-base sm:text-xl font-black text-[#f0ede8] tracking-tighter leading-none">Signature Studio</h2>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-2">
                             <button
                                 onClick={onCancel}
-                                className="w-9 h-9 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-white transition-all shadow-inner"
+                                className="w-9 h-9 rounded-full bg-white/[0.04] hover:bg-white/[0.1] border border-white/[0.06] flex items-center justify-center text-zinc-500 hover:text-[#f0ede8] transition-all shadow-inner"
                             >
                                 <X size={15} />
                             </button>
@@ -378,7 +378,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                 onClick={() => setTab(t.id as any)}
                                 className={`
                                     flex items-center gap-2 px-6 py-3 text-[10px] font-black uppercase tracking-[0.2em] transition-all relative
-                                    ${activeTab === t.id ? "text-white" : "text-zinc-500 hover:text-zinc-300"}
+                                    ${activeTab === t.id ? "text-[#f0ede8]" : "text-zinc-500 hover:text-zinc-300"}
                                 `}
                             >
                                 <t.icon size={13} />
@@ -392,7 +392,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                 </header>
 
                 {/* ── BODY ── */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar bg-black/20">
+                <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#141414]/20">
                     {/* TYPE TAB */}
                     {activeTab === "type" && (
                         <div className="p-6 sm:p-10 flex flex-col gap-8 max-w-4xl mx-auto">
@@ -441,7 +441,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                     {activeTab === "draw" && (
                         <div className="flex h-full min-h-[400px]">
                             {/* Left tool dock */}
-                            <aside className="hidden sm:flex w-24 bg-black/40 border-r border-white/[0.05] flex-col items-center py-6 gap-3 shrink-0">
+                            <aside className="hidden sm:flex w-24 bg-[#141414]/40 border-r border-white/[0.05] flex-col items-center py-6 gap-3 shrink-0">
                                 {PEN_STYLES.map(s => {
                                     const active = mode === "pen" && penStyle === s.id;
                                     return (
@@ -453,8 +453,8 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                                 relative w-14 h-14 rounded-2xl flex flex-col items-center justify-center gap-1 overflow-hidden
                                                 transition-all duration-300
                                                 ${active
-                                                    ? "bg-white text-black scale-105"
-                                                    : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-500 hover:text-white"
+                                                    ? "bg-[#f0ede8] text-[#141414] scale-105"
+                                                    : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-500 hover:text-[#f0ede8]"
                                                 }
                                             `}
                                         >
@@ -471,8 +471,8 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                         w-14 h-14 rounded-2xl flex flex-col items-center justify-center gap-1
                                         transition-all duration-300
                                         ${mode === "eraser"
-                                            ? "bg-white text-black scale-105"
-                                            : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-500 hover:text-white"
+                                            ? "bg-[#f0ede8] text-[#141414] scale-105"
+                                            : "bg-white/[0.04] hover:bg-white/[0.08] text-zinc-500 hover:text-[#f0ede8]"
                                         }
                                     `}
                                 >
@@ -485,7 +485,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                             onClick={undo}
                                             disabled={historyIdx < 0}
                                             title="Undo (Ctrl+Z)"
-                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
+                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[#f0ede8] hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
                                         >
                                             <RotateCcw size={16} className="scale-x-[-1]" />
                                         </button>
@@ -493,7 +493,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                             onClick={redo}
                                             disabled={historyIdx >= history.length - 1}
                                             title="Redo (Ctrl+Shift+Z)"
-                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-white hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
+                                            className="w-10 h-10 rounded-lg flex items-center justify-center text-zinc-500 hover:text-[#f0ede8] hover:bg-white/10 disabled:opacity-10 transition-all active:scale-90"
                                         >
                                             <RotateCcw size={16} />
                                         </button>
@@ -566,10 +566,10 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                         }}
                                     />
                                     <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-                                        <UploadIcon size={28} className="text-zinc-500 group-hover:text-white" />
+                                        <UploadIcon size={28} className="text-zinc-500 group-hover:text-[#f0ede8]" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-white font-black text-sm uppercase tracking-widest">Select Image</p>
+                                        <p className="text-[#f0ede8] font-black text-sm uppercase tracking-widest">Select Image</p>
                                         <p className="text-zinc-500 text-[10px] uppercase font-bold mt-1">PNG or JPG work best</p>
                                     </div>
                                 </div>
@@ -579,7 +579,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                         <img src={uploadedImg} alt="uploaded" className="max-h-full max-w-full object-contain filter grayscale contrast-125" />
                                         <button
                                             onClick={() => setUploadedImg(null)}
-                                            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-red-500/80 text-white transition-all flex items-center justify-center backdrop-blur-md"
+                                            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-[#141414]/50 hover:bg-red-500/80 text-[#f0ede8] transition-all flex items-center justify-center backdrop-blur-md"
                                         >
                                             <Trash2 size={18} />
                                         </button>
@@ -599,7 +599,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                     <div className="flex flex-col gap-5">
                         <div className="flex items-center justify-between gap-6 flex-wrap">
                             {/* Color palette */}
-                            <div className="flex items-center gap-1.5 bg-black/40 px-3 py-2.5 rounded-2xl border border-white/[0.06]">
+                            <div className="flex items-center gap-1.5 bg-[#141414]/40 px-3 py-2.5 rounded-2xl border border-white/[0.06]">
                                 {PRESET_COLORS.map(c => (
                                     <button
                                         key={c.value}
@@ -624,7 +624,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                     className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-gradient-to-tr from-white via-zinc-400 to-zinc-800 transition-all shrink-0
                                         ${isCustomColor && mode === "pen" ? "scale-110 ring-2 ring-white/80 ring-offset-2 ring-offset-black" : "opacity-40 hover:opacity-100"}`}
                                 >
-                                    <Palette size={13} className="text-white" />
+                                    <Palette size={13} className="text-[#f0ede8]" />
                                 </button>
                                 <input ref={colorInputRef} type="color" className="hidden" value={color}
                                     onChange={e => { setColor(e.target.value); setMode("pen"); }} />
@@ -635,7 +635,7 @@ export default function SignaturePad({ onSave, onCancel }: SignaturePadProps) {
                                 <div className="hidden sm:flex flex-1 max-w-xs flex-col gap-1">
                                     <div className="flex justify-between items-center mb-1">
                                         <span className="text-[9px] font-black text-zinc-500 uppercase tracking-widest">Ink Flow</span>
-                                        <span className="text-[10px] font-black text-white tabular-nums">{lineWidth}px</span>
+                                        <span className="text-[10px] font-black text-[#f0ede8] tabular-nums">{lineWidth}px</span>
                                     </div>
                                     <input
                                         type="range" min="1" max="16" step="0.5"

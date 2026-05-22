@@ -171,15 +171,15 @@ export default function ImageConverterPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-white py-10 px-4">
+        <div className="min-h-screen bg-[#1c1c1c] text-[#f0ede8] py-10 px-4">
             <div className="max-w-4xl mx-auto space-y-7">
 
                 {/* ── Header ── */}
                 <div>
-                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-4 relative group">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-4 relative group">
                         <button 
                             onClick={() => setShowHelp(true)}
-                            className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl z-10"
+                            className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl z-10"
                             title="What is this?"
                         >
                             <Info size={10} />
@@ -187,7 +187,7 @@ export default function ImageConverterPage() {
                         <FileImage size={11} className="text-zinc-400 ml-4" />
                         <span className="text-xs font-semibold tracking-wide text-zinc-400">Image Converter</span>
                     </div>
-                    <h1 className="text-4xl font-black tracking-tight text-white mb-2">
+                    <h1 className="text-4xl font-black tracking-tight text-[#f0ede8] mb-2">
                         Convert Images
                     </h1>
                     <p className="text-zinc-400 text-sm font-medium max-w-lg leading-relaxed">
@@ -196,7 +196,7 @@ export default function ImageConverterPage() {
                 </div>
 
                 {/* ── Mode & Quality ── */}
-                <div className="border border-zinc-800 bg-zinc-900/40 rounded-2xl p-5 space-y-5">
+                <div className="border border-white/[0.07] bg-[#1c1c1c]/40 rounded-2xl p-5 space-y-5">
 
                     {/* Mode selector */}
                     <div>
@@ -208,7 +208,7 @@ export default function ImageConverterPage() {
                                      onClick={() => changeMode(m.value)}
                                      className={`py-3 px-3 sm:px-4 rounded-xl border text-[10px] sm:text-sm font-black transition-all ${mode === m.value
                                          ? "bg-white border-white text-black shadow-lg shadow-white/10"
-                                         : "bg-zinc-800 border-zinc-700 text-zinc-300 hover:border-zinc-500"
+                                         : "bg-white/[0.06] border-zinc-700 text-zinc-300 hover:border-zinc-500"
                                          }`}
                                  >
                                      <span className="text-[10px]">{m.from}</span>
@@ -222,9 +222,9 @@ export default function ImageConverterPage() {
                     {/* JPG→PNG size notice */}
                     {mode === "jpg-to-png" && (
                         <div className="flex items-start gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-                            <span className="text-white text-sm leading-none mt-0.5">⚠️</span>
+                            <span className="text-[#f0ede8] text-sm leading-none mt-0.5">⚠️</span>
                             <div>
-                                <p className="text-[10px] font-black text-white mb-0.5">File size will increase</p>
+                                <p className="text-[10px] font-black text-[#f0ede8] mb-0.5">File size will increase</p>
                                 <p className="text-[10px] text-zinc-400 font-medium leading-relaxed">
                                     PNG is lossless and usually larger than JPG. For <em>smaller</em> files, use <strong>JPG → WebP</strong>.
                                 </p>
@@ -239,13 +239,13 @@ export default function ImageConverterPage() {
                                 <p className="text-[10px] font-semibold tracking-wide text-zinc-500 uppercase">
                                     WebP Quality
                                 </p>
-                                <span className="text-xs font-black text-white">{quality}%</span>
+                                <span className="text-xs font-black text-[#f0ede8]">{quality}%</span>
                             </div>
                             <input
                                 type="range" min={10} max={100} step={5}
                                 value={quality}
                                 onChange={e => setQuality(Number(e.target.value))}
-                                className="w-full h-1 bg-zinc-800 rounded-full appearance-none cursor-pointer accent-white"
+                                className="w-full h-1 bg-white/[0.06] rounded-full appearance-none cursor-pointer accent-white"
                             />
                             <div className="flex justify-between text-[9px] text-zinc-600 mt-1">
                                 <span>Smallest</span>
@@ -263,23 +263,23 @@ export default function ImageConverterPage() {
                     onClick={() => inputRef.current?.click()}
                     className={`border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center py-10 sm:py-14 cursor-pointer transition-all ${dragging
                         ? "border-white bg-white/5"
-                        : "border-zinc-800 bg-zinc-950 hover:border-zinc-500 hover:bg-zinc-900/50"
+                        : "border-white/[0.07] bg-[#1c1c1c] hover:border-zinc-500 hover:bg-[#1e1e1e]/50"
                         }`}
                 >
-                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 transition-all ${dragging ? "bg-white/20 border border-white/30" : "bg-zinc-900 border border-zinc-800 shadow-xl"
+                    <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex items-center justify-center mb-4 transition-all ${dragging ? "bg-white/20 border border-white/30" : "bg-[#1c1c1c] border border-white/[0.07] shadow-xl"
                         }`}>
-                        <Upload size={22} className={dragging ? "text-white" : "text-zinc-500"} />
+                        <Upload size={22} className={dragging ? "text-[#f0ede8]" : "text-zinc-500"} />
                     </div>
-                    <p className="text-lg sm:text-xl font-black text-white mb-2">
+                    <p className="text-lg sm:text-xl font-black text-[#f0ede8] mb-2">
                         Drag & Drop or Click Here
                     </p>
                     <p className="text-[10px] sm:text-xs text-zinc-500 font-medium mb-5">
                         Multiple files supported • 100% Private Browser Conversion
                     </p>
                     <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-semibold tracking-wide text-zinc-500">
-                        <span className="px-2 py-1 border border-zinc-800">100% Private</span>
-                        <span className="px-2 py-1 border border-zinc-800">No Server Upload</span>
-                        <span className="px-2 py-1 border border-zinc-800">Free Forever</span>
+                        <span className="px-2 py-1 border border-white/[0.07]">100% Private</span>
+                        <span className="px-2 py-1 border border-white/[0.07]">No Server Upload</span>
+                        <span className="px-2 py-1 border border-white/[0.07]">Free Forever</span>
                     </div>
                     <input
                         ref={inputRef}
@@ -304,7 +304,7 @@ export default function ImageConverterPage() {
                                 {doneCount > 1 && (
                                     <button
                                         onClick={downloadAll}
-                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/30 text-white rounded-full text-xs font-semibold tracking-wide hover:bg-white/20 transition-all"
+                                        className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 border border-white/30 text-[#f0ede8] rounded-full text-xs font-semibold tracking-wide hover:bg-white/20 transition-all"
                                     >
                                         <Download size={12} />
                                         Download All
@@ -323,7 +323,7 @@ export default function ImageConverterPage() {
                         {/* File cards */}
                         <div className="space-y-3">
                             {files.map(entry => (
-                                <div key={entry.id} className="border border-zinc-800 bg-zinc-900/40 rounded-2xl p-4 flex items-center gap-4">
+                                <div key={entry.id} className="border border-white/[0.07] bg-[#1c1c1c]/40 rounded-2xl p-4 flex items-center gap-4">
                                     {/* Thumbnail */}
                                     {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
@@ -340,10 +340,10 @@ export default function ImageConverterPage() {
                                             {entry.status === "done" && entry.outputSize && (
                                                 <>
                                                     <ArrowRight size={10} className="text-zinc-600" />
-                                                    <span className="text-[10px] text-white font-bold">{fmtBytes(entry.outputSize)}</span>
+                                                    <span className="text-[10px] text-[#f0ede8] font-bold">{fmtBytes(entry.outputSize)}</span>
                                                     <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-full ${entry.outputSize < entry.originalSize
-                                                        ? "bg-white/10 text-white border border-white/20"
-                                                        : "bg-white/10 text-white border border-white/20"
+                                                        ? "bg-white/10 text-[#f0ede8] border border-white/20"
+                                                        : "bg-white/10 text-[#f0ede8] border border-white/20"
                                                         }`}>
                                                         {savingPct(entry.originalSize, entry.outputSize)}
                                                     </span>
@@ -362,10 +362,10 @@ export default function ImageConverterPage() {
                                     <div className="shrink-0 flex items-center gap-2">
                                         {entry.status === "done" && (
                                             <>
-                                                <CheckCircle2 size={16} className="text-white" />
+                                                <CheckCircle2 size={16} className="text-[#f0ede8]" />
                                                 <button
                                                     onClick={() => downloadOne(entry)}
-                                                    className="h-10 px-4 bg-white text-black rounded-full text-xs font-bold hover:bg-zinc-200 transition-all active:scale-95"
+                                                    className="h-10 px-4 bg-[#f0ede8] text-[#141414] rounded-full text-xs font-bold hover:bg-[#e8e5e0] transition-all active:scale-95"
                                                 >
                                                     <Download size={14} className="inline mr-1" />
                                                     Save
@@ -380,7 +380,7 @@ export default function ImageConverterPage() {
                                         )}
                                         <button
                                             onClick={() => removeFile(entry.id)}
-                                            className="p-1.5 text-zinc-600 hover:text-zinc-300 transition-colors rounded-lg hover:bg-zinc-800"
+                                            className="p-1.5 text-zinc-600 hover:text-zinc-300 transition-colors rounded-lg hover:bg-white/[0.06]"
                                         >
                                             <Trash2 size={14} />
                                         </button>
@@ -393,7 +393,7 @@ export default function ImageConverterPage() {
                         {pendingCount > 0 && (
                             <button
                                 onClick={convertAll}
-                                className="w-full h-12 bg-white text-black rounded-full font-black text-xs sm:text-sm tracking-widest uppercase hover:bg-zinc-200 active:scale-[0.98] transition-all shadow-xl shadow-white/10"
+                                className="w-full h-12 bg-[#f0ede8] text-[#141414] rounded-full font-black text-xs sm:text-sm tracking-widest uppercase hover:bg-[#e8e5e0] active:scale-[0.98] transition-all shadow-xl shadow-white/10"
                             >
                                 Convert {pendingCount} File{pendingCount !== 1 ? "s" : ""} to {currentMode.to}
                             </button>
@@ -407,8 +407,8 @@ export default function ImageConverterPage() {
                     title="High-Definition Transformation"
                 >
                     <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 High-Definition Image Transformation
                             </h3>
                             <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -417,29 +417,29 @@ export default function ImageConverterPage() {
                         </section>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                     <Zap size={20} className="text-zinc-500" />
                                     How to Convert Safely
                                 </h3>
                                 <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>Multi-Format Engine:</strong> Instantly pivot between JPG, PNG, and WebP containers. Batch support is built-in.</span>
                                     </li>
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>Hardware Acceleration:</strong> We utilize your browser&apos;s native Canvas API for lightning-fast, zero-server processing.</span>
                                     </li>
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>Precision Output:</strong> Fine-tune quality sliders to achieve the perfect balance of file weight and visual clarity.</span>
                                     </li>
                                 </ul>
                             </section>
 
-                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                     <ShieldCheck size={20} className="text-zinc-500" />
                                     Privacy Infrastructure
                                 </h3>
@@ -455,8 +455,8 @@ export default function ImageConverterPage() {
                             </section>
                         </div>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                             <Accordion>
                                 <AccordionItem title="Why WebP?">
                                     WebP provides superior compression, saving up to 30% file size compared to JPG with identical quality.

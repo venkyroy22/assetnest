@@ -64,13 +64,13 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
   const getSmallIcon = (iconName: string) => {
     // @ts-ignore
     const IconComponent = Icons[iconName] || Icons.FileText;
-    return <IconComponent className="w-6 h-6 text-zinc-300 group-hover:text-white transition-colors" strokeWidth={1.5} />;
+    return <IconComponent className="w-6 h-6 text-zinc-300 group-hover:text-[#f0ede8] transition-colors" strokeWidth={1.5} />;
   };
 
   const getFeaturedIcon = (iconName: string) => {
     // @ts-ignore
     const IconComponent = Icons[iconName] || Icons.FileText;
-    return <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-300 group-hover:text-white transition-colors" strokeWidth={1.5} />;
+    return <IconComponent className="w-8 h-8 sm:w-10 sm:h-10 text-zinc-300 group-hover:text-[#f0ede8] transition-colors" strokeWidth={1.5} />;
   };
 
   return (
@@ -84,7 +84,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
           placeholder="Search guides, tags, or topics..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="w-full h-14 pl-12 pr-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-700 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+          className="w-full h-14 pl-12 pr-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl text-[#f0ede8] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-700 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
         />
       </div>
 
@@ -96,8 +96,8 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
             onClick={() => setSelectedCategory(category)}
             className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all whitespace-nowrap border ${
               selectedCategory === category
-                ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                : "bg-zinc-900/50 text-zinc-500 border-zinc-800 hover:border-zinc-700 hover:text-zinc-300"
+                ? "bg-[#f0ede8] text-[#141414] border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                : "bg-[#1e1e1e]/50 text-zinc-500 border-white/[0.07] hover:border-white/[0.12] hover:text-zinc-300"
             }`}
           >
             {category}
@@ -109,13 +109,13 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
       {!isFiltering && featured && (
         <Link
           href={`/guides/${featured.slug}`}
-          className="group block mb-12 bg-zinc-950 border border-zinc-900 rounded-[2rem] p-8 sm:p-10 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_60px_rgba(255,255,255,0.04)] relative overflow-hidden"
+          className="group block mb-12 bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-8 sm:p-10 hover:border-white/[0.12] transition-all duration-300 hover:shadow-[0_0_60px_rgba(255,255,255,0.04)] relative overflow-hidden"
         >
           {/* Ambient glow */}
           <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-white/[0.02] blur-3xl pointer-events-none group-hover:bg-white/[0.04] transition-all duration-500" />
 
           <div className="relative z-10 flex flex-col md:flex-row md:items-center gap-8">
-            <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+            <div className="shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
               {getFeaturedIcon(featured.icon)}
             </div>
 
@@ -129,7 +129,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                 </span>
               </div>
 
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight mb-3 group-hover:text-zinc-100 transition-colors leading-snug">
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-[#f0ede8] tracking-tight mb-3 group-hover:text-zinc-100 transition-colors leading-snug">
                 {featured.title}
               </h2>
               <p className="text-zinc-500 text-sm sm:text-base leading-relaxed mb-4 max-w-2xl">
@@ -141,7 +141,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                   <Clock size={12} />
                   {featured.readTime}
                 </div>
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-white group-hover:gap-2.5 transition-all duration-200">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#f0ede8] group-hover:gap-2.5 transition-all duration-200">
                   Read Guide
                   <ArrowRight size={13} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </div>
@@ -158,12 +158,12 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
             <Link
               key={post.slug}
               href={`/guides/${post.slug}`}
-              className="group flex flex-col bg-zinc-950 border border-zinc-900 rounded-[1.5rem] p-6 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
+              className="group flex flex-col bg-[#1c1c1c] border border-white/[0.05] rounded-[1.5rem] p-6 hover:border-white/[0.12] transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
             >
                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
+                <div className="w-14 h-14 rounded-xl bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center mb-4 group-hover:scale-105 transition-transform duration-300">
                   {getSmallIcon(post.icon)}
                 </div>
 
@@ -171,7 +171,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                   {post.category}
                 </span>
 
-                <h2 className="text-base sm:text-lg font-black text-white tracking-tight mb-2 group-hover:text-zinc-100 transition-colors leading-snug flex-1">
+                <h2 className="text-base sm:text-lg font-black text-[#f0ede8] tracking-tight mb-2 group-hover:text-zinc-100 transition-colors leading-snug flex-1">
                   {post.title}
                 </h2>
                 <p className="text-zinc-600 text-xs sm:text-sm leading-relaxed mb-5 line-clamp-2">
@@ -183,7 +183,7 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
                     <Clock size={11} />
                     {post.readTime}
                   </div>
-                  <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 group-hover:text-white transition-colors">
+                  <div className="flex items-center gap-1 text-[11px] font-bold text-zinc-500 group-hover:text-[#f0ede8] transition-colors">
                     Read Guide
                     <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform" />
                   </div>
@@ -192,8 +192,8 @@ export default function GuidesSearch({ allPosts }: { allPosts: GuidePost[] }) {
             </Link>
           ))
         ) : (
-          <div className="col-span-full py-20 text-center border overflow-hidden border-zinc-900/50 rounded-[2rem] bg-zinc-950/30">
-             <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-5">
+          <div className="col-span-full py-20 text-center border overflow-hidden border-white/[0.05]/50 rounded-[2rem] bg-[#1c1c1c]/30">
+             <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-full flex items-center justify-center mx-auto mb-5">
                 <Search size={24} className="text-zinc-600" />
              </div>
              <p className="text-zinc-400 font-medium tracking-tight">No guides found matching your filters</p>

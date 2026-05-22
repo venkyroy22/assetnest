@@ -1160,8 +1160,8 @@ export default function TypingTesterPage() {
                                         {testMode === "time" ? <Timer size={12} /> : testMode === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
                                         {testMode}
                                     </div>
-                                    <div className="h-3 w-px bg-zinc-800" />
-                                    <div className="text-xs font-bold text-white">
+                                    <div className="h-3 w-px bg-white/[0.06]" />
+                                    <div className="text-xs font-bold text-[#f0ede8]">
                                         {testMode === "time" ? `${timeConfig}s` : testMode === "words" ? `${wordConfig} words` : `${timeConfig}s & ${wordConfig}w`}
                                     </div>
                                 </div>
@@ -1790,8 +1790,8 @@ export default function TypingTesterPage() {
                 title="Master Your Speed"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Master Your Typing Speed</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Master Your Typing Speed</h3>
                         <div className="space-y-4 text-zinc-400 text-sm leading-relaxed">
                             <p>
                                 Elevate your typing proficiency with our professional-grade Typing Tester. Whether you're a developer, writer, or student, speed and accuracy are the pillars of productivity. This tool provides a minimalist, focus-oriented environment inspired by modern typing benchmarks.
@@ -1803,8 +1803,8 @@ export default function TypingTesterPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Keyboard size={18} className="text-zinc-500" />
                                 Custom Practice Modes
                             </h3>
@@ -1824,8 +1824,8 @@ export default function TypingTesterPage() {
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Palette size={18} className="text-zinc-500" />
                                 Aesthetic Personalization
                             </h3>
@@ -1838,8 +1838,8 @@ export default function TypingTesterPage() {
                             </div>
                         </section>
                     </div>
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 pt-12 border-t border-zinc-900/50">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Typing Intelligence (FAQ)</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] pt-12 border-t border-white/[0.05]/50">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Typing Intelligence (FAQ)</h3>
                         <Accordion>
                             <AccordionItem title="How is WPM calculated?">
                                 Words Per Minute (WPM) is calculated by taking the total number of correctly typed characters, dividing by 5 (the average word length), and then dividing by the time elapsed in minutes.

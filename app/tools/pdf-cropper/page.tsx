@@ -172,7 +172,7 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
     const { x, y, w, h } = crop;
 
     return (
-        <div className="relative w-full select-none bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800">
+        <div className="relative w-full select-none bg-[#1c1c1c] rounded-2xl overflow-hidden border border-white/[0.07]">
             <canvas ref={canvasRef} className="w-full h-auto block" />
             {/* Overlay */}
             <div
@@ -183,7 +183,7 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
                 onMouseMove={handleMouseMove}
             >
                 {/* Darkened regions */}
-                <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+                <div className="absolute inset-0 bg-[#141414]/50 pointer-events-none" />
                 {/* Crop window cutout (simulate) */}
                 <div
                     className="absolute pointer-events-none border-2 border-white shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]"
@@ -230,7 +230,7 @@ function NumInput({ label, value, min, max, step = 0.5, onChange }: {
     return (
         <div className="flex flex-col gap-1">
             <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">{label}</span>
-            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2">
+            <div className="flex items-center gap-2 bg-[#1c1c1c] border border-white/[0.07] rounded-xl px-3 py-2">
                 <input
                     type="number"
                     value={value.toFixed(1)}
@@ -238,7 +238,7 @@ function NumInput({ label, value, min, max, step = 0.5, onChange }: {
                     max={max}
                     step={step}
                     onChange={e => onChange(clamp(parseFloat(e.target.value) || 0, min, max))}
-                    className="bg-transparent text-xs font-bold text-white w-16 focus:outline-none"
+                    className="bg-transparent text-xs font-bold text-[#f0ede8] w-16 focus:outline-none"
                 />
                 <span className="text-zinc-600 text-[10px]">%</span>
             </div>
@@ -398,17 +398,17 @@ export default function PdfCropperPage() {
             <div className="text-center mb-10 relative group">
                 <button
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-zinc-800 border border-zinc-800 rounded-full text-zinc-400 hover:text-white transition-all shadow-xl z-20"
+                    className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-white/[0.06] border border-white/[0.07] rounded-full text-zinc-400 hover:text-[#f0ede8] transition-all shadow-xl z-20"
                     title="View Information"
                 >
                     <Info size={12} />
                 </button>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
-                    <Crop size={11} className="text-white" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6">
+                    <Crop size={11} className="text-[#f0ede8]" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    PDF <span className="text-white">Cropper</span>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
+                    PDF <span className="text-[#f0ede8]">Cropper</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
                     Upload a PDF, drag to define the crop area on any page, and export a perfectly trimmed document — entirely in your browser.
@@ -420,7 +420,7 @@ export default function PdfCropperPage() {
                 <div className="mb-6 p-4 border border-red-500/20 bg-red-500/5 flex items-center gap-3 rounded-2xl">
                     <Info size={16} className="text-red-400 shrink-0" />
                     <span className="text-xs font-medium text-red-100">{error}</span>
-                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-white"><X size={16} /></button>
+                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-[#f0ede8]"><X size={16} /></button>
                 </div>
             )}
 
@@ -431,26 +431,26 @@ export default function PdfCropperPage() {
                     onDragLeave={() => setIsDragging(false)}
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
-                    className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
+                    className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-white bg-white/5" : "border-white/[0.07] bg-[#1c1c1c] hover:bg-[#1e1e1e]/50"}`}
                 >
                     <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
                     <div className="text-center px-8 space-y-4">
-                        <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto">
+                        <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto">
                             {isLoading ? <RefreshCw size={24} className="animate-spin text-zinc-500" /> : <Upload size={24} className="text-zinc-500" />}
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <h2 className="text-lg font-bold text-[#f0ede8] tracking-tight">Drag & Drop or Click Here</h2>
                             <div className="flex flex-wrap items-center justify-center gap-2 mt-3">
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <ShieldCheck size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <ShieldCheck size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <Sparkles size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <Sparkles size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
                                 </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-zinc-900 border border-zinc-800">
-                                    <Check size={10} className="text-white" />
+                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
+                                    <Check size={10} className="text-[#f0ede8]" />
                                     <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
                                 </div>
                             </div>
@@ -460,40 +460,40 @@ export default function PdfCropperPage() {
             ) : (
                 <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom duration-500">
                     {/* Top bar */}
-                    <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                    <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-5 flex flex-col sm:flex-row items-start sm:items-center gap-4">
                         <div className="flex items-center gap-3 shrink-0">
                             <div className="w-9 h-9 bg-white/10 border border-white/20 rounded-xl flex items-center justify-center">
-                                <Crop size={16} className="text-white" />
+                                <Crop size={16} className="text-[#f0ede8]" />
                             </div>
                             <div>
-                                <p className="text-xs font-black text-white truncate max-w-[180px]">{file.name}</p>
+                                <p className="text-xs font-black text-[#f0ede8] truncate max-w-[180px]">{file.name}</p>
                                 <p className="text-[10px] text-zinc-500">{pageCount} page{pageCount !== 1 ? "s" : ""}</p>
                             </div>
                         </div>
 
-                        <div className="h-px sm:h-8 sm:w-px bg-zinc-800 w-full sm:w-auto" />
+                        <div className="h-px sm:h-8 sm:w-px bg-white/[0.06] w-full sm:w-auto" />
 
                         {/* Apply to all toggle */}
                         <button
                             onClick={() => setApplyToAll(!applyToAll)}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold transition-all ${applyToAll ? "bg-white text-black border-white" : "bg-zinc-900 text-zinc-400 border-zinc-700 hover:border-zinc-500"}`}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-full border text-xs font-bold transition-all ${applyToAll ? "bg-[#f0ede8] text-[#141414] border-white" : "bg-[#1c1c1c] text-zinc-400 border-zinc-700 hover:border-zinc-500"}`}
                         >
                             <Check size={12} className={applyToAll ? "opacity-100" : "opacity-0"} />
                             Apply crop to all pages
                         </button>
 
                         <div className="flex gap-2">
-                            <button onClick={reset} className="h-9 px-3 text-zinc-500 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors" title="Exit Editor"><X size={14} /></button>
-                            <button onClick={resetCrop} className="h-9 px-4 text-xs font-semibold text-zinc-400 hover:text-white border border-zinc-800 rounded-full hover:bg-zinc-800 transition-colors">Reset Crop</button>
+                            <button onClick={reset} className="h-9 px-3 text-zinc-500 hover:text-[#f0ede8] border border-white/[0.07] rounded-full hover:bg-white/[0.06] transition-colors" title="Exit Editor"><X size={14} /></button>
+                            <button onClick={resetCrop} className="h-9 px-4 text-xs font-semibold text-zinc-400 hover:text-[#f0ede8] border border-white/[0.07] rounded-full hover:bg-white/[0.06] transition-colors">Reset Crop</button>
                         </div>
                     </div>
 
                     {/* Main editor */}
                     <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
                         {/* Crop preview */}
-                        <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-6 flex flex-col gap-4">
+                        <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-6 flex flex-col gap-4">
                             <div className="flex items-center justify-between">
-                                <h2 className="text-sm font-bold text-white">
+                                <h2 className="text-sm font-bold text-[#f0ede8]">
                                     Page {currentPage + 1} of {pageCount}
                                     <span className="text-zinc-500 font-medium ml-2">— drag handles to crop</span>
                                 </h2>
@@ -502,14 +502,14 @@ export default function PdfCropperPage() {
                                     <button
                                         onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
                                         disabled={currentPage === 0}
-                                        className="h-8 w-8 flex items-center justify-center rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 disabled:opacity-30 transition-all"
+                                        className="h-8 w-8 flex items-center justify-center rounded-full border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white/[0.15] disabled:opacity-30 transition-all"
                                     >
                                         <ChevronLeft size={14} />
                                     </button>
                                     <button
                                         onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))}
                                         disabled={currentPage === pageCount - 1}
-                                        className="h-8 w-8 flex items-center justify-center rounded-full border border-zinc-800 text-zinc-400 hover:text-white hover:border-zinc-600 disabled:opacity-30 transition-all"
+                                        className="h-8 w-8 flex items-center justify-center rounded-full border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white/[0.15] disabled:opacity-30 transition-all"
                                     >
                                         <ChevronRight size={14} />
                                     </button>
@@ -527,7 +527,7 @@ export default function PdfCropperPage() {
                         {/* Sidebar: numeric controls + page strip */}
                         <div className="flex flex-col gap-5">
                             {/* Numeric crop inputs */}
-                            <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-6">
+                            <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-6">
                                 <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-5">Crop Region (%)</h3>
                                 <div className="grid grid-cols-2 gap-4">
                                     <NumInput label="Left (X)" value={c.x * 100} min={0} max={(1 - c.w) * 100} onChange={v => setField("x", v)} />
@@ -537,7 +537,7 @@ export default function PdfCropperPage() {
                                 </div>
 
                                 {/* Quick presets */}
-                                <div className="mt-5 border-t border-zinc-900 pt-4">
+                                <div className="mt-5 border-t border-white/[0.05] pt-4">
                                     <p className="text-[10px] font-black uppercase tracking-widest text-zinc-600 mb-3">Quick Presets</p>
                                     <div className="grid grid-cols-2 gap-2">
                                         {[
@@ -551,7 +551,7 @@ export default function PdfCropperPage() {
                                             <button
                                                 key={label}
                                                 onClick={() => updateCrop(crop)}
-                                                className="text-[10px] font-bold text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 rounded-lg px-2 py-1.5 transition-all hover:bg-zinc-900 text-left"
+                                                className="text-[10px] font-bold text-zinc-400 hover:text-[#f0ede8] border border-white/[0.07] hover:border-white/[0.15] rounded-lg px-2 py-1.5 transition-all hover:bg-[#1c1c1c] text-left"
                                             >
                                                 {label}
                                             </button>
@@ -562,17 +562,17 @@ export default function PdfCropperPage() {
 
                             {/* Page thumbnails strip */}
                             {pageCount > 1 && (
-                                <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-5">
+                                <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-5">
                                     <h3 className="text-xs font-black uppercase tracking-widest text-zinc-400 mb-4">Pages</h3>
                                     <div className="flex flex-col gap-2 max-h-[340px] overflow-y-auto custom-scrollbar pr-1">
                                         {Array.from({ length: pageCount }, (_, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => setCurrentPage(i)}
-                                                className={`relative h-20 rounded-xl border-2 overflow-hidden flex flex-col items-center transition-all duration-200 ${currentPage === i ? "border-white bg-white/10" : "border-zinc-800 hover:border-zinc-600 opacity-60 hover:opacity-90"}`}
+                                                className={`relative h-20 rounded-xl border-2 overflow-hidden flex flex-col items-center transition-all duration-200 ${currentPage === i ? "border-white bg-white/10" : "border-white/[0.07] hover:border-white/[0.15] opacity-60 hover:opacity-90"}`}
                                             >
                                                 <PdfPageThumbnail file={file} pageIndex={i} />
-                                                <div className="absolute bottom-0 inset-x-0 bg-black/60 text-[8px] font-black text-white/70 text-center py-0.5">
+                                                <div className="absolute bottom-0 inset-x-0 bg-[#141414]/60 text-[8px] font-black text-white/70 text-center py-0.5">
                                                     Pg {i + 1}
                                                 </div>
                                             </button>
@@ -588,7 +588,7 @@ export default function PdfCropperPage() {
                         <button
                             onClick={exportPdf}
                             disabled={isExporting}
-                            className="w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-white text-black hover:bg-zinc-100 shadow-lg shadow-white/10 disabled:opacity-60"
+                            className="w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-[#f0ede8] text-[#141414] hover:bg-zinc-100 shadow-lg shadow-white/10 disabled:opacity-60"
                         >
                             {isExporting
                                 ? <><RefreshCw size={18} className="animate-spin" /> Cropping...</>
@@ -599,25 +599,25 @@ export default function PdfCropperPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button
                                 onClick={() => outputUrl && window.open(outputUrl, '_blank')}
-                                className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-100 shadow-lg shadow-white/10 transition-all active:scale-[0.98]"
+                                className="h-12 px-6 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-100 shadow-lg shadow-white/10 transition-all active:scale-[0.98]"
                             >
                                 <Eye size={16} /> <span className="hidden sm:inline">Preview PDF</span><span className="sm:hidden">Preview</span>
                             </button>
                             <button
                                 onClick={download}
-                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                             >
                                 <Download size={16} /> Download PDF
                             </button>
                             <button
                                 onClick={() => setIsSharing(true)}
-                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                             >
                                 <Share2 size={16} /> Share to Mobile
                             </button>
                             <button
                                 onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 font-bold text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:text-white hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 font-bold text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:text-[#f0ede8] hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                             >
                                 <RefreshCw size={14} /> Re-crop PDF
                             </button>
@@ -627,14 +627,14 @@ export default function PdfCropperPage() {
             )}
 
             {!file && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12 max-w-4xl mx-auto">
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-white/[0.05] pt-12 max-w-4xl mx-auto">
                     {[
                         { title: "Privacy First", desc: "Your file never leaves your device. 100% processed securely in your browser's local memory." },
                         { title: "Precision Control", desc: "Draw intuitively with your cursor or type exact percentage values for perfect margin alignment." },
                         { title: "Universal Output", desc: "No watermarks. We adjust the standard PDF CropBox to ensure universal compatibility everywhere." }
                     ].map((f, i) => (
                         <div key={i} className="space-y-4 text-center md:text-left">
-                             <h4 className="text-[10px] font-bold text-white tracking-widest uppercase">{f.title}</h4>
+                             <h4 className="text-[10px] font-bold text-[#f0ede8] tracking-widest uppercase">{f.title}</h4>
                              <p className="text-[11px] text-zinc-500 font-medium leading-relaxed">{f.desc}</p>
                         </div>
                     ))}
@@ -644,8 +644,8 @@ export default function PdfCropperPage() {
             {/* Help Modal */}
             <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Cropper Info">
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Precision PDF Viewport Editor
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -654,33 +654,33 @@ export default function PdfCropperPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Layout size={20} className="text-zinc-500" />
                                 How to Crop
                             </h3>
                             <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Drag to draw:</strong> Click and drag anywhere on the PDF to start a new crop region.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Resize handles:</strong> Drag the white corner/edge handles to resize precisely.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Apply to all:</strong> Toggle "Apply crop to all pages" to sync one crop across the entire document.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Numeric control:</strong> Type exact percentage values for pixel-perfect positioning.</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy & Output
                             </h3>
@@ -696,8 +696,8 @@ export default function PdfCropperPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Does cropping delete page content?">
                                 No. PDF cropping sets the CropBox which hides content outside the region — the original data is preserved inside the file.

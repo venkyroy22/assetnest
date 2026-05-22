@@ -181,7 +181,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         You need to send an invoice, a contract, and a cover letter to a client, but they are three separate files. Sending a cluster of separate email attachments looks unprofessional. You need them combined into one sleek PDF.
       </P>
       <P>
-        For years, the corporate world relied on Adobe Acrobat for this simple task, forcing users into expensive subscriptions. Today, you don't need a subscription—or even an account—to merge PDFs securely.
+        For years, the corporate world relied on Adobe Acrobat for this simple task, forcing users into expensive subscriptions. Today, you don't need a subscription-or even an account-to merge PDFs securely.
       </P>
 
       <H2>Why You Shouldn't Use Random "Free PDF" Sites</H2>
@@ -299,7 +299,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         You sit down at your desk, determined to code, write, or study for three straight hours. Ten minutes later, you are scrolling Twitter. Sound familiar?
       </P>
       <P>
-        The human brain is not designed for endless, unbroken focus. That is why the <strong>Pomodoro Technique</strong>—invented by Francesco Cirillo in the late 1980s—remains the gold standard for getting things done without burning out.
+        The human brain is not designed for endless, unbroken focus. That is why the <strong>Pomodoro Technique</strong>-invented by Francesco Cirillo in the late 1980s-remains the gold standard for getting things done without burning out.
       </P>
 
       <H2>The Core Loop</H2>
@@ -313,7 +313,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
 
       <H2>Why It Works</H2>
       <P>
-        The technique leverages a psychological concept called <em>timeboxing</em>. By turning "an overwhelming mountain of work" into a short, manageable 25-minute sprint, you bypass the anxiety that causes procrastination. It creates artificial urgency—you know the break is coming soon, so you push hard to finish the sprint.
+        The technique leverages a psychological concept called <em>timeboxing</em>. By turning "an overwhelming mountain of work" into a short, manageable 25-minute sprint, you bypass the anxiety that causes procrastination. It creates artificial urgency-you know the break is coming soon, so you push hard to finish the sprint.
       </P>
 
       <Alert title="The Rule of Interruption">
@@ -666,7 +666,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
     <>
       <P>Dealing with excessive white margins or unwanted watermarks on a PDF document can be incredibly frustrating. Attempting to fix this by printing the document, physically cutting the paper, and rescanning it is a massive waste of time and destroys the document's original quality.</P>
       <H2>Understanding PDF Viewports</H2>
-      <P>Unlike standard image formats, a PDF doesn't just crop pixels. The PDF specification includes a feature called a "CropBox"—a mathematical boundary that defines the visible region of a page without deleting the underlying geometry or text data outside of it.</P>
+      <P>Unlike standard image formats, a PDF doesn't just crop pixels. The PDF specification includes a feature called a "CropBox"-a mathematical boundary that defines the visible region of a page without deleting the underlying geometry or text data outside of it.</P>
       <H2>How to Crop without Software Extensions</H2>
       <P>Using the AssetNest PDF Cropper eliminates the need for expensive desktop licenses and protects your data by doing all the heavy lifting locally in your browser memory.</P>
       <UL>
@@ -688,7 +688,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
 
       <H2>The Science of Optical Estimation</H2>
       <P>
-        Humans are naturally good at comparing sizes when objects are side-by-side, but our "absolute" estimation—guessing the size of a standalone object—is notoriously unreliable. Factors like screen resolution, viewing distance, and optical illusions can easily trick your brain into misjudging dimensions by 20% or more.
+        Humans are naturally good at comparing sizes when objects are side-by-side, but our "absolute" estimation-guessing the size of a standalone object-is notoriously unreliable. Factors like screen resolution, viewing distance, and optical illusions can easily trick your brain into misjudging dimensions by 20% or more.
       </P>
 
       <H3>Training Your Internal Ruler</H3>
@@ -700,7 +700,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
           <strong className="text-white">Use Your Hands:</strong> Sometimes, physically referencing the size of your thumb or a finger against the screen (safely!) can help you anchor your guesses for smaller dimensions.
         </LI>
         <LI>
-          <strong className="text-white">Analyze Your Bias:</strong> Most people have a consistent bias—they either always overestimate or always underestimate. Pay attention to your final results screen to see which way you lean.
+          <strong className="text-white">Analyze Your Bias:</strong> Most people have a consistent bias-they either always overestimate or always underestimate. Pay attention to your final results screen to see which way you lean.
         </LI>
       </UL>
 
@@ -713,7 +713,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
         The game is simple but difficult to master. You'll be given a target Width and Height in the header. Your job is to click and drag on the canvas to draw a box that matches those numbers as closely as possible.
       </P>
       <P>
-        Release the mouse to "submit" your guess. The game will show you your box (in blue) overlaid with the correct target (in emerald dashed lines). Your score is the total number of pixels you were off—so lower is better!
+        Release the mouse to "submit" your guess. The game will show you your box (in blue) overlaid with the correct target (in emerald dashed lines). Your score is the total number of pixels you were off-so lower is better!
       </P>
     </>
   ),
@@ -743,7 +743,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
           <strong className="text-white">Increasing Difficulty:</strong> As you progress through the 10 levels, the shapes become more complex (from simple squares to intersecting tri-combos) and the offsets become smaller and harder to detect.
         </LI>
         <LI>
-          <strong className="text-white">Target Results:</strong> After you guess, the game reveals the "algebraic crosshairs"—the perfect vertical and horizontal axes of the shape.
+          <strong className="text-white">Target Results:</strong> After you guess, the game reveals the "algebraic crosshairs"-the perfect vertical and horizontal axes of the shape.
         </LI>
       </UL>
 
@@ -753,7 +753,7 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
 
       <H2>Track Your Precision</H2>
       <P>
-        At the end of your run, you'll receive a Final Precision Score based on how many levels you cleared. The game will even give you a sarcastic remark about your performance—because as designers, we're our own harshest critics.
+        At the end of your run, you'll receive a Final Precision Score based on how many levels you cleared. The game will even give you a sarcastic remark about your performance-because as designers, we're our own harshest critics.
       </P>
     </>
   ),
@@ -781,14 +781,14 @@ export const GUIDE_CONTENT: Record<string, React.ReactNode> = {
 
       <H2>2. Middle Game: Tactical Vision</H2>
       <P>
-        Once the pieces are developed, the game enters the Middle Game. This is where most games are won or lost through <strong>Tactics</strong>—short-term sequences of moves that result in a material or positional advantage.
+        Once the pieces are developed, the game enters the Middle Game. This is where most games are won or lost through <strong>Tactics</strong>-short-term sequences of moves that result in a material or positional advantage.
       </P>
       <div className="bg-zinc-900 border border-zinc-800 p-6 rounded-2xl mb-8">
         <H3>Key Tactical Patterns</H3>
         <UL>
           <LI><strong className="text-white">Spoons & Forks:</strong> Attacking two or more enemy pieces simultaneously with one of your own (especially deadly with Knights).</LI>
           <LI><strong className="text-white">Pins:</strong> Attacking a piece that cannot move without exposing a more valuable piece behind it.</LI>
-          <LI><strong className="text-white">Skewers:</strong> The reverse of a pin—attacking a piece of high value that, when moved, exposes a piece of lower value behind it.</LI>
+          <LI><strong className="text-white">Skewers:</strong> The reverse of a pin-attacking a piece of high value that, when moved, exposes a piece of lower value behind it.</LI>
         </UL>
       </div>
 

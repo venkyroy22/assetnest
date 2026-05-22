@@ -199,18 +199,18 @@ export default function Game2048Page() {
 
     const getTileColor = (val: number) => {
         switch (val) {
-            case 2: return "bg-zinc-800 text-zinc-100";
+            case 2: return "bg-white/[0.06] text-zinc-100";
             case 4: return "bg-zinc-700 text-zinc-100";
-            case 8: return "bg-orange-600 text-white";
-            case 16: return "bg-orange-500 text-white";
-            case 32: return "bg-orange-400 text-white";
-            case 64: return "bg-orange-300 text-white";
-            case 128: return "bg-yellow-500 text-white shadow-[0_0_10px_rgba(234,179,8,0.4)]";
-            case 256: return "bg-yellow-400 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]";
-            case 512: return "bg-yellow-300 text-white shadow-[0_0_20px_rgba(234,179,8,0.6)]";
+            case 8: return "bg-orange-600 text-[#f0ede8]";
+            case 16: return "bg-orange-500 text-[#f0ede8]";
+            case 32: return "bg-orange-400 text-[#f0ede8]";
+            case 64: return "bg-orange-300 text-[#f0ede8]";
+            case 128: return "bg-yellow-500 text-[#f0ede8] shadow-[0_0_10px_rgba(234,179,8,0.4)]";
+            case 256: return "bg-yellow-400 text-[#f0ede8] shadow-[0_0_15px_rgba(234,179,8,0.5)]";
+            case 512: return "bg-yellow-300 text-[#f0ede8] shadow-[0_0_20px_rgba(234,179,8,0.6)]";
             case 1024: return "bg-yellow-200 text-zinc-900 shadow-[0_0_25px_rgba(234,179,8,0.7)] font-black";
             case 2048: return "bg-emerald-400 text-zinc-900 shadow-[0_0_30px_rgba(52,211,153,0.8)] font-black";
-            default: return "bg-zinc-900/50 text-zinc-700";
+            default: return "bg-[#1e1e1e]/50 text-zinc-700";
         }
     };
 
@@ -222,18 +222,18 @@ export default function Game2048Page() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-5 rounded-full relative group">
                     <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="Help & FAQ"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[#f0ede8] mb-4">
                     2048
                 </h1>
                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
@@ -243,21 +243,21 @@ export default function Game2048Page() {
 
             {/* Stats */}
             <div className="flex items-center gap-4 mb-8 w-full max-w-[400px]">
-                <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
+                <div className="flex-1 p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Score</span>
-                    <span className="text-2xl font-black text-white">{score}</span>
+                    <span className="text-2xl font-black text-[#f0ede8]">{score}</span>
                 </div>
-                <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
+                <div className="flex-1 p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Best</span>
                     <span className="text-2xl font-black text-amber-400">{highScore}</span>
                 </div>
-                <button onClick={reset} className="p-5 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white hover:border-white transition-all rounded-2xl">
+                <button onClick={reset} className="p-5 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white transition-all rounded-2xl">
                     <RotateCcw size={20} />
                 </button>
             </div>
 
             {/* Game Board */}
-            <div className="relative p-3 bg-zinc-950 border-4 border-zinc-900 rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)] touch-action-none" style={{ touchAction: 'none' }}>
+            <div className="relative p-3 bg-[#1c1c1c] border-4 border-white/[0.05] rounded-[2.5rem] shadow-[0_0_80px_-20px_rgba(255,255,255,0.05)] touch-action-none" style={{ touchAction: 'none' }}>
                 <div className="grid grid-cols-4 gap-3">
                     {board.map((row, r) => (
                         row.map((cell, c) => (
@@ -273,23 +273,23 @@ export default function Game2048Page() {
 
                 {/* Overlays */}
                 {(gameOver || won) && (
-                    <div className="absolute inset-0 bg-black/80 backdrop-blur-md rounded-[2.2rem] flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
+                    <div className="absolute inset-0 bg-[#141414]/80 backdrop-blur-md rounded-[2.2rem] flex flex-col items-center justify-center p-8 text-center animate-in fade-in zoom-in duration-500">
                         {won ? (
                             <>
                                 <Star size={48} className="text-yellow-400 mb-4 animate-bounce" />
-                                <h2 className="text-3xl font-black text-white mb-2 uppercase">You Reached 2048!</h2>
+                                <h2 className="text-3xl font-black text-[#f0ede8] mb-2 uppercase">You Reached 2048!</h2>
                                 <p className="text-sm text-zinc-400 mb-8">Legendary focus. Keep playing to set a record?</p>
                                 <div className="flex gap-4">
-                                    <button onClick={() => setWon(false)} className="px-8 py-3 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all">KEEP GOING</button>
-                                    <button onClick={reset} className="px-8 py-3 border border-zinc-700 text-white text-xs font-black rounded-full hover:bg-zinc-800 transition-all">RESTART</button>
+                                    <button onClick={() => setWon(false)} className="px-8 py-3 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all">KEEP GOING</button>
+                                    <button onClick={reset} className="px-8 py-3 border border-zinc-700 text-[#f0ede8] text-xs font-black rounded-full hover:bg-white/[0.06] transition-all">RESTART</button>
                                 </div>
                             </>
                         ) : (
                             <>
                                 <Trophy size={48} className="text-zinc-600 mb-4" />
-                                <h2 className="text-3xl font-black text-white mb-2 uppercase">Game Over</h2>
+                                <h2 className="text-3xl font-black text-[#f0ede8] mb-2 uppercase">Game Over</h2>
                                 <p className="text-sm text-zinc-400 mb-8">You scored {score} points. Practice makes perfect.</p>
-                                <button onClick={reset} className="px-10 py-4 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
+                                <button onClick={reset} className="px-10 py-4 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2">
                                     <RefreshCw size={14} /> PLAY AGAIN
                                 </button>
                             </>
@@ -302,11 +302,11 @@ export default function Game2048Page() {
             <div className="mt-12 text-center">
                 <p className="text-[10px] font-black text-zinc-600 uppercase tracking-[0.4em] mb-4">How to Play</p>
                 <div className="flex gap-3 justify-center">
-                    <span className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-[10px] font-bold text-zinc-400">ARROW KEYS</span>
-                    <span className="px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-lg text-[10px] font-bold text-zinc-400">TOUCH SWIPE</span>
+                    <span className="px-3 py-1 bg-[#1c1c1c] border border-white/[0.07] rounded-lg text-[10px] font-bold text-zinc-400">ARROW KEYS</span>
+                    <span className="px-3 py-1 bg-[#1c1c1c] border border-white/[0.07] rounded-lg text-[10px] font-bold text-zinc-400">TOUCH SWIPE</span>
                 </div>
                 <p className="mt-6 text-xs text-zinc-500 font-medium max-w-sm mx-auto leading-relaxed">
-                    Use your arrow keys to move the tiles. When two tiles with the same number touch, they <span className="text-white">merge into one!</span>
+                    Use your arrow keys to move the tiles. When two tiles with the same number touch, they <span className="text-[#f0ede8]">merge into one!</span>
                 </p>
             </div>
 
@@ -327,55 +327,55 @@ export default function Game2048Page() {
                 title="2048 Strategic Briefing"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Play 2048 Online: The Ultimate Strategy Puzzle</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Play 2048 Online: The Ultimate Strategy Puzzle</h3>
                         <p className="text-base leading-relaxed text-zinc-400 max-w-3xl">
                             Welcome to the official AssetNest edition of <strong>2048</strong>, the world-famous sliding tile puzzle game. Since its viral debut, 2048 has captivated millions with its perfect blend of mathematical simplicity and deep strategic challenge. Whether you are a casual player looking to pass the time or a high-score enthusiast hunting for the legendary 2048 tile, our responsive, dark-themed version provides the smoothest gameplay experience directly in your browser. No downloads, no accounts, just pure 4x4 grid mastery.
                         </p>
                     </section>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-black">1</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-xs font-black">1</span>
                                 How to Master 2048
                             </h3>
                             <ul className="space-y-4 text-sm leading-relaxed text-zinc-400">
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">•</span>
+                                    <span className="text-[#f0ede8] shrink-0">•</span>
                                     <div><strong className="text-zinc-200">The Core Rule:</strong> Swipe tiles (Up, Down, Left, Right) to move all tiles in the grid. When two tiles with the same number collide, they merge into one with double the value!</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">•</span>
+                                    <span className="text-[#f0ede8] shrink-0">•</span>
                                     <div><strong className="text-zinc-200">Strategic Cornering:</strong> Most experts recommend picking one corner (like the bottom-left) and keeping your highest-value tile locked there to maintain grid organization.</div>
                                 </li>
                                 <li className="flex gap-3">
-                                    <span className="text-white shrink-0">•</span>
+                                    <span className="text-[#f0ede8] shrink-0">•</span>
                                     <div><strong className="text-zinc-200">Chain Reactions:</strong> Plan your moves to create back-to-back merges, which not only clears the board but exponentially boosts your score.</div>
                                 </li>
                             </ul>
                         </section>
                         
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-xs font-black">2</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-xs font-black">2</span>
                                 Why Play Here?
                             </h3>
                             <div className="space-y-6">
-                                <div className="p-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl">
-                                    <h4 className="text-sm font-bold text-white mb-2">Zero Latency Controls</h4>
+                                <div className="p-4 bg-[#1c1c1c]/50 border border-white/[0.06] rounded-2xl">
+                                    <h4 className="text-sm font-bold text-[#f0ede8] mb-2">Zero Latency Controls</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed">Our game engine is optimized for instant response. Use your arrow keys or swipe with precision—every move is calculated in milliseconds without server lag.</p>
                                 </div>
-                                <div className="p-4 bg-zinc-950/50 border border-zinc-800/50 rounded-2xl">
-                                    <h4 className="text-sm font-bold text-white mb-2">Local High Score Tracking</h4>
+                                <div className="p-4 bg-[#1c1c1c]/50 border border-white/[0.06] rounded-2xl">
+                                    <h4 className="text-sm font-bold text-[#f0ede8] mb-2">Local High Score Tracking</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed">Your highest score is saved directly to your browser&apos;s local storage. Close the tab and come back anytime to beat your personal record.</p>
                                 </div>
                             </div>
                         </section>
                     </div>
                     
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] bg-[#1c1c1c]/30 border border-white/[0.05] rounded-[2.5rem] p-8 md:p-12 shadow-2xl">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Frequently Asked Questions</h3>
                         <Accordion>
                             <AccordionItem title="Is the 2048 game free to play?">
                                 Yes, 100% free. We offer the full 2048 experience without paywalls, subscriptions, or watermarks. Just open the page and start merging.

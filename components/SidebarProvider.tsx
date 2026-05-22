@@ -46,6 +46,18 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
     const toggle = () => setIsOpen((prev) => !prev);
     const toggleFullscreen = () => setIsAppFullscreen((prev) => !prev);
 
+    // Global keyboard listener for Ctrl+. (or Cmd+. on macOS)
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === ".") {
+                e.preventDefault();
+                setIsOpen((prev) => !prev);
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+        return () => window.removeEventListener("keydown", handleKeyDown);
+    }, []);
+
     return (
         <SidebarContext.Provider value={{ isOpen, setIsOpen, toggle, isAppFullscreen, setIsAppFullscreen, toggleFullscreen, isNavigating }}>
             {children}

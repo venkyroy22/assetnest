@@ -298,21 +298,21 @@ export default function IsItCenteredPage() {
             <div className="w-full max-w-6xl flex items-center justify-between mb-4 sm:mb-6 relative z-50">
                 <div className="flex flex-col">
                     <div className="text-[10px] uppercase tracking-[0.4em] font-black text-zinc-500 mb-1">AssetNest</div>
-                    <div className="text-2xl font-black text-white leading-none tracking-tighter">Is It Centered?</div>
+                    <div className="text-2xl font-black text-[#f0ede8] leading-none tracking-tighter">Is It Centered?</div>
                 </div>
 
                 {gameState !== "intro" && gameState !== "game_over" && (
                     <div className="flex gap-8 items-center">
                         <button 
                             onClick={() => setIsHelpOpen(true)}
-                            className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-800/50 rounded-full transition-all border border-transparent hover:border-zinc-700/50"
+                            className="p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-full transition-all border border-transparent hover:border-white/[0.12]"
                             title="How to play"
                         >
                             <Info size={20} />
                         </button>
                         <div className="flex flex-col items-end">
                             <span className="text-[10px] text-zinc-500 uppercase font-black tracking-widest leading-none mb-1">Score</span>
-                            <span className="text-xl font-black text-white">{score} / {MAX_LEVELS}</span>
+                            <span className="text-xl font-black text-[#f0ede8]">{score} / {MAX_LEVELS}</span>
                         </div>
                     </div>
                 )}
@@ -321,7 +321,7 @@ export default function IsItCenteredPage() {
                     <div className="flex items-center">
                         <button 
                             onClick={() => setIsHelpOpen(true)}
-                            className="p-3 text-zinc-500 hover:text-white hover:bg-zinc-800/50 rounded-full transition-all border border-transparent hover:border-zinc-700/50"
+                            className="p-3 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-full transition-all border border-transparent hover:border-white/[0.12]"
                             title="How to play"
                         >
                             <Info size={24} />
@@ -336,13 +336,13 @@ export default function IsItCenteredPage() {
                         <Maximize2 size={32} className="text-emerald-500" strokeWidth={1.5} />
                     </div>
                     
-                    <h1 className="text-5xl md:text-7xl font-black text-white tracking-tighter mb-6">Master your eye.</h1>
+                    <h1 className="text-5xl md:text-7xl font-black text-[#f0ede8] tracking-tighter mb-6">Master your eye.</h1>
                     <p className="text-zinc-500 font-medium mb-12 text-lg tracking-wide">
                         The dot is either perfectly centered algebraically, or slightly off. <br/>Trust your vision. One mistake and you're out.
                     </p>
                     <button 
                         onClick={startGame}
-                        className="px-14 py-5 bg-white text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
+                        className="px-14 py-5 bg-[#f0ede8] text-[#141414] font-black uppercase tracking-widest rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
                     >
                         Begin Training <Play size={18} fill="currentColor" />
                     </button>
@@ -362,7 +362,7 @@ export default function IsItCenteredPage() {
                                     disabled={gameState !== "playing"}
                                     className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-0 pointer-events-none cursor-default"}`}
                                 >
-                                    <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-zinc-900 rounded-[2rem] flex items-center justify-center border border-zinc-800 shadow-2xl transition-all group-hover:bg-zinc-800 group-hover:border-zinc-700 p-5 overflow-hidden relative ${isYesHovered ? 'shadow-[0_0_40px_rgba(52,211,153,0.15)]' : ''}`}>
+                                    <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-[#1c1c1c] rounded-[2rem] flex items-center justify-center border border-white/[0.07] shadow-2xl transition-all group-hover:bg-white/[0.06] group-hover:border-white/[0.12] p-5 overflow-hidden relative ${isYesHovered ? 'shadow-[0_0_40px_rgba(52,211,153,0.15)]' : ''}`}>
                                         <HappyIcon className="w-full h-full" />
                                     </div>
                                     <span className={`text-emerald-400 font-black uppercase tracking-[0.2em] text-[10px] transition-opacity ${isYesHovered ? 'opacity-100' : 'opacity-40'}`}>Yes</span>
@@ -380,7 +380,7 @@ export default function IsItCenteredPage() {
                                         ))}
 
                                         <div 
-                                            className="w-1.5 h-1.5 bg-black rounded-full absolute z-20"
+                                            className="w-1.5 h-1.5 bg-[#141414] rounded-full absolute z-20"
                                             style={{ transform: `translate(${offsetX}px, ${offsetY}px)` }}
                                         />
 
@@ -403,7 +403,7 @@ export default function IsItCenteredPage() {
                                     disabled={gameState !== "playing"}
                                     className={`group flex flex-col items-center gap-4 transition-all ${gameState === "playing" ? "hover:scale-110 active:scale-90" : "opacity-0 pointer-events-none cursor-default"}`}
                                 >
-                                    <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-zinc-900 rounded-[2rem] flex items-center justify-center border border-zinc-800 shadow-2xl transition-all group-hover:bg-zinc-800 group-hover:border-zinc-700 p-5 relative ${isNoHovered ? 'shadow-[0_0_40px_rgba(239,68,68,0.15)]' : ''}`}>
+                                    <div className={`w-20 h-20 sm:w-28 sm:h-28 bg-[#1c1c1c] rounded-[2rem] flex items-center justify-center border border-white/[0.07] shadow-2xl transition-all group-hover:bg-white/[0.06] group-hover:border-white/[0.12] p-5 relative ${isNoHovered ? 'shadow-[0_0_40px_rgba(239,68,68,0.15)]' : ''}`}>
                                         <SadIcon className="w-full h-full" />
                                     </div>
                                     <span className={`text-red-500 font-black uppercase tracking-[0.2em] text-[10px] transition-opacity ${isNoHovered ? 'opacity-100' : 'opacity-40'}`}>No</span>
@@ -415,7 +415,7 @@ export default function IsItCenteredPage() {
                     <div className="mb-auto pb-4 flex flex-col items-center gap-4">
                         
                         {gameState === "playing" && (
-                            <h2 className="text-2xl md:text-3xl font-black text-white tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 text-center opacity-70">
+                            <h2 className="text-2xl md:text-3xl font-black text-[#f0ede8] tracking-widest uppercase animate-in fade-in slide-in-from-bottom-2 text-center opacity-70">
                                 Is it centered?
                             </h2>
                         )}
@@ -425,7 +425,7 @@ export default function IsItCenteredPage() {
                                 <div className="text-xs font-black uppercase tracking-[0.5em] text-emerald-400 drop-shadow-[0_0_15px_rgba(52,211,153,0.3)]">Target Secured</div>
                                 <button 
                                     onClick={level === MAX_LEVELS ? () => setGameState("game_over") : handleNextRound}
-                                    className="px-20 py-6 bg-white text-black font-black uppercase tracking-[0.2em] text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
+                                    className="px-20 py-6 bg-[#f0ede8] text-[#141414] font-black uppercase tracking-[0.2em] text-sm rounded-2xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-4"
                                 >
                                     {level === MAX_LEVELS ? "Finish Training" : `Proceed to Level ${level + 1}`}
                                 </button>
@@ -440,21 +440,21 @@ export default function IsItCenteredPage() {
                                 <div className={`text-[9px] uppercase tracking-[0.4em] font-black ${isSuccess ? "text-emerald-500" : "text-zinc-500"} mb-2`}>
                                     {isSuccess ? "Calibration Complete" : "Training Terminated"}
                                 </div>
-                                <h2 className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2">
+                                <h2 className="text-3xl sm:text-4xl font-black text-[#f0ede8] tracking-tighter mb-2">
                                     {isSuccess ? "Absolute Perfection." : "You Failed."}
                                 </h2>
                                 <p className="text-zinc-500 font-medium mb-5 sm:mb-8 text-sm sm:text-base italic px-4">
                                     "{getSarcasticRemark(score)}"
                                 </p>
                                 
-                                <div className={`bg-zinc-900/40 border ${isSuccess ? "border-emerald-500/30" : "border-zinc-800/60"} rounded-2xl p-4 sm:p-8 w-full max-w-sm mb-6 sm:mb-8 flex flex-col items-center shadow-2xl`}>
-                                    <div className={`text-4xl sm:text-5xl font-black ${isSuccess ? "text-emerald-400" : "text-white"} mb-1`}>{score}</div>
+                                <div className={`bg-[#1c1c1c]/40 border ${isSuccess ? "border-emerald-500/30" : "border-white/[0.06]"} rounded-2xl p-4 sm:p-8 w-full max-w-sm mb-6 sm:mb-8 flex flex-col items-center shadow-2xl`}>
+                                    <div className={`text-4xl sm:text-5xl font-black ${isSuccess ? "text-emerald-400" : "text-[#f0ede8]"} mb-1`}>{score}</div>
                                     <div className="text-[9px] sm:text-[10px] uppercase tracking-widest font-black text-zinc-500">Final Precision Score</div>
                                 </div>
 
                                 <button 
                                     onClick={startGame}
-                                    className="px-10 py-4 bg-white text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-3"
+                                    className="px-10 py-4 bg-[#f0ede8] text-[#141414] font-black uppercase tracking-widest text-xs rounded-xl hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-3"
                                 >
                                     {isSuccess ? "Train Again" : "Try Again"} <RotateCcw size={16} />
                                 </button>
@@ -472,7 +472,7 @@ export default function IsItCenteredPage() {
 
             {/* Cinematic Background Branding */}
             <div className="absolute bottom-10 left-1/2 -translate-x-1/2 pointer-events-none select-none opacity-[0.02] scale-75 md:scale-100">
-                <span className="text-[12vw] font-black text-white whitespace-nowrap uppercase tracking-tighter italic leading-none">
+                <span className="text-[12vw] font-black text-[#f0ede8] whitespace-nowrap uppercase tracking-tighter italic leading-none">
                     Is It Centered?
                 </span>
             </div>
@@ -483,7 +483,7 @@ export default function IsItCenteredPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-[2px]"
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-[#141414]/40 backdrop-blur-[2px]"
                     >
                         <motion.div
                             initial={{ scale: 0, rotate: -20, y: -400 }}
@@ -523,7 +523,7 @@ export default function IsItCenteredPage() {
             >
                 <div className="space-y-8">
                     <section>
-                        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">The Ultimate Design Test</h3>
+                        <h3 className="text-xl font-bold text-[#f0ede8] mb-3 tracking-tight">The Ultimate Design Test</h3>
                         <p className="text-zinc-400 leading-relaxed text-lg">
                             A single black dot is placed within a geometric shape. Is it perfectly centered, or is it off by a few pixels?
                         </p>
@@ -541,21 +541,21 @@ export default function IsItCenteredPage() {
                     </div>
 
                     <section>
-                        <h3 className="text-xl font-bold text-white mb-3 tracking-tight">Rules of Engagement</h3>
+                        <h3 className="text-xl font-bold text-[#f0ede8] mb-3 tracking-tight">Rules of Engagement</h3>
                         <ul className="space-y-4 text-zinc-400 list-none p-0">
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">1</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">1</span>
                                 <span>Observe the shape and the dot carefully.</span>
                             </li>
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">2</span>
-                                <span>Click the <strong className="text-white">Happy</strong> face (Yes) if you think it's centered.</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">2</span>
+                                <span>Click the <strong className="text-[#f0ede8]">Happy</strong> face (Yes) if you think it's centered.</span>
                             </li>
                             <li className="flex gap-4">
-                                <span className="flex-none w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center text-white font-bold text-sm">3</span>
-                                <span>Click the <strong className="text-white">Sad</strong> face (No) if you think it's off.</span>
+                                <span className="flex-none w-8 h-8 rounded-full bg-white/[0.06] flex items-center justify-center text-[#f0ede8] font-bold text-sm">3</span>
+                                <span>Click the <strong className="text-[#f0ede8]">Sad</strong> face (No) if you think it's off.</span>
                             </li>
-                            <li className="flex gap-4 italic text-zinc-500 border-l-2 border-zinc-800 pl-4 ml-4">
+                            <li className="flex gap-4 italic text-zinc-500 border-l-2 border-white/[0.07] pl-4 ml-4">
                                 One wrong move and the game ends immediately. Precision is everything.
                             </li>
                         </ul>

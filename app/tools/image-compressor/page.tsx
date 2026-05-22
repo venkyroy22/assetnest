@@ -181,18 +181,18 @@ export default function ImageCompressorPage() {
 
             {/* Header */}
             <div className="mb-12">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 relative group">
-                    <Zap size={11} className="text-white" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-5 relative group">
+                    <Zap size={11} className="text-[#f0ede8]" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Free Tool</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="What is this?"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-3">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-3">
                     Image Compressor
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium leading-relaxed max-w-lg">
@@ -210,7 +210,7 @@ export default function ImageCompressorPage() {
                     onClick={() => fileInputRef.current?.click()}
                     className={`relative flex flex-col items-center justify-center min-h-[360px] border-2 border-dashed cursor-pointer transition-all duration-300 ${isDragging
                         ? "border-white bg-white/5"
-                        : "border-zinc-700 bg-zinc-950/50 hover:border-zinc-500 hover:bg-zinc-900/50"
+                        : "border-zinc-700 bg-[#1c1c1c]/50 hover:border-zinc-500 hover:bg-[#1e1e1e]/50"
                         }`}
                 >
                     <input
@@ -219,17 +219,17 @@ export default function ImageCompressorPage() {
                         onChange={(e) => e.target.files?.[0] && loadFile(e.target.files[0])}
                     />
                     <div className="flex flex-col items-center gap-5 p-10 text-center">
-                        <div className="w-16 h-16 bg-zinc-900 border border-zinc-700 flex items-center justify-center">
+                        <div className="w-16 h-16 bg-[#1c1c1c] border border-zinc-700 flex items-center justify-center">
                             <Upload size={28} className="text-zinc-400" />
                         </div>
                         <div>
-                            <p className="text-white font-black tracking-tight text-xl mb-2">Drag & Drop or Click Here</p>
+                            <p className="text-[#f0ede8] font-black tracking-tight text-xl mb-2">Drag & Drop or Click Here</p>
                             <p className="text-zinc-500 text-sm font-medium">JPEG, PNG, WebP supported • No Server Upload</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold tracking-wide text-zinc-500">
-                            <span className="px-2 py-1 border border-zinc-800">100% Private</span>
-                            <span className="px-2 py-1 border border-zinc-800">No Server Upload</span>
-                            <span className="px-2 py-1 border border-zinc-800">Free Forever</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">100% Private</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">No Server Upload</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">Free Forever</span>
                         </div>
                     </div>
                 </div>
@@ -240,10 +240,10 @@ export default function ImageCompressorPage() {
                 <div className="space-y-5">
 
                     {/* File info */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-zinc-900/50 border border-zinc-800">
+                    <div className="flex items-center justify-between px-4 py-3 bg-[#1e1e1e]/50 border border-white/[0.07]">
                         <div className="flex items-center gap-3">
                             <ImageIcon size={16} className="text-zinc-400" />
-                            <span className="text-xs font-black text-white truncate max-w-[200px]">{originalFile.name}</span>
+                            <span className="text-xs font-black text-[#f0ede8] truncate max-w-[200px]">{originalFile.name}</span>
                             <span className="text-[10px] font-semibold tracking-wider text-zinc-400 border border-zinc-700 px-2 py-0.5 rounded-full">
                                 {formatBytes(originalSize)}
                             </span>
@@ -261,16 +261,16 @@ export default function ImageCompressorPage() {
                     {/* PNG note */}
                     {outputFormat === "image/png" && (
                         <div className="flex items-start gap-3 px-4 py-3 border border-white/20 bg-white/5">
-                            <Info size={14} className="text-white mt-0.5 shrink-0" />
+                            <Info size={14} className="text-[#f0ede8] mt-0.5 shrink-0" />
                             <p className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                                <span className="text-white font-black">PNG is lossless</span> — browsers ignore the quality slider for PNG.
+                                <span className="text-[#f0ede8] font-black">PNG is lossless</span> — browsers ignore the quality slider for PNG.
                                 Resize (Max Width) is the only way to reduce PNG file size. Switch to <strong>JPEG</strong> or <strong>WebP</strong> for significant compression.
                             </p>
                         </div>
                     )}
 
                     {/* Controls */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-zinc-900/50 border border-zinc-800">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 p-5 bg-[#1e1e1e]/50 border border-white/[0.07]">
 
                         {/* Quality */}
                         <div>
@@ -278,7 +278,7 @@ export default function ImageCompressorPage() {
                                 <label className="text-[10px] font-semibold text-zinc-400">
                                     Quality {outputFormat === "image/png" && <span className="text-zinc-700 normal-case font-medium">(PNG: no effect)</span>}
                                 </label>
-                                <span className="text-xs font-black text-white">{quality}%</span>
+                                <span className="text-xs font-black text-[#f0ede8]">{quality}%</span>
                             </div>
                             <input type="range" min={1} max={100} value={quality}
                                 onChange={(e) => { setQuality(Number(e.target.value)); setHasCompressed(false); }}
@@ -296,7 +296,7 @@ export default function ImageCompressorPage() {
                                     <Maximize2 size={10} className="text-zinc-500" />
                                     <label className="text-[10px] font-semibold text-zinc-400">Max Width / Height</label>
                                 </div>
-                                <span className="text-xs font-black text-white">{maxDim}px</span>
+                                <span className="text-xs font-black text-[#f0ede8]">{maxDim}px</span>
                             </div>
                             <input type="range" min={320} max={4096} step={64} value={maxDim}
                                 onChange={(e) => { setMaxDim(Number(e.target.value)); setHasCompressed(false); }}
@@ -313,7 +313,7 @@ export default function ImageCompressorPage() {
                                 <select
                                     value={outputFormat}
                                     onChange={(e) => { setOutputFormat(e.target.value); setHasCompressed(false); }}
-                                    className="bg-zinc-800 border border-zinc-700 text-white text-xs font-bold px-3 py-2.5 focus:outline-none focus:border-white cursor-pointer"
+                                    className="bg-white/[0.06] border border-zinc-700 text-[#f0ede8] text-xs font-bold px-3 py-2.5 focus:outline-none focus:border-white cursor-pointer"
                                 >
                                     <option value="image/jpeg">JPEG — best compression</option>
                                     <option value="image/webp">WebP — modern + small</option>
@@ -327,7 +327,7 @@ export default function ImageCompressorPage() {
                             <button
                                 onClick={() => originalFile && compress(originalFile, quality, outputFormat, maxDim)}
                                 disabled={isCompressing}
-                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-white text-black text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[#f0ede8] text-[#141414] text-sm font-bold tracking-wide rounded-full hover:opacity-90 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {isCompressing
                                     ? <><RefreshCw size={13} className="animate-spin" /> Compressing…</>
@@ -339,9 +339,9 @@ export default function ImageCompressorPage() {
                     {/* Increased size warning */}
                     {increased && (
                         <div className="flex items-start gap-3 px-4 py-3 border border-white/30 bg-white/5">
-                            <AlertTriangle size={14} className="text-white mt-0.5 shrink-0" />
+                            <AlertTriangle size={14} className="text-[#f0ede8] mt-0.5 shrink-0" />
                             <div className="text-[11px] text-zinc-400 font-medium leading-relaxed">
-                                <span className="text-white font-black">Output is larger than original.</span>{" "}
+                                <span className="text-[#f0ede8] font-black">Output is larger than original.</span>{" "}
                                 Try: switching to <strong>JPEG or WebP</strong> format, lowering quality, or reducing max width.
                                 PNG files can increase in size when re-encoded if the original was already optimised.
                             </div>
@@ -352,8 +352,8 @@ export default function ImageCompressorPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
                         {/* Original */}
-                        <div className="border border-zinc-800 bg-zinc-950/30">
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+                        <div className="border border-white/[0.07] bg-[#1c1c1c]/30">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
                                 <span className="text-xs font-semibold tracking-wide text-zinc-400">Original</span>
                                 <div className="flex items-center gap-3">
                                     {originalDims && (
@@ -361,7 +361,7 @@ export default function ImageCompressorPage() {
                                             {originalDims.w}×{originalDims.h}
                                         </span>
                                     )}
-                                    <span className="text-xs font-black text-white">{formatBytes(originalSize)}</span>
+                                    <span className="text-xs font-black text-[#f0ede8]">{formatBytes(originalSize)}</span>
                                 </div>
                             </div>
                             <div className="p-4 flex items-center justify-center min-h-[250px]" style={{ background: CHECKER }}>
@@ -372,8 +372,8 @@ export default function ImageCompressorPage() {
                         </div>
 
                         {/* Compressed */}
-                        <div className="border border-zinc-800 bg-zinc-950/30">
-                            <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+                        <div className="border border-white/[0.07] bg-[#1c1c1c]/30">
+                            <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.07]">
                                 <span className="text-xs font-semibold tracking-wide text-zinc-400">Compressed</span>
                                 <div className="flex items-center gap-3">
                                     {hasCompressed && compressedDims && (
@@ -383,13 +383,13 @@ export default function ImageCompressorPage() {
                                     )}
                                     {hasCompressed && compressedSize > 0 && (
                                         <span className={`text-[11px] font-bold tracking-wider border px-2 py-0.5 rounded-full ${savings > 0
-                                            ? "text-white border-white/30 bg-white/10"
-                                            : "text-white border-white/30 bg-white/10"
+                                            ? "text-[#f0ede8] border-white/30 bg-white/10"
+                                            : "text-[#f0ede8] border-white/30 bg-white/10"
                                             }`}>
                                             {savings > 0 ? `-${savings}%` : "+size"}
                                         </span>
                                     )}
-                                    <span className="text-xs font-black text-white">
+                                    <span className="text-xs font-black text-[#f0ede8]">
                                         {hasCompressed ? formatBytes(compressedSize) : "—"}
                                     </span>
                                 </div>
@@ -419,13 +419,13 @@ export default function ImageCompressorPage() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4">
                             <button
                                 onClick={handleDownload}
-                                className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                className="h-12 px-6 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-all active:scale-[0.98] shadow-xl"
                             >
                                 <Download size={18} /> Download ({formatBytes(compressedSize)})
                             </button>
                             <button
                                 onClick={reset}
-                                className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                             >
                                 <RefreshCw size={14} /> Compress Another
                             </button>
@@ -440,8 +440,8 @@ export default function ImageCompressorPage() {
                 title="Ultra-Efficient Optimization"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Ultra-Efficient Image Minification
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -450,8 +450,8 @@ export default function ImageCompressorPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Scissors size={20} className="text-zinc-500" />
                                 Smart Optimization
                             </h3>
@@ -471,26 +471,26 @@ export default function ImageCompressorPage() {
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Zap size={20} className="text-zinc-500" />
                                 Pro Compression Tips
                             </h3>
                             <div className="grid grid-cols-1 gap-4">
                                 <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                    <p className="text-[10px] font-black text-white uppercase tracking-widest">Sweet Spot</p>
+                                    <p className="text-[10px] font-black text-[#f0ede8] uppercase tracking-widest">Sweet Spot</p>
                                     <p className="text-xs text-zinc-500 mt-1">Aim for 70-80% quality. It typically cuts file size in half with zero visible artifacts.</p>
                                 </div>
                                 <div className="p-4 bg-white/5 border border-white/10 rounded-2xl">
-                                    <p className="text-[10px] font-black text-white uppercase tracking-widest">WebP Advantage</p>
+                                    <p className="text-[10px] font-black text-[#f0ede8] uppercase tracking-widest">WebP Advantage</p>
                                     <p className="text-xs text-zinc-500 mt-1">WebP files are consistently 25-30% smaller than JPEGs at equivalent visual quality.</p>
                                 </div>
                             </div>
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Frequently Asked Questions</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Frequently Asked Questions</h3>
                         <Accordion>
                             <AccordionItem title="Is my data secure?">
                                 Yes. We use HTML5 Canvas APIs for local processing. Your images never touch any server, providing 100% privacy.

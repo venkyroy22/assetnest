@@ -21,8 +21,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "heroic-portrait",
     description: "Professional editorial lighting setup for 'Heroic' feel portraits.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_l454rnl454rnl454.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_1e7stc1e7stc1e7s.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagel454rnl454rnl454-1779426746644.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage1e7stc1e7stc1e7s-1779426717472.webp"
     ],
     author: "Gemini",
     sections: [
@@ -57,8 +57,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "matchflame-closeup-portrait",
     description: "Dramatic cinematic close-up portrait with a lit match flame as the key light source against a deep warm red background.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_eueuboeueuboeueu.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_9wzf9i9wzf9i9wzf.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimageeueuboeueuboeueu-1779426743157.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage9wzf9i9wzf9i9wzf-1779426735608.webp"
     ],
     author: "Gemini",
     sections: [
@@ -76,7 +76,7 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "SCENE & COMPOSITION",
-        content: "Background: A dense, uniform deep warm red backdrop with minimal visual detail. The background should feel heavy and atmospheric without visible patterns.\n\nCamera Angle (CRITICAL): Eye-level close portrait framing the face and hand prominently.\n\nFraming: Tight close-up composition focusing on the face, lips, fingers, and flame.\n\nPose: The subject’s right hand is raised to the face holding a thin wooden match between the fingers. The tip of the match burns with a bright flame positioned slightly above the lips. Loose strands of hair partially cover the face."
+        content: "Background: A dense, uniform deep warm red backdrop with minimal visual detail. The background should feel heavy and atmospheric without visible patterns.\n\nCamera Angle (CRITICAL): Eye-level close portrait framing the face and hand prominently.\n\nFraming: Tight close-up composition focusing on the face, lips, fingers, and flame.\n\nPose: The subject's right hand is raised to the face holding a thin wooden match between the fingers. The tip of the match burns with a bright flame positioned slightly above the lips. Loose strands of hair partially cover the face."
       },
       {
         label: "LIGHTING (DRAMATIC & CINEMATIC)",
@@ -93,8 +93,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "monochrome-dutch-tilt",
     description: "Cinematic black & white portrait with surreal diagonal light patterns and high texture detail.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_7lmyk07lmyk07lmy.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_4eu1o04eu1o04eu1.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage7lmyk07lmyk07lmy-1779426731989.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage4eu1o04eu1o04eu1-1779426728387.webp"
     ],
     author: "Gemini",
     sections: [
@@ -112,15 +112,15 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "SCENE & COMPOSITION",
-        content: "Camera Angle (CRITICAL): Dutch tilt camera angle creating a diagonal and dynamic composition that introduces visual tension.\n\nFraming: Shoulder-up portrait framing, with the subject’s head slightly tilted in the opposite direction of the camera angle to intensify imbalance and visual drama.\n\nPose: The subject remains still and centered within the frame while the diagonal framing creates movement across the image.\n\nBackground: A soft smoky gray gradient background with faint atmospheric haze that allows light streaks to fade gradually into darkness."
+        content: "Camera Angle (CRITICAL): Dutch tilt camera angle creating a diagonal and dynamic composition that introduces visual tension.\n\nFraming: Shoulder-up portrait framing, with the subject's head slightly tilted in the opposite direction of the camera angle to intensify imbalance and visual drama.\n\nPose: The subject remains still and centered within the frame while the diagonal framing creates movement across the image.\n\nBackground: A soft smoky gray gradient background with faint atmospheric haze that allows light streaks to fade gradually into darkness."
       },
       {
         label: "LIGHTING (DRAMATIC & SURREAL)",
-        content: "Palette: Pure monochrome black-and-white tonal range with rich blacks, luminous highlights, and smooth mid-gray transitions.\n\nKey Light: Bright sunlight passes through a textured surface, breaking into glowing wavy light lines that sweep diagonally across the subject’s face and body.\n\nLight Pattern: The beams ripple like underwater reflections, refracting into surreal fluid patterns that travel across the skin.\n\nShadow Behavior: Shadows remain soft and mid-gray, maintaining smooth tonal balance while allowing the luminous streaks to dominate the composition.\n\nLight Interaction: The wavy rays sculpt cheekbones, lips, and jawline, producing depth and surreal contrast while enhancing facial contours."
+        content: "Palette: Pure monochrome black-and-white tonal range with rich blacks, luminous highlights, and smooth mid-gray transitions.\n\nKey Light: Bright sunlight passes through a textured surface, breaking into glowing wavy light lines that sweep diagonally across the subject's face and body.\n\nLight Pattern: The beams ripple like underwater reflections, refracting into surreal fluid patterns that travel across the skin.\n\nShadow Behavior: Shadows remain soft and mid-gray, maintaining smooth tonal balance while allowing the luminous streaks to dominate the composition.\n\nLight Interaction: The wavy rays sculpt cheekbones, lips, and jawline, producing depth and surreal contrast while enhancing facial contours."
       },
       {
         label: "TECHNICAL QUALITY",
-        content: "Style: Hyperrealistic 8K black-and-white cinematic portrait photography.\n\nTexture: Extremely detailed skin rendering with visible pores, freckles, faint facial hair, and natural imperfections.\n\nAtmosphere: Fine cinematic grain overlays the frame, adding analog texture and film realism.\n\nFocus: Sharp focus on the face and illuminated areas while the background fades softly into smoky gradients.\n\nMood: Dramatic, surreal, and emotional — a monochrome editorial portrait where the tilted angle and flowing wave-like light create tension and visual storytelling.\n\nImportant: The subject's face must remain unchanged with natural features and realistic skin texture. The image ratio should be portrait."
+        content: "Style: Hyperrealistic 8K black-and-white cinematic portrait photography.\n\nTexture: Extremely detailed skin rendering with visible pores, freckles, faint facial hair, and natural imperfections.\n\nAtmosphere: Fine cinematic grain overlays the frame, adding analog texture and film realism.\n\nFocus: Sharp focus on the face and illuminated areas while the background fades softly into smoky gradients.\n\nMood: Dramatic, surreal, and emotional - a monochrome editorial portrait where the tilted angle and flowing wave-like light create tension and visual storytelling.\n\nImportant: The subject's face must remain unchanged with natural features and realistic skin texture. The image ratio should be portrait."
       }
     ]
   },
@@ -129,8 +129,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "shattered-mirror-portrait",
     description: "Ultra-realistic 8K cinematic portrait featuring shattered glass reflections and low-key lighting.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_bedjqybedjqybedj.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_wdjvrjwdjvrjwdjv.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagebedjqybedjqybedj-1779426739320.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagewdjvrjwdjvrjwdjv-1779426761490.webp"
     ],
     author: "Gemini",
     sections: [
@@ -140,7 +140,7 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "IDENTITY ANCHOR (CRITICAL STRICT CONSTRAINT)",
-        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject’s facial features must remain identical to the uploaded image. Maintain the exact face structure, skin texture, hairstyle, and natural likeness without alteration.\n\nUniversal Application: Apply all styling, lighting, and composition elements while preserving the subject’s identity regardless of gender."
+        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject's facial features must remain identical to the uploaded image. Maintain the exact face structure, skin texture, hairstyle, and natural likeness without alteration.\n\nUniversal Application: Apply all styling, lighting, and composition elements while preserving the subject's identity regardless of gender."
       },
       {
         label: "WARDROBE & STYLING",
@@ -148,7 +148,7 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "SCENE & COMPOSITION",
-        content: "Background: A dark, atmospheric environment that enhances the cinematic mood while keeping the focus on the subject.\n\nFraming: A tight cinematic portrait framing the subject from the chest or shoulders upward.\n\nVisual Elements: Surround the subject with shattered glass and broken mirror fragments suspended around them.\n\nReflection Effect: The fractured mirror pieces reflect distorted variations of the subject’s own face, creating multiple fragmented reflections that intensify the dramatic composition.\n\nComposition Mood: The shattered reflections add tension and visual complexity while emphasizing the subject as the central figure."
+        content: "Background: A dark, atmospheric environment that enhances the cinematic mood while keeping the focus on the subject.\n\nFraming: A tight cinematic portrait framing the subject from the chest or shoulders upward.\n\nVisual Elements: Surround the subject with shattered glass and broken mirror fragments suspended around them.\n\nReflection Effect: The fractured mirror pieces reflect distorted variations of the subject's own face, creating multiple fragmented reflections that intensify the dramatic composition.\n\nComposition Mood: The shattered reflections add tension and visual complexity while emphasizing the subject as the central figure."
       },
       {
         label: "LIGHTING (DRAMATIC & CINEMATIC)",
@@ -165,8 +165,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "emerald-profile-portrait",
     description: "Cinematic close-up profile portrait with saturated deep-green monochromatic lighting and high-fashion aesthetic.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_3cqyo23cqyo23cqy.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_x27iwsx27iwsx27i.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage3cqyo23cqyo23cqy-1779426724530.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagex27iwsx27iwsx27i-1779426766352.webp"
     ],
     author: "Gemini",
     sections: [
@@ -176,15 +176,15 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "IDENTITY ANCHOR (CRITICAL STRICT CONSTRAINT)",
-        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: Preserve 100% of the real facial identity from the uploaded image. Maintain the exact facial structure, skin texture, eye placement, hairstyle base, and natural likeness without alteration.\n\nUniversal Application: Apply all lighting, styling, and compositional elements while keeping the subject’s identity perfectly recognizable regardless of gender."
+        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: Preserve 100% of the real facial identity from the uploaded image. Maintain the exact facial structure, skin texture, eye placement, hairstyle base, and natural likeness without alteration.\n\nUniversal Application: Apply all lighting, styling, and compositional elements while keeping the subject's identity perfectly recognizable regardless of gender."
       },
       {
         label: "WARDROBE & STYLING",
-        content: "Hairstyle: Dark messy hair styled in a modern mullet-inspired texture, with loose layered strands that enhance the edgy fashion aesthetic while preserving the subject’s natural hairstyle.\n\nFacial Detail: Maintain the subject’s natural facial hair or smooth skin exactly as in the reference image without adding or removing features.\n\nAccessories: Thick rectangular black sunglasses covering the eyes, a dangling silver earring, a thick silver link chain around the neck, and a longer thin chain with a blade-shaped pendant.\n\nAttire: A dark textured black jacket with subtle fabric detail that gradually fades into shadow.\n\nExpression: Calm, moody, and introspective. The subject looks slightly downward, maintaining a composed and mysterious presence."
+        content: "Hairstyle: Dark messy hair styled in a modern mullet-inspired texture, with loose layered strands that enhance the edgy fashion aesthetic while preserving the subject's natural hairstyle.\n\nFacial Detail: Maintain the subject's natural facial hair or smooth skin exactly as in the reference image without adding or removing features.\n\nAccessories: Thick rectangular black sunglasses covering the eyes, a dangling silver earring, a thick silver link chain around the neck, and a longer thin chain with a blade-shaped pendant.\n\nAttire: A dark textured black jacket with subtle fabric detail that gradually fades into shadow.\n\nExpression: Calm, moody, and introspective. The subject looks slightly downward, maintaining a composed and mysterious presence."
       },
       {
         label: "SCENE & COMPOSITION",
-        content: "Framing: A tight cinematic close-up portrait focused on the side of the face.\n\nCamera Angle: Profile view of the subject’s face, emphasizing the silhouette of the nose, lips, jawline, and hair texture.\n\nPose: The head is angled slightly downward, creating a reflective and introspective mood while highlighting the profile contours.\n\nBackground: A smooth glowing deep-green backdrop with rich saturation and soft gradients that enhance the monochromatic atmosphere.\n\nComposition Mood: Minimalist yet striking, allowing lighting and silhouette to dominate the visual narrative."
+        content: "Framing: A tight cinematic close-up portrait focused on the side of the face.\n\nCamera Angle: Profile view of the subject's face, emphasizing the silhouette of the nose, lips, jawline, and hair texture.\n\nPose: The head is angled slightly downward, creating a reflective and introspective mood while highlighting the profile contours.\n\nBackground: A smooth glowing deep-green backdrop with rich saturation and soft gradients that enhance the monochromatic atmosphere.\n\nComposition Mood: Minimalist yet striking, allowing lighting and silhouette to dominate the visual narrative."
       },
       {
         label: "LIGHTING (DRAMATIC & MONOCHROMATIC)",
@@ -192,7 +192,7 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "TECHNICAL QUALITY",
-        content: "Style: Hyper-realistic 8K cinematic studio portrait photography with a high-fashion editorial and music-video aesthetic.\n\nFocus: Ultra-sharp focus on facial structure, hair texture, and reflective jewelry details.\n\nDetail: Highly realistic skin texture, natural imperfections, metallic reflections, and subtle fabric textures.\n\nColor Grading: Deep monochromatic green color grading with rich shadows and luminous highlights.\n\nMood: Intense, atmospheric, and stylish with a dramatic cinematic presence.\n\nImportant: The subject’s face must remain identical to the reference image with realistic skin texture and natural features. The image ratio should be portrait."
+        content: "Style: Hyper-realistic 8K cinematic studio portrait photography with a high-fashion editorial and music-video aesthetic.\n\nFocus: Ultra-sharp focus on facial structure, hair texture, and reflective jewelry details.\n\nDetail: Highly realistic skin texture, natural imperfections, metallic reflections, and subtle fabric textures.\n\nColor Grading: Deep monochromatic green color grading with rich shadows and luminous highlights.\n\nMood: Intense, atmospheric, and stylish with a dramatic cinematic presence.\n\nImportant: The subject's face must remain identical to the reference image with realistic skin texture and natural features. The image ratio should be portrait."
       }
     ]
   },
@@ -201,8 +201,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "icy-blue-futuristic-halo",
     description: "Futuristic closet-up portrait with a neon halo effect and cool monochromatic icy blue lighting.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_vgqpw8vgqpw8vgqp.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_24e81424e81424e8.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagevgqpw8vgqpw8vgqp-1779426757126.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage24e81424e81424e8-1779426720965.webp"
     ],
     author: "Gemini",
     sections: [
@@ -212,7 +212,7 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "IDENTITY ANCHOR (CRITICAL STRICT CONSTRAINT)",
-        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject’s facial features must remain identical to the uploaded image. Maintain the exact facial structure, skin texture, hairstyle, and natural likeness without modification.\n\nUniversal Application: Apply all lighting, styling, and compositional instructions while preserving the subject’s identity regardless of gender."
+        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject's facial features must remain identical to the uploaded image. Maintain the exact facial structure, skin texture, hairstyle, and natural likeness without modification.\n\nUniversal Application: Apply all lighting, styling, and compositional instructions while preserving the subject's identity regardless of gender."
       },
       {
         label: "WARDROBE & STYLING",
@@ -237,8 +237,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "minimalist-studio-suit",
     description: "Artistic black and white portrait in a minimalist fashion studio with sharp tailored suit lines.",
     images: [
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_v0rvz9v0rvz9v0rv.png`,
-      `${CLOUDINARY_BASE_URL}Gemini_Generated_Image_tuqosttuqosttuqo.png`
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagev0rvz9v0rvz9v0rv-1779426753619.webp",
+      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagetuqosttuqosttuqo-1779426750194.webp"
     ],
     author: "Gemini",
     sections: [
@@ -248,15 +248,15 @@ export const aiPrompts: PromptItem[] = [
       },
       {
         label: "IDENTITY ANCHOR (CRITICAL STRICT CONSTRAINT)",
-        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject’s facial features must remain identical to the uploaded image. Maintain the exact facial structure, skin texture, hairstyle, and natural likeness without alteration.\n\nUniversal Application: Apply all styling, lighting, and compositional instructions while preserving the subject’s identity regardless of gender."
+        content: "Source: Use the person from the ATTACHED REFERENCE PHOTO.\n\nPreservation: The subject's facial features must remain identical to the uploaded image. Maintain the exact facial structure, skin texture, hairstyle, and natural likeness without alteration.\n\nUniversal Application: Apply all styling, lighting, and compositional instructions while preserving the subject's identity regardless of gender."
       },
       {
         label: "WARDROBE & STYLING",
-        content: "Attire: A tailored dark suit with sharp, structured lines that create a polished and sophisticated silhouette.\n\nTexture: High-quality fabric with subtle texture visible in the jacket and trousers.\n\nFootwear: Polished black shoes that complement the formal styling.\n\nFit: Clean, structured tailoring that enhances the subject’s posture and editorial appearance.\n\nExpression: Calm, introspective, and confident, conveying quiet strength and elegance."
+        content: "Attire: A tailored dark suit with sharp, structured lines that create a polished and sophisticated silhouette.\n\nTexture: High-quality fabric with subtle texture visible in the jacket and trousers.\n\nFootwear: Polished black shoes that complement the formal styling.\n\nFit: Clean, structured tailoring that enhances the subject's posture and editorial appearance.\n\nExpression: Calm, introspective, and confident, conveying quiet strength and elegance."
       },
       {
         label: "SCENE & COMPOSITION",
-        content: "Framing: A cinematic portrait composition showing the seated subject with balanced negative space.\n\nPose: The subject sits on a simple modern chair, leaning slightly forward with hands clasped together, creating a thoughtful and composed posture.\n\nCamera Perspective: Natural eye-level framing that emphasizes the subject’s presence and body language.\n\nBackground: A plain, smooth gray studio backdrop that remains minimal and unobtrusive, keeping the visual focus entirely on the subject.\n\nComposition Mood: Minimalist, refined, and editorial, emphasizing elegance and clarity."
+        content: "Framing: A cinematic portrait composition showing the seated subject with balanced negative space.\n\nPose: The subject sits on a simple modern chair, leaning slightly forward with hands clasped together, creating a thoughtful and composed posture.\n\nCamera Perspective: Natural eye-level framing that emphasizes the subject's presence and body language.\n\nBackground: A plain, smooth gray studio backdrop that remains minimal and unobtrusive, keeping the visual focus entirely on the subject.\n\nComposition Mood: Minimalist, refined, and editorial, emphasizing elegance and clarity."
       },
       {
         label: "LIGHTING (CLEAN & SCULPTURAL)",

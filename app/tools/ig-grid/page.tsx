@@ -225,25 +225,25 @@ export default function IGGridPlannerPage() {
     };
 
     return (
-        <div className="min-h-screen bg-zinc-950 text-zinc-400 font-sans pb-24">
+        <div className="min-h-screen bg-[#1c1c1c] text-zinc-400 font-sans pb-24">
             {/* Header */}
             <header className="max-w-5xl mx-auto px-6 pt-10 pb-6 flex items-center justify-between">
                 <Link
                     href="/tools"
-                    className="flex items-center gap-2 text-zinc-500 hover:text-white transition-colors text-sm font-bold"
+                    className="flex items-center gap-2 text-zinc-500 hover:text-[#f0ede8] transition-colors text-sm font-bold"
                 >
                     <ArrowLeft size={16} /> back to tools
                 </Link>
                 <div className="flex items-center gap-3 relative mr-8 sm:mr-0 z-10 group">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)]" style={{ background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" }}>
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[#f0ede8] text-xs font-black shadow-[0_0_20px_rgba(255, 255, 255,0.4)]" style={{ background: "linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%)" }}>
                         AN
                     </div>
-                    <span className="text-lg font-bold tracking-tight text-white hidden sm:block">
+                    <span className="text-lg font-bold tracking-tight text-[#f0ede8] hidden sm:block">
                         IG Grid Planner
                     </span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="What is this?"
                     >
                         <Info size={10} />
@@ -254,24 +254,24 @@ export default function IGGridPlannerPage() {
             <main className="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-12 items-start mt-8">
 
                 {/* ── Left Side: Planner Workspace ── */}
-                <div className="w-full max-w-[450px] mx-auto lg:mx-0 bg-black border border-zinc-800 rounded-[2.5rem] overflow-hidden shadow-2xl relative">
+                <div className="w-full max-w-[450px] mx-auto lg:mx-0 bg-[#141414] border border-white/[0.07] rounded-[2.5rem] overflow-hidden shadow-2xl relative">
                     {/* Fake phone notch area */}
-                    <div className="h-14 w-full bg-black border-b border-zinc-900 flex justify-between items-center px-8 z-20 relative">
-                        <div className="text-[11px] font-bold text-white">9:41</div>
-                        <div className="w-32 h-6 bg-zinc-900 rounded-full"></div>
+                    <div className="h-14 w-full bg-[#141414] border-b border-white/[0.05] flex justify-between items-center px-8 z-20 relative">
+                        <div className="text-[11px] font-bold text-[#f0ede8]">9:41</div>
+                        <div className="w-32 h-6 bg-[#1c1c1c] rounded-full"></div>
                         <div className="flex gap-1">
-                            <div className="w-3 h-3 rounded-full bg-zinc-800"></div>
-                            <div className="w-3 h-3 rounded-full bg-zinc-800"></div>
+                            <div className="w-3 h-3 rounded-full bg-white/[0.06]"></div>
+                            <div className="w-3 h-3 rounded-full bg-white/[0.06]"></div>
                         </div>
                     </div>
 
                     {/* App Header */}
-                    <div className="flex items-center justify-between px-4 py-3 border-b border-zinc-900">
-                        <div className="flex items-center gap-1 font-bold text-white tracking-tight">
+                    <div className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05]">
+                        <div className="flex items-center gap-1 font-bold text-[#f0ede8] tracking-tight">
                             <input
                                 value={username}
                                 onChange={(e) => setUsername(e.target.value)}
-                                className="bg-transparent outline-none w-32 border-none focus:bg-zinc-900 focus:px-2 focus:rounded transition-all"
+                                className="bg-transparent outline-none w-32 border-none focus:bg-[#1c1c1c] focus:px-2 focus:rounded transition-all"
                                 spellCheck={false}
                             />
                         </div>
@@ -290,14 +290,14 @@ export default function IGGridPlannerPage() {
                         <div className="flex items-center gap-6">
                             <div className="relative group cursor-pointer" onClick={() => profileInputRef.current?.click()}>
                                 <div className="w-20 h-20 rounded-full p-[2px] bg-gradient-to-tr from-white via-white to-white">
-                                    <div className="w-full h-full rounded-full border-2 border-black overflow-hidden bg-zinc-900 flex items-center justify-center relative">
+                                    <div className="w-full h-full rounded-full border-2 border-black overflow-hidden bg-[#1c1c1c] flex items-center justify-center relative">
                                         {profilePic ? (
                                             <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
                                         ) : (
                                             <ImageIcon size={24} className="text-zinc-600" />
                                         )}
-                                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                                            <Camera size={20} className="text-white" />
+                                        <div className="absolute inset-0 bg-[#141414]/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                            <Camera size={20} className="text-[#f0ede8]" />
                                         </div>
                                     </div>
                                 </div>
@@ -306,15 +306,15 @@ export default function IGGridPlannerPage() {
 
                             <div className="flex-1 flex items-center justify-around">
                                 <div className="flex flex-col items-center">
-                                    <span className="font-bold text-white text-lg">{images.length}</span>
+                                    <span className="font-bold text-[#f0ede8] text-lg">{images.length}</span>
                                     <span className="text-[11px] text-zinc-400">posts</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <span className="font-bold text-white text-lg">1.2M</span>
+                                    <span className="font-bold text-[#f0ede8] text-lg">1.2M</span>
                                     <span className="text-[11px] text-zinc-400">followers</span>
                                 </div>
                                 <div className="flex flex-col items-center">
-                                    <span className="font-bold text-white text-lg">42</span>
+                                    <span className="font-bold text-[#f0ede8] text-lg">42</span>
                                     <span className="text-[11px] text-zinc-400">following</span>
                                 </div>
                             </div>
@@ -324,25 +324,25 @@ export default function IGGridPlannerPage() {
                             <textarea
                                 value={bio}
                                 onChange={(e) => setBio(e.target.value)}
-                                className="w-full bg-transparent text-sm text-zinc-200 outline-none resize-none border-none focus:bg-zinc-900 focus:p-2 focus:rounded transition-all break-words"
+                                className="w-full bg-transparent text-sm text-zinc-200 outline-none resize-none border-none focus:bg-[#1c1c1c] focus:p-2 focus:rounded transition-all break-words"
                                 rows={3}
                                 spellCheck={false}
                             />
                         </div>
 
                         <div className="flex gap-2 mt-4">
-                            <button className="flex-1 py-1.5 bg-zinc-900 hover:bg-zinc-800 transition-colors text-white font-semibold text-sm rounded-lg border border-zinc-800">
+                            <button className="flex-1 py-1.5 bg-[#1c1c1c] hover:bg-white/[0.06] transition-colors text-[#f0ede8] font-semibold text-sm rounded-lg border border-white/[0.07]">
                                 Edit profile
                             </button>
-                            <button className="flex-1 py-1.5 bg-zinc-900 hover:bg-zinc-800 transition-colors text-white font-semibold text-sm rounded-lg border border-zinc-800">
+                            <button className="flex-1 py-1.5 bg-[#1c1c1c] hover:bg-white/[0.06] transition-colors text-[#f0ede8] font-semibold text-sm rounded-lg border border-white/[0.07]">
                                 Share profile
                             </button>
                         </div>
                     </div>
 
                     {/* Grid Tabs */}
-                    <div className="flex border-t border-zinc-900 mt-2">
-                        <div className="flex-1 flex justify-center py-3 border-t border-white text-white">
+                    <div className="flex border-t border-white/[0.05] mt-2">
+                        <div className="flex-1 flex justify-center py-3 border-t border-white text-[#f0ede8]">
                             <svg aria-label="Posts" color="currentColor" fill="currentColor" height="24" role="img" viewBox="0 0 24 24" width="24"><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.008" x2="2.992" y1="21.008" y2="2.992"></line><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.008" x2="2.992" y1="2.992" y2="21.008"></line><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.008" x2="2.992" y1="9.008" y2="9.008"></line><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="21.008" x2="2.992" y1="14.992" y2="14.992"></line><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="9.008" x2="9.008" y1="21.008" y2="2.992"></line><line fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" x1="14.992" x2="14.992" y1="21.008" y2="2.992"></line></svg>
                         </div>
                         <div className="flex-1 flex justify-center py-3 text-zinc-600">
@@ -354,13 +354,13 @@ export default function IGGridPlannerPage() {
                     </div>
 
                     {/* The Grid Workspace */}
-                    <div className="bg-black min-h-[300px]">
+                    <div className="bg-[#141414] min-h-[300px]">
                         {images.length === 0 ? (
                             <div className="flex flex-col items-center justify-center p-12 text-center h-full min-h-[400px]">
-                                <div className="w-16 h-16 rounded-full border-2 border-zinc-800 flex items-center justify-center mb-4">
+                                <div className="w-16 h-16 rounded-full border-2 border-white/[0.07] flex items-center justify-center mb-4">
                                     <ImageIcon size={24} className="text-zinc-600" />
                                 </div>
-                                <h3 className="text-white font-bold mb-2">No Posts Yet</h3>
+                                <h3 className="text-[#f0ede8] font-bold mb-2">No Posts Yet</h3>
                                 <p className="text-xs text-zinc-500 max-w-[250px]">
                                     Use the controls on the right to upload images and start planning your perfect grid.
                                 </p>
@@ -389,11 +389,11 @@ export default function IGGridPlannerPage() {
                                         />
 
                                         {/* Hover Controls */}
-                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none">
+                                        <div className="absolute inset-0 bg-[#141414]/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center pointer-events-none">
                                             <div className="pointer-events-auto flex items-center gap-2">
                                                 <button
                                                     onClick={() => removeImage(img.id)}
-                                                    className="w-8 h-8 rounded-full bg-red-500 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform"
+                                                    className="w-8 h-8 rounded-full bg-red-500 text-[#f0ede8] flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform"
                                                     title="Remove"
                                                 >
                                                     <Trash2 size={14} />
@@ -415,20 +415,20 @@ export default function IGGridPlannerPage() {
 
                 {/* ── Right Side: Controls ── */}
                 <div className="sticky top-10 space-y-6">
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
+                    <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <UploadCloud size={20} />
                             </div>
                             <div>
-                                <h2 className="text-white font-bold text-lg leading-tight">Add Photos</h2>
+                                <h2 className="text-[#f0ede8] font-bold text-lg leading-tight">Add Photos</h2>
                                 <p className="text-xs text-zinc-500">Upload single or multiple images</p>
                             </div>
                         </div>
 
-                        <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-white hover:bg-zinc-900/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-zinc-950">
-                            <UploadCloud className="text-zinc-600 group-hover:text-white transition-colors mb-2" size={28} />
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors">Drag & Drop or Click Here</span>
+                        <label className="block w-full h-32 border-2 border-dashed border-zinc-700 hover:border-white hover:bg-[#1e1e1e]/50 rounded-2xl cursor-pointer transition-colors relative flex flex-col items-center justify-center group overflow-hidden bg-[#1c1c1c]">
+                            <UploadCloud className="text-zinc-600 group-hover:text-[#f0ede8] transition-colors mb-2" size={28} />
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-[#f0ede8] transition-colors">Drag & Drop or Click Here</span>
                             <span className="text-xs font-semibold text-zinc-600 mt-1 tracking-wide">JPG, PNG, HEIC</span>
                             <input
                                 ref={fileInputRef}
@@ -441,19 +441,19 @@ export default function IGGridPlannerPage() {
                         </label>
                     </div>
 
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
+                    <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <Scissors size={20} />
                             </div>
                             <div>
-                                <h2 className="text-white font-bold text-lg leading-tight">Giant Image Splitter</h2>
+                                <h2 className="text-[#f0ede8] font-bold text-lg leading-tight">Giant Image Splitter</h2>
                                 <p className="text-xs text-zinc-500">Slice a large image into multiple posts</p>
                             </div>
                         </div>
 
-                        <label className="block w-full h-16 border border-zinc-700 hover:border-white bg-black hover:bg-white/10 rounded-2xl cursor-pointer transition-colors relative flex items-center justify-center group overflow-hidden">
-                            <span className="text-sm font-bold text-zinc-400 group-hover:text-white transition-colors flex items-center gap-2">
+                        <label className="block w-full h-16 border border-zinc-700 hover:border-white bg-[#141414] hover:bg-white/10 rounded-2xl cursor-pointer transition-colors relative flex items-center justify-center group overflow-hidden">
+                            <span className="text-sm font-bold text-zinc-400 group-hover:text-[#f0ede8] transition-colors flex items-center gap-2">
                                 <Grid3X3 size={16} /> Choose Image to Split
                             </span>
                             <input
@@ -466,32 +466,32 @@ export default function IGGridPlannerPage() {
                         </label>
                     </div>
 
-                    <div className="bg-zinc-900 border border-zinc-800 rounded-3xl p-6 sm:p-8">
+                    <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-3xl p-6 sm:p-8">
                         <div className="flex items-center gap-3 mb-6">
                             <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: "rgba(255, 255, 255, 0.1)", color: "#ffffff" }}>
                                 <GripHorizontal size={20} />
                             </div>
                             <div>
-                                <h2 className="text-white font-bold text-lg leading-tight">Instructions</h2>
+                                <h2 className="text-[#f0ede8] font-bold text-lg leading-tight">Instructions</h2>
                                 <p className="text-xs text-zinc-500">How to use the planner</p>
                             </div>
                         </div>
 
                         <ul className="space-y-4 text-sm text-zinc-400">
                             <li className="flex gap-3 items-start">
-                                <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">1</span>
+                                <span className="w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">1</span>
                                 <span>Upload multiple photos at once using the area above.</span>
                             </li>
                             <li className="flex gap-3 items-start">
-                                <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">2</span>
+                                <span className="w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">2</span>
                                 <span>Drag and drop images in the mock phone viewer to reorder them perfectly.</span>
                             </li>
                             <li className="flex gap-3 items-start">
-                                <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">3</span>
+                                <span className="w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">3</span>
                                 <span>Click on your username, bio, or profile picture to customize the preview.</span>
                             </li>
                             <li className="flex gap-3 items-start">
-                                <span className="w-5 h-5 rounded-full bg-zinc-800 flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">4</span>
+                                <span className="w-5 h-5 rounded-full bg-white/[0.06] flex items-center justify-center text-[10px] font-bold text-zinc-300 shrink-0 mt-0.5">4</span>
                                 <span>Hover over any image and click the red trash can to remove it.</span>
                             </li>
                         </ul>
@@ -514,8 +514,8 @@ export default function IGGridPlannerPage() {
                 title="Visual Aesthetic Orchestration"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Visual Aesthetic Orchestration
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -524,29 +524,29 @@ export default function IGGridPlannerPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <GripHorizontal size={20} className="text-zinc-500" />
                                 How to Plan Safely
                             </h3>
                             <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Universal Support:</strong> Drop your entire camera roll. Our engine renders physical mockups for instant aesthetic verification.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Visual Grid Composer:</strong> Drag and drop posts to test structural combinations, or customize your bio to mirror your actual profile.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Giant Image Splicing:</strong> Automatically slice high-res landscapes into perfectly numbered tiles ready for sequential posting.</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy Infrastructure
                             </h3>
@@ -562,8 +562,8 @@ export default function IGGridPlannerPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Account Required?">
                                 No. Our engine is standalone. Plan your grid privately without ever providing your social login credentials.
@@ -582,16 +582,16 @@ export default function IGGridPlannerPage() {
             {/* ── Split Image Modal ── */}
             {splitModalOpen && splitImageSrc && (
                 <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 sm:p-8" style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)" }}>
-                    <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-zinc-950 border-zinc-800">
+                    <div className="rounded-2xl p-6 sm:p-8 w-full max-w-4xl shadow-2xl border flex flex-col max-h-[90vh] overflow-hidden bg-[#1c1c1c] border-white/[0.07]">
 
                         <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-bold text-xl text-white">
+                            <h3 className="font-bold text-xl text-[#f0ede8]">
                                 {splitResults.length > 0 ? "Grid Split Successful!" : "Split Giant Image"}
                             </h3>
                             <button onClick={() => {
                                 setSplitModalOpen(false);
                                 setSplitResults([]);
-                            }} className="text-zinc-500 hover:text-white p-2">
+                            }} className="text-zinc-500 hover:text-[#f0ede8] p-2">
                                 <X size={24} />
                             </button>
                         </div>
@@ -601,7 +601,7 @@ export default function IGGridPlannerPage() {
                                 /* Configuration View */
                                 <div className="flex flex-col sm:flex-row gap-6">
                                     <div className="flex-1 flex flex-col items-center gap-4">
-                                        <div className="relative w-full aspect-square border-2 border-dashed border-zinc-800 rounded-xl overflow-hidden flex items-center justify-center bg-black">
+                                        <div className="relative w-full aspect-square border-2 border-dashed border-white/[0.07] rounded-xl overflow-hidden flex items-center justify-center bg-[#141414]">
                                             <img src={splitImageSrc} className="absolute inset-0 w-full h-full object-contain opacity-50" />
 
                                             {/* Overlay Grid based on cols/rows */}
@@ -630,7 +630,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitCols(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitCols === v ? "bg-[#f0ede8] text-[#141414]" : "bg-[#1c1c1c] text-zinc-400 hover:bg-white/[0.06]"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -644,7 +644,7 @@ export default function IGGridPlannerPage() {
                                                     <button
                                                         key={v}
                                                         onClick={() => setSplitRows(v)}
-                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-white text-black" : "bg-zinc-900 text-zinc-400 hover:bg-zinc-800"}`}
+                                                        className={`w-10 h-10 rounded-lg text-sm font-bold transition-colors ${splitRows === v ? "bg-[#f0ede8] text-[#141414]" : "bg-[#1c1c1c] text-zinc-400 hover:bg-white/[0.06]"}`}
                                                     >{v}</button>
                                                 ))}
                                             </div>
@@ -653,7 +653,7 @@ export default function IGGridPlannerPage() {
                                         <button
                                             onClick={confirmSplit}
                                             disabled={isSplitting}
-                                            className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white disabled:opacity-50"
+                                            className="w-full py-4 rounded-full text-sm font-bold tracking-wide text-[#f0ede8] transition-all bg-white hover:bg-white disabled:opacity-50"
                                         >
                                             {isSplitting ? "Splitting..." : `Split into ${splitCols * splitRows} Images`}
                                         </button>
@@ -663,10 +663,10 @@ export default function IGGridPlannerPage() {
                                 /* Success View */
                                 <div className="space-y-8">
                                     <div className="bg-white/10 border border-white/20 p-4 sm:p-5 rounded-xl flex items-start gap-4">
-                                        <Info size={24} className="text-white shrink-0 mt-0.5" />
+                                        <Info size={24} className="text-[#f0ede8] shrink-0 mt-0.5" />
                                         <div>
-                                            <h4 className="text-white font-bold mb-1">How to post to Instagram</h4>
-                                            <p className="text-sm text-white">
+                                            <h4 className="text-[#f0ede8] font-bold mb-1">How to post to Instagram</h4>
+                                            <p className="text-sm text-[#f0ede8]">
                                                 To make these images assemble perfectly on your Instagram timeline, you must post them in <strong>reverse order</strong>. Download the images, and begin posting from the last file to the first file.
                                             </p>
                                         </div>
@@ -674,7 +674,7 @@ export default function IGGridPlannerPage() {
 
                                     <div className="flex flex-col lg:flex-row gap-8 items-start">
                                         <div
-                                            className="grid gap-1 bg-zinc-900 p-2 rounded-lg border border-zinc-800 mx-auto w-[250px] shrink-0"
+                                            className="grid gap-1 bg-[#1c1c1c] p-2 rounded-lg border border-white/[0.07] mx-auto w-[250px] shrink-0"
                                             style={{
                                                 gridTemplateColumns: `repeat(${splitCols}, minmax(0, 1fr))`
                                             }}
@@ -682,9 +682,9 @@ export default function IGGridPlannerPage() {
                                             {splitResults.map((img, i) => (
                                                 <div key={img.id} className="aspect-square relative group">
                                                     <img src={img.url} className="w-full h-full object-cover rounded shadow-md" />
-                                                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
-                                                        <span className="text-[10px] font-bold text-white mb-1">Post Order</span>
-                                                        <span className="w-6 h-6 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs">
+                                                    <div className="absolute inset-0 bg-[#141414]/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center">
+                                                        <span className="text-[10px] font-bold text-[#f0ede8] mb-1">Post Order</span>
+                                                        <span className="w-6 h-6 rounded-full bg-[#f0ede8] text-[#141414] font-bold flex items-center justify-center text-xs">
                                                             {splitResults.length - i}
                                                         </span>
                                                     </div>
@@ -696,7 +696,7 @@ export default function IGGridPlannerPage() {
                                             <button
                                                 onClick={handleDownloadZip}
                                                 disabled={isZipping}
-                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-zinc-800 hover:bg-zinc-700 disabled:opacity-50"
+                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-[#f0ede8] transition-all bg-white/[0.06] hover:bg-zinc-700 disabled:opacity-50"
                                             >
                                                 {isZipping ? <span className="animate-spin">◌</span> : <Package size={18} />}
                                                 Download all as .ZIP
@@ -704,7 +704,7 @@ export default function IGGridPlannerPage() {
 
                                             <button
                                                 onClick={addSplitImagesToGrid}
-                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-white transition-all bg-white hover:bg-white border border-white"
+                                                className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-sm font-bold tracking-wide text-[#f0ede8] transition-all bg-white hover:bg-white border border-white"
                                             >
                                                 <CheckCircle size={18} />
                                                 Add to Grid Planner

@@ -65,12 +65,12 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
     const hideUI = isBillingView || isAppFullscreen || isEmbed;
 
     return (
-        <div className="flex flex-col min-h-screen bg-black text-white">
+        <div className="flex flex-col min-h-screen" style={{ background: "#141414", color: "#f0ede8" }}>
 
             {/* Header Placeholder (takes space in flow) */}
             {!hideUI && (
-                <div className="h-16 md:h-20 shrink-0">
-                    <header className={`${settings.fixedNavbar ? "fixed" : "absolute"} top-0 left-0 w-full z-[1000] bg-black`}>
+                <div className={isHome ? "" : "h-16 md:h-20 shrink-0"}>
+                    <header className={`${(settings.fixedNavbar && !isHome) ? "fixed" : "absolute"} top-0 left-0 w-full z-[5000] bg-transparent`}>
                         <Navbar />
                     </header>
                 </div>
@@ -89,8 +89,8 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                     className={`flex flex-col flex-1 w-full transition-[padding-left] duration-500 
                     ${isNavigating ? "!transition-none" : ""} 
                     ${(hideUI || isHome)
-                        ? "pl-0"
-                        : (isOpen ? "lg:pl-[256px]" : "lg:pl-[64px]")}`}
+                            ? "pl-0"
+                            : (isOpen ? "lg:pl-[256px]" : "lg:pl-[64px]")}`}
                 >
                     <div className="flex-1">
                         {children}
@@ -100,16 +100,16 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                 </main>
             </div>
 
-            {/* Toast */}
-            <div className={`fixed top-24 right-6 z-50 px-4 py-2 rounded-xl bg-zinc-900 border border-zinc-800 text-sm transition-all
-                ${toastMessage ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}>
+            <div className={`fixed top-24 right-6 z-50 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-300
+                ${toastMessage ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"}`}
+                style={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,0.08)", color: "#f0ede8" }}>
                 {toastMessage}
             </div>
 
             {/* Scroll Top */}
             <button
                 onClick={scrollToTop}
-                className={`fixed bottom-10 right-8 w-12 h-12 z-[9999] flex items-center justify-center rounded-full bg-black/80 backdrop-blur-md border border-white/20 transition-all hover:bg-white hover:text-black
+                className={`fixed bottom-10 right-8 w-12 h-12 z-[9999] flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-300 border bg-[rgba(28,28,28,0.9)] hover:bg-[#f0ede8] text-[#f0ede8] hover:text-[#141414] border-[rgba(255,255,255,0.10)] hover:border-[#f0ede8] hover:scale-105 active:scale-95
                 ${showScrollTop ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10 pointer-events-none"}`}
                 aria-label="Back to Top"
             >

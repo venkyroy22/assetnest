@@ -214,7 +214,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                             overflow: 'hidden'
                         } : {}}
                     >
-                        <div className="relative group w-full h-full bg-black rounded-xl overflow-hidden border border-zinc-800 shadow-2xl">
+                        <div className="relative group w-full h-full bg-[#141414] rounded-xl overflow-hidden border border-white/[0.07] shadow-2xl">
                             <iframe
                                 ref={iframeRef}
                                 src={currentYoutubeEmbed}
@@ -228,7 +228,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                             {!isDockMode && (
                                 <button
                                     onClick={() => setIsMiniPlayerVisible(false)}
-                                    className="absolute top-2 right-2 p-1.5 bg-black/60 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
+                                    className="absolute top-2 right-2 p-1.5 bg-[#141414]/60 text-[#f0ede8] rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500"
                                 >
                                     <X size={14} />
                                 </button>
@@ -241,7 +241,7 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
                 {!isDockMode && currentYoutubeEmbed && !isMiniPlayerVisible && (
                     <button
                         onClick={() => setIsMiniPlayerVisible(true)}
-                        className="fixed bottom-10 right-10 z-[999] p-4 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-400 hover:text-white shadow-2xl animate-in slide-in-from-bottom-4 duration-500"
+                        className="fixed bottom-10 right-10 z-[999] p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-full text-zinc-400 hover:text-[#f0ede8] shadow-2xl animate-in slide-in-from-bottom-4 duration-500"
                         title="Restore Music View"
                     >
                         <Music2 size={20} />

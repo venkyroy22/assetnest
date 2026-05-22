@@ -76,27 +76,27 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
 
     return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-md bg-zinc-950 border border-zinc-800 rounded-3xl shadow-2xl p-6 sm:p-8 animate-in zoom-in-95 duration-200">
+            <div className="absolute inset-0 bg-[#141414]/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative w-full max-w-md bg-[#1c1c1c] border border-white/[0.07] rounded-3xl shadow-2xl p-6 sm:p-8 animate-in zoom-in-95 duration-200">
                 <button 
                     onClick={onClose} 
-                    className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white bg-zinc-900 rounded-full transition-colors"
+                    className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-[#f0ede8] bg-[#1c1c1c] rounded-full transition-colors"
                 >
                     <X size={16} />
                 </button>
 
                 <div className="text-center mb-6">
-                    <div className="w-12 h-12 bg-white/10 border border-white/20 text-white rounded-2xl flex items-center justify-center mx-auto mb-4">
+                    <div className="w-12 h-12 bg-white/10 border border-white/20 text-[#f0ede8] rounded-2xl flex items-center justify-center mx-auto mb-4">
                         <Smartphone size={24} />
                     </div>
-                    <h2 className="text-xl font-bold text-white tracking-tight mb-2">Share to Mobile</h2>
+                    <h2 className="text-xl font-bold text-[#f0ede8] tracking-tight mb-2">Share to Mobile</h2>
                     <p className="text-[13px] text-zinc-400 font-medium">Scan the QR code to open the file directly on your mobile device.</p>
                 </div>
 
                 {status === "uploading" && (
-                    <div className="flex flex-col items-center justify-center py-12 px-4 border border-zinc-800 rounded-2xl bg-zinc-900/40">
+                    <div className="flex flex-col items-center justify-center py-12 px-4 border border-white/[0.07] rounded-2xl bg-[#1c1c1c]/40">
                         <div className="w-10 h-10 border-4 border-white/30 border-t-white rounded-full animate-spin mb-4" />
-                        <p className="text-sm font-bold text-white tracking-wide">Generating Secure Link...</p>
+                        <p className="text-sm font-bold text-[#f0ede8] tracking-wide">Generating Secure Link...</p>
                         <p className="text-xs text-zinc-500 mt-1">This will only take a moment</p>
                     </div>
                 )}
@@ -106,14 +106,14 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                         <X size={32} className="text-red-400 mb-3" />
                         <p className="text-sm font-bold text-red-200">Upload Failed</p>
                         <p className="text-xs text-red-300/70 mt-1 mb-4">Could not generate a sharing link.</p>
-                        <button onClick={handleUpload} className="px-4 py-2 bg-zinc-900 text-white rounded-lg text-xs font-bold hover:bg-zinc-800">Try Again</button>
+                        <button onClick={handleUpload} className="px-4 py-2 bg-[#1c1c1c] text-[#f0ede8] rounded-lg text-xs font-bold hover:bg-white/[0.06]">Try Again</button>
                     </div>
                 )}
 
                 {status === "success" && url && (
                     <div className="flex flex-col items-center space-y-6">
                         {/* QR Code */}
-                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-white/5 border-4 border-zinc-800/50 relative overflow-hidden group">
+                        <div className="bg-white p-4 rounded-2xl shadow-xl shadow-white/5 border-4 border-white/[0.07]/50 relative overflow-hidden group">
                            <QRCodeSVG 
                                value={url} 
                                size={180} 
@@ -132,12 +132,12 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                                 <input 
                                     readOnly 
                                     value={url}
-                                    className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-700"
+                                    className="w-full bg-[#1c1c1c] border border-white/[0.07] rounded-xl px-4 py-3 text-xs text-zinc-300 focus:outline-none focus:border-zinc-700"
                                 />
                                 <button 
                                     onClick={handleCopy}
                                     className={`shrink-0 h-10 px-4 rounded-xl text-xs font-bold tracking-wide transition-all flex items-center gap-2 
-                                        ${copied ? 'bg-white/20 text-white px-6' : 'bg-white hover:bg-zinc-100 text-black shadow-lg shadow-white/10'}`}
+                                        ${copied ? 'bg-white/20 text-[#f0ede8] px-6' : 'bg-white hover:bg-zinc-100 text-black shadow-lg shadow-white/10'}`}
                                 >
                                     {copied ? <><Check size={14} /> Copied!</> : <><Copy size={14} /> Copy</>}
                                 </button>

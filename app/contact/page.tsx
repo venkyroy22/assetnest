@@ -9,22 +9,22 @@ export const metadata = {
 
 export default function ContactPage() {
     return (
-        <div className="py-20 bg-black min-h-screen">
+        <div className="py-20 min-h-screen" style={{ background: "#141414" }}>
             <Container>
-                <div className="max-w-4xl mx-auto bg-zinc-950 border border-zinc-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 md:p-16 shadow-2xl relative overflow-hidden">
+                <div className="max-w-4xl mx-auto bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 md:p-16 shadow-2xl relative overflow-hidden">
                     <div className="absolute -top-10 -right-10 text-zinc-800 opacity-20 pointer-events-none rotate-12">
                         <Mail size={250} strokeWidth={1} />
                     </div>
                     
                     <div className="relative z-10">
-                        <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 rounded-full mb-6">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 rounded-full mb-6">
                             <span className="text-xs font-semibold tracking-wide text-zinc-400">Get in Touch</span>
                         </div>
-                        <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 sm:mb-12 text-white">Contact Us</h1>
+                        <h1 className="text-4xl md:text-6xl font-black tracking-tight mb-8 sm:mb-12 text-[#f0ede8]">Contact Us</h1>
                         
                         <div className="max-w-2xl mx-auto text-center space-y-8 sm:space-y-12">
                             <section>
-                                <h2 className="text-xl sm:text-2xl font-bold text-white mb-4 sm:mb-6">Support & Feedback</h2>
+                                <h2 className="text-xl sm:text-2xl font-bold text-[#f0ede8] mb-4 sm:mb-6">Support & Feedback</h2>
                                 <p className="text-zinc-400 leading-relaxed text-[15px] sm:text-[18px]">
                                     Have a question about one of our tools? Or perhaps a suggestion for a new feature? We&apos;d love to hear from you. Click below to send us an email directly.
                                 </p>
@@ -33,20 +33,20 @@ export default function ContactPage() {
                             <div className="flex justify-center">
                                 <a 
                                     href="mailto:assetnestt@gmail.com"
-                                    className="group flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-6 sm:p-8 bg-zinc-900 border border-zinc-800 rounded-[2rem] sm:rounded-[2.5rem] hover:border-white/50 hover:bg-white/5 transition-all duration-500 shadow-2xl active:scale-95 w-full sm:w-auto"
+                                    className="group flex flex-col sm:flex-row items-center gap-4 sm:gap-6 p-6 sm:p-8 bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] sm:rounded-[2.5rem] hover:border-white/50 hover:bg-white/5 transition-all duration-500 shadow-2xl active:scale-95 w-full sm:w-auto"
                                 >
-                                    <div className="p-4 bg-zinc-800 rounded-2xl text-white group-hover:bg-white group-hover:text-black transition-colors duration-500">
+                                    <div className="p-4 bg-white/[0.06] rounded-2xl text-[#f0ede8] group-hover:bg-white group-hover:text-black transition-colors duration-500">
                                         <Mail size={24} />
                                     </div>
                                     <div className="text-center sm:text-left">
                                         <div className="text-white/40 text-[10px] font-black uppercase tracking-widest mb-1">Send an Email</div>
-                                        <div className="text-white text-lg sm:text-xl md:text-2xl font-bold tracking-tight break-all">assetnestt@gmail.com</div>
+                                        <div className="text-[#f0ede8] text-lg sm:text-xl md:text-2xl font-bold tracking-tight break-all">assetnestt@gmail.com</div>
                                     </div>
                                 </a>
                             </div>
                         </div>
 
-                        <div className="mt-12 sm:mt-16 pt-8 border-t border-zinc-900/50 text-center">
+                        <div className="mt-12 sm:mt-16 pt-8 border-t border-white/[0.05]/50 text-center">
                             <p className="text-xs text-zinc-600 max-w-lg mx-auto leading-relaxed">
                                 We typically respond within 24-48 hours. By contacting us, you agree to our{" "}
                                 <Link href="/privacy" className="underline underline-offset-2 hover:text-zinc-400 transition-colors">

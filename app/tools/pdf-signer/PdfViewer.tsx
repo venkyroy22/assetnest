@@ -124,7 +124,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
             ref={scrollRef}
             data-lenis-prevent
             data-lenis-prevent-touch
-            className="flex flex-col max-h-[78vh] overflow-y-auto overflow-x-auto overscroll-contain bg-zinc-950/20 rounded-xl border border-zinc-900/50 relative"
+            className="flex flex-col max-h-[78vh] overflow-y-auto overflow-x-auto overscroll-contain bg-[#1c1c1c]/20 rounded-xl border border-white/[0.05]/50 relative"
             style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
         >
             {/* ── Zoom Controls ── */}
@@ -136,15 +136,15 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                     }
                 `}</style>
                 <div className="pointer-events-auto bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/40 rounded-xl px-2 py-1.5 flex items-center gap-1.5 shadow-2xl">
-                    <button onClick={zoomOut} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom <= 0.5}>
+                    <button onClick={zoomOut} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom <= 0.5}>
                         <ZoomOut size={13} />
                     </button>
                     <span className="text-[10px] font-black text-zinc-300 w-11 text-center tabular-nums tracking-tight">{Math.round(zoom * 100)}%</span>
-                    <button onClick={zoomIn} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom >= 3}>
+                    <button onClick={zoomIn} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom >= 3}>
                         <ZoomIn size={13} />
                     </button>
                     <div className="w-px h-4 bg-zinc-700/60" />
-                    <button onClick={zoomReset} className="h-7 px-2 rounded-lg text-[9px] font-black text-zinc-500 hover:text-white hover:bg-white/10 transition-all uppercase tracking-wider">Fit</button>
+                    <button onClick={zoomReset} className="h-7 px-2 rounded-lg text-[9px] font-black text-zinc-500 hover:text-[#f0ede8] hover:bg-white/10 transition-all uppercase tracking-wider">Fit</button>
                     
                     {/* Floating Undo/Redo */}
                     <div className="w-px h-4 bg-zinc-700/60" />
@@ -152,14 +152,14 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                         <button 
                             onClick={(e) => { e.stopPropagation(); (window as any).undo?.(); }}
                             title="Undo (Ctrl+Z)"
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all active:scale-95"
                         >
                             <RotateCcw size={13} className="scale-x-[-1]" />
                         </button>
                         <button 
                             onClick={(e) => { e.stopPropagation(); (window as any).redo?.(); }}
                             title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all active:scale-95"
+                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all active:scale-95"
                         >
                             <RotateCcw size={13} />
                         </button>
@@ -204,7 +204,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                         <button
                             onClick={() => scrollToPage(Math.max(0, visiblePage - 1))}
                             disabled={visiblePage === 0}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20"
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20"
                         >
                             <ChevronUp size={13} />
                         </button>
@@ -214,7 +214,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                         <button
                             onClick={() => scrollToPage(Math.min(pageCount - 1, visiblePage + 1))}
                             disabled={visiblePage === pageCount - 1}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-white hover:bg-white/10 transition-all disabled:opacity-20"
+                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20"
                         >
                             <ChevronDown size={13} />
                         </button>
@@ -432,11 +432,11 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
         <div className="flex flex-col items-stretch gap-2">
             {/* Page header */}
             <div className="flex items-center gap-2 px-1">
-                <span className="w-6 h-6 rounded-md bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[9px] font-black text-zinc-400 shrink-0">
+                <span className="w-6 h-6 rounded-md bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[9px] font-black text-zinc-400 shrink-0">
                     {index + 1}
                 </span>
-                <div className="h-px bg-zinc-800/50 flex-1" />
-                <span className="text-[8px] font-bold text-zinc-700 flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-900/30 border border-zinc-800/30 transition-all">
+                <div className="h-px bg-white/[0.06] flex-1" />
+                <span className="text-[8px] font-bold text-zinc-700 flex items-center gap-1 px-2 py-0.5 rounded bg-[#1c1c1c]/30 border border-white/[0.07]/30 transition-all">
                     <Maximize2 size={8} /> 
                     {activeTool === "text" || activeTool === "date" ? "Drag to draw box" : "Click or drag to place"}
                 </span>
@@ -497,7 +497,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
                                 style={{ left: currentRect.x, top: currentRect.y, width: currentRect.w, height: currentRect.h }}
                             >
                                 {currentRect.w > 60 && currentRect.h > 24 && (
-                                    <div className="bg-blue-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight">
+                                    <div className="bg-blue-600 text-[#f0ede8] px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight">
                                         {activeTool}
                                     </div>
                                 )}
@@ -718,13 +718,13 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, p
                 onPointerDown={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}
             >
-                <div className="bg-zinc-900 border border-zinc-700 text-white px-1.5 py-1 rounded-lg shadow-xl flex items-center gap-1" style={{ fontSize: 0 }}>
+                <div className="bg-[#1c1c1c] border border-zinc-700 text-[#f0ede8] px-1.5 py-1 rounded-lg shadow-xl flex items-center gap-1" style={{ fontSize: 0 }}>
                     <span className="text-[9px] font-bold uppercase tracking-tight px-1.5 text-zinc-300">
                         {sig.allPages ? "All" : `P${sig.pageIndex + 1}`}
                     </span>
                     {!sig.allPages && (
                         <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }}
-                            className="h-6 px-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white rounded text-[8px] font-bold uppercase transition-colors"
+                            className="h-6 px-2 bg-white/[0.06] hover:bg-zinc-700 text-zinc-300 hover:text-[#f0ede8] rounded text-[8px] font-bold uppercase transition-colors"
                             title="Apply to all pages">
                             <Copy size={10} />
                         </button>

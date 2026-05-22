@@ -81,29 +81,29 @@ export default function ESignaturePage() {
     return (
         <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-4xl mx-auto">
             <div className="text-center mb-8">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full relative group">
-                    <PenTool size={12} className="text-white" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6 rounded-full relative group">
+                    <PenTool size={12} className="text-[#f0ede8]" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Fast & Free Utility</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-2 p-1 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="What is this?"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    E-Signature <span className="text-white">Creator</span>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
+                    E-Signature <span className="text-[#f0ede8]">Creator</span>
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium max-w-xl mx-auto">
                     Draw your signature smoothly using your mouse or touch screen. Download instantly as a transparent PNG or SVG for your documents.
                 </p>
             </div>
 
-            <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 lg:p-6 shadow-2xl animate-in fade-in slide-in-from-bottom duration-500 max-w-3xl mx-auto relative group">
+            <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] p-4 lg:p-6 shadow-2xl animate-in fade-in slide-in-from-bottom duration-500 max-w-3xl mx-auto relative group">
                 {/* Tools Header */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-zinc-900">
-                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4 bg-zinc-900/50 px-4 py-3 rounded-2xl border border-zinc-800 w-full sm:w-auto">
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-4 pb-4 border-b border-white/[0.05]">
+                    <div className="flex flex-col xs:flex-row items-center gap-3 xs:gap-4 bg-[#1e1e1e]/50 px-4 py-3 rounded-2xl border border-white/[0.07] w-full sm:w-auto">
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mr-1">Color</span>
                             <div className="flex items-center gap-2">
@@ -118,7 +118,7 @@ export default function ESignaturePage() {
                                 ))}
                             </div>
                         </div>
-                        <div className="hidden xs:block w-px h-6 bg-zinc-800 mx-1"></div>
+                        <div className="hidden xs:block w-px h-6 bg-white/[0.06] mx-1"></div>
                         <div className="flex items-center gap-2">
                             <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mr-1">Weight</span>
                             <div className="flex items-center gap-1.5">
@@ -130,7 +130,7 @@ export default function ESignaturePage() {
                                     <button
                                         key={w.val}
                                         onClick={() => setPenWidth(w.val)}
-                                        className={`flex items-center justify-center w-7 h-7 rounded-lg transition-all ${penWidth === w.val ? "bg-white/10 border border-white/20" : "hover:bg-zinc-800"}`}
+                                        className={`flex items-center justify-center w-7 h-7 rounded-lg transition-all ${penWidth === w.val ? "bg-white/10 border border-white/20" : "hover:bg-white/[0.06]"}`}
                                     >
                                         <div className={`rounded-full ${w.size} ${penWidth === w.val ? "bg-white shadow-[0_0_8px_rgba(255,255,255,0.5)]" : "bg-zinc-600"}`}></div>
                                     </button>
@@ -143,7 +143,7 @@ export default function ESignaturePage() {
                          <button 
                             onClick={undoDrawing} 
                             disabled={!hasDrawn}
-                            className="h-10 px-4 flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-900 rounded-lg transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
+                            className="h-10 px-4 flex items-center gap-2 text-xs font-bold text-zinc-400 hover:text-[#f0ede8] hover:bg-[#1c1c1c] rounded-lg transition-colors disabled:opacity-30 disabled:hover:bg-transparent"
                          >
                             <Undo2 size={14} /> Undo
                          </button>
@@ -159,7 +159,7 @@ export default function ESignaturePage() {
 
                 {/* Canvas Container */}
                 <div 
-                    className="relative w-full h-80 rounded-2xl overflow-hidden cursor-crosshair border-2 border-dashed border-zinc-800 group-hover:border-zinc-700 transition-colors"
+                    className="relative w-full h-80 rounded-2xl overflow-hidden cursor-crosshair border-2 border-dashed border-white/[0.07] group-hover:border-white/[0.12] transition-colors"
                     style={{ 
                         backgroundImage: `url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='8' height='8' fill='%23111'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23111'/%3E%3C/svg%3E")`, 
                         backgroundColor: "#050505" 
@@ -172,7 +172,7 @@ export default function ESignaturePage() {
                                 <span className="text-2xl font-black text-zinc-600 tracking-widest uppercase">Sign Here</span>
                             </>
                         )}
-                        <div className="w-3/4 border-b-2 border-zinc-800/50 absolute bottom-16 border-dashed" />
+                        <div className="w-3/4 border-b-2 border-white/[0.06] absolute bottom-16 border-dashed" />
                     </div>
                     
                     {mounted && (
@@ -194,14 +194,14 @@ export default function ESignaturePage() {
                     <button 
                         onClick={() => downloadSignature("png")}
                         disabled={!hasDrawn}
-                        className="h-12 px-8 bg-white text-black font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 active:scale-[0.98] shadow-xl shadow-white/10 disabled:opacity-30 disabled:grayscale"
+                        className="h-12 px-8 bg-[#f0ede8] text-[#141414] font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-100 active:scale-[0.98] shadow-xl shadow-white/10 disabled:opacity-30 disabled:grayscale"
                     >
                         <Download size={16} /> Download PNG
                     </button>
                     <button 
                         onClick={() => downloadSignature("svg")}
                         disabled={!hasDrawn}
-                        className="h-12 px-8 bg-zinc-900 border border-zinc-800 text-white font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-800 hover:border-zinc-700 active:scale-[0.98] disabled:opacity-30"
+                        className="h-12 px-8 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-black uppercase tracking-widest text-xs rounded-full flex items-center justify-center gap-3 transition-all hover:bg-white/[0.06] hover:border-white/[0.12] active:scale-[0.98] disabled:opacity-30"
                     >
                         Download SVG
                     </button>
@@ -218,8 +218,8 @@ export default function ESignaturePage() {
                 title="Visual Ink Encoding Infrastructure"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Visual Optical Character Infrastructure
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -228,29 +228,29 @@ export default function ESignaturePage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <PenTool size={20} className="text-zinc-500" />
                                 How to Sign Safely
                             </h3>
                             <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Universal Input:</strong> Draw with specialized pens using your mouse, trackpad, or touch screen. Our engine optimizes the pressure curve for natural ink flow.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Precision Tuning:</strong> Adjust ink weight and color presets (Black, Royal Blue, Ruby Red) to match the standard requirements of any document type.</span>
                                 </li>
                                 <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                     <span><strong>Lossless Export:</strong> Download high-resolution transparent PNGs or infinite-scale SVGs ready for professional document embedding.</span>
                                 </li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy Infrastructure
                             </h3>
@@ -266,8 +266,8 @@ export default function ESignaturePage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Legal Validity?">
                                 Yes. Electronic signatures are legally binding in most jurisdictions (e.g., ESIGN Act, eIDAS) when used for standard documents.

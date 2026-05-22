@@ -202,17 +202,17 @@ export default function PdfTextExtractorPage() {
             <div className="text-center mb-10 relative group">
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
+                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                     title="View Information"
                 >
                     <Info size={16} />
                 </button>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6 rounded-full">
-                    <FileText size={12} className="text-white" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6 rounded-full">
+                    <FileText size={12} className="text-[#f0ede8]" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Text Extraction Tool</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
-                    PDF Text <span className="text-white">Extractor</span>
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
+                    PDF Text <span className="text-[#f0ede8]">Extractor</span>
                 </h1>
                 <p className="text-zinc-400 text-sm font-medium max-w-xl mx-auto leading-relaxed">
                     Extract paragraphs and un-selectable text from any PDF directly into a raw Word Document (DOCX). Keeps text secure, offline, and private.
@@ -224,7 +224,7 @@ export default function PdfTextExtractorPage() {
                 <div className="mb-6 p-4 border border-red-500/20 bg-red-500/5 flex items-center gap-3 rounded-2xl animate-in fade-in">
                     <Info size={16} className="text-red-400 shrink-0" />
                     <span className="text-xs font-medium text-red-100">{error}</span>
-                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-white"><X size={16} /></button>
+                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-[#f0ede8]"><X size={16} /></button>
                 </div>
             )}
 
@@ -235,7 +235,7 @@ export default function PdfTextExtractorPage() {
                     onDrop={handleDrop}
                     onClick={() => fileInputRef.current?.click()}
                     className={`min-h-[300px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${
-                        isDragging ? "border-white bg-white/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"
+                        isDragging ? "border-white bg-white/5" : "border-white/[0.07] bg-[#1c1c1c] hover:bg-[#1e1e1e]/50"
                     }`}
                 >
                     <input 
@@ -246,32 +246,32 @@ export default function PdfTextExtractorPage() {
                         onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} 
                     />
                     <div className="text-center px-8 space-y-4">
-                        <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-105">
+                        <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto transition-transform group-hover:scale-105">
                             <Upload size={24} className="text-zinc-500" />
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-white tracking-tight">Drag & Drop or Click Here</h2>
+                            <h2 className="text-lg font-bold text-[#f0ede8] tracking-tight">Drag & Drop or Click Here</h2>
                             <p className="text-zinc-500 text-xs font-medium mt-1 mb-4">100% Private PDF Text Extraction • Secure Local Parsing</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3 text-[10px] font-semibold tracking-wide text-zinc-500">
-                            <span className="px-2 py-1 border border-zinc-800">100% Private</span>
-                            <span className="px-2 py-1 border border-zinc-800">No Server Upload</span>
-                            <span className="px-2 py-1 border border-zinc-800">Free Forever</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">100% Private</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">No Server Upload</span>
+                            <span className="px-2 py-1 border border-white/[0.07]">Free Forever</span>
                         </div>
                     </div>
                 </div>
             ) : (
                 <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom duration-500">
                     {/* Active File Card */}
-                    <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-5 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 relative overflow-hidden group">
+                    <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-5 sm:p-8 flex flex-col md:flex-row items-center gap-6 sm:gap-8 relative overflow-hidden group">
                         
                         {/* Status Backdrop Blur */}
                         <div className="absolute inset-0 bg-white/[0.02] pointer-events-none" />
 
                         {/* Thumbnail View */}
-                        <div className="w-32 h-44 sm:w-40 sm:h-52 shrink-0 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden shadow-2xl relative flex items-center justify-center">
+                        <div className="w-32 h-44 sm:w-40 sm:h-52 shrink-0 bg-[#1c1c1c] border border-white/[0.07] rounded-xl overflow-hidden shadow-2xl relative flex items-center justify-center">
                              <PdfPageThumbnail file={file} pageIndex={0} />
-                             <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] font-black text-white/90 border border-white/10 uppercase tracking-widest">
+                             <div className="absolute bottom-2 right-2 bg-[#141414]/80 backdrop-blur-md px-1.5 py-0.5 rounded text-[8px] font-black text-white/90 border border-white/10 uppercase tracking-widest">
                                  Preview
                              </div>
                         </div>
@@ -280,7 +280,7 @@ export default function PdfTextExtractorPage() {
                         <div className="flex-grow w-full flex flex-col items-center md:items-start justify-center text-center md:text-left">
                             <div className="flex items-center gap-2 mb-1 w-full justify-center md:justify-start">
                                 <FileText size={16} className="text-zinc-400 shrink-0" />
-                                <h3 className="text-lg sm:text-xl font-bold text-white truncate max-w-[200px] sm:max-w-none">{file.name}</h3>
+                                <h3 className="text-lg sm:text-xl font-bold text-[#f0ede8] truncate max-w-[200px] sm:max-w-none">{file.name}</h3>
                             </div>
                             <p className="text-[10px] sm:text-xs text-zinc-500 font-semibold tracking-wider mb-5 sm:mb-6">
                                 {(file.size / 1024 / 1024).toFixed(2)} MB
@@ -292,10 +292,10 @@ export default function PdfTextExtractorPage() {
                                     {isConverting ? (
                                         <div className="w-full space-y-2">
                                             <div className="flex justify-between items-center px-1">
-                                                <span className="text-[10px] font-bold text-white uppercase">Extracting...</span>
-                                                <span className="text-[10px] font-bold text-white">{progress}%</span>
+                                                <span className="text-[10px] font-bold text-[#f0ede8] uppercase">Extracting...</span>
+                                                <span className="text-[10px] font-bold text-[#f0ede8]">{progress}%</span>
                                             </div>
-                                            <div className="h-2 w-full bg-zinc-900 border border-zinc-800 rounded-full overflow-hidden">
+                                            <div className="h-2 w-full bg-[#1c1c1c] border border-white/[0.07] rounded-full overflow-hidden">
                                                 <div 
                                                     className="h-full bg-white transition-all duration-300 ease-out shadow-[0_0_10px_rgba(255,255,255,0.3)]"
                                                     style={{ width: `${progress}%` }}
@@ -308,7 +308,7 @@ export default function PdfTextExtractorPage() {
                                     ) : (
                                         <button
                                             onClick={convertToWord}
-                                            className="w-full sm:w-auto h-12 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-200 shadow-lg shadow-white/5 active:scale-[0.98]"
+                                            className="w-full sm:w-auto h-12 px-8 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-[#e8e5e0] shadow-lg shadow-white/5 active:scale-[0.98]"
                                         >
                                             Extract Text <FileText size={16} />
                                         </button>
@@ -316,13 +316,13 @@ export default function PdfTextExtractorPage() {
                                 </div>
                             ) : (
                                 <div className="w-full space-y-4 animate-in fade-in duration-700">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 text-white rounded-lg text-[10px] font-bold uppercase tracking-wider">
-                                        <Check size={12} className="text-white" /> Extraction Complete
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 border border-white/20 text-[#f0ede8] rounded-lg text-[10px] font-bold uppercase tracking-wider">
+                                        <Check size={12} className="text-[#f0ede8]" /> Extraction Complete
                                     </div>
                                     <div className="flex flex-col sm:flex-row gap-3 w-full">
                                         <button
                                             onClick={downloadWord}
-                                            className="h-12 px-8 bg-white text-black font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-zinc-200 shadow-lg shadow-white/5 active:scale-[0.98] w-full sm:w-auto"
+                                            className="h-12 px-8 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all hover:bg-[#e8e5e0] shadow-lg shadow-white/5 active:scale-[0.98] w-full sm:w-auto"
                                         >
                                             <Download size={16} /> 
                                             <span className="hidden sm:inline">Download DOCX</span>
@@ -330,7 +330,7 @@ export default function PdfTextExtractorPage() {
                                         </button>
                                         <button 
                                             onClick={reset}
-                                            className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white font-bold tracking-wide text-xs rounded-full flex items-center justify-center gap-3 transition-all active:scale-[0.98] w-full sm:w-auto"
+                                            className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] font-bold tracking-wide text-xs rounded-full flex items-center justify-center gap-3 transition-all active:scale-[0.98] w-full sm:w-auto"
                                         >
                                             <RefreshCw size={14} /> Start Fresh
                                         </button>
@@ -343,7 +343,7 @@ export default function PdfTextExtractorPage() {
                         <button 
                             onClick={reset} 
                             disabled={isConverting}
-                            className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-white hover:bg-zinc-800 rounded-full transition-colors disabled:opacity-0"
+                            className="absolute top-4 right-4 p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-full transition-colors disabled:opacity-0"
                             title="Start Over"
                         >
                             <X size={16} />
@@ -356,8 +356,8 @@ export default function PdfTextExtractorPage() {
                 <div className="max-w-4xl mx-auto text-left">
                     <div className="space-y-16">
                         
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 Visual Text Extraction Infrastructure
                             </h3>
                             <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -366,29 +366,29 @@ export default function PdfTextExtractorPage() {
                         </section>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                     <FileText size={20} className="text-zinc-500" />
                                     How to Extract Safely
                                 </h3>
                                 <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>Universal Support:</strong> Drop any standard PDF container. Our engine automatically identifies underlying text layers for extraction.</span>
                                     </li>
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>Internal Mapping:</strong> We utilize client-side PDF parsing to scan document structures locally. Blazing fast, ultra-secure.</span>
                                     </li>
                                     <li className="flex gap-4 items-start">
-                                        <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                                        <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                                         <span><strong>DOCX Reconstruction:</strong> Automatically compile extracted strings into professional Word documents while retaining paragraph flow.</span>
                                     </li>
                                 </ul>
                             </section>
 
-                            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                     <ShieldCheck size={20} className="text-zinc-500" />
                                     Privacy Infrastructure
                                 </h3>
@@ -404,8 +404,8 @@ export default function PdfTextExtractorPage() {
                             </section>
                         </div>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                             <Accordion>
                                 <AccordionItem title="Scanned PDFs?">
                                     No. This tool extracts from digital text layers. For image-based scans, use our dedicated OCR tools.

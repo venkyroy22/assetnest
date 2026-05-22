@@ -35,7 +35,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   },
   {
     slug: "why-most-business-plans-fail",
-    title: "Why Most Business Plans Fail — And What to Write Instead",
+    title: "Why Most Business Plans Fail - And What to Write Instead",
     description: "Traditional business plans are often ignored the moment they are printed. Learn why they fail and how to build a Living Business Document that actually grows with you.",
     category: "Business Strategy",
     readTime: "12 min read",
@@ -66,7 +66,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   {
     slug: "art-of-saying-no-boundaries-business",
     title: "The Art of Saying No: How Boundaries Drive Business Success",
-    description: "Every time you say yes to the wrong thing, you are automatically saying no to something better. Learn why the most successful business owners have mastered the art of saying no — clearly, kindly, and without apology.",
+    description: "Every time you say yes to the wrong thing, you are automatically saying no to something better. Learn why the most successful business owners have mastered the art of saying no - clearly, kindly, and without apology.",
     category: "Business Strategy",
     readTime: "14 min read",
     publishedAt: "2026-04-15",
@@ -126,7 +126,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   {
     slug: "understanding-business-credit",
     title: "Understanding Business Credit: What Most Entrepreneurs Learn Too Late",
-    description: "Business credit is the invisible foundation of your company's financial power. Discover why it’s separate from personal credit and how to build it from zero to unlock better rates and higher limits.",
+    description: "Business credit is the invisible foundation of your company's financial power. Discover why it's separate from personal credit and how to build it from zero to unlock better rates and higher limits.",
     category: "Business Strategy",
     readTime: "16 min read",
     publishedAt: "2026-04-16",
@@ -165,7 +165,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   },
   {
     slug: "5-businesses-that-failed-lessons",
-    title: "5 Businesses That Failed — And the Exact Lessons That Came Out of Them",
+    title: "5 Businesses That Failed - And the Exact Lessons That Came Out of Them",
     description: "Failure is the most honest teacher in business. Discover the specific, preventable reasons why five iconic companies collapsed and what you can learn to protect your own venture.",
     category: "Business Strategy",
     readTime: "25 min read",
@@ -356,7 +356,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   {
     slug: "how-to-build-business-moat",
     title: "How to Build a Moat: Protecting Your Business from Competitors Who Want What You Have",
-    description: "Success attracts competition. Explore the five genuine sources of competitive durability—from switching costs to network effects—and learn how to build structural protection that allows your business to compound its advantages.",
+    description: "Success attracts competition. Explore the five genuine sources of competitive durability-from switching costs to network effects-and learn how to build structural protection that allows your business to compound its advantages.",
     category: "Business Strategy",
     readTime: "35 min read",
     publishedAt: "2026-04-19",
@@ -426,7 +426,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   {
     slug: "true-cost-of-bad-decision",
     title: "The True Cost of a Bad Decision: How to Calculate What Your Mistakes Are Really Costing You",
-    description: "Learn how to calculate the real, often hidden costs of business mistakes—from opportunity costs to momentum damage—and turn them into high-value lessons.",
+    description: "Learn how to calculate the real, often hidden costs of business mistakes-from opportunity costs to momentum damage-and turn them into high-value lessons.",
     category: "Mindset & Strategy",
     readTime: "25 min read",
     publishedAt: "2026-04-21",
@@ -546,7 +546,7 @@ export const ALL_ARTICLE_POSTS: ArticlePost[] = [
   {
     slug: "comfort-is-the-enemy-of-breakthrough",
     title: "Why Comfort Is the Enemy of Every Business Breakthrough",
-    description: "The specific feeling that precedes every significant business breakthrough is not excitement or confidence—it is discomfort. Learn why comfort is the enemy of growth.",
+    description: "The specific feeling that precedes every significant business breakthrough is not excitement or confidence-it is discomfort. Learn why comfort is the enemy of growth.",
     category: "Mindset & Strategy",
     readTime: "25 min read",
     publishedAt: "2026-04-23",

@@ -181,18 +181,18 @@ export default function DinoRunPage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-5 rounded-full relative group">
                     <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all"
                         title="Help & FAQ"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 uppercase">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[#f0ede8] mb-4 uppercase">
                     Dino Run
                 </h1>
                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
@@ -201,29 +201,29 @@ export default function DinoRunPage() {
             </div>
 
             <div className="flex items-center gap-6 mb-8 w-full max-w-[500px]">
-                <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
+                <div className="flex-1 p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Score</span>
-                    <span className="text-2xl font-black text-white tabular-nums">{score}</span>
+                    <span className="text-2xl font-black text-[#f0ede8] tabular-nums">{score}</span>
                 </div>
-                <div className="flex-1 p-4 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center">
+                <div className="flex-1 p-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex flex-col items-center">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">High</span>
                     <span className="text-2xl font-black text-emerald-400 tabular-nums">{highScore}</span>
                 </div>
             </div>
 
-            <div className="relative group p-4 border-8 border-zinc-900 bg-zinc-950 rounded-[2.5rem] shadow-2xl">
+            <div className="relative group p-4 border-8 border-white/[0.05] bg-[#1c1c1c] rounded-[2.5rem] shadow-2xl">
                 <canvas 
                     ref={canvasRef} 
                     width={800} height={300} 
                     onClick={jump}
-                    className="w-full max-w-[800px] h-auto rounded-xl bg-zinc-950/50 cursor-pointer"
+                    className="w-full max-w-[800px] h-auto rounded-xl bg-[#1c1c1c]/50 cursor-pointer"
                 />
 
                 {!isPlaying && !gameOver && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 backdrop-blur-[2px] rounded-[2.2rem]">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#141414]/40 backdrop-blur-[2px] rounded-[2.2rem]">
                         <button 
                             onClick={reset}
-                            className="bg-white text-black text-xs font-black px-12 py-5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-2"
+                            className="bg-[#f0ede8] text-[#141414] text-xs font-black px-12 py-5 rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl flex items-center gap-2"
                         >
                             <Gamepad2 size={16} /> START ADVENTURE
                         </button>
@@ -231,13 +231,13 @@ export default function DinoRunPage() {
                 )}
 
                 {gameOver && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 backdrop-blur-md rounded-[2.2rem] p-8 text-center animate-in fade-in zoom-in duration-500">
+                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#141414]/80 backdrop-blur-md rounded-[2.2rem] p-8 text-center animate-in fade-in zoom-in duration-500">
                         <Trophy size={48} className="text-red-500 mb-4 animate-pulse" />
-                        <h2 className="text-3xl font-black text-white mb-2 uppercase tracking-tighter">Grounded!</h2>
+                        <h2 className="text-3xl font-black text-[#f0ede8] mb-2 uppercase tracking-tighter">Grounded!</h2>
                         <p className="text-sm text-zinc-500 mb-10 uppercase font-black tracking-widest">Score: {score}</p>
                         <button 
                             onClick={reset}
-                            className="bg-white text-black text-xs font-black px-12 py-5 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
+                            className="bg-[#f0ede8] text-[#141414] text-xs font-black px-12 py-5 rounded-full hover:scale-105 active:scale-95 transition-all flex items-center gap-2"
                         >
                             <RefreshCw size={16} /> REBOOT SYSTEM
                         </button>
@@ -246,10 +246,10 @@ export default function DinoRunPage() {
             </div>
 
             <div className="mt-10 flex flex-col items-center gap-3">
-               <div className="flex items-center gap-2 px-4 py-2 border border-zinc-800 bg-zinc-900/40 rounded-full">
+               <div className="flex items-center gap-2 px-4 py-2 border border-white/[0.07] bg-[#1c1c1c]/40 rounded-full">
                     <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mr-2">Controls</span>
-                    <span className="px-2 py-0.5 bg-zinc-800 text-zinc-300 text-[10px] font-black rounded uppercase">SPACE</span>
-                    <span className="px-2 py-0.5 bg-zinc-800 text-zinc-300 text-[10px] font-black rounded uppercase">CLICK</span>
+                    <span className="px-2 py-0.5 bg-white/[0.06] text-zinc-300 text-[10px] font-black rounded uppercase">SPACE</span>
+                    <span className="px-2 py-0.5 bg-white/[0.06] text-zinc-300 text-[10px] font-black rounded uppercase">CLICK</span>
                </div>
                <p className="text-xs text-zinc-600 font-medium">Avoid the crimson pillars. Speed increases over distance.</p>
             </div>
@@ -260,34 +260,34 @@ export default function DinoRunPage() {
                 title="Dino Run Strategy Briefing"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Edge of Extinction: The Dino Run Experience</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Edge of Extinction: The Dino Run Experience</h3>
                         <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
                             Welcome to <strong>Dino Run</strong>, a high-octane, infinite runner inspired by the classic arcade era. In a world where speed is your only ally, take control of the last surviving dinosaur and navigate a treacherous landscape filled with pillars of flame and rising difficulty. Our browser-based game is built for minimal latency, ensuring your jumps are pixel-perfect every time. Whether you are looking for a quick five-minute break or aim to dominate the high-score leaderboard, Dino Run offers an addictive, rhythmic challenge that is 100% free and private.
                         </p>
                     </section>
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-4">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">!</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-4">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[10px] font-black italic">!</span>
                                 Game Mechanics
                             </h3>
                             <div className="space-y-4">
-                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
-                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Dynamic Speed Scaling</h4>
+                                <div className="bg-[#1c1c1c]/40 p-6 rounded-3xl border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                                    <h4 className="text-sm font-black text-[#f0ede8] mb-2 uppercase tracking-wide">Dynamic Speed Scaling</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed font-semibold">The further you run, the faster the world moves. Every 2000 distance units, the scroll speed increases, testing your reflexes to their absolute limit.</p>
                                 </div>
-                                <div className="bg-zinc-900/40 p-6 rounded-3xl border border-zinc-800/60 hover:border-zinc-700 transition-colors">
-                                    <h4 className="text-sm font-black text-white mb-2 uppercase tracking-wide">Pixel-Perfect Collision</h4>
+                                <div className="bg-[#1c1c1c]/40 p-6 rounded-3xl border border-white/[0.06] hover:border-white/[0.12] transition-colors">
+                                    <h4 className="text-sm font-black text-[#f0ede8] mb-2 uppercase tracking-wide">Pixel-Perfect Collision</h4>
                                     <p className="text-xs text-zinc-500 leading-relaxed font-semibold">We use specialized bounding-box detection to ensure that your survival depends entirely on your timing—not random glitches.</p>
                                 </div>
                             </div>
                         </section>
                         
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
-                                <span className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] font-black italic">?</span>
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
+                                <span className="w-8 h-8 rounded-lg bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[10px] font-black italic">?</span>
                                 How to Surpass your Best
                             </h3>
                             <ul className="space-y-4 text-sm leading-relaxed text-zinc-400 font-medium">
@@ -307,8 +307,8 @@ export default function DinoRunPage() {
                         </section>
                     </div>
                     
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 bg-zinc-950/30 border border-zinc-900 rounded-[3rem] p-10 md:p-14">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Strategic Briefing (FAQ)</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] bg-[#1c1c1c]/30 border border-white/[0.05] rounded-[3rem] p-10 md:p-14">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Strategic Briefing (FAQ)</h3>
                         <Accordion>
                             <AccordionItem title="Is this game free forever?">
                                 Yes. Dino Run is a part of the AssetNest free utility suite. No ads, no tracking, and no cost to play, ever.

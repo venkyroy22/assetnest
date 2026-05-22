@@ -262,16 +262,16 @@ export default function PdfMergerPage() {
             <div className="text-center mb-8 relative group">
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-zinc-800 text-zinc-400 hover:text-white transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
+                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
                     title="View Information"
                 >
                     <Info size={16} />
                 </button>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6">
                     <Combine size={11} className="text-red-400" />
                     <span className="text-xs font-semibold tracking-wide text-zinc-300">Secure Document Utility</span>
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-white mb-4">
+                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
                     PDF <span className="text-red-500">Merger</span>
                 </h1>
                 <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
@@ -283,7 +283,7 @@ export default function PdfMergerPage() {
                 <div className="mb-6 p-4 border border-red-500/20 bg-red-500/5 flex items-center gap-3 rounded-2xl animate-in fade-in">
                     <Info size={16} className="text-red-400 shrink-0" />
                     <span className="text-xs font-medium text-red-100">{error}</span>
-                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-white"><X size={16} /></button>
+                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-[#f0ede8]"><X size={16} /></button>
                 </div>
             )}
 
@@ -296,15 +296,15 @@ export default function PdfMergerPage() {
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        className={`py-8 px-6 border border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-red-500 bg-red-500/5" : "border-zinc-800 bg-zinc-950 hover:bg-zinc-900/50"}`}
+                        className={`py-8 px-6 border border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer ${isDragging ? "border-red-500 bg-red-500/5" : "border-white/[0.07] bg-[#1c1c1c] hover:bg-[#1e1e1e]/50"}`}
                     >
                         <input ref={fileInputRef} type="file" multiple accept="application/pdf" className="hidden" onChange={handleFileChange} />
                         <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-zinc-900 border border-zinc-800 rounded-xl flex items-center justify-center shadow-xl shrink-0">
+                            <div className="w-12 h-12 bg-[#1c1c1c] border border-white/[0.07] rounded-xl flex items-center justify-center shadow-xl shrink-0">
                                 {isLoading ? <RefreshCw className="animate-spin text-zinc-500" size={20} /> : <Upload size={20} className="text-zinc-500" />}
                             </div>
                             <div>
-                                <h2 className="text-sm font-bold text-white tracking-tight">{isLoading ? "Loading Pages..." : "Drag & Drop or Click Here"}</h2>
+                                <h2 className="text-sm font-bold text-[#f0ede8] tracking-tight">{isLoading ? "Loading Pages..." : "Drag & Drop or Click Here"}</h2>
                                 <p className="text-zinc-500 text-[10px] font-medium">100% Private PDF Merging • Arrange Pages Visually</p>
                             </div>
                         </div>
@@ -312,21 +312,21 @@ export default function PdfMergerPage() {
 
                     {/* Pages Grid Editor */}
                     {pages.length > 0 && (
-                        <div className="bg-zinc-950 border border-zinc-900 rounded-[2rem] p-6 shadow-2xl relative animate-in fade-in">
-                            <div className="flex justify-between items-center mb-6 border-b border-zinc-900 pb-4">
+                        <div className="bg-[#1c1c1c] border border-white/[0.05] rounded-[2rem] p-6 shadow-2xl relative animate-in fade-in">
+                            <div className="flex justify-between items-center mb-6 border-b border-white/[0.05] pb-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center">
                                         <Grid size={14} className="text-red-400" />
                                     </div>
-                                    <h3 className="text-sm font-bold text-white tracking-tight">Arrange Pages ({pages.length})</h3>
+                                    <h3 className="text-sm font-bold text-[#f0ede8] tracking-tight">Arrange Pages ({pages.length})</h3>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1.5 mr-2 bg-zinc-900/80 p-1.5 rounded-xl border border-zinc-800">
+                                    <div className="flex items-center gap-1.5 mr-2 bg-zinc-900/80 p-1.5 rounded-xl border border-white/[0.07]">
                                         <Tooltip content="Undo (Ctrl+Z)">
-                                            <button onClick={undo} disabled={!canUndo} className="p-2 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Undo size={16} /></button>
+                                            <button onClick={undo} disabled={!canUndo} className="p-2 rounded-lg hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors"><Undo size={16} /></button>
                                         </Tooltip>
                                         <Tooltip content="Redo (Ctrl+Y)">
-                                            <button onClick={redo} disabled={!canRedo} className="p-2 rounded-lg hover:bg-zinc-800 disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-white transition-colors"><Redo size={16} /></button>
+                                            <button onClick={redo} disabled={!canRedo} className="p-2 rounded-lg hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors"><Redo size={16} /></button>
                                         </Tooltip>
                                     </div>
                                     <span className="text-[10px] font-semibold tracking-wider text-zinc-500 block sm:inline mt-1 sm:mt-0">Drag or use arrows to reorder • Click X to delete</span>
@@ -359,7 +359,7 @@ export default function PdfMergerPage() {
                                 
                                 <DragOverlay dropAnimation={{ sideEffects: defaultDropAnimationSideEffects({ styles: { active: { opacity: "0.5" } } }) }}>
                                     {draggedIdx !== null ? (
-                                        <div className="h-44 w-32 bg-zinc-900 border border-zinc-700 rounded-2xl flex flex-col items-center p-3 opacity-80 shadow-2xl scale-105">
+                                        <div className="h-44 w-32 bg-[#1c1c1c] border border-zinc-700 rounded-2xl flex flex-col items-center p-3 opacity-80 shadow-2xl scale-105">
                                             <div className="flex-grow flex items-center justify-center w-full bg-white/5 rounded border border-white/5">
                                                 <div className="text-[10px] font-bold text-zinc-500">Moving Page {draggedIdx + 1}</div>
                                             </div>
@@ -368,21 +368,21 @@ export default function PdfMergerPage() {
                                 </DragOverlay>
                             </DndContext>
 
-                            <div className="mt-6 pt-6 border-t border-zinc-900 flex flex-col md:flex-row gap-4 items-center justify-between">
+                            <div className="mt-6 pt-6 border-t border-white/[0.05] flex flex-col md:flex-row gap-4 items-center justify-between">
                                 <span className="text-xs font-semibold tracking-wider text-zinc-400">
                                     {files.length} File{files.length !== 1 ? 's' : ''} • {pages.length} Page{pages.length !== 1 ? 's' : ''} Total
                                 </span>
                                 <div className="flex gap-3 w-full md:w-auto">
                                     <button 
                                         onClick={() => resetHistory({ files: [], pages: [] })}
-                                        className="h-14 px-6 font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-transparent border border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-800"
+                                        className="h-14 px-6 font-semibold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all bg-transparent border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:bg-white/[0.06]"
                                     >
                                         Clear All
                                     </button>
                                     <button 
                                         onClick={mergePdfs}
                                         disabled={pages.length === 0 || isLoading}
-                                        className={`h-14 px-8 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-zinc-900 text-zinc-500 border border-zinc-800 cursor-not-allowed" : "bg-white text-black hover:bg-zinc-200 shadow-xl shadow-white/5"}`}
+                                        className={`h-14 px-8 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all flex-grow md:flex-grow-0 ${pages.length === 0 ? "bg-[#1c1c1c] text-zinc-500 border border-white/[0.07] cursor-not-allowed" : "bg-[#f0ede8] text-[#141414] hover:bg-[#e8e5e0] shadow-xl shadow-white/5"}`}
                                     >
                                         {isLoading ? (
                                             <><RefreshCw size={18} className="animate-spin" /> Merging...</>
@@ -399,9 +399,9 @@ export default function PdfMergerPage() {
                 <div className="max-w-5xl mx-auto space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         {/* Left: Preview */}
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-4 shadow-2xl flex flex-col min-h-[300px] sm:min-h-[450px]">
-                            <h3 className="text-xs sm:text-sm font-bold text-white mb-3 sm:mb-4 px-2">Merged Preview</h3>
-                            <div className="flex-grow bg-zinc-900 rounded-xl overflow-hidden min-h-[250px] sm:min-h-[400px]">
+                        <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] p-4 shadow-2xl flex flex-col min-h-[300px] sm:min-h-[450px]">
+                            <h3 className="text-xs sm:text-sm font-bold text-[#f0ede8] mb-3 sm:mb-4 px-2">Merged Preview</h3>
+                            <div className="flex-grow bg-[#1c1c1c] rounded-xl overflow-hidden min-h-[250px] sm:min-h-[400px]">
                                 <object data={outputUrl} type="application/pdf" className="w-full h-full min-h-[250px] sm:min-h-[400px]">
                                     <iframe src={outputUrl} className="w-full h-full min-h-[250px] sm:min-h-[400px] border-none" title="PDF Preview" />
                                 </object>
@@ -409,23 +409,23 @@ export default function PdfMergerPage() {
                         </div>
 
                         {/* Right: Actions */}
-                        <div className="bg-zinc-950 border border-zinc-800 rounded-[2rem] p-6 sm:p-8 shadow-2xl flex flex-col justify-center text-center space-y-6 sm:space-y-8">
+                        <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] p-6 sm:p-8 shadow-2xl flex flex-col justify-center text-center space-y-6 sm:space-y-8">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 bg-red-500/10 border border-red-500/20 rounded-full flex items-center justify-center mx-auto shadow-xl">
                                 <Combine size={28} className="text-red-500 sm:size-32" />
                             </div>
                             <div>
-                                <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-2">Success!</h2>
+                                <h2 className="text-xl sm:text-2xl font-black text-[#f0ede8] tracking-tight mb-2">Success!</h2>
                                 <p className="text-zinc-400 text-xs sm:text-sm font-medium">Your custom PDF has been generated.</p>
                             </div>
                             
-                            <div className="flex items-center justify-center gap-3 sm:gap-4 py-4 sm:py-6 border-y border-zinc-900">
+                            <div className="flex items-center justify-center gap-3 sm:gap-4 py-4 sm:py-6 border-y border-white/[0.05]">
                                 <div className="text-center px-3 sm:px-4">
-                                    <span className="block text-2xl sm:text-3xl font-black text-white">{pages.length}</span>
+                                    <span className="block text-2xl sm:text-3xl font-black text-[#f0ede8]">{pages.length}</span>
                                     <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 mt-1 uppercase">Pages</span>
                                 </div>
-                                <div className="w-px h-10 sm:h-12 bg-zinc-900"></div>
+                                <div className="w-px h-10 sm:h-12 bg-[#1c1c1c]"></div>
                                 <div className="text-center px-3 sm:px-4">
-                                    <span className="block text-2xl sm:text-3xl font-black text-white">{outputSize ? formatSize(outputSize) : "---"}</span>
+                                    <span className="block text-2xl sm:text-3xl font-black text-[#f0ede8]">{outputSize ? formatSize(outputSize) : "---"}</span>
                                     <span className="text-[9px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 mt-1 uppercase">Size</span>
                                 </div>
                             </div>
@@ -433,7 +433,7 @@ export default function PdfMergerPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                                 <button 
                                     onClick={handleDownload}
-                                    className="h-12 px-6 bg-white text-black font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-200 transition-all active:scale-[0.98] shadow-xl"
+                                    className="h-12 px-6 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-all active:scale-[0.98] shadow-xl"
                                 >
                                     <Download size={18} /> 
                                     <span className="hidden sm:inline">Download Custom PDF</span>
@@ -441,7 +441,7 @@ export default function PdfMergerPage() {
                                 </button>
                                 <button 
                                     onClick={() => setIsSharing(true)}
-                                    className="h-12 px-6 bg-zinc-900 border border-zinc-800 text-white font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-800 transition-all active:scale-[0.98]"
+                                    className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98]"
                                 >
                                     <Share2 size={16} className="text-red-400" /> 
                                     <span className="hidden sm:inline">Share to Mobile</span>
@@ -449,13 +449,13 @@ export default function PdfMergerPage() {
                                 </button>
                                 <button 
                                     onClick={() => setOutputUrl(null)}
-                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-300 hover:text-white font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
+                                    className="h-12 px-6 bg-transparent border border-white/[0.07] text-zinc-300 hover:text-[#f0ede8] font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#1c1c1c] transition-all"
                                 >
                                     <ArrowLeft size={16} /> Edit Pages
                                 </button>
                                 <button 
                                     onClick={reset}
-                                    className="h-12 px-6 bg-transparent border border-zinc-800 text-zinc-500 hover:text-red-400 font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-zinc-900 transition-all"
+                                    className="h-12 px-6 bg-transparent border border-white/[0.07] text-zinc-500 hover:text-red-400 font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#1c1c1c] transition-all"
                                 >
                                     <RefreshCw size={14} /> Start Fresh
                                 </button>
@@ -466,7 +466,7 @@ export default function PdfMergerPage() {
             )}
             
             {!outputUrl && files.length === 0 && (
-                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-zinc-900 pt-12 max-w-4xl mx-auto">
+                <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 border-t border-white/[0.05] pt-12 max-w-4xl mx-auto">
                     {[
                         { title: "Privacy First", desc: "Documents never leave your computer. 100% processed in your browser." },
                         { title: "Visual Organizer", desc: "Drag and drop individual pages into the perfect custom order." },
@@ -482,8 +482,8 @@ export default function PdfMergerPage() {
             
             <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Merger Info">
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             Visual PDF Architecture: Merge & Organize
                         </h3>
                         <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -492,8 +492,8 @@ export default function PdfMergerPage() {
                     </section>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <Combine size={20} className="text-red-500" />
                                 How to Merge Safely
                             </h3>
@@ -513,8 +513,8 @@ export default function PdfMergerPage() {
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                                 <ShieldCheck size={20} className="text-zinc-500" />
                                 Privacy Infrastructure
                             </h3>
@@ -530,8 +530,8 @@ export default function PdfMergerPage() {
                         </section>
                     </div>
 
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border-t border-zinc-900 pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Documentation FAQ</h3>
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
                         <Accordion>
                             <AccordionItem title="Is it free?">
                                 Yes. We provide 100% free PDF combination with no subscriptions, file limits, or hidden costs.
@@ -589,13 +589,13 @@ function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, i
             style={style}
             {...attributes}
             {...listeners}
-            className={`group relative h-44 bg-zinc-900 border border-zinc-800 rounded-2xl flex flex-col items-center p-3 cursor-grab active:cursor-grabbing hover:border-red-500/50 hover:bg-zinc-800/80 transition-all touch-none ${isDragging ? 'opacity-30 border-dashed border-red-500' : ''}`}
+            className={`group relative h-44 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex flex-col items-center p-3 cursor-grab active:cursor-grabbing hover:border-red-500/50 hover:bg-zinc-800/80 transition-all touch-none ${isDragging ? 'opacity-30 border-dashed border-red-500' : ''}`}
         >
             <div className="absolute top-2 left-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity z-10">
                 <button
                     onClick={(e) => { e.stopPropagation(); removePage(p.id, e); }}
                     onPointerDown={(e) => e.stopPropagation()}
-                    className="w-6 h-6 bg-black/60 backdrop-blur-md text-red-400 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-colors border border-white/10"
+                    className="w-6 h-6 bg-[#141414]/60 backdrop-blur-md text-red-400 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-[#f0ede8] transition-colors border border-white/10"
                 >
                     <X size={12} />
                 </button>
@@ -608,7 +608,7 @@ function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, i
                         pageIndex={p.pageIndex}
                     />
                 )}
-                <div className="absolute top-1 right-1 z-10 bg-black/60 px-1.5 py-0.5 rounded text-[8px] font-bold text-white shadow-md backdrop-blur-sm border border-white/10">
+                <div className="absolute top-1 right-1 z-10 bg-[#141414]/60 px-1.5 py-0.5 rounded text-[8px] font-bold text-[#f0ede8] shadow-md backdrop-blur-sm border border-white/10">
                     Pg {p.pageIndex + 1}
                 </div>
             </div>
@@ -617,7 +617,7 @@ function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, i
                 <div className="text-[10px] text-zinc-500 truncate px-1">
                     {p.name.length > 12 ? p.name.substring(0, 10) + '...' : p.name}
                 </div>
-                <div className="text-xs font-black text-white px-1">
+                <div className="text-xs font-black text-[#f0ede8] px-1">
                     Page {p.pageIndex + 1}
                 </div>
             </div>
@@ -628,7 +628,7 @@ function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, i
                     onClick={(e) => { e.stopPropagation(); movePage(index, -1, e); }}
                     onPointerDown={(e) => e.stopPropagation()}
                     disabled={index === 0}
-                    className="w-8 h-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center bg-white/[0.06] border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
                 >
                     <ChevronLeft size={16} />
                 </button>
@@ -636,7 +636,7 @@ function SortablePageCard({ p, index, files, pagesCount, removePage, movePage, i
                     onClick={(e) => { e.stopPropagation(); movePage(index, 1, e); }}
                     onPointerDown={(e) => e.stopPropagation()}
                     disabled={index === pagesCount - 1}
-                    className="w-8 h-8 flex items-center justify-center bg-zinc-800 border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
+                    className="w-8 h-8 flex items-center justify-center bg-white/[0.06] border border-zinc-700 text-zinc-300 rounded-lg active:bg-zinc-700 disabled:opacity-0 transition-colors"
                 >
                     <ChevronRight size={16} />
                 </button>

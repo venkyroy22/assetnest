@@ -35,22 +35,22 @@ export default function IconLibrary() {
         
         {/* Header */}
         <div className="flex flex-col gap-2">
-          <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-1 relative group w-max">
-              <LucideIcons.ImagePlus size={11} className="text-white" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-1 relative group w-max">
+              <LucideIcons.ImagePlus size={11} className="text-[#f0ede8]" />
               <span className="text-xs font-semibold tracking-wide text-zinc-300">Asset Library</span>
               <button 
                   onClick={() => setShowHelp(true)}
-                  className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                  className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                   title="What is this?"
               >
                   <LucideIcons.Info size={10} />
               </button>
           </div>
           <div className="flex items-center justify-between mt-2">
-              <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-2 tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-black text-[#f0ede8] flex items-center gap-2 tracking-tight">
                 <LucideIcons.Images size={32} className="text-zinc-400" /> Essential Icon Library
               </h1>
-              <span className="hidden sm:inline-flex text-xs font-bold px-3 py-1 bg-zinc-900 border border-zinc-800 rounded-full text-zinc-400 uppercase tracking-widest">Lucide Outline</span>
+              <span className="hidden sm:inline-flex text-xs font-bold px-3 py-1 bg-[#1c1c1c] border border-white/[0.07] rounded-full text-zinc-400 uppercase tracking-widest">Lucide Outline</span>
           </div>
           <p className="text-zinc-500 text-sm font-medium mt-1">A beautifully curated list of 72 premium vector icons. Click any card to instantly copy the React component code.</p>
         </div>
@@ -71,7 +71,7 @@ export default function IconLibrary() {
                 className={`group relative flex flex-col items-center justify-center gap-3 p-4 rounded-2xl border transition-all duration-300
                   ${isCopied 
                     ? "bg-green-500/10 border-green-500/50 scale-[0.98]" 
-                    : "bg-zinc-900/50 border-zinc-800/60 hover:border-zinc-500/50 hover:bg-zinc-800/30 hover:-translate-y-1 shadow-2xl"
+                    : "bg-[#1e1e1e]/50 border-white/[0.06] hover:border-zinc-500/50 hover:bg-zinc-800/30 hover:-translate-y-1 shadow-2xl"
                   }
                 `}
                 title={`Copy <${name} />`}
@@ -80,7 +80,7 @@ export default function IconLibrary() {
                   {isCopied ? (
                     <LucideIcons.CheckCircle2 size={26} className="text-green-500" />
                   ) : (
-                    <IconRenderer size={26} className="text-white group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
+                    <IconRenderer size={26} className="text-[#f0ede8] group-hover:scale-110 transition-transform duration-300" strokeWidth={1.5} />
                   )}
                   {/* Subtle top-down glow on hover */}
                   <div className="absolute inset-x-0 -top-2 h-6 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 mix-blend-screen transition-opacity" />
@@ -104,7 +104,7 @@ export default function IconLibrary() {
                  <LucideIcons.Info size={20} className="text-blue-400" />
              </div>
              <div className="flex flex-col gap-1.5">
-                 <h3 className="text-white text-sm font-bold tracking-tight">How to use these icons</h3>
+                 <h3 className="text-[#f0ede8] text-sm font-bold tracking-tight">How to use these icons</h3>
                  <p className="text-xs text-blue-200/60 leading-relaxed">
                      These icons are natively sourced from the <code>lucide-react</code> package. When you click an icon, it copies the exact JSX component (e.g. <code>&lt;Shield className="w-6 h-6" /&gt;</code>). You must have <code>lucide-react</code> installed in your project to render them directly.
                  </p>
@@ -119,8 +119,8 @@ export default function IconLibrary() {
           title="Icon Library Infrastructure"
       >
           <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-              <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+              <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                       Vector Icon Dashboard
                   </h3>
                   <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -129,29 +129,29 @@ export default function IconLibrary() {
               </section>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <LucideIcons.Paintbrush size={20} className="text-zinc-500" />
                           Features
                       </h3>
                       <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Perfect Consistency:</strong> Same stroke widths, rounded edges, and padding format across the board.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>1-Click Copy:</strong> Automatically writes the React Component syntax `&lt;IconName /&gt;` straight to your clipboard.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><LucideIcons.Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Zero Load Time:</strong> Pre-rendered elements bypass layout shift.</span>
                           </li>
                       </ul>
                   </section>
 
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <LucideIcons.ShieldCheck size={20} className="text-zinc-500" />
                           Implementation
                       </h3>

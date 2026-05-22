@@ -38,25 +38,25 @@ export default function CssGradientMaker() {
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-3 relative group">
-                <Paintbrush size={11} className="text-white" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-3 relative group">
+                <Paintbrush size={11} className="text-[#f0ede8]" />
                 <span className="text-xs font-semibold tracking-wide text-zinc-300">Design Tool</span>
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                    className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                     title="What is this?"
                 >
                     <Info size={10} />
                 </button>
             </div>
-            <h1 className="text-3xl md:text-4xl font-black text-white flex items-center gap-2 tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-black text-[#f0ede8] flex items-center gap-2 tracking-tight">
               <Palette size={32} className="text-zinc-400" /> CSS Gradient Maker
             </h1>
             <p className="text-zinc-500 text-sm mt-3 font-medium">Mix beautiful gradients and instantly copy the pure CSS for your stylesheets.</p>
           </div>
           <button 
             onClick={randomize} 
-            className="flex items-center gap-2 px-4 py-2 bg-zinc-900 border border-zinc-800 rounded-lg hover:bg-zinc-800 transition-colors text-sm font-semibold"
+            className="flex items-center gap-2 px-4 py-2 bg-[#1c1c1c] border border-white/[0.07] rounded-lg hover:bg-white/[0.06] transition-colors text-sm font-semibold"
           >
             <RefreshCw size={14} /> Randomize
           </button>
@@ -67,36 +67,36 @@ export default function CssGradientMaker() {
           
           {/* Canvas Preview */}
           <div 
-            className="w-full rounded-3xl border border-zinc-800/50 shadow-2xl relative overflow-hidden min-h-[400px] lg:min-h-[500px]"
+            className="w-full rounded-3xl border border-white/[0.06] shadow-2xl relative overflow-hidden min-h-[400px] lg:min-h-[500px]"
             style={{ background: cssValue }}
           >
              <div className="absolute inset-0 bg-white/5 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
-                 <span className="bg-black/40 backdrop-blur-md px-6 py-3 rounded-full text-white text-sm font-bold shadow-2xl drop-shadow-2xl flex items-center gap-2 select-none">
+                 <span className="bg-[#141414]/40 backdrop-blur-md px-6 py-3 rounded-full text-[#f0ede8] text-sm font-bold shadow-2xl drop-shadow-2xl flex items-center gap-2 select-none">
                    Previewing Gradient
                  </span>
              </div>
           </div>
 
           {/* Controls Sidebar */}
-          <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-3xl p-6 flex flex-col gap-6">
+          <div className="bg-[#1e1e1e]/50 backdrop-blur-sm border border-white/[0.07] rounded-3xl p-6 flex flex-col gap-6">
             
             {/* Type Selector */}
-            <div className="flex gap-2 p-1 bg-zinc-950 rounded-xl border border-zinc-800">
+            <div className="flex gap-2 p-1 bg-[#1c1c1c] rounded-xl border border-white/[0.07]">
               <button 
                 onClick={() => setType("linear")}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${type === "linear" ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"}`}
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${type === "linear" ? "bg-white/[0.06] text-[#f0ede8] shadow" : "text-zinc-500 hover:text-zinc-300"}`}
               >
                 LINEAR
               </button>
               <button 
                 onClick={() => setType("radial")}
-                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${type === "radial" ? "bg-zinc-800 text-white shadow" : "text-zinc-500 hover:text-zinc-300"}`}
+                className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all ${type === "radial" ? "bg-white/[0.06] text-[#f0ede8] shadow" : "text-zinc-500 hover:text-zinc-300"}`}
               >
                 RADIAL
               </button>
             </div>
 
-            <hr className="border-t border-zinc-800/50" />
+            <hr className="border-t border-white/[0.06]" />
 
             {/* Color Pickers */}
             <div className="flex flex-col gap-4">
@@ -105,7 +105,7 @@ export default function CssGradientMaker() {
                 <div className="relative group w-12 h-12 rounded-xl overflow-hidden border-2 border-zinc-700 hover:border-zinc-500 transition-colors cursor-pointer">
                   <input type="color" value={color1} onChange={(e) => setColor1(e.target.value)} className="absolute -inset-4 w-[200%] h-[200%] cursor-pointer" />
                 </div>
-                <div className="flex-1 font-mono text-xs uppercase bg-black px-4 py-3 rounded-xl border border-zinc-800">
+                <div className="flex-1 font-mono text-xs uppercase bg-[#141414] px-4 py-3 rounded-xl border border-white/[0.07]">
                   {color1}
                 </div>
               </div>
@@ -113,26 +113,26 @@ export default function CssGradientMaker() {
                 <div className="relative group w-12 h-12 rounded-xl overflow-hidden border-2 border-zinc-700 hover:border-zinc-500 transition-colors cursor-pointer">
                   <input type="color" value={color2} onChange={(e) => setColor2(e.target.value)} className="absolute -inset-4 w-[200%] h-[200%] cursor-pointer" />
                 </div>
-                <div className="flex-1 font-mono text-xs uppercase bg-black px-4 py-3 rounded-xl border border-zinc-800">
+                <div className="flex-1 font-mono text-xs uppercase bg-[#141414] px-4 py-3 rounded-xl border border-white/[0.07]">
                   {color2}
                 </div>
               </div>
             </div>
 
-            <hr className="border-t border-zinc-800/50" />
+            <hr className="border-t border-white/[0.06]" />
 
             {/* Angle Slider (only for linear) */}
             <div className={`flex flex-col gap-4 transition-opacity duration-300 ${type === "radial" ? "opacity-30 pointer-events-none" : "opacity-100"}`}>
               <div className="flex justify-between items-center">
                 <label className="text-xs font-bold tracking-wider text-zinc-500 uppercase">Angle</label>
-                <span className="text-xs font-mono bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800">{angle}°</span>
+                <span className="text-xs font-mono bg-[#1c1c1c] px-2 py-1 rounded-md border border-white/[0.07]">{angle}°</span>
               </div>
               <input 
                 type="range" 
                 min="0" max="360" 
                 value={angle} 
                 onChange={(e) => setAngle(Number(e.target.value))}
-                className="w-full h-2 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-white"
+                className="w-full h-2 bg-white/[0.06] rounded-lg appearance-none cursor-pointer accent-white"
               />
             </div>
 
@@ -142,12 +142,12 @@ export default function CssGradientMaker() {
             <div className="flex flex-col gap-3">
               <label className="text-xs font-bold tracking-wider text-zinc-500 uppercase">CSS Output</label>
               <div className="relative">
-                <div className="bg-black text-[11px] font-mono text-zinc-300 p-4 rounded-xl border border-zinc-800 break-all leading-relaxed">
+                <div className="bg-[#141414] text-[11px] font-mono text-zinc-300 p-4 rounded-xl border border-white/[0.07] break-all leading-relaxed">
                   {exactCssCode}
                 </div>
                 <button
                   onClick={copyToClipboard}
-                  className="absolute right-2 top-2 p-2 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg transition-all"
+                  className="absolute right-2 top-2 p-2 bg-white/[0.06] hover:bg-zinc-700 text-[#f0ede8] rounded-lg transition-all"
                 >
                   <Copy size={14} />
                 </button>
@@ -171,8 +171,8 @@ export default function CssGradientMaker() {
           title="Gradient Generation Infrastructure"
       >
           <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-              <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+              <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                  <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                       CSS Gradient Maker
                   </h3>
                   <p className="text-base leading-relaxed text-zinc-400 font-medium">
@@ -181,29 +181,29 @@ export default function CssGradientMaker() {
               </section>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <Paintbrush size={20} className="text-zinc-500" />
                           Features
                       </h3>
                       <ul className="space-y-4 text-sm text-zinc-400 font-medium">
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Real-time Preview:</strong> See your styling instantly applied to the main render canvas.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>Radial & Linear:</strong> Support for multi-directional and center-weighted gradient spreads.</span>
                           </li>
                           <li className="flex gap-4 items-start">
-                              <div className="mt-1 shrink-0"><Check size={16} className="text-white" /></div>
+                              <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
                               <span><strong>1-Click Export:</strong> Automatically wraps outputs in standard `background: ...` syntax.</span>
                           </li>
                       </ul>
                   </section>
 
-                  <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6">
-                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                  <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
+                      <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                           <ShieldCheck size={20} className="text-zinc-500" />
                           Privacy Infrastructure
                       </h3>

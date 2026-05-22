@@ -18,27 +18,25 @@ const CategoryCard = ({ title, count, image, icon: Icon, href, accent = "#d4d4d8
     return (
         <Link
             href={isDevelopment ? "#" : href}
-            className={`group relative flex items-center justify-between bg-zinc-900/40 backdrop-blur-md rounded-2xl border border-white/5 shadow-sm overflow-hidden h-28 transition-all duration-300 ${isDevelopment
+            className={`group relative flex items-center justify-between rounded-2xl overflow-hidden h-28 bg-white border border-black/[0.06] transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.02)] ${
+                isDevelopment
                     ? "cursor-not-allowed grayscale-[0.5] opacity-80"
-                    : "hover:border-zinc-700/50 hover:bg-zinc-900/60"
-                }`}
-            style={{
-                boxShadow: !isDevelopment ? `0 0 0 0 ${accent}00` : undefined,
-            }}
+                    : "hover:bg-zinc-50 hover:border-black/[0.12] hover:shadow-[0_8px_30px_rgba(0,0,0,0.04)]"
+            }`}
         >
             <div className="pl-8 z-10 py-5">
-                <h3 className="text-zinc-100 text-base font-bold tracking-tight mb-1 group-hover:text-white transition-colors"
-                    style={{ color: !isDevelopment ? undefined : undefined }}
+                <h3 className="text-base font-bold tracking-tight mb-1 transition-colors"
+                    style={{ color: "#71381d" }}
                 >
                     {title}
                 </h3>
-                <p className="text-secondary text-[10px] font-bold uppercase tracking-[0.1em]"
-                   style={{ color: !isDevelopment ? `${accent}cc` : undefined }}
+                <p className="text-[10px] font-bold uppercase tracking-[0.1em]"
+                   style={{ color: "#71381d" }}
                 >
                     {isDevelopment ? "Ongoing Development" : count}
                 </p>
                 {isDevelopment && (
-                    <div className="mt-2 text-[9px] font-semibold tracking-wide text-white/80 animate-pulse">
+                    <div className="mt-2 text-[9px] font-semibold tracking-wide text-zinc-800 animate-pulse">
                         Stay Updated
                     </div>
                 )}
@@ -49,8 +47,8 @@ const CategoryCard = ({ title, count, image, icon: Icon, href, accent = "#d4d4d8
             >
                 {Icon ? (
                     <div className={`relative z-20 transition-all duration-700 ${!isDevelopment && 'group-hover:scale-125 group-hover:rotate-[15deg]'}`}>
-                        <div className="absolute inset-0 bg-white/10 blur-3xl rounded-full scale-[2.5]" />
-                        <Icon size={52} strokeWidth={1.25} className="text-white/40 group-hover:text-white/80 transition-colors" />
+                        <div className="absolute inset-0 blur-3xl rounded-full scale-[2.5]" style={{ background: "rgba(57,174,102,0.08)" }} />
+                        <Icon size={52} strokeWidth={1.25} className="transition-colors text-[#39ae66]/30 group-hover:text-[#39ae66]/50 duration-300" />
                     </div>
                 ) : image && (
                     <div 

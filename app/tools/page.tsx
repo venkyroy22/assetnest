@@ -3,7 +3,7 @@
 import { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import {
     Wrench, Search, X, Sparkles,
-    ArrowUpRight, Pin,
+    ArrowUpRight, ArrowRight, Pin,
 } from "lucide-react";
 import Link from "next/link";
 import { ALL_TOOLS, Tool, ToolCategory } from "@/lib/tools";
@@ -17,6 +17,55 @@ function shortName(name: string): string {
         .replace(/^Professional\s+/i, "")
         .replace(/^Free\s+/i, "")
         .trim();
+}
+
+// ─── Category Background Helper ────────────────────────────────────────────────
+function getCategoryBg(category: ToolCategory): string {
+    switch (category) {
+        case "Images":
+            return "linear-gradient(135deg, #0a2523 0%, #051110 100%)"; // Dark Teal
+        case "PDF":
+            return "linear-gradient(135deg, #2a0a10 0%, #120407 100%)"; // Ruby Burgundy
+        case "Generate":
+            return "linear-gradient(135deg, #180d25 0%, #0b0611 100%)";
+        case "Productivity":
+            return "linear-gradient(135deg, #0d1a25 0%, #060c11 100%)";
+        case "Business":
+            return "linear-gradient(135deg, #251b0d 0%, #110c06 100%)";
+        case "Games":
+            return "linear-gradient(135deg, #100d25 0%, #080611 100%)"; // Dark Indigo
+        case "Design Training":
+            return "linear-gradient(135deg, #250d21 0%, #11060f 100%)";
+        default:
+            return "linear-gradient(135deg, #161616 0%, #0a0a0a 100%)";
+    }
+}
+
+// ─── Category Hover Colors Helper ──────────────────────────────────────────────
+interface HoverColors {
+    solid: string;
+    glow: string;
+}
+
+function getCategoryHoverColors(category: ToolCategory): HoverColors {
+    switch (category) {
+        case "Images":
+            return { solid: "#0d9488", glow: "rgba(13, 148, 136, 0.16)" }; // Rich Teal
+        case "PDF":
+            return { solid: "#be123c", glow: "rgba(190, 18, 60, 0.16)" }; // Ruby Crimson
+        case "Generate":
+            return { solid: "#7c3aed", glow: "rgba(124, 58, 237, 0.16)" }; // Royal Violet
+        case "Productivity":
+            return { solid: "#2563eb", glow: "rgba(37, 99, 235, 0.16)" }; // Cobalt Blue
+        case "Business":
+            return { solid: "#d97706", glow: "rgba(217, 119, 6, 0.16)" }; // Warm Amber
+        case "Games":
+            return { solid: "#4f46e5", glow: "rgba(79, 70, 229, 0.16)" }; // Premium Indigo
+        case "Design Training":
+            return { solid: "#db2777", glow: "rgba(219, 39, 119, 0.16)" }; // Magenta Rose
+        default:
+            return { solid: "#475569", glow: "rgba(71, 85, 105, 0.16)" }; // Sleek Slate
+    }
 }
 
 // ─── Tool Card ────────────────────────────────────────────────────────────────
@@ -79,17 +128,18 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
     };
 
     const Icon = tool.icon;
+    const colors = getCategoryHoverColors(tool.category);
 
     return (
         <Link 
             href={tool.href} 
-            className="block group" 
+            className="block group h-full" 
             tabIndex={-1}
             onClick={handleLinkClick}
         >
 
             {/* ════════════════════════════════
-                DESKTOP — full spotlight card
+                DESKTOP — premium visual card
                 (hidden on mobile)
             ════════════════════════════════ */}
             <div
@@ -99,53 +149,100 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                 onMouseLeave={() => setHovered(false)}
                 style={{
                     opacity: visible ? 1 : 0,
-                    transform: visible ? "translateY(0)" : "translateY(28px)",
-                    transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
+                    transform: visible 
+                        ? (hovered ? "translateY(-6px)" : "translateY(0)") 
+                        : "translateY(28px)",
+                    transition: "opacity 0.5s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+                    background: "#1c1c1c",
+                    border: "none",
+                    boxShadow: hovered 
+                        ? `0 25px 50px rgba(0,0,0,0.85), 0 0 30px ${colors.glow}` 
+                        : "0 10px 35px rgba(0,0,0,0.6)",
                 }}
-                className="hidden sm:flex flex-col relative overflow-hidden rounded-[2.2rem] bg-zinc-900/40 border border-white/5 backdrop-blur-md p-6 h-full transition-all duration-300 hover:border-zinc-700 hover:bg-zinc-900/60"
+                className="hidden sm:flex flex-col relative overflow-hidden rounded-2xl h-full"
             >
                 {/* Pin Button */}
                 <button
                     onClick={handlePinClick}
-                    className={`absolute top-4 left-4 z-20 p-2 rounded-lg border transition-all duration-300 active:scale-95
+                    className={`absolute top-4 left-4 z-20 p-2 rounded-lg transition-all duration-300 active:scale-95
                         ${pinned
-                            ? "bg-white text-black border-white shadow-lg"
-                            : "bg-black/40 text-zinc-600 border-zinc-800 hover:border-zinc-500 hover:text-white backdrop-blur-md"}`}
-                    style={{ opacity: pinned || hovered ? 1 : 0 }}
+                            ? "shadow-lg"
+                            : "backdrop-blur-md"}`}
+                    style={{
+                        opacity: pinned || hovered ? 1 : 0,
+                        background: pinned ? colors.solid : "rgba(20,20,20,0.6)",
+                        color: "#ffffff",
+                        border: pinned ? `1px solid ${colors.solid}` : "1px solid rgba(255,255,255,0.08)",
+                    }}
                     title={pinned ? "Unpin tool" : "Pin tool"}
                 >
-                    <Pin size={12} className={`transition-transform duration-300 ${pinned ? "rotate-45" : ""}`} fill={pinned ? "black" : "none"} />
+                    <Pin size={12} className={`transition-transform duration-300 ${pinned ? "rotate-45" : ""}`} fill={pinned ? "white" : "none"} />
                 </button>
 
-                {/* Spotlight */}
+                {/* Spotlight hover shimmer */}
                 <div
-                    className="absolute inset-0 pointer-events-none transition-opacity duration-500"
+                    className="absolute inset-0 pointer-events-none transition-opacity duration-500 z-10"
                     style={{
                         opacity: hovered ? 1 : 0,
-                        background: `radial-gradient(300px circle at ${mouse.x}px ${mouse.y}px, rgba(255,255,255,0.06), transparent 80%)`,
+                        background: `radial-gradient(300px circle at ${mouse.x}px ${mouse.y}px, rgba(255,255,255,0.04), transparent 80%)`,
                     }}
                 />
 
-                {/* Content */}
-                <div className="relative z-10 flex flex-col h-full gap-4 pt-2">
-                    <div className="flex items-start justify-between">
-                        <div className="w-12 h-12 rounded-[14px] flex items-center justify-center border border-zinc-800 bg-zinc-900 transition-all duration-300 group-hover:bg-zinc-800 group-hover:border-zinc-700">
-                            <Icon size={20} className="text-zinc-500 group-hover:text-white transition-colors duration-300" />
+                {/* Top visual preview slot */}
+                <div className="relative w-full h-40 bg-[#161616] flex items-center justify-center overflow-hidden shrink-0">
+                    {tool.image ? (
+                        <img 
+                            src={tool.image} 
+                            alt={tool.name} 
+                            className="w-full h-full object-cover transition-transform duration-500 ease-out"
+                            style={{
+                                transform: hovered ? "scale(1.06)" : "scale(1)",
+                            }}
+                        />
+                    ) : (
+                        <div 
+                            className="w-full h-full flex items-center justify-center relative transition-all duration-500"
+                            style={{
+                                background: getCategoryBg(tool.category),
+                            }}
+                        >
+                            {/* Radial/dot pattern */}
+                            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(rgba(255,255,255,0.15)_1px,transparent_1px)] [background-size:16px_16px]" />
+                            
+                            {/* Ghost background icon */}
+                            <Icon 
+                                size={72} 
+                                className="absolute opacity-10 transition-transform duration-700" 
+                                style={{
+                                    color: "#ffffff",
+                                    transform: hovered ? "scale(1.15) rotate(5deg)" : "scale(1) rotate(0deg)",
+                                }}
+                            />
+                            
+                            {/* Centered highlighted icon box */}
+                            <div 
+                                className="relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                style={{
+                                    border: "1px solid rgba(255,255,255,0.1)",
+                                    background: "rgba(255,255,255,0.05)",
+                                    boxShadow: hovered ? "0 0 20px rgba(255,255,255,0.05)" : "none",
+                                }}
+                            >
+                                <Icon size={22} className="text-[#f0ede8]" />
+                            </div>
                         </div>
-                        <div className="flex items-center gap-1.5">
-                            {pinned && <Pin size={8} fill="currentColor" className="text-zinc-500" />}
-                            <span className="text-[10px] font-semibold tracking-wide px-2.5 py-0.5 border border-white/10 bg-white/5 text-zinc-400 rounded-full group-hover:text-white transition-colors whitespace-nowrap">
-                                {tool.badge}
-                            </span>
-                            <ArrowUpRight size={15} className="text-zinc-600 group-hover:text-white group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300" />
-                        </div>
-                    </div>
-                    <div className="space-y-1.5 min-w-0">
-                        <h3 className="text-sm font-bold tracking-tight text-white">{tool.name}</h3>
-                        <p className="text-xs text-zinc-500 font-medium leading-relaxed group-hover:text-zinc-400 transition-colors duration-300 line-clamp-3">
-                            {tool.description}
-                        </p>
-                    </div>
+                    )}
+                </div>
+
+                {/* Bottom dark tab footer */}
+                <div 
+                    className="flex items-center justify-between px-5 py-4 transition-colors duration-300 mt-auto shrink-0"
+                    style={{
+                        background: hovered ? colors.solid : "#1c1c1c"
+                    }}
+                >
+                    <span className="text-sm font-bold text-white tracking-tight">{tool.name}</span>
+                    <ArrowRight size={16} className="text-white transform group-hover:translate-x-1 transition-transform duration-300" />
                 </div>
             </div>
 
@@ -164,13 +261,13 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                 onTouchEnd={handleTouchEnd}
             >
                 {/* App Icon */}
-                <div className={`relative w-16 h-16 rounded-[18px] bg-zinc-900 border border-white/8 flex items-center justify-center shadow-lg transition-all duration-200 ${showMobileMenu ? "scale-90 brightness-75" : "active:scale-95"}`}>
-                    <Icon size={28} className="text-zinc-400" />
+                <div className={`relative w-16 h-16 rounded-[18px] flex items-center justify-center shadow-lg transition-all duration-200 ${showMobileMenu ? "scale-90 brightness-75" : "active:scale-95"}`} style={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,0.06)" }}>
+                    <Icon size={28} style={{ color: "#707070" }} />
 
                     {/* Pinned status dot (Top Right) */}
                     {pinned && (
-                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white rounded-full flex items-center justify-center shadow">
-                            <Pin size={7} fill="black" className="rotate-45" />
+                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center shadow" style={{ background: "#f0ede8" }}>
+                            <Pin size={7} fill="#141414" className="rotate-45" style={{ color: "#141414" }} />
                         </div>
                     )}
 
@@ -184,20 +281,21 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                             <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-200">
                                 <button
                                     onClick={handlePinToggle}
-                                    className="flex items-center gap-2 px-4 py-2 bg-white text-black rounded-full shadow-2xl font-black text-[11px] uppercase tracking-wider whitespace-nowrap active:scale-95 transition-transform"
+                                    className="flex items-center gap-2 px-4 py-2 rounded-full shadow-2xl font-black text-[11px] uppercase tracking-wider whitespace-nowrap active:scale-95 transition-transform"
+                                    style={{ background: "#f0ede8", color: "#141414" }}
                                 >
                                     <Pin size={12} fill={pinned ? "black" : "none"} className={pinned ? "rotate-45" : ""} />
                                     {pinned ? "Unpin Tool" : "Pin Tool"}
                                 </button>
                                 {/* Triangle arrow */}
-                                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] border-t-white mx-auto mt-[-1px]" />
+                                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] mx-auto mt-[-1px]" style={{ borderTopColor: "#f0ede8" }} />
                             </div>
                         </>
                     )}
                 </div>
 
                 {/* Short label */}
-                <span className="text-[10px] font-semibold text-zinc-400 text-center leading-tight line-clamp-2 w-16 px-0.5">
+                <span className="text-[10px] font-semibold text-center leading-tight line-clamp-2 w-16 px-0.5" style={{ color: "#707070" }}>
                     {shortName(tool.name)}
                 </span>
             </div>
@@ -264,7 +362,7 @@ export default function ToolsPage() {
             <div
                 className="fixed inset-0 pointer-events-none z-0"
                 style={{
-                    backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)`,
+                backgroundImage: `radial-gradient(circle, rgba(240,237,232,0.025) 1px, transparent 1px)`,
                     backgroundSize: "32px 32px",
                     maskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
                     WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
@@ -273,7 +371,7 @@ export default function ToolsPage() {
 
             {/* Wrench — desktop only, hard clipped */}
             <div className="hidden lg:block absolute top-0 right-0 overflow-hidden pointer-events-none z-0" style={{ width: "420px", height: "420px" }}>
-                <Wrench size={500} strokeWidth={0.5} className="text-white/5 rotate-12 translate-x-28 -translate-y-14" />
+                <Wrench size={500} strokeWidth={0.5} className="rotate-12 translate-x-28 -translate-y-14" style={{ color: "rgba(240,237,232,0.04)" }} />
             </div>
 
             <div
@@ -288,24 +386,25 @@ export default function ToolsPage() {
                             <Sparkles size={11} className="text-zinc-100" />
                             <span className="text-[10px] font-black tracking-[0.2em] uppercase text-zinc-400">Tool Directory</span>
                         </div>
-                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight text-white mb-3 leading-none">
-                            Smart <span className="text-zinc-500">Tools</span>
+                        <h1 className="text-4xl sm:text-5xl md:text-7xl font-black tracking-tight mb-3 leading-none" style={{ color: "#f0ede8" }}>
+                            Smart <span style={{ color: "#555" }}>Tools</span>
                         </h1>
-                        <p className="text-zinc-500 text-sm md:text-base font-medium max-w-lg leading-relaxed">
+                        <p className="text-sm md:text-base font-medium max-w-lg leading-relaxed" style={{ color: "#707070" }}>
                             Powerful, secure, and private utilities that run 100% in your browser. No sign-up, no server uploads, forever free.
                         </p>
                     </div>
 
                     {/* Search */}
                     <div className="mb-6 sm:mb-8">
-                        <div className={`flex items-center bg-zinc-950/80 backdrop-blur-xl rounded-2xl border px-4 sm:px-5 py-3 sm:py-3.5 w-full transition-all duration-300 hover:border-zinc-700 focus-within:border-white/50 shadow-2xl ${query ? "border-zinc-600" : "border-zinc-800"}`}>
+                        <div className={`flex items-center backdrop-blur-xl rounded-2xl px-4 sm:px-5 py-3 sm:py-3.5 w-full transition-all duration-300 shadow-2xl ${query ? "" : ""}`}
+                            style={{ background: "rgba(28,28,28,0.8)", border: `1px solid ${query ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.07)"}` }}>
                             <Search size={15} className="text-zinc-500 mr-3 shrink-0" />
                             <input
                                 type="text"
                                 value={query}
                                 onChange={e => setQuery(e.target.value)}
-                                placeholder="Search tools…"
-                                className="bg-transparent text-sm w-full min-w-0 focus:outline-none placeholder:text-zinc-600 font-medium text-white"
+                                className="bg-transparent text-sm w-full min-w-0 focus:outline-none font-medium" style={{ color: "#f0ede8" }}
+                            placeholder="Search tools…"
                                 autoComplete="off"
                                 autoCorrect="off"
                                 autoCapitalize="off"
@@ -329,11 +428,16 @@ export default function ToolsPage() {
                                 <button
                                     key={cat}
                                     onClick={() => setActiveCategory(cat as ToolCategory | "All")}
-                                    className={`shrink-0 px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all duration-300 border touch-manipulation
+                                    className={`shrink-0 px-4 sm:px-5 py-2 rounded-full text-[10px] sm:text-[11px] font-black uppercase tracking-widest transition-all duration-300 touch-manipulation
                                         ${activeCategory === cat
-                                            ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                                            : "bg-zinc-900/40 border-zinc-800 text-zinc-500 hover:text-zinc-300 hover:border-zinc-700"
+                                            ? "shadow-[0_0_20px_rgba(240,237,232,0.08)]"
+                                            : ""
                                         }`}
+                                    style={{
+                                        background: activeCategory === cat ? "#f0ede8" : "rgba(255,255,255,0.03)",
+                                        color: activeCategory === cat ? "#141414" : "#666",
+                                        border: activeCategory === cat ? "1px solid #f0ede8" : "1px solid rgba(255,255,255,0.07)",
+                                    }}
                                 >
                                     {cat}
                                 </button>
@@ -343,15 +447,16 @@ export default function ToolsPage() {
 
                     {/* No results */}
                     {filtered.length === 0 && (
-                        <div className="flex flex-col items-center justify-center py-20 border border-dashed border-zinc-800 bg-zinc-950/30 rounded-2xl px-4">
-                            <Search size={26} className="text-zinc-700 mb-4" />
-                            <h2 className="text-base font-semibold text-zinc-400 mb-2">No tools found</h2>
-                            <p className="text-sm text-zinc-500 text-center max-w-xs">
+                        <div className="flex flex-col items-center justify-center py-20 rounded-2xl px-4" style={{ border: "1px dashed rgba(255,255,255,0.08)", background: "rgba(28,28,28,0.3)" }}>
+                            <Search size={26} className="mb-4" style={{ color: "#555" }} />
+                            <h2 className="text-base font-semibold mb-2" style={{ color: "#a0a0a0" }}>No tools found</h2>
+                            <p className="text-sm text-center max-w-xs" style={{ color: "#666" }}>
                                 Nothing matches &ldquo;{query}&rdquo;. Try a different keyword.
                             </p>
                             <button
                                 onClick={() => setQuery("")}
-                                className="mt-5 px-5 py-2.5 rounded-full border border-zinc-700 text-xs font-semibold text-zinc-300 hover:border-white/40 hover:text-white transition-all touch-manipulation"
+                                className="mt-5 px-5 py-2.5 rounded-full text-xs font-semibold transition-all touch-manipulation"
+                                style={{ border: "1px solid rgba(255,255,255,0.08)", color: "#a0a0a0" }}
                             >
                                 Clear Search
                             </button>
@@ -366,11 +471,11 @@ export default function ToolsPage() {
 
                                     {/* Section heading */}
                                     <div className="flex items-center gap-3 mb-6">
-                                        <div className="h-px bg-zinc-800 flex-1 min-w-0" />
-                                        <h2 className="text-xs sm:text-sm font-semibold text-zinc-300 px-3 whitespace-nowrap">
+                                        <div className="h-px flex-1 min-w-0" style={{ background: "rgba(255,255,255,0.06)" }} />
+                                        <h2 className="text-xs sm:text-sm font-semibold px-3 whitespace-nowrap" style={{ color: "#a0a0a0" }}>
                                             {group.name}
                                         </h2>
-                                        <div className="h-px bg-zinc-800 flex-1 min-w-0" />
+                                        <div className="h-px flex-1 min-w-0" style={{ background: "rgba(255,255,255,0.06)" }} />
                                     </div>
 
                                     {/*

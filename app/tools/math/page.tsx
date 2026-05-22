@@ -118,18 +118,18 @@ export default function MathGamePage() {
 
             {/* Header */}
             <div className="w-full mb-10 text-center">
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-zinc-800 bg-zinc-900/50 mb-5 rounded-full relative group">
+                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-5 rounded-full relative group">
                     <Zap size={11} className="text-amber-400" />
                     <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Games</span>
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl"
+                        className="ml-3 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl"
                         title="Help & FAQ"
                     >
                         <Info size={10} />
                     </button>
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4 uppercase">
+                <h1 className="text-4xl md:text-6xl font-black tracking-tighter text-[#f0ede8] mb-4 uppercase">
                     Quick Math
                 </h1>
                 <p className="text-zinc-500 text-xs font-bold uppercase tracking-[0.2em] max-w-lg mx-auto leading-relaxed">
@@ -139,32 +139,32 @@ export default function MathGamePage() {
 
             <div className="flex flex-col items-center w-full max-w-md gap-6">
                 <div className="flex gap-4 w-full">
-                    <div className="flex-1 p-5 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col items-center">
+                    <div className="flex-1 p-5 bg-[#1c1c1c] border border-white/[0.07] rounded-3xl flex flex-col items-center">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1 flex items-center gap-2">
                             <Timer size={10} /> Time
                         </span>
-                        <span className={`text-3xl font-black tabular-nums ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-white'}`}>
+                        <span className={`text-3xl font-black tabular-nums ${timeLeft <= 10 ? 'text-red-500 animate-pulse' : 'text-[#f0ede8]'}`}>
                             {timeLeft}s
                         </span>
                     </div>
-                    <div className="flex-1 p-5 bg-zinc-900 border border-zinc-800 rounded-3xl flex flex-col items-center">
+                    <div className="flex-1 p-5 bg-[#1c1c1c] border border-white/[0.07] rounded-3xl flex flex-col items-center">
                         <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1">Score</span>
                         <span className="text-3xl font-black text-emerald-400 tabular-nums">{score}</span>
                     </div>
                 </div>
 
                 <div className="w-full relative group">
-                    <div className={`p-10 bg-zinc-950 border-4 border-zinc-900 rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-emerald-500/50 shadow-emerald-500/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
+                    <div className={`p-10 bg-[#1c1c1c] border-4 border-white/[0.05] rounded-[3rem] shadow-2xl transition-all duration-300 ${isCorrect === true ? 'border-emerald-500/50 shadow-emerald-500/20' : isCorrect === false ? 'border-red-500/50 shadow-red-500/20 animate-shake' : ''}`}>
                         {!isPlaying && !gameOver ? (
                             <div className="flex flex-col items-center text-center gap-8">
                                 <Calculator size={48} className="text-zinc-800" />
                                 <div>
-                                    <h2 className="text-xl font-black text-white mb-2 uppercase tracking-tight">System Ready</h2>
+                                    <h2 className="text-xl font-black text-[#f0ede8] mb-2 uppercase tracking-tight">System Ready</h2>
                                     <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">High Score: {highScore}</p>
                                 </div>
                                 <button 
                                     onClick={startGame}
-                                    className="px-12 py-5 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl uppercase tracking-widest"
+                                    className="px-12 py-5 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl uppercase tracking-widest"
                                 >
                                     Engage Test
                                 </button>
@@ -173,19 +173,19 @@ export default function MathGamePage() {
                             <div className="flex flex-col items-center text-center gap-8 animate-in zoom-in duration-500">
                                 <Trophy size={48} className="text-amber-400 animate-bounce" />
                                 <div>
-                                    <h2 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">Test Concluded</h2>
-                                    <p className="text-sm text-zinc-500 font-medium">You identified <span className="text-white font-bold">{score}</span> problems corectly.</p>
+                                    <h2 className="text-2xl font-black text-[#f0ede8] mb-2 uppercase tracking-tighter">Test Concluded</h2>
+                                    <p className="text-sm text-zinc-500 font-medium">You identified <span className="text-[#f0ede8] font-bold">{score}</span> problems corectly.</p>
                                 </div>
                                 <button 
                                     onClick={startGame}
-                                    className="px-12 py-5 bg-white text-black text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl uppercase tracking-widest flex items-center gap-2"
+                                    className="px-12 py-5 bg-[#f0ede8] text-[#141414] text-xs font-black rounded-full hover:scale-105 active:scale-95 transition-all shadow-2xl uppercase tracking-widest flex items-center gap-2"
                                 >
                                     <RefreshCw size={14} /> RE-ENGAGE
                                 </button>
                             </div>
                         ) : (
                             <form onSubmit={handleAnswer} className="flex flex-col items-center gap-10">
-                                <div className="text-5xl font-black text-white tracking-widest tabular-nums py-4">
+                                <div className="text-5xl font-black text-[#f0ede8] tracking-widest tabular-nums py-4">
                                     {problem.q} = ?
                                 </div>
                                 <input
@@ -194,7 +194,7 @@ export default function MathGamePage() {
                                     value={userAnswer}
                                     onChange={(e) => setUserAnswer(e.target.value)}
                                     placeholder="?"
-                                    className="w-full bg-zinc-900 border-2 border-zinc-800 text-center text-4xl font-black py-6 rounded-3xl text-white focus:outline-none focus:border-white transition-all placeholder:text-zinc-800"
+                                    className="w-full bg-[#1c1c1c] border-2 border-white/[0.07] text-center text-4xl font-black py-6 rounded-3xl text-[#f0ede8] focus:outline-none focus:border-white transition-all placeholder:text-zinc-800"
                                     autoFocus
                                 />
                                 <button type="submit" className="hidden" />
@@ -214,8 +214,8 @@ export default function MathGamePage() {
                 title="Quick Math Intelligence"
             >
                 <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">
+                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06]">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
                             <Calculator size={24} className="text-zinc-500" />
                             Quick Math Intelligence (FAQ)
                         </h3>

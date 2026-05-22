@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Outfit } from "next/font/google";
 import "./globals.css";
 import AppLayout from "@/components/AppLayout";
 import CookieConsent from "@/components/CookieConsent";
@@ -7,9 +7,9 @@ import SmoothScroll from "@/components/SmoothScroll";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-outfit",
   display: "swap",
 });
 
@@ -95,12 +95,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`dark ${inter.variable}`} style={{ colorScheme: 'dark' }}>
+    <html lang="en" className={`dark ${outfit.variable}`} style={{ colorScheme: 'dark' }}>
       <head>
         <link rel="icon" href="/logo.png" type="image/png" />
         <link rel="shortcut icon" href="/logo.png" type="image/png" />
         <link rel="apple-touch-icon" href="/logo.png" />
-        <meta name="theme-color" content="#000000" />
+        <meta name="theme-color" content="#141414" />
         {/* Google AdSense - Loading in head for better verification */}
         <script
           async

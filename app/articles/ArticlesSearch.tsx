@@ -76,7 +76,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
   const getSmallIcon = (iconName?: string) => {
     // @ts-ignore
     const IconComponent = Icons[iconName || ""] || Icons.FileText;
-    return <IconComponent className="w-6 h-6 text-zinc-300 group-hover:text-white transition-colors" strokeWidth={1.5} />;
+    return <IconComponent className="w-6 h-6 text-zinc-300 group-hover:text-[#f0ede8] transition-colors" strokeWidth={1.5} />;
   };
 
   return (
@@ -90,7 +90,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
           placeholder="Search articles, insights, or analysis..."
           value={query}
           onChange={(e) => updateParams({ q: e.target.value || null })}
-          className="w-full h-14 pl-12 pr-4 bg-zinc-950 border border-zinc-800 rounded-2xl text-white placeholder:text-zinc-400 focus:outline-none focus:border-zinc-700 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
+          className="w-full h-14 pl-12 pr-4 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl text-[#f0ede8] placeholder:text-zinc-400 focus:outline-none focus:border-zinc-700 transition-colors shadow-[0_0_30px_rgba(0,0,0,0.5)]"
         />
       </div>
 
@@ -100,15 +100,15 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
           onClick={() => updateParams({ bookmarks: showBookmarks ? null : "true", category: "All" })}
           className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border flex items-center gap-2 ${
             showBookmarks
-              ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-              : "bg-zinc-900/50 text-amber-500 border-amber-900/30 hover:border-amber-700/50"
+              ? "bg-[#f0ede8] text-[#141414] border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+              : "bg-[#1e1e1e]/50 text-amber-500 border-amber-900/30 hover:border-amber-700/50"
           }`}
         >
           <Bookmark size={12} className={showBookmarks ? "fill-current" : ""} />
           Bookmarks {savedSlugs.length > 0 && `(${savedSlugs.length})`}
         </button>
 
-        <div className="w-px h-4 bg-zinc-800 mx-2" />
+        <div className="w-px h-4 bg-white/[0.06] mx-2" />
 
         {["All", ...ARTICLE_CATEGORIES].map((category) => (
           <button
@@ -118,8 +118,8 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
             }}
             className={`px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border ${
               selectedCategory === category && !showBookmarks
-                ? "bg-white text-black border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
-                : "bg-zinc-900/50 text-zinc-600 border-zinc-800 hover:border-zinc-700 hover:text-zinc-300"
+                ? "bg-[#f0ede8] text-[#141414] border-white shadow-[0_0_20px_rgba(255,255,255,0.1)]"
+                : "bg-[#1e1e1e]/50 text-zinc-600 border-white/[0.07] hover:border-white/[0.12] hover:text-zinc-300"
             }`}
           >
             {category}
@@ -134,23 +134,23 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
             <Link
               key={post.slug}
               href={`/articles/${post.slug}`}
-              className="group flex flex-col bg-zinc-950 border border-zinc-900 rounded-[1.2rem] sm:rounded-[1.5rem] p-4 sm:p-6 hover:border-zinc-700 transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
+              className="group flex flex-col bg-[#1c1c1c] border border-white/[0.05] rounded-[1.2rem] sm:rounded-[1.5rem] p-4 sm:p-6 hover:border-white/[0.12] transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,255,255,0.03)] relative overflow-hidden"
             >
                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.01] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
               <div className="relative z-10 flex flex-col h-full">
-                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-105 transition-transform duration-300">
+                <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center mb-4 sm:mb-5 group-hover:scale-105 transition-transform duration-300">
                   {getSmallIcon(post.icon || "FileText")}
                 </div>
 
                 <div className="flex items-center gap-2 mb-3 sm:mb-4">
-                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-zinc-800/50 text-zinc-500 group-hover:bg-white/10 group-hover:text-zinc-300 transition-all border border-zinc-700/50">
+                    <span className="text-[8px] sm:text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md bg-white/[0.06] text-zinc-500 group-hover:bg-white/10 group-hover:text-zinc-300 transition-all border border-zinc-700/50">
                     {post.category}
                     </span>
                     <span className="text-[8px] sm:text-[9px] font-bold text-zinc-700">{post.readTime}</span>
                 </div>
 
-                <h2 className="text-[13px] sm:text-lg font-black text-white tracking-normal mb-2 sm:mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1 line-clamp-2">
+                <h2 className="text-[13px] sm:text-lg font-black text-[#f0ede8] tracking-normal mb-2 sm:mb-3 group-hover:text-zinc-100 transition-colors leading-tight flex-1 line-clamp-2">
                   {post.title}
                 </h2>
                 <p className="text-zinc-600 text-[11px] sm:text-sm leading-relaxed mb-4 sm:mb-6 line-clamp-2">
@@ -161,7 +161,7 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
                   <div className="text-[9px] sm:text-[10px] font-bold text-zinc-700 uppercase tracking-widest">
                     {new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </div>
-                  <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-black text-white uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all group-hover:gap-2.5">
+                  <div className="hidden sm:flex items-center gap-1.5 text-[10px] font-black text-[#f0ede8] uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all group-hover:gap-2.5">
                     Read Article
                     <ArrowRight size={10} />
                   </div>
@@ -170,8 +170,8 @@ export default function ArticlesSearch({ allPosts }: { allPosts: ArticlePost[] }
             </Link>
           ))
         ) : (
-          <div className="col-span-full py-24 text-center border border-dashed border-zinc-900 rounded-[3rem] bg-zinc-950/20">
-             <div className="w-16 h-16 bg-zinc-900 border border-zinc-800 rounded-full flex items-center justify-center mx-auto mb-6">
+          <div className="col-span-full py-24 text-center border border-dashed border-white/[0.05] rounded-[3rem] bg-[#1c1c1c]/20">
+             <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-full flex items-center justify-center mx-auto mb-6">
                 {showBookmarks ? <Bookmark size={22} className="text-zinc-600" /> : <Search size={22} className="text-zinc-600" />}
              </div>
              <p className="text-zinc-400 font-black uppercase tracking-[0.2em] text-[10px]">

@@ -198,19 +198,19 @@ export default function KanbanPage() {
         <div>
               <button 
                   onClick={() => setShowHelp(true)}
-                  className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-white transition-all shadow-xl z-30"
+                  className="absolute -top-2 -left-2 p-1.5 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shadow-xl z-30"
                   title="Help & FAQ"
               >
                   <Info size={10} className="pointer-events-none" />
               </button>
-              <Zap size={11} className="text-white ml-6" />
+              <Zap size={11} className="text-[#f0ede8] ml-6" />
               <span className="text-[10px] font-black tracking-widest uppercase text-zinc-300">Productivity</span>
-          <h1 className="text-3xl sm:text-4xl font-black text-white tracking-tighter mb-2">Kanban Board</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-[#f0ede8] tracking-tighter mb-2">Kanban Board</h1>
           <p className="text-zinc-500 font-medium tracking-wide text-sm">Organize tasks, track progress. 100% local and private.</p>
         </div>
         <button 
           onClick={createColumn}
-          className="bg-white text-black px-6 py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-zinc-200 transition-colors flex items-center gap-2 group whitespace-nowrap"
+          className="bg-[#f0ede8] text-[#141414] px-6 py-3 rounded-xl font-bold text-sm tracking-wide hover:bg-[#e8e5e0] transition-colors flex items-center gap-2 group whitespace-nowrap"
         >
           <Plus size={16} className="group-hover:scale-125 transition-transform" /> Add List
         </button>
@@ -279,15 +279,15 @@ export default function KanbanPage() {
         title="Kanban Board Intelligence"
       >
         <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 space-y-6 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl">
-                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-2">Organize Your Brain Without the Clutter</h3>
+            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2">Organize Your Brain Without the Clutter</h3>
                 <p className="text-base leading-relaxed text-zinc-400 max-w-3xl font-medium">
                     The AssetNest Kanban Board strips away complicated corporate assigning layers and annoying burndown charts. It gives you a pure, frictionless workspace to quickly throw your messy thoughts onto sticky notes.
                 </p>
             </section>
             
-            <section className="bg-zinc-900/30 p-6 sm:p-8 rounded-3xl border border-zinc-800/50 border border-zinc-900 rounded-[3rem] md:p-10">
-                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-white mb-6">Kanban FAQ</h3>
+            <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border border-white/[0.05] rounded-[3rem] md:p-10">
+                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Kanban FAQ</h3>
                 <Accordion>
                     <AccordionItem title="How do I change colored sticky notes?">
                         Hover over any active task card. An inline toolbar will appear on the right side offering 5 distinct color accents (Zinc, Yellow, Blue, Green, Red).
@@ -346,7 +346,7 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
       <div 
         ref={setNodeRef} 
         style={style} 
-        className="opacity-40 border-2 border-emerald-500/50 bg-zinc-950 w-full shrink-0 h-[80vh] rounded-3xl flex flex-col"
+        className="opacity-40 border-2 border-emerald-500/50 bg-[#1c1c1c] w-full shrink-0 h-[80vh] rounded-3xl flex flex-col"
       />
     );
   }
@@ -355,11 +355,11 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
     <div 
       ref={setNodeRef} 
       style={style} 
-      className={`bg-zinc-900 border border-zinc-800 w-full max-h-[80vh] shrink-0 rounded-3xl flex flex-col shadow-2xl transition-all ${isOverlay ? 'ring-2 ring-zinc-700 shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-95 cursor-grabbing' : ''}`}
+      className={`bg-[#1c1c1c] border border-white/[0.07] w-full max-h-[80vh] shrink-0 rounded-3xl flex flex-col shadow-2xl transition-all ${isOverlay ? 'ring-2 ring-zinc-700 shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-95 cursor-grabbing' : ''}`}
     >
       {/* Column Header */}
       <div 
-        className="flex items-center justify-between p-4 px-5 border-b border-zinc-800/50 group bg-zinc-900/40 rounded-t-3xl cursor-grab touch-none"
+        className="flex items-center justify-between p-4 px-5 border-b border-white/[0.06] group bg-[#1c1c1c]/40 rounded-t-3xl cursor-grab touch-none"
         {...attributes}
         {...listeners}
       >
@@ -370,8 +370,8 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
           <Trash2 size={16} />
         </button>
         <div className="flex items-center gap-3 flex-1 min-w-0">
-          <GripHorizontal size={16} className="text-zinc-600 group-hover:text-white transition-colors cursor-grab shrink-0" />
-          <div className="bg-zinc-950 border border-zinc-800 text-zinc-400 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md whitespace-nowrap shrink-0">
+          <GripHorizontal size={16} className="text-zinc-600 group-hover:text-[#f0ede8] transition-colors cursor-grab shrink-0" />
+          <div className="bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 font-black text-[10px] uppercase tracking-wider px-2.5 py-1 rounded-md whitespace-nowrap shrink-0">
             {tasks.length} {tasks.length === 1 ? 'task' : 'tasks'}
           </div>
           <input 
@@ -382,7 +382,7 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
               e.stopPropagation();
               if (e.key === 'Enter') e.currentTarget.blur();
             }}
-            className="bg-transparent focus:bg-zinc-950 text-white font-bold outline-none flex-1 truncate transition-colors rounded px-1.5 focus:border focus:ring-1 focus:ring-zinc-700/50 -ml-1.5 min-w-0"
+            className="bg-transparent focus:bg-[#1c1c1c] text-[#f0ede8] font-bold outline-none flex-1 truncate transition-colors rounded px-1.5 focus:border focus:ring-1 focus:ring-zinc-700/50 -ml-1.5 min-w-0"
           />
         </div>
       </div>
@@ -403,10 +403,10 @@ function ColumnContainer({ column, tasks, deleteColumn, updateColumn, createTask
       </div>
 
       {/* Add Task footer */}
-      <div className="p-3 border-t border-zinc-800/50">
+      <div className="p-3 border-t border-white/[0.06]">
         <button 
           onClick={() => createTask(column.id)}
-          className="w-full border border-dashed border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-white hover:bg-zinc-800/50 rounded-2xl p-4 flex items-center justify-center gap-2 font-bold text-sm transition-all"
+          className="w-full border border-dashed border-zinc-700 hover:border-zinc-500 text-zinc-400 hover:text-[#f0ede8] hover:bg-white/[0.06] rounded-2xl p-4 flex items-center justify-center gap-2 font-bold text-sm transition-all"
         >
           <Plus size={16} /> Add Task
         </button>
@@ -451,13 +451,13 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
       <div 
         ref={setNodeRef} 
         style={style} 
-        className="opacity-30 border-2 border-emerald-500 bg-zinc-950 p-5 rounded-2xl h-[80px]" 
+        className="opacity-30 border-2 border-emerald-500 bg-[#1c1c1c] p-5 rounded-2xl h-[80px]" 
       />
     );
   }
 
   const colorStyles = {
-    zinc: 'bg-zinc-950 hover:bg-[#111113] border-zinc-800 text-zinc-200',
+    zinc: 'bg-[#1c1c1c] hover:bg-[#111113] border-white/[0.07] text-zinc-200',
     yellow: 'bg-yellow-500/10 hover:bg-yellow-500/20 border-yellow-500/30 border-l-4 border-l-yellow-500 text-yellow-100',
     blue: 'bg-blue-500/10 hover:bg-blue-500/20 border-blue-500/30 border-l-4 border-l-blue-500 text-blue-100',
     emerald: 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/30 border-l-4 border-l-emerald-500 text-emerald-100',
@@ -473,7 +473,7 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
       className={`border p-4 rounded-2xl cursor-grab active:cursor-grabbing shadow-sm relative group flex flex-col gap-2 transition-all min-h-[80px] touch-none
           ${currentColorStyle}
           ${isOverlay ? 'shadow-[0_20px_60px_rgba(0,0,0,0.8)] opacity-95 ring-2 ring-white/20 z-50' : ''}
-          ${editMode ? 'ring-2 ring-zinc-500 bg-zinc-900 border-zinc-700' : ''}`}
+          ${editMode ? 'ring-2 ring-zinc-500 bg-[#1c1c1c] border-zinc-700' : ''}`}
       onContextMenu={(e) => { e.preventDefault(); toggleEditMode(); }}
       onMouseEnter={() => setMouseIsOver(true)}
       onMouseLeave={() => setMouseIsOver(false)}
@@ -515,12 +515,12 @@ function TaskCard({ task, deleteTask, updateTask, updateTaskColor, isOverlay }: 
       {/* Hover/Tap Toolbar */}
       {(mouseIsOver || showOptions) && !editMode && (
         <div 
-          className="absolute left-3 top-3 bg-zinc-900 border border-zinc-700 rounded-lg flex items-center shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50"
+          className="absolute left-3 top-3 bg-[#1c1c1c] border border-zinc-700 rounded-lg flex items-center shadow-lg overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-50"
           onClick={(e) => e.stopPropagation()}
         >
           <button 
             onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleEditMode(); }}
-            className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1.5 text-zinc-400 hover:text-[#f0ede8] hover:bg-white/[0.06] transition-colors"
             title="Edit (Right-Click)"
           >
             <GripVertical size={14} />
