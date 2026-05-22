@@ -77,13 +77,7 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: [
-      { url: "/logo.png", type: "image/png" },
-    ],
-    shortcut: "/logo.png",
-    apple: "/logo.png",
-  },
+
   verification: {
     // google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
   },
@@ -97,9 +91,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${outfit.variable}`} style={{ colorScheme: 'dark' }}>
       <head>
-        <link rel="icon" href="/logo.png" type="image/png" />
-        <link rel="shortcut icon" href="/logo.png" type="image/png" />
-        <link rel="apple-touch-icon" href="/logo.png" />
+
         <meta name="theme-color" content="#141414" />
         {/* Google AdSense - Loading in head for better verification */}
         <script
