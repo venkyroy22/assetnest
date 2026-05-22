@@ -291,12 +291,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </div>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "HMjVjrske-k", title: "The 80/20 Rule: Why Everyone in Consulting Uses It — Firm Learning" },
-          { id: "lsGwqk_agcQ", title: "Pareto Principle [The 80/20 Rule Explained] — Sprouts" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The 3 Biggest Mistakes People Make</H2>
@@ -418,12 +413,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         <Step num="5" title="How You Make Money" text="Write it plainly. What exactly do you sell, what is the price, and how many do you need to sell each month to cover your costs and pay yourself?" />
       </div>
 
-      <VideoSection 
-        videos={[
-          { id: "sxLpumdgmzo", title: "Why Do Most Business Plans Fail? And How to Fix Them" },
-          { id: "D07o_fBTSdw", title: "The CEO's Decision-Making Framework: Aligning Vision, Values, and Strategy" }
-        ]}
-      />
+      
 
       <H2>The Most Important Rule</H2>
       <P>
@@ -558,12 +548,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         ]}
       />
 
-      <VideoSection 
-        videos={[
-          { id: "Yf03Z2ELY4c", title: "Y Combinator's Brutally Simple Playbook to Get Your First 100 Customers" },
-          { id: "KYtkyOpjXFw", title: "How To Get Your First 100 Customers — Startup Playbook" }
-        ]}
-      />
+      
 
       <H2>The Magic of Referrals</H2>
       <P>
@@ -771,12 +756,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
           <LI><strong>Two-Way Door:</strong> Reversible. Pricing changes, marketing tests. Go fast.</LI>
       </UL>
 
-      <VideoSection 
-        videos={[
-          { id: "GJWRBuk8rgI", title: "The CEO Decision-Making Framework — Byron Morrison" },
-          { id: "faHDFJD6i0U", title: "3 CEO Mental Models for Better Critical Thinking" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -878,12 +858,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
           ]}
         />
 
-        <VideoSection 
-        videos={[
-          { id: "1YGe6Ta9oys", title: "The Art of Saying No: Setting Boundaries for Success" },
-          { id: "YIuIaxG7QDs", title: "How To Set Boundaries In Business: The Power of 'No'" }
-        ]}
-      />
+        
 
         <P>
           None of these fears are irrational. They come from real human instincts that serve important purposes in other areas of life. But in business, unexamined, they will cost you everything.
@@ -1160,12 +1135,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "FKTavjfqPuA", title: "Make $8K/day From These Side Hustles You've Never Heard Of — My First Million" },
-          { id: "V0FlSVxL4S4", title: "7 Reasons Why Positioning Matters in Small Business" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>How to Find the Gap - A Practical Step by Step Process</H2>
@@ -1349,12 +1319,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </div>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "UlSLziMzBdQ", title: "Complete Content Strategy to Get Customers in 2026 — Caleb Ralston" },
-          { id: "GHp-XeObSLA", title: "Brand Building 101: Content Strategy, Storytelling & Positioning — Donald Miller" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Content Types That Work at Each Stage</H2>
@@ -1595,12 +1560,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </div>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "uGG-7ZgWjcw", title: "Mind-Blowing Word of Mouth Marketing Examples That Went Viral" },
-          { id: "GWaY3-VmnJw", title: "Why Loyal Customers Are More Effective Than Ads — Peter Sage" }
-        ]}
-      />
+      
 
       <StoryBlock>
         <H2>Case Study: Growing Through Pure Word-of-Mouth</H2>
@@ -1765,12 +1725,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </div>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "9w0jJGl3KgQ", title: "Premium Pricing Psychology: How to Charge More and Get Clients Saying Yes" },
-          { id: "Krg4zrGC97Y", title: "12 Ways to Build Brand Loyalty — GoDaddy" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Psychological Anchoring Effect</H2>
@@ -2003,12 +1958,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </div>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "W9fWLDaO7so", title: "Cash Flow Forecasting for Startups: Tools, Tips, and Best Practices" },
-          { id: "osVjkNrjcxo", title: "Cash Flow vs Profit: What Most Business Owners Get Wrong" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Cash Flow Mistakes That Most Founders Make</H2>
@@ -2235,12 +2185,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         />
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "lkEtgnhsV04", title: "Cash Flow vs. Profit: What's the Difference? — Business: Explained" },
-          { id: "Uio1Jy7QDRw", title: "Economic Moats: Competitive Advantage in Corporate Finance" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>Protecting Your Business Credit - The Mistakes That Damage It</H2>
@@ -2459,12 +2404,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "MvJPkpxhYhE", title: "Bootstrapped vs Funding: Should Your Startup Raise Venture Capital? [Full Guide]" },
-          { id: "v_nvxM7dprg", title: "Should You Raise Money or Bootstrap? The Truth About Startup Funding" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Questions That Actually Matter - How to Decide</H2>
@@ -2647,12 +2587,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "eY9gpdaXW7w", title: "Business is Hard Until You Build These Systems — Dan Martell" },
-          { id: "2r9rCVMXO6k", title: "How Billionaires Grow Wealth Faster Than Everyone Else — The 6 Mechanisms" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Cost of Hiring - The Full Picture Nobody Shows You</H2>
@@ -2922,12 +2857,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "qlxkWqAO0n8", title: "The One Person Business, 4 Hour Workday & Nature of Reality — Dan Koe" },
-          { id: "DmehFuCMtvc", title: "Startup Experts Reveal Their Favorite Pivot Stories" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>Some of Your Biggest Fans Will Not Buy From You</H2>
@@ -3274,12 +3204,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "5Mb69m5UoKE", title: "Ben Horowitz Tells the Story of Slack's Pivot from a Failed Game" },
-          { id: "oXcXROIwQZw", title: "Survivorship Bias With Examples — From A Business Professor" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Thread That Runs Through All Five</H2>
@@ -3616,12 +3541,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "1qsvZqngKz8", title: "How Apple Built Their Competitive Advantage" },
-          { id: "qDxDCtZ9UkE", title: "Daily Consistency = Massive Results: The Compound Effect — Productivity Game" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>What You Can Steal Starting Today</H2>
@@ -3856,12 +3776,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         The exact lesson: A business is not permanently defined by the market it starts in. The capabilities, the culture, the financial resources, and the ambition that a business develops in its original market can be the foundation for a transformation into something entirely different. The question is not what business are we in today but what capabilities do we have and where in the world could those capabilities create the most value tomorrow. The willingness to ask that question honestly and act on the answer boldly is what separates companies that endure from companies that are permanently limited by their origin.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "DmehFuCMtvc", title: "Startup Experts Reveal Their Favorite Pivot Stories" },
-          { id: "5Mb69m5UoKE", title: "Ben Horowitz Tells the Story of Slack's Pivot from a Failed Game" }
-        ]}
-      />
+      
 
       <H2>The Common Thread Running Through Every Pivot</H2>
       <P>
@@ -4194,12 +4109,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         These five steps will not immediately give you a four-hour business day. But they will begin the shift in how you think about your time and your work. And that shift, once begun, compounds in ways that are difficult to predict but genuinely exciting to experience.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "qlxkWqAO0n8", title: "The One Person Business & 4 Hour Workday — Dan Koe" },
-          { id: "kEK5CZy17Ng", title: "How to Build Systems So Your Business Runs Without You" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -4497,12 +4407,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         At the end of a year, fifty systems later, you will have a business that looks, feels, and operates fundamentally differently from the one you have now.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "eY9gpdaXW7w", title: "Business is Hard Until You Build These Systems — Dan Martell" },
-          { id: "kEK5CZy17Ng", title: "How to Build Systems So Your Business Runs Without You" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -4787,12 +4692,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         Either way, early honesty produces a better outcome than delayed comfort.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "N-3QcvGf5VI", title: "The Transition From Individual Contributor to Manager Is Tough!" },
-          { id: "fRSMefh7bFE", title: "4 Key Mindset Shifts for Individual Contributors Transitioning to Management" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -5042,12 +4942,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         It is built in the accumulation of these ordinary moments, chosen consistently in the right direction, adding their tiny increment to the curve that does not look like much yet but that is quietly, relentlessly, unstoppably building toward something.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "u3Ps6tLAMEs", title: "The Compound Effect: How it Really Works" },
-          { id: "qDxDCtZ9UkE", title: "Daily Consistency = Massive Results: The Compound Effect — Productivity Game" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -5311,12 +5206,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         If the answer is yes, the positioning is genuine. If the answer is no, it is a costume. And costumes eventually come off.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "V0FlSVxL4S4", title: "7 Reasons Why Positioning Matters in Small Business" },
-          { id: "HXv4Cz23ptM", title: "How Competitive Positioning Relates to Competitors" }
-        ]}
-      />
+      
 
       <H2>The Bottom Line</H2>
       <P>
@@ -5552,12 +5442,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         Make the transition deliberately, with clear communication to the team about why the focus is shifting and what the new north star means for their work. Do not make it because the current metric is uncomfortable. Make it because the business has genuinely moved to a stage where a different metric is more predictive, more relevant, and more useful as an organizing principle.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "UUEBiZ0kaE4", title: "What is the One Metric That Matters? — How to Have a Successful Startup" },
-          { id: "Nueu2N4opo8", title: "OMTM: One Metric That Matters — 500 Startups" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         The one metric that matters is not a management technique. It is a philosophy of strategic clarity.
@@ -5813,12 +5698,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         And the accumulation of these weeks, over months and over years, is the difference between a founder who looks back on a decade and can point to what they have become and a founder who looks back on a decade and can only point to what they have done.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "qlxkWqAO0n8", title: "The One Person Business & 4 Hour Workday — Dan Koe" },
-          { id: "RAoRI4Td85A", title: "How to Start a Side Hustle and Turn It Into Your Full-Time Thing" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         Every founder has the same twenty-four hours. The question that separates the ones who build extraordinary things from the ones who work just as hard and build far less is not how many of those hours they use. It is how many of those hours are alive.
@@ -6107,12 +5987,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         And then what?
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "qp0ybabZMD4", title: "What is Second Order Thinking | Explained in 2 min" },
-          { id: "FaNrMoVeb2M", title: "What is Second Order Consequences | Explained in 2 min" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         The distance between a good decision and a great one is rarely more information. It is almost always a different quality of thinking applied to the same information that everyone else has.
@@ -6372,12 +6247,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         This filter does not make every decision obvious. But it makes many decisions clearer. And it provides a strategic coherence - a through-line that connects each decision to the same central logic - that businesses without a defined flywheel often struggle to maintain.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "dZXlVTYd_e8", title: "The Flywheel Effect | Amazon Flywheel Explained — Retail Dogma" },
-          { id: "Myq0_odZl_s", title: "The Amazon Flywheel Explained" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         The businesses that create unstoppable momentum are not the ones with the most resources or the most talented founders or the best timing. They are the ones that identified the self-reinforcing loop at the heart of their value creation and then pushed that loop consistently, deliberately, and patiently until the accumulated momentum crossed the threshold from resistance to self-perpetuation.
@@ -6597,12 +6467,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         That is not a conservative strategy. That is how empires are actually built.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "lhcSkax-PpU", title: "Scaling Your Company: Choosing a Growth Strategy — Scale Venture Partners" },
-          { id: "8yGM28Uq8mk", title: "Scaling vs. Growing a Business: What's the Difference?" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         The startup culture celebration of fast growth has produced a generation of founders who are more afraid of growing too slowly than of growing too fast. This fear is backwards. The evidence does not support it. The businesses that fail because of insufficient growth ambition are real but they are far outnumbered by the businesses that fail because the growth they achieved outpaced the infrastructure, the culture, the team, and the financial model that were supposed to support it.
@@ -6844,12 +6709,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         <strong>The sixth response is to use the competitive presence as internal motivation.</strong> Brief the team on the competitive landscape clearly and honestly. Treat the competition as the external challenge that makes every team member's contribution more significant rather than as a threat that creates anxiety. Activate the team's best competitive instincts rather than their fear.
       </P>
 
-      <VideoSection 
-        videos={[
-          { id: "klrQJB6F77U", title: "Competitive Analysis Framework for Your Business Growth — Upmetrics" },
-          { id: "V0FlSVxL4S4", title: "7 Reasons Why Positioning Matters in Small Business" }
-        ]}
-      />
+      
       <H2>The Bottom Line</H2>
       <P>
         The narrative that competition is primarily a threat is one of the most consistent and most costly misconceptions in business strategy.
@@ -7138,12 +6998,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "GMCvVU2AhFo", title: "How Leaders Make Decisions Faster: 4 Simple Frameworks" },
-          { id: "osd4XPpcWK8", title: "3 Mental Models to Think Like a Strategic Leader" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Every hour you spend solving a problem you have solved before is an hour with a negative return on investment. You get the immediate satisfaction of resolution and you get nothing else. The problem comes back. The hour does not.
@@ -7409,12 +7264,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "GJWRBuk8rgI", title: "The CEO Decision-Making Framework — Byron Morrison" },
-          { id: "KRWLcKtBuK4", title: "Strategic Decision Making for Leaders: Balancing Data and Intuition" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Desperation is not a character flaw. It is a condition. A specific, physiologically real, cognitively measurable state that every business owner enters at some point and that every business owner's decisions suffer for, reliably and predictably, while they are in it.
@@ -7690,12 +7540,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "oXcXROIwQZw", title: "Survivorship Bias With Examples — From A Business Professor" },
-          { id: "NN7oDN6TG7k", title: "Best Tactics for Avoiding Survivorship Bias" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           The business world needs more critical examination of its own conventional wisdom and less reverence for advice that has achieved authority through repetition rather than through rigorous testing against the evidence of what actually works.
@@ -7904,12 +7749,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "kn_XieEuvKM", title: "Warren Buffett: Competitive Advantage Analysis & Moat Investing" },
-          { id: "Uio1Jy7QDRw", title: "Economic Moats: Competitive Advantage in Corporate Finance" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           The first mover advantage is real in specific circumstances. It is one of the most persistently overstated strategic principles in business in general circumstances. The second mover advantage is real in most circumstances. It is one of the most persistently understated strategic insights available to any founder building any business in any market.
@@ -8115,12 +7955,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "8yGM28Uq8mk", title: "Scaling vs. Growing a Business: What's the Difference?" },
-          { id: "lhcSkax-PpU", title: "Scaling Your Company: Choosing a Growth Strategy" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Growth and scale are not the same thing. They describe different economic relationships between input and output, different structural characteristics of business models, different investment requirements, and different trajectories of margin and value creation over time.
@@ -8291,12 +8126,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "kn_XieEuvKM", title: "Warren Buffett: Competitive Advantage Analysis & Moat Investing" },
-          { id: "Uio1Jy7QDRw", title: "Economic Moats: Competitive Advantage in Corporate Finance" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Every business that succeeds will attract competitors. That is not a problem to be solved. It is a condition to be prepared for. The preparation is building the structural features of the business that make competing against you genuinely costly, slow, and uncertain.
@@ -8526,12 +8356,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "rDFB_9Dns7A", title: "The Truth About Product-Market Fit — It's Not What You Think" },
-          { id: "9w36HcZGzYU", title: "I Obsessed Over Product-Market Fit — Here Are the 5 Stages of PMF" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Product-market fit is not a milestone that gets announced in a board meeting. It is not a survey result above a specific threshold. It is not a revenue number or a growth rate or a number of customers.
@@ -8749,12 +8574,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24 mb-24">
-        <VideoSection 
-        videos={[
-          { id: "4HOx_n-ClR4", title: "3 Lessons From Scaling to $100M+" },
-          { id: "lhcSkax-PpU", title: "Scaling Your Company: Choosing a Growth Strategy" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Every growth phase in a business has natural limits. The customer segment that drove first-phase growth is finite. The channel that efficiently reached early customers saturates. The product experience that delighted the early adopters does not automatically delight the mainstream. The organizational capabilities that executed the first strategy may not be the capabilities the second strategy requires.
@@ -9039,12 +8859,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24 mb-24">
-        <VideoSection 
-        videos={[
-          { id: "nD_fz1ly-kA", title: "Network Effects: So, Is It a Network Effect? — a16z" },
-          { id: "VhsvvMQMmHk", title: "Why Networks are Your MOAT and Competitive Edge — Alix Pasquet's Strategy" }
-        ]}
-      />
+        
       <H2>The Bottom Line</H2>
         <P>
           Network effects are one of the most powerful forces in business because they create something that most competitive advantages cannot create. Value that grows automatically with scale. Competitive positions that strengthen rather than erode over time. Moats that widen without requiring continuous active investment to maintain their width.
@@ -9311,12 +9126,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "XORw4J-TFC8", title: "How Focusing on Niche Markets Leads to Business Success" },
-          { id: "kn_XieEuvKM", title: "Warren Buffett: Competitive Advantage Analysis & Moat Investing" }
-        ]}
-      />
+      
 
       <section className="mt-24 mb-24">
         <H2>The Bottom Line</H2>
@@ -9602,12 +9412,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "WP1_CgppowQ", title: "The Wealth Triangle Formula Explained — Dan Lok" },
-          { id: "36NEMgeRzK8", title: "How to Master the Money Pathway: The Income Triangle Strategy" }
-        ]}
-      />
+      
 
       <section className="mt-24 mb-24">
         <H2>The Bottom Line</H2>
@@ -9846,12 +9651,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "osVjkNrjcxo", title: "Cash Flow vs Profit: What Most Business Owners Get Wrong" },
-          { id: "lkEtgnhsV04", title: "Cash Flow vs. Profit: What's the Difference? — Business: Explained" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Bottom Line</H2>
@@ -10180,12 +9980,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "5FTNO8qsBPU", title: "The Sunk-Cost Fallacy Explained" },
-          { id: "hdHomRH59zc", title: "How to Make Better Decisions & Avoid Sunk Cost Fallacy — TEDxDonauinsel" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Bottom Line</H2>
@@ -10461,12 +10256,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "fH3vKBBoXpw", title: "How Do Bootstrapped Founders Really Keep Their Business Cash-Positive?" },
-          { id: "osVjkNrjcxo", title: "Cash Flow vs Profit: What Most Business Owners Get Wrong" }
-        ]}
-      />
+      
 
       <section className="mt-24">
         <H2>The Bottom Line</H2>
@@ -10844,12 +10634,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "4eY50NrtmBM", title: "Competitive Moats: How Companies Build Long-Term Advantage — FinPod" },
-          { id: "lkEtgnhsV04", title: "Cash Flow vs. Profit: What's the Difference? — Business: Explained" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -11109,12 +10894,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "osVjkNrjcxo", title: "Cash Flow vs Profit: What Most Business Owners Get Wrong" },
-          { id: "lkEtgnhsV04", title: "Cash Flow vs. Profit: What's the Difference? — Business: Explained" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -11377,12 +11157,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         <P>
           Everything gets better from there.
         </P>
-        <VideoSection 
-        videos={[
-          { id: "Ik1iM4czSs8", title: "Your First 90 Days in a New Leadership Role" },
-          { id: "Cpdb1LzKR2s", title: "From Individual Contributor to Manager: How to Lead with Clarity" }
-        ]}
-      />
+        
       </section>
     </>
   ),
@@ -11600,12 +11375,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-        <VideoSection 
-        videos={[
-          { id: "AgKsrCUZHgo", title: "The First 90 Days — Transition Trap #2: Culture Trap — IMD" },
-          { id: "svsRC3VRLCg", title: "Leadership Culture and the Bias Trap — OrgDev Podcast" }
-        ]}
-      />
+        
 
       <div className="bg-zinc-900 border border-white/5 p-10 sm:p-14 rounded-[3rem] mt-24 text-center relative overflow-hidden group hover:border-white/10 transition-colors">
         <h3 className="relative z-10 text-2xl sm:text-3xl font-black text-white mb-8 tracking-tight leading-tight">
@@ -11852,12 +11622,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "N-3QcvGf5VI", title: "The Transition From Individual Contributor to Manager Is Tough!" },
-          { id: "Cpdb1LzKR2s", title: "From Individual Contributor to Manager: How to Lead with Clarity" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -12120,12 +11885,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "eY9gpdaXW7w", title: "Business is Hard Until You Build These Systems — Dan Martell" },
-          { id: "kEK5CZy17Ng", title: "How to Build Systems So Your Business Runs Without You" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -12184,12 +11944,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
         </P>
       </section>
 
-      <VideoSection 
-        videos={[
-          { id: "fRSMefh7bFE", title: "4 Key Mindset Shifts for Individual Contributors Transitioning to Management" },
-          { id: "1WuUlQL5b3Q", title: "How to Shift Your Mindset From Individual Contributor to Manager — Jocko Willink" }
-        ]}
-      />
+      
     </>
   ),
 "great-managers-first-90-days": (
@@ -12439,12 +12194,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "Ik1iM4czSs8", title: "Your First 90 Days in a New Leadership Role — Webinar" },
-          { id: "AgKsrCUZHgo", title: "The First 90 Days — Transition Trap #2: Culture Trap — IMD" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -12681,12 +12431,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "5FTNO8qsBPU", title: "The Sunk-Cost Fallacy Explained" },
-          { id: "hdHomRH59zc", title: "How to Make Better Decisions & Avoid Sunk Cost Fallacy — TEDxDonauinsel" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -12894,12 +12639,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "oXcXROIwQZw", title: "Survivorship Bias With Examples — From A Business Professor" },
-          { id: "z-Ez32Bc7hg", title: "What is Survivorship Bias? Easy Explanation" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
@@ -13117,12 +12857,7 @@ export const ARTICLE_CONTENT: Record<string, JSX.Element> = {
       </section>
 
       <section className="mt-24">
-        <VideoSection 
-        videos={[
-          { id: "u3Ps6tLAMEs", title: "The Compound Effect: How it Really Works" },
-          { id: "sKLTvQNYx-Q", title: "Think Like a CEO: The Secret to Strategic Thinking for Leaders" }
-        ]}
-      />
+        
 
         <H2>The Bottom Line</H2>
         <P>
