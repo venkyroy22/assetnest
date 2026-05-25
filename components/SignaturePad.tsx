@@ -1453,6 +1453,35 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                     />
                                                 ))}
                                             </div>
+
+                                            <div style={{ width: "1px", height: "16px", background: "rgba(255,255,255,0.1)" }} />
+
+                                            {/* Pen Size */}
+                                            <div style={{ display: "flex", gap: "4px" }}>
+                                                {[2, 3, 5, 8].map(w => {
+                                                    const active = mode === "pen" && lineWidth === w;
+                                                    return (
+                                                        <button
+                                                            key={w}
+                                                            onClick={() => { setLineWidth(w); setMode("pen"); }}
+                                                            style={{
+                                                                padding: "3px 6px",
+                                                                borderRadius: "4px",
+                                                                fontSize: "9px",
+                                                                fontWeight: 800,
+                                                                background: active ? "rgba(124,106,255,0.12)" : "rgba(255,255,255,0.02)",
+                                                                border: `1px solid ${active ? "#7c6aff" : "rgba(255,255,255,0.06)"}`,
+                                                                color: active ? "#7c6aff" : "#8b8a97",
+                                                                cursor: "pointer",
+                                                                transition: "all 0.15s",
+                                                            }}
+                                                            title={`Pen Size ${w}px`}
+                                                        >
+                                                            {w}px
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
 
                                         {/* Undo/Redo & Trash */}

@@ -1,23 +1,57 @@
 import { NextResponse } from "next/server";
+import fs from "fs";
+import path from "path";
 
-// Keep session state in memory
-const globalForSignatures = global as unknown as {
-  mobileSignatures?: Map<string, { status: "pending" | "completed"; signature: string | null; updatedAt: number }>;
-};
+// Filesystem-based persistence for cross-process compatibility in both Dev and Prod
+const SESSIONS_DIR = path.join(process.cwd(), ".next", "mobile-sign-sessions");
 
-if (!globalForSignatures.mobileSignatures) {
-  globalForSignatures.mobileSignatures = new Map();
+function ensureDirectory() {
+  if (!fs.existsSync(SESSIONS_DIR)) {
+    fs.mkdirSync(SESSIONS_DIR, { recursive: true });
+  }
 }
 
-const sessions = globalForSignatures.mobileSignatures;
-
-// Self cleaning function to prevent memory leaks
 function cleanOldSessions() {
-  const now = Date.now();
-  for (const [key, value] of sessions.entries()) {
-    if (now - value.updatedAt > 15 * 60 * 1000) { // 15 mins expiry
-      sessions.delete(key);
+  try {
+    ensureDirectory();
+    const files = fs.readdirSync(SESSIONS_DIR);
+    const now = Date.now();
+    for (const file of files) {
+      if (file.endsWith(".json")) {
+        const filePath = path.join(SESSIONS_DIR, file);
+        const stats = fs.statSync(filePath);
+        if (now - stats.mtimeMs > 15 * 60 * 1000) { // 15 mins expiry
+          fs.unlinkSync(filePath);
+        }
+      }
     }
+  } catch (err) {
+    console.error("Failed to clean old sessions:", err);
+  }
+}
+
+function getSession(sessionId: string) {
+  try {
+    ensureDirectory();
+    const filePath = path.join(SESSIONS_DIR, `${sessionId}.json`);
+    if (!fs.existsSync(filePath)) return null;
+    const data = fs.readFileSync(filePath, "utf-8");
+    return JSON.parse(data);
+  } catch (err) {
+    console.error("Failed to read session:", err);
+    return null;
+  }
+}
+
+function setSession(sessionId: string, sessionData: any) {
+  try {
+    ensureDirectory();
+    const filePath = path.join(SESSIONS_DIR, `${sessionId}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(sessionData), "utf-8");
+    return true;
+  } catch (err) {
+    console.error("Failed to write session:", err);
+    return false;
   }
 }
 
@@ -30,7 +64,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "Missing sessionId" }, { status: 400 });
   }
 
-  const session = sessions.get(sessionId);
+  const session = getSession(sessionId);
   if (!session) {
     return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
   }
@@ -49,11 +83,14 @@ export async function POST(req: Request) {
 
     if (action === "init") {
       const newSessionId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      sessions.set(newSessionId, {
+      const success = setSession(newSessionId, {
         status: "pending",
         signature: null,
         updatedAt: Date.now(),
       });
+      if (!success) {
+        return NextResponse.json({ error: "Failed to initialize session" }, { status: 500 });
+      }
       return NextResponse.json({ sessionId: newSessionId });
     }
 
@@ -65,16 +102,19 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: "Missing signature data" }, { status: 400 });
       }
 
-      const session = sessions.get(sessionId);
+      const session = getSession(sessionId);
       if (!session) {
         return NextResponse.json({ error: "Session expired or not found" }, { status: 404 });
       }
 
-      sessions.set(sessionId, {
+      const success = setSession(sessionId, {
         status: "completed",
         signature,
         updatedAt: Date.now(),
       });
+      if (!success) {
+        return NextResponse.json({ error: "Failed to save signature" }, { status: 500 });
+      }
 
       return NextResponse.json({ success: true });
     }

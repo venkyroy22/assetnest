@@ -327,7 +327,7 @@ function MobileSignContent() {
 
                     {/* Stroke width */}
                     <div style={styles.strokeSelector}>
-                        {[2, 3, 5].map(w => (
+                        {[3, 5, 8, 12].map(w => (
                             <button
                                 key={w}
                                 onClick={() => setLineWidth(w)}
@@ -338,7 +338,7 @@ function MobileSignContent() {
                                     color: lineWidth === w ? "#7c6aff" : "#8b8a97",
                                 }}
                             >
-                                <PenTool size={w + 8} />
+                                <PenTool size={w === 3 ? 13 : w === 5 ? 15 : w === 8 ? 17 : 19} />
                             </button>
                         ))}
                     </div>
