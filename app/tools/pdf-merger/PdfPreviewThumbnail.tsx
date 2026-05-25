@@ -22,8 +22,8 @@ export default function PdfPageThumbnail({ file, pageIndex }: PdfPageThumbnailPr
                 setError(false);
 
                 // Dynamically import pdfjs so it only runs client-side
-                const pdfjsLib = await import("pdfjs-dist");
-                pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+                const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+                pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
                 const arrayBuffer = await file.arrayBuffer();
                 const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });

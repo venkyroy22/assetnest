@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/pdfjs-polyfill";
 import { useState, useRef } from "react";
 import { Upload, Download, RefreshCw, FileText, Info, X, FileEdit, Check, ShieldCheck } from "lucide-react";
 import { Accordion, AccordionItem } from "@/components/Accordion";
@@ -48,8 +49,8 @@ export default function PdfTextExtractorPage() {
 
         try {
             // Dynamically load pdfjs specifically when requested
-            const pdfjsLib = await import("pdfjs-dist");
-            pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+            const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
             const arrayBuffer = await file.arrayBuffer();
             const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });

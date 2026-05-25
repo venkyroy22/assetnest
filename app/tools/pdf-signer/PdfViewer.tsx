@@ -1,30 +1,44 @@
 "use client";
 
+import "./polyfill";
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import {
     X, Maximize2, Type, Calendar, CheckSquare, Check as CheckIcon,
     Copy, Trash2, ZoomIn, ZoomOut, ChevronUp, ChevronDown, RotateCcw,
-    Stamp as StampIcon
+    Stamp as StampIcon, Layers
 } from "lucide-react";
-
 import type { Signature } from "./types";
 
 if (typeof window !== "undefined") {
-    pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
-
+    // Polyfill in main thread
     if (typeof (Promise as any).withResolvers === "undefined") {
         (Promise as any).withResolvers = function <T>() {
-            let resolve!: (value: T | PromiseLike<T>) => void;
-            let reject!: (reason?: any) => void;
-            const promise = new Promise<T>((res, rej) => {
-                resolve = res;
-                reject = rej;
-            });
+            let resolve!: (v: T | PromiseLike<T>) => void;
+            let reject!: (r?: any) => void;
+            const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej; });
             return { promise, resolve, reject };
         };
     }
+
+    // Set workerSrc directly to the same-origin transpiled legacy worker.
+    // This supports both real workers (same-origin, no CORS/CSP restrictions)
+    // and fake worker fallback on the main thread (runs full worker script without throws).
+    pdfjsLib.GlobalWorkerOptions.workerSrc = window.location.origin + "/pdf.worker.min.mjs";
 }
+
+/* ─── Design tokens (kept local for the viewer) ─── */
+const V = {
+    bg:      "#080809",
+    surface: "#101012",
+    surfHov: "#1c1c1f",
+    border:  "rgba(255,255,255,0.055)",
+    accent:  "#7c6aff",
+    textSec: "#8b8a97",
+    muted:   "#42414d",
+    textPri: "#f0eff5",
+    danger:  "#ef4444",
+};
 
 interface PdfViewerProps {
     file: File;
@@ -33,203 +47,174 @@ interface PdfViewerProps {
     pushSignatures: (sigs: Signature[]) => void;
     onBoxSelected: (box: { pageIndex: number; x: number; y: number; w: number; h: number }) => void;
     applyToAllPages: (sig: Signature) => void;
-    onLoadSuccess?: (numPages: number) => void;
+    onLoadSuccess?: (numPages: number, pdf?: any) => void;
+    onPageChange?: (page: number) => void;
     activeTool?: string;
     activeSigId: string | null;
     setActiveSigId: (id: string | null) => void;
 }
 
-export default function PdfViewer({ file, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, activeTool, activeSigId, setActiveSigId }: PdfViewerProps) {
-    const [pageCount, setPageCount] = useState(0);
-    const [pdf, setPdf] = useState<any>(null);
-    const [loadError, setLoadError] = useState<string | null>(null);
-    const [zoom, setZoom] = useState(1);
+export default function PdfViewer({ file, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, onPageChange, activeTool, activeSigId, setActiveSigId }: PdfViewerProps) {
+    const [pageCount,  setPageCount]  = useState(0);
+    const [pdf,        setPdf]        = useState<any>(null);
+    const [loadError,  setLoadError]  = useState<string | null>(null);
+    const [zoom,       setZoom]       = useState(1);
     const [visiblePage, setVisiblePage] = useState(0);
 
-    const scrollRef = useRef<HTMLDivElement>(null);
-    const pageRefs = useRef<(HTMLDivElement | null)[]>([]);
-
-    const onLoadSuccessRef = useRef(onLoadSuccess);
-    onLoadSuccessRef.current = onLoadSuccess;
+    const scrollRef  = useRef<HTMLDivElement>(null);
+    const pageRefs   = useRef<(HTMLDivElement | null)[]>([]);
+    const onLoadRef  = useRef(onLoadSuccess);
+    onLoadRef.current = onLoadSuccess;
 
     useEffect(() => {
         if (!file) return;
-        setLoadError(null);
-        setPdf(null);
-        setPageCount(0);
-        setZoom(1);
-
+        setLoadError(null); setPdf(null); setPageCount(0); setZoom(1);
         (async () => {
             try {
-                const buf = await file.arrayBuffer();
-                const data = new Uint8Array(buf);
+                if (file.size === 0) {
+                    throw new Error("The PDF file is empty or inaccessible (0 bytes).");
+                }
+                const buf    = await file.arrayBuffer();
                 const loaded = await pdfjsLib.getDocument({
-                    data,
+                    data: new Uint8Array(buf),
                     cMapUrl: `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/cmaps/`,
                     cMapPacked: true,
-                    standardFontDataUrl: `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`
+                    standardFontDataUrl: `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/standard_fonts/`,
                 }).promise;
-                setPdf(loaded);
-                setPageCount(loaded.numPages);
-                onLoadSuccessRef.current?.(loaded.numPages);
+                setPdf(loaded); setPageCount(loaded.numPages);
+                onLoadRef.current?.(loaded.numPages, loaded);
             } catch (err: any) {
-                console.error("PDF load error:", err);
+                console.error("PDF loading error:", err);
+                const desc = err?.message || err?.toString() || "Unknown error";
                 setLoadError(
                     err?.message?.includes("password") || err?.name === "PasswordException"
-                        ? "This PDF requires a password to open. Please unlock it first."
-                        : "This PDF couldn't be loaded. It might be corrupted or unsupported."
+                        ? "This PDF is password protected. Please unlock it first."
+                        : `Could not load this PDF. It may be corrupted or unsupported. (Details: ${desc})`
                 );
             }
         })();
     }, [file]);
 
-    // Track visible page with IntersectionObserver
     useEffect(() => {
         const container = scrollRef.current;
         if (!container || pageCount === 0) return;
-
         const observer = new IntersectionObserver(
-            (entries) => {
+            entries => {
                 let best = { ratio: 0, page: 0 };
-                entries.forEach(entry => {
-                    const idx = parseInt(entry.target.getAttribute("data-page-idx") || "0");
-                    if (entry.intersectionRatio > best.ratio) {
-                        best = { ratio: entry.intersectionRatio, page: idx };
-                    }
+                entries.forEach(e => {
+                    const idx = parseInt(e.target.getAttribute("data-page-idx") || "0");
+                    if (e.intersectionRatio > best.ratio) best = { ratio: e.intersectionRatio, page: idx };
                 });
-                if (best.ratio > 0) setVisiblePage(best.page);
+                if (best.ratio > 0) {
+                    setVisiblePage(best.page);
+                    onPageChange?.(best.page);
+                }
             },
             { root: container, threshold: [0, 0.25, 0.5, 0.75, 1] }
         );
-
-        // Small delay to let pages mount
-        const timer = setTimeout(() => {
-            pageRefs.current.forEach(ref => ref && observer.observe(ref));
-        }, 500);
-
-        return () => { clearTimeout(timer); observer.disconnect(); };
+        const t = setTimeout(() => { pageRefs.current.forEach(r => r && observer.observe(r)); }, 500);
+        return () => { clearTimeout(t); observer.disconnect(); };
     }, [pageCount]);
 
-    const scrollToPage = (idx: number) => {
-        const target = pageRefs.current[idx];
-        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
+    const scrollToPage = (idx: number) => pageRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "start" });
 
-    const zoomIn = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
-    const zoomOut = () => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)));
+    const zoomIn    = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
+    const zoomOut   = () => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)));
     const zoomReset = () => setZoom(1);
+
+    const ZoomPill = () => (
+        <div style={{
+            display: "flex", alignItems: "center", gap: 2,
+            background: "rgba(10,10,11,0.88)",
+            backdropFilter: "blur(16px)",
+            border: `1px solid ${V.border}`,
+            borderRadius: 12, padding: "5px 8px",
+            boxShadow: "0 8px 24px rgba(0,0,0,0.5)",
+        }}>
+            {[
+                { icon: <ZoomOut size={12} />, onClick: zoomOut, disabled: zoom <= 0.5 },
+            ].map((btn, i) => (
+                <button key={i} onClick={btn.onClick} disabled={btn.disabled} style={{ width: 26, height: 26, borderRadius: 7, background: "none", border: "none", color: btn.disabled ? V.muted : V.textSec, cursor: btn.disabled ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s" }}>
+                    {btn.icon}
+                </button>
+            ))}
+            <span style={{ fontSize: 10, fontWeight: 800, color: V.textPri, width: 42, textAlign: "center", letterSpacing: "-0.02em", fontVariantNumeric: "tabular-nums" }}>
+                {Math.round(zoom * 100)}%
+            </span>
+            <button onClick={zoomIn} disabled={zoom >= 3} style={{ width: 26, height: 26, borderRadius: 7, background: "none", border: "none", color: zoom >= 3 ? V.muted : V.textSec, cursor: zoom >= 3 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <ZoomIn size={12} />
+            </button>
+            <div style={{ width: 1, height: 16, background: V.border, margin: "0 4px" }} />
+            <button onClick={zoomReset} style={{ padding: "0 8px", height: 26, borderRadius: 7, background: "none", border: "none", fontSize: 9, fontWeight: 800, color: V.muted, cursor: "pointer", letterSpacing: "0.08em", textTransform: "uppercase", fontFamily: "inherit" }}>Fit</button>
+            <div style={{ width: 1, height: 16, background: V.border, margin: "0 4px" }} />
+            <button onClick={() => (window as any).undo?.()} title="Undo (⌘Z)" style={{ width: 26, height: 26, borderRadius: 7, background: "none", border: "none", color: V.textSec, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <RotateCcw size={12} style={{ transform: "scaleX(-1)" }} />
+            </button>
+            <button onClick={() => (window as any).redo?.()} title="Redo (⌘Y)" style={{ width: 26, height: 26, borderRadius: 7, background: "none", border: "none", color: V.textSec, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <RotateCcw size={12} />
+            </button>
+        </div>
+    );
 
     return (
         <div
             ref={scrollRef}
             data-lenis-prevent
             data-lenis-prevent-touch
-            className="flex flex-col max-h-[78vh] overflow-y-auto overflow-x-auto overscroll-contain bg-[#1c1c1c]/20 rounded-xl border border-white/[0.05]/50 relative"
-            style={{ touchAction: "pan-y", WebkitOverflowScrolling: "touch" } as React.CSSProperties}
+            style={{
+                display: "flex", flexDirection: "column",
+                maxHeight: "78vh", overflowY: "auto", overflowX: "auto",
+                overscrollBehavior: "contain",
+                background: "transparent",
+                borderRadius: 18,
+                position: "relative",
+                scrollbarWidth: "thin",
+            }}
         >
-            {/* ── Zoom Controls ── */}
-            <div className="sticky top-0 z-30 flex justify-center py-2 pointer-events-none">
-                <style>{`
-                    textarea[data-sig-text]::selection {
-                        background-color: #0066ff !important;
-                        color: white !important;
-                    }
-                `}</style>
-                <div className="pointer-events-auto bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/40 rounded-xl px-2 py-1.5 flex items-center gap-1.5 shadow-2xl">
-                    <button onClick={zoomOut} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom <= 0.5}>
-                        <ZoomOut size={13} />
-                    </button>
-                    <span className="text-[10px] font-black text-zinc-300 w-11 text-center tabular-nums tracking-tight">{Math.round(zoom * 100)}%</span>
-                    <button onClick={zoomIn} className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20" disabled={zoom >= 3}>
-                        <ZoomIn size={13} />
-                    </button>
-                    <div className="w-px h-4 bg-zinc-700/60" />
-                    <button onClick={zoomReset} className="h-7 px-2 rounded-lg text-[9px] font-black text-zinc-500 hover:text-[#f0ede8] hover:bg-white/10 transition-all uppercase tracking-wider">Fit</button>
-                    
-                    {/* Floating Undo/Redo */}
-                    <div className="w-px h-4 bg-zinc-700/60" />
-                    <div className="flex items-center gap-0.5">
-                        <button 
-                            onClick={(e) => { e.stopPropagation(); (window as any).undo?.(); }}
-                            title="Undo (Ctrl+Z)"
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all active:scale-95"
-                        >
-                            <RotateCcw size={13} className="scale-x-[-1]" />
-                        </button>
-                        <button 
-                            onClick={(e) => { e.stopPropagation(); (window as any).redo?.(); }}
-                            title="Redo (Ctrl+Y / Ctrl+Shift+Z)"
-                            className="w-7 h-7 rounded-lg flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all active:scale-95"
-                        >
-                            <RotateCcw size={13} />
-                        </button>
-                    </div>
-                </div>
+            <style>{`
+                @keyframes spin { to { transform: rotate(360deg); } }
+                textarea[data-sig-text]::selection { background: #7c6aff !important; color: #fff !important; }
+            `}</style>
+
+            {/* Zoom bar — sticky top */}
+            <div style={{ position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", padding: "10px 0 6px", pointerEvents: "none" }}>
+                <div style={{ pointerEvents: "auto" }}><ZoomPill /></div>
             </div>
 
             {loadError && (
-                <div className="flex flex-col items-center justify-center p-10 text-center gap-4 py-20">
-                    <div className="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center text-red-400 border border-red-500/20">
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 60, gap: 14, textAlign: "center" }}>
+                    <div style={{ width: 52, height: 52, borderRadius: 14, background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", display: "flex", alignItems: "center", justifyContent: "center", color: V.danger }}>
                         <X size={20} />
                     </div>
-                    <p className="text-zinc-300 font-semibold text-sm">{loadError}</p>
+                    <p style={{ color: "#fca5a5", fontWeight: 600, fontSize: 14 }}>{loadError}</p>
                 </div>
             )}
 
-            {/* Pages container */}
-            <div className="flex flex-col gap-6 p-3 sm:p-5" style={{ zoom }}>
+            {/* Pages */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "8px 12px 16px", zoom }}>
                 {Array.from({ length: pageCount }, (_, i) => (
-                    <div key={`${file.name}-${i}`} ref={el => { pageRefs.current[i] = el; }} data-page-idx={i}>
+                    <div key={`${file.name}-${i}`} ref={el => { pageRefs.current[i] = el; }} data-page-idx={i} id={`pdf-page-${i}`}>
                         <PdfPage
-                            pdf={pdf}
-                            index={i}
-                            zoom={zoom}
-                            signatures={signatures}
-                            setSignatures={setSignatures}
-                            pushSignatures={pushSignatures}
-                            onBoxSelected={onBoxSelected}
-                            applyToAllPages={applyToAllPages}
-                            activeTool={activeTool}
-                            activeSigId={activeSigId}
-                            setActiveSigId={setActiveSigId}
+                            pdf={pdf} index={i} zoom={zoom}
+                            signatures={signatures} setSignatures={setSignatures}
+                            pushSignatures={pushSignatures} onBoxSelected={onBoxSelected}
+                            applyToAllPages={applyToAllPages} activeTool={activeTool}
+                            activeSigId={activeSigId} setActiveSigId={setActiveSigId}
                         />
                     </div>
                 ))}
             </div>
 
-            {/* ── Page Navigation ── */}
-            {pageCount > 1 && (
-                <div className="sticky bottom-2 z-30 flex justify-center pointer-events-none pb-1">
-                    <div className="pointer-events-auto bg-zinc-900/90 backdrop-blur-xl border border-zinc-700/40 rounded-full px-3 py-1.5 flex items-center gap-2 shadow-2xl">
-                        <button
-                            onClick={() => scrollToPage(Math.max(0, visiblePage - 1))}
-                            disabled={visiblePage === 0}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20"
-                        >
-                            <ChevronUp size={13} />
-                        </button>
-                        <span className="text-[10px] font-black text-zinc-300 tabular-nums w-14 text-center tracking-tight">
-                            {visiblePage + 1} / {pageCount}
-                        </span>
-                        <button
-                            onClick={() => scrollToPage(Math.min(pageCount - 1, visiblePage + 1))}
-                            disabled={visiblePage === pageCount - 1}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-zinc-400 hover:text-[#f0ede8] hover:bg-white/10 transition-all disabled:opacity-20"
-                        >
-                            <ChevronDown size={13} />
-                        </button>
-                    </div>
-                </div>
-            )}
+
         </div>
     );
 }
 
-/* ─── Single page ─── */
+/* ─── Single PDF page ─── */
 function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, activeTool, activeSigId, setActiveSigId }: any) {
-    const wrapperRef    = useRef<HTMLDivElement>(null);
-    const containerRef  = useRef<HTMLDivElement>(null);
-    const canvasRef     = useRef<HTMLCanvasElement>(null);
+    const wrapperRef   = useRef<HTMLDivElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const canvasRef    = useRef<HTMLCanvasElement>(null);
 
     const [containerWidth, setContainerWidth] = useState(0);
     const [dimensions,     setDimensions]     = useState({ w: 0, h: 0 });
@@ -238,110 +223,92 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
     const [currentRect,    setCurrentRect]    = useState<{ x: number; y: number; w: number; h: number } | null>(null);
     const intentLocked     = useRef<"select" | "scroll" | null>(null);
     const [renderError,    setRenderError]    = useState<string | null>(null);
+    const skipDeselectRef  = useRef(false);
 
-    const getCursorStyle = () => {
+    const toolCursor = () => {
         if (isSelecting) return "crosshair";
         switch (activeTool) {
-            case "text": return "text";
-            case "date": return "cell";
-            case "stamp": return "alias";
+            case "text":      return "text";
+            case "date":      return "cell";
+            case "stamp":     return "alias";
             case "checkmark": return "pointer";
-            case "signature": 
-            case "initials": 
-            default: return "crosshair";
+            default:          return "crosshair";
         }
     };
 
-    /* ── Measure wrapper width ── */
+    /* Measure width */
     useEffect(() => {
-        const el = wrapperRef.current;
-        if (!el) return;
-
-        const measure = () => {
-            const w = el.clientWidth;
-            if (w > 0 && Math.abs(w - containerWidth) > 10) {
-                setContainerWidth(w);
-            }
-        };
-
+        const el = wrapperRef.current; if (!el) return;
+        const measure = () => { const w = el.clientWidth; if (w > 0 && Math.abs(w - containerWidth) > 10) setContainerWidth(w); };
         measure();
-        let timeout: any;
-        const handleResize = () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(measure, 150);
-        };
-
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
+        let t: any;
+        const handler = () => { clearTimeout(t); t = setTimeout(measure, 150); };
+        window.addEventListener("resize", handler);
+        return () => window.removeEventListener("resize", handler);
     }, [containerWidth]);
 
-    /* ── Render PDF page ── */
+    /* Render page */
     useEffect(() => {
         if (!pdf || !canvasRef.current || containerWidth === 0) return;
         setRenderError(null);
-        let isMounted = true;
-
-        const render = async () => {
+        let mounted = true;
+        let renderTask: any = null;
+        (async () => {
             try {
                 const page      = await pdf.getPage(index + 1);
-                if (!isMounted) return;
+                if (!mounted) return;
                 const naturalVp = page.getViewport({ scale: 1.0 });
-                const dpr       = window.devicePixelRatio || 1;
+                const dpr       = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1.5 : 2);
                 const fitScale  = containerWidth / naturalVp.width;
-                const safeDpr   = Math.min(dpr, window.innerWidth < 768 ? 1.5 : 2);
-                const renderScale = fitScale * safeDpr;
-                const viewport  = page.getViewport({ scale: renderScale });
-
-                const canvas = canvasRef.current;
-                if (!canvas || !isMounted) return;
-
-                const ctx    = canvas.getContext("2d", { alpha: false, willReadFrequently: true });
+                const viewport  = page.getViewport({ scale: fitScale * dpr });
+                const canvas    = canvasRef.current;
+                if (!canvas || !mounted) return;
+                const ctx = canvas.getContext("2d", { alpha: false, willReadFrequently: true });
                 if (!ctx) return;
-
                 canvas.width  = viewport.width;
                 canvas.height = viewport.height;
-
                 const displayW = Math.round(containerWidth);
                 const displayH = Math.round(naturalVp.height * fitScale);
                 canvas.style.width  = `${displayW}px`;
                 canvas.style.height = `${displayH}px`;
-                if (isMounted) setDimensions({ w: displayW, h: displayH });
-
-                const task = page.render({ canvasContext: ctx, viewport });
-                await task.promise;
+                if (mounted) setDimensions({ w: displayW, h: displayH });
+                
+                if (!mounted) return;
+                renderTask = page.render({ canvasContext: ctx, viewport });
+                await renderTask.promise;
             } catch (err: any) {
-                if (err?.name !== "RenderingCancelledException" && isMounted) {
-                    console.error("PDF render:", err);
+                if (err?.name !== "RenderingCancelledException" && mounted) {
                     setRenderError(err.toString());
                 }
             }
+        })();
+        return () => {
+            mounted = false;
+            if (renderTask) {
+                try {
+                    renderTask.cancel();
+                } catch (e) {}
+            }
         };
-
-        render();
-        return () => { isMounted = false; };
     }, [pdf, index, containerWidth]);
 
-    /* ── Selection logic ── */
     const getPos = (e: React.PointerEvent) => {
         const rect = containerRef.current!.getBoundingClientRect();
         return {
             x: Math.max(0, Math.min((e.clientX - rect.left) / zoom, dimensions.w)),
-            y: Math.max(0, Math.min((e.clientY - rect.top) / zoom, dimensions.h))
+            y: Math.max(0, Math.min((e.clientY - rect.top)  / zoom, dimensions.h)),
         };
     };
 
     const handlePointerDown = (e: React.PointerEvent) => {
         if ((e.target as HTMLElement).closest("[data-sig]")) return;
-        setActiveSigId(null);
-        intentLocked.current = null;
-
-        if (e.pointerType === "touch") {
-            const pos = getPos(e);
-            setStartPos(pos);
-            setCurrentRect(null);
+        if (skipDeselectRef.current) {
+            skipDeselectRef.current = false;
             return;
         }
-
+        setActiveSigId(null);
+        intentLocked.current = null;
+        if (e.pointerType === "touch") { setStartPos(getPos(e)); setCurrentRect(null); return; }
         setIsSelecting(true);
         const pos = getPos(e);
         setStartPos(pos);
@@ -351,164 +318,115 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
 
     const handlePointerMove = (e: React.PointerEvent) => {
         const pos = getPos(e);
-
         if (e.pointerType === "touch" && intentLocked.current === null) {
-            const dx = Math.abs(pos.x - startPos.x);
-            const dy = Math.abs(pos.y - startPos.y);
+            const dx = Math.abs(pos.x - startPos.x), dy = Math.abs(pos.y - startPos.y);
             if (dx < 6 && dy < 6) return;
-
-            if (dy > dx * 1.5) {
-                intentLocked.current = "scroll";
-                return;
-            } else {
-                intentLocked.current = "select";
-                setIsSelecting(true);
-                setCurrentRect({ x: startPos.x, y: startPos.y, w: 0, h: 0 });
-                try { (e.target as HTMLElement).setPointerCapture(e.pointerId); } catch {}
-            }
+            if (dy > dx * 1.5) { intentLocked.current = "scroll"; return; }
+            intentLocked.current = "select";
+            setIsSelecting(true);
+            setCurrentRect({ x: startPos.x, y: startPos.y, w: 0, h: 0 });
+            try { (e.target as HTMLElement).setPointerCapture(e.pointerId); } catch {}
         }
-
         if (intentLocked.current === "scroll" || (!isSelecting && e.pointerType === "touch")) return;
         if (!isSelecting) return;
-
-        const dw = pos.x - startPos.x;
-        const dh = pos.y - startPos.y;
-        setCurrentRect({
-            x: dw > 0 ? startPos.x : pos.x,
-            y: dh > 0 ? startPos.y : pos.y,
-            w: Math.abs(dw), h: Math.abs(dh),
-        });
+        const dw = pos.x - startPos.x, dh = pos.y - startPos.y;
+        setCurrentRect({ x: dw > 0 ? startPos.x : pos.x, y: dh > 0 ? startPos.y : pos.y, w: Math.abs(dw), h: Math.abs(dh) });
     };
 
     const handlePointerUp = (e: React.PointerEvent) => {
         intentLocked.current = null;
         if (!isSelecting) return;
         setIsSelecting(false);
-
         const pos = getPos(e);
-        const dx = Math.abs(pos.x - startPos.x);
-        const dy = Math.abs(pos.y - startPos.y);
+        const dx = Math.abs(pos.x - startPos.x), dy = Math.abs(pos.y - startPos.y);
 
-        // Click placement
         if (dx < 10 && dy < 10 && dimensions.w > 0) {
-            if (activeTool === "text" || activeTool === "date") {
-                setCurrentRect(null);
-                return; // Enforce drag-to-draw for custom text areas
-            }
-            let defW = 0.18, defH = 0.06;
-            if (activeTool === "checkmark")  { defW = 0.035; defH = 0.035; }
-            else if (activeTool === "initials")  { defW = 0.1;  defH = 0.06; }
-            else if (activeTool === "signature") { defW = 0.22; defH = 0.1; }
-            else if (activeTool === "date")      { defW = 0.15; defH = 0.035; }
-            else if (activeTool === "stamp")     { defW = 0.2;  defH = 0.06; }
-
-            const cx = pos.x / dimensions.w;
-            const cy = pos.y / dimensions.h;
-
-            onBoxSelected({
-                pageIndex: index,
-                x: Math.max(0, Math.min(cx - defW / 2, 1 - defW)),
-                y: Math.max(0, Math.min(cy - defH / 2, 1 - defH)),
-                w: defW,
-                h: defH,
-            });
-        }
-        // Drag selection
-        else if (currentRect && currentRect.w > 12 && currentRect.h > 12 && dimensions.w > 0) {
-            onBoxSelected({
-                pageIndex: index,
-                x: currentRect.x / dimensions.w,
-                y: currentRect.y / dimensions.h,
-                w: currentRect.w / dimensions.w,
-                h: currentRect.h / dimensions.h,
-            });
+            if (activeTool === "text" || activeTool === "date") { setCurrentRect(null); return; }
+            const defaults: Record<string, [number, number]> = { signature: [0.22, 0.1], initials: [0.1, 0.06], checkmark: [0.035, 0.035], date: [0.15, 0.035], stamp: [0.2, 0.06], text: [0.18, 0.06] };
+            const [defW, defH] = defaults[activeTool || "signature"] || [0.18, 0.06];
+            skipDeselectRef.current = true;
+            setTimeout(() => { skipDeselectRef.current = false; }, 150);
+            onBoxSelected({ pageIndex: index, x: Math.max(0, Math.min(pos.x / dimensions.w - defW / 2, 1 - defW)), y: Math.max(0, Math.min(pos.y / dimensions.h - defH / 2, 1 - defH)), w: defW, h: defH });
+        } else if (currentRect && currentRect.w > 12 && currentRect.h > 12 && dimensions.w > 0) {
+            skipDeselectRef.current = true;
+            setTimeout(() => { skipDeselectRef.current = false; }, 150);
+            onBoxSelected({ pageIndex: index, x: currentRect.x / dimensions.w, y: currentRect.y / dimensions.h, w: currentRect.w / dimensions.w, h: currentRect.h / dimensions.h });
         }
         setCurrentRect(null);
     };
 
-    const pageSignatures = signatures.filter((s: Signature) => s.pageIndex === index || s.allPages);
+    const pageSigs = signatures.filter((s: Signature) => s.pageIndex === index || s.allPages);
 
     return (
-        <div className="flex flex-col items-stretch gap-2">
-            {/* Page header */}
-            <div className="flex items-center gap-2 px-1">
-                <span className="w-6 h-6 rounded-md bg-[#1c1c1c] border border-white/[0.07] flex items-center justify-center text-[9px] font-black text-zinc-400 shrink-0">
+        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Page label */}
+            <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "0 2px" }}>
+                <span style={{ width: 22, height: 22, borderRadius: 6, background: V.surface, border: `1px solid ${V.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 9, fontWeight: 800, color: V.muted, flexShrink: 0 }}>
                     {index + 1}
                 </span>
-                <div className="h-px bg-white/[0.06] flex-1" />
-                <span className="text-[8px] font-bold text-zinc-700 flex items-center gap-1 px-2 py-0.5 rounded bg-[#1c1c1c]/30 border border-white/[0.07]/30 transition-all">
-                    <Maximize2 size={8} /> 
-                    {activeTool === "text" || activeTool === "date" ? "Drag to draw box" : "Click or drag to place"}
+                <div style={{ flex: 1, height: 1, background: V.border }} />
+                <span style={{ fontSize: 9, fontWeight: 700, color: V.muted, letterSpacing: "0.08em", textTransform: "uppercase", whiteSpace: "nowrap" }}>
+                    {activeTool === "text" || activeTool === "date" ? "Drag to draw text box" : "Click or drag to place"}
                 </span>
             </div>
 
-            {/* Full-width measured wrapper */}
-            <div ref={wrapperRef} className="w-full">
+            <div ref={wrapperRef} style={{ width: "100%", display: "flex", justifyContent: "center" }}>
                 <div
                     ref={containerRef}
-                    className="relative bg-white select-none rounded-sm overflow-hidden"
                     style={{
-                        width: "100%",
-                        height: dimensions.h || "auto",
-                        minHeight: 200,
+                        position: "relative", background: "#fff",
+                        userSelect: "none", borderRadius: 8,
+                        overflow: "hidden",
+                        width: "100%", height: dimensions.h || "auto", minHeight: 200,
                         touchAction: isSelecting ? "none" : "pan-y",
-                        cursor: getCursorStyle(),
-                        boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+                        cursor: toolCursor(),
+                        boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
                     }}
                     onPointerDown={handlePointerDown}
                     onPointerMove={handlePointerMove}
                     onPointerUp={handlePointerUp}
                 >
-                    <canvas ref={canvasRef} className="block w-full" />
+                    <canvas ref={canvasRef} style={{ display: "block", width: "100%" }} />
 
-                    {/* Render error fallback */}
                     {renderError && (
-                        <div className="absolute inset-0 flex items-center justify-center p-4 bg-zinc-900/80 overflow-auto z-50">
-                            <p className="text-red-400 font-mono text-xs whitespace-pre-wrap text-center font-bold">
-                                Failed to render page {index + 1}:<br />{renderError}
-                            </p>
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(8,8,9,0.8)", zIndex: 50 }}>
+                            <p style={{ color: "#f87171", fontFamily: "monospace", fontSize: 12, textAlign: "center" }}>Failed to render page {index + 1}: {renderError}</p>
                         </div>
                     )}
 
-                    {/* Overlays */}
-                    <div className="absolute inset-0 pointer-events-none">
-                        {pageSignatures.map((sig: Signature) => (
+                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
+                        {pageSigs.map((sig: Signature) => (
                             <AnnotationOverlay
-                                key={sig.id}
-                                sig={sig}
-                                dimensions={dimensions}
-                                zoom={zoom}
-                                signatures={signatures}
-                                setSignatures={setSignatures}
-                                pushSignatures={pushSignatures}
-                                applyToAllPages={applyToAllPages}
-                                activeSigId={activeSigId}
-                                setActiveSigId={setActiveSigId}
+                                key={sig.id} sig={sig} dimensions={dimensions} zoom={zoom}
+                                signatures={signatures} setSignatures={setSignatures}
+                                pushSignatures={pushSignatures} applyToAllPages={applyToAllPages}
+                                activeSigId={activeSigId} setActiveSigId={setActiveSigId}
                             />
                         ))}
 
-                        {/* Selection dimming overlay */}
-                        {isSelecting && <div className="absolute inset-0 bg-black/10" />}
+                        {isSelecting && <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.04)" }} />}
 
-                        {/* Selection rectangle */}
                         {currentRect && currentRect.w > 0 && (
-                            <div
-                                className="absolute border-2 border-blue-500 bg-blue-500/10 pointer-events-none flex items-center justify-center"
-                                style={{ left: currentRect.x, top: currentRect.y, width: currentRect.w, height: currentRect.h }}
-                            >
-                                {currentRect.w > 60 && currentRect.h > 24 && (
-                                    <div className="bg-blue-600 text-[#f0ede8] px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-tight">
-                                        {activeTool}
+                            <div style={{
+                                position: "absolute",
+                                left: currentRect.x, top: currentRect.y, width: currentRect.w, height: currentRect.h,
+                                border: `2px solid ${V.accent}`,
+                                background: `${V.accent}14`,
+                                borderRadius: 4,
+                                display: "flex", alignItems: "center", justifyContent: "center",
+                            }}>
+                                {currentRect.w > 70 && currentRect.h > 26 && (
+                                    <div style={{ padding: "3px 8px", background: V.accent, color: "#fff", borderRadius: 5, fontSize: 9, fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                                        {/* no label by default */}
                                     </div>
                                 )}
                             </div>
                         )}
                     </div>
 
-                    {/* Loading */}
                     {!dimensions.h && (
-                        <div className="absolute inset-0 flex items-center justify-center bg-zinc-100">
-                            <div className="w-7 h-7 border-2 border-zinc-300 border-t-zinc-600 rounded-full animate-spin" />
+                        <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", background: "#f8f8f8" }}>
+                            <div style={{ width: 28, height: 28, border: "3px solid #ddd", borderTopColor: "#999", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
                         </div>
                     )}
                 </div>
@@ -525,100 +443,69 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, p
     applyToAllPages: (s: Signature) => void;
     activeSigId: string | null; setActiveSigId: (id: string | null) => void;
 }) {
-    const isActive = activeSigId === sig.id;
-    const textRef = useRef<HTMLTextAreaElement>(null);
+    const isActive    = activeSigId === sig.id;
+    const textRef     = useRef<HTMLTextAreaElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const dragData = useRef({ dx: 0, dy: 0 });
+    const dragData    = useRef({ dx: 0, dy: 0 });
     const [resizeOffset, setResizeOffset] = useState({ w: 0, h: 0 });
 
     useEffect(() => {
         if (isActive && (sig.type === "text" || sig.type === "date") && textRef.current) {
-            textRef.current.focus();
-            textRef.current.select();
+            textRef.current.focus(); textRef.current.select();
         }
     }, [isActive, sig.type]);
 
     const startDrag = (e: React.PointerEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
+        e.stopPropagation(); e.preventDefault();
         setActiveSigId(sig.id);
-        
-        const el = containerRef.current;
-        if (!el) return;
-        
-        el.setPointerCapture(e.pointerId);
+        const el = containerRef.current; if (!el) return;
         const sp = { x: e.clientX, y: e.clientY };
-        
         const onMove = (me: PointerEvent) => {
-            dragData.current.dx = me.clientX - sp.x;
-            dragData.current.dy = me.clientY - sp.y;
-            el.style.transform = `translate(${Math.round(dragData.current.dx)}px, ${Math.round(dragData.current.dy)}px)`;
+            dragData.current = { dx: me.clientX - sp.x, dy: me.clientY - sp.y };
+            const dragX = Math.round(dragData.current.dx / zoom);
+            const dragY = Math.round(dragData.current.dy / zoom);
+            el.style.transform = `translate(${dragX}px,${dragY}px)`;
         };
-        
         const onUp = (me: PointerEvent) => {
-            el.releasePointerCapture(me.pointerId);
-            el.removeEventListener("pointermove", onMove);
-            el.removeEventListener("pointerup", onUp);
+            document.removeEventListener("pointermove", onMove);
+            document.removeEventListener("pointerup", onUp);
             el.style.transform = "";
-            
-            const dxPct = dragData.current.dx / (dimensions.w * zoom);
-            const dyPct = dragData.current.dy / (dimensions.h * zoom);
-            
-            if (dxPct !== 0 || dyPct !== 0) {
+            const dxP = dragData.current.dx / (dimensions.w * zoom);
+            const dyP = dragData.current.dy / (dimensions.h * zoom);
+            if (dxP !== 0 || dyP !== 0) {
                 pushSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
                     ...s,
-                    x: Math.max(0, Math.min(s.x + dxPct, 1 - sig.width)),
-                    y: Math.max(0, Math.min(s.y + dyPct, 1 - sig.height)),
+                    x: Math.max(0, Math.min(s.x + dxP, 1 - sig.width)),
+                    y: Math.max(0, Math.min(s.y + dyP, 1 - sig.height)),
                 }));
             }
-            dragData.current.dx = 0;
-            dragData.current.dy = 0;
+            dragData.current = { dx: 0, dy: 0 };
         };
-        el.addEventListener("pointermove", onMove);
-        el.addEventListener("pointerup", onUp);
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
     };
 
     const startResize = (e: React.PointerEvent) => {
-        e.stopPropagation();
-        e.preventDefault();
-        
-        const el = containerRef.current;
-        if (!el) return;
-        
-        el.setPointerCapture(e.pointerId);
+        e.stopPropagation(); e.preventDefault();
+        const el = containerRef.current; if (!el) return;
         const sp = { x: e.clientX, y: e.clientY };
-        
-        const onMove = (me: PointerEvent) => {
-            const dwPct = (me.clientX - sp.x) / (dimensions.w * zoom);
-            const dhPct = (me.clientY - sp.y) / (dimensions.h * zoom);
-            setResizeOffset({ w: dwPct, h: dhPct });
-        };
-        
+        const onMove = (me: PointerEvent) => setResizeOffset({ w: (me.clientX - sp.x) / (dimensions.w * zoom), h: (me.clientY - sp.y) / (dimensions.h * zoom) });
         const onUp = (me: PointerEvent) => {
-            el.releasePointerCapture(me.pointerId);
-            el.removeEventListener("pointermove", onMove);
-            el.removeEventListener("pointerup", onUp);
-            
+            document.removeEventListener("pointermove", onMove);
+            document.removeEventListener("pointerup", onUp);
             setResizeOffset(curr => {
-                const finalW = curr.w;
-                const finalH = curr.h;
-                
-                if (finalW !== 0 || finalH !== 0) {
-                    // Use a small timeout or requestAnimationFrame to defer the parent state update
-                    // or simply call it outside the functional update of the local state.
-                    setTimeout(() => {
-                        pushSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
-                            ...s,
-                            width:  Math.max(0.005, Math.min(sig.width + finalW, 1 - sig.x)),
-                            height: Math.max(0.005, Math.min(sig.height + finalH, 1 - sig.y)),
-                        }));
-                    }, 0);
+                if (curr.w !== 0 || curr.h !== 0) {
+                    setTimeout(() => pushSignatures(signatures.map((s: Signature) => s.id !== sig.id ? s : {
+                        ...s,
+                        width:  Math.max(0.005, Math.min(sig.width + curr.w, 1 - sig.x)),
+                        height: Math.max(0.005, Math.min(sig.height + curr.h, 1 - sig.y)),
+                    })), 0);
                 }
                 return { w: 0, h: 0 };
             });
         };
-        el.addEventListener("pointermove", onMove);
-        el.addEventListener("pointerup", onUp);
+        document.addEventListener("pointermove", onMove);
+        document.addEventListener("pointerup", onUp);
     };
 
     const displayW = Math.max(0.005, Math.min(sig.width + resizeOffset.w, 1 - sig.x));
@@ -627,118 +514,119 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, p
     const pxH = displayH * dimensions.h * zoom;
     const annotColor = sig.color || "#000000";
 
-    const getCalculatedFontSize = (content: string, w: number, h: number) => {
-        if (!content) return Math.max(3, h * 0.65);
-        const lines = content.split('\n');
-        const numLines = Math.max(1, lines.length);
-        const maxChars = Math.max(1, ...lines.map(l => l.length));
-        const maxH = h / (numLines * 1.15);
-        const maxW = w / (maxChars * 0.55);
-        return Math.max(3, Math.min(maxH, maxW));
+    const calcFontSize = (c: string, w: number, h: number) => {
+        const placeholderLen = sig.type === "date" ? 10 : 12;
+        if (!c) return Math.max(3, Math.min(h * 0.65, w / (placeholderLen * 0.55)));
+        const lines = c.split("\n"); const nL = Math.max(1, lines.length);
+        const mC = Math.max(1, ...lines.map(l => l.length));
+        return Math.max(3, Math.min(h / (nL * 1.15), w / (mC * 0.55)));
     };
-    const textFontSize = getCalculatedFontSize(sig.content || "", pxW, pxH);
+    const textFontSize = calcFontSize(sig.content || "", pxW, pxH);
 
     return (
         <div
             ref={containerRef}
             data-sig="true"
-            className={`absolute pointer-events-auto group/sig transition-colors cursor-move flex items-center justify-center overflow-visible
-                ${isActive
-                    ? "ring-2 ring-blue-500 ring-offset-0 bg-blue-50/20 z-40"
-                    : "border border-dashed border-zinc-300/60 hover:border-zinc-400 hover:bg-blue-50/5"
-                }
-            `}
-            style={{ left: `${sig.x * 100}%`, top: `${sig.y * 100}%`, width: `${displayW * 100}%`, height: `${displayH * 100}%`, touchAction: "none" }}
+            style={{
+                position: "absolute", pointerEvents: "auto",
+                left: `${sig.x * 100}%`, top: `${sig.y * 100}%`,
+                width: `${displayW * 100}%`, height: `${displayH * 100}%`,
+                touchAction: "none", cursor: "move",
+                border: isActive ? `2px solid ${V.accent}` : "1.5px dashed rgba(100,100,120,0.4)",
+                borderRadius: 4,
+                background: isActive ? "rgba(124,106,255,0.04)" : "transparent",
+                zIndex: isActive ? 40 : 10,
+                transition: "border-color 0.15s, background 0.15s",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                overflow: "visible",
+            }}
             onPointerDown={startDrag}
-            onClick={(e) => { e.stopPropagation(); setActiveSigId(sig.id); }}
+            onClick={e => { e.stopPropagation(); setActiveSigId(sig.id); }}
         >
-            {sig.type === "signature" || sig.type === "initials" ? (
-                <img src={sig.dataUrl} alt="sig" className="w-full h-full object-contain pointer-events-none select-none" />
-            ) : sig.type === "checkmark" ? (
-                /* Boxed checkmark */
-                <div className="w-full h-full flex items-center justify-center" style={{ color: annotColor }}>
-                    <div className="relative flex items-center justify-center" style={{ width: `${Math.min(pxW, pxH) * 0.85}px`, height: `${Math.min(pxW, pxH) * 0.85}px` }}>
-                        <div className="absolute inset-0 border-[2.5px] border-current rounded-[3px]" />
-                        <CheckIcon size={Math.min(pxW, pxH) * 0.55} strokeWidth={3.5} className="relative" />
+            {/* Annotation content */}
+            {(sig.type === "signature" || sig.type === "initials") && (
+                <img src={sig.dataUrl} alt="annotation" style={{ width: "100%", height: "100%", objectFit: "contain", pointerEvents: "none", userSelect: "none" }} />
+            )}
+
+            {sig.type === "checkmark" && (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: annotColor }}>
+                    <div style={{ position: "relative", width: `${Math.min(pxW, pxH) * 0.85}px`, height: `${Math.min(pxW, pxH) * 0.85}px`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                        <div style={{ position: "absolute", inset: 0, border: "2.5px solid currentColor", borderRadius: 3 }} />
+                        <CheckIcon size={Math.min(pxW, pxH) * 0.55} strokeWidth={3.5} />
                     </div>
                 </div>
-            ) : sig.type === "stamp" ? (
-                /* Stamp overlay */
-                <div className="w-full h-full flex items-center justify-center p-0.5" style={{ color: sig.color || "#dc2626" }}>
-                    <div className="border-[3px] border-current rounded-md px-2 py-0.5 flex items-center justify-center transform -rotate-6 opacity-90 w-full h-full">
-                        <span
-                            className="font-black uppercase tracking-[0.15em] text-center leading-none"
-                            style={{ fontSize: `${Math.max(8, Math.min(pxW * 0.12, pxH * 0.55))}px` }}
-                        >
+            )}
+
+            {sig.type === "stamp" && (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", padding: 2, color: sig.color || "#dc2626" }}>
+                    <div style={{ border: "3px solid currentColor", borderRadius: 6, padding: "2px 8px", display: "flex", alignItems: "center", justifyContent: "center", transform: "rotate(-6deg)", opacity: 0.88, width: "100%", height: "100%" }}>
+                        <span style={{ fontSize: `${Math.max(8, Math.min(pxW * 0.12, pxH * 0.55))}px`, fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.12em", textAlign: "center", lineHeight: 1 }}>
                             {sig.content}
                         </span>
                     </div>
                 </div>
-            ) : (
-                <div className="w-full h-full flex items-center p-0.5">
+            )}
+
+            {(sig.type === "text" || sig.type === "date") && (
+                <div style={{ width: "100%", height: "100%", display: "flex", alignItems: "center", padding: 2 }}>
                     <textarea
                         ref={textRef}
                         value={sig.content || ""}
-                        onChange={e => {
-                            setSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s));
-                        }}
-                        onBlur={e => {
-                            pushSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s));
-                        }}
-                        onPointerDown={(e) => {
-                            if (isActive) e.stopPropagation();
-                        }}
+                        onChange={e => setSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s))}
+                        onBlur={e => pushSignatures(signatures.map((s: Signature) => s.id === sig.id ? { ...s, content: e.target.value } : s))}
+                        onPointerDown={e => { if (isActive) e.stopPropagation(); }}
                         data-sig-text="true"
-                        className="w-full h-full bg-transparent text-left outline-none resize-none overflow-hidden leading-tight whitespace-pre"
-                        wrap="off"
                         style={{
-                            fontSize: `${textFontSize}px`,
-                            lineHeight: 1.15,
+                            width: "100%", height: "100%",
+                            background: "transparent", outline: "none", resize: "none",
+                            border: "none", overflow: isActive ? "auto" : "hidden", lineHeight: 1.15,
+                            whiteSpace: "pre-wrap", fontSize: `${textFontSize}px`,
                             cursor: isActive ? "text" : "move",
                             pointerEvents: isActive ? "auto" : "none",
                             color: annotColor,
-                            fontFamily: sig.fontFamily === "Times-Roman" ? "Times New Roman" : sig.fontFamily === "Courier" ? "Courier New" : sig.fontFamily && sig.fontFamily !== "Helvetica" ? sig.fontFamily : "Arial, Helvetica, sans-serif",
+                            fontFamily: sig.fontFamily === "Times-Roman" ? "Times New Roman, serif" : sig.fontFamily === "Courier" ? "Courier New, monospace" : sig.fontFamily && sig.fontFamily !== "Helvetica" ? sig.fontFamily : "Arial, Helvetica, sans-serif",
                             fontWeight: sig.fontWeight || "bold",
                             fontStyle: sig.fontStyle || "normal",
                             textDecoration: sig.textDecoration || "none",
                         }}
-                        placeholder={sig.type === "date" ? "Date" : "Type here..."}
+                        placeholder={sig.type === "date" ? "Date" : "Type here…"}
                     />
                 </div>
             )}
 
-            {/* Action bar */}
-            <div 
-                className={`
-                    absolute ${sig.y < 0.12 ? "top-full mt-1" : "bottom-full mb-1"} left-1/2 -translate-x-1/2 z-50
-                    flex items-center pointer-events-auto whitespace-nowrap
-                    transition-all duration-150
-                    ${isActive ? "opacity-100 scale-100" : "opacity-0 scale-95 group-hover/sig:opacity-100 group-hover/sig:scale-100"}
-                `}
+            {/* Action toolbar */}
+            <div
+                style={{
+                    position: "absolute",
+                    [sig.y < 0.12 ? "top" : "bottom"]: "calc(100% + 6px)",
+                    left: "50%",
+                    zIndex: 50, pointerEvents: "auto",
+                    whiteSpace: "nowrap",
+                    opacity: isActive ? 1 : 0,
+                    transform: isActive ? "translateX(-50%) scale(1)" : "translateX(-50%) scale(0.95)",
+                    transition: "opacity 0.15s, transform 0.15s",
+                }}
                 onPointerDown={e => e.stopPropagation()}
                 onMouseDown={e => e.stopPropagation()}
             >
-                <div className="bg-[#1c1c1c] border border-zinc-700 text-[#f0ede8] px-1.5 py-1 rounded-lg shadow-xl flex items-center gap-1" style={{ fontSize: 0 }}>
-                    <span className="text-[9px] font-bold uppercase tracking-tight px-1.5 text-zinc-300">
-                        {sig.allPages ? "All" : `P${sig.pageIndex + 1}`}
+                <div style={{ display: "flex", alignItems: "center", gap: 2, padding: "4px 6px", background: "rgba(10,10,11,0.92)", border: `1px solid rgba(255,255,255,0.12)`, borderRadius: 10, boxShadow: "0 8px 24px rgba(0,0,0,0.5)", backdropFilter: "blur(12px)" }}>
+                    <span style={{ fontSize: 9, fontWeight: 800, color: "#a78bfa", padding: "0 5px", letterSpacing: "0.05em" }}>
+                        {sig.allPages ? "ALL PAGES" : `P${sig.pageIndex + 1}`}
                     </span>
-                    {!sig.allPages && (
-                        <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }}
-                            className="h-6 px-2 bg-white/[0.06] hover:bg-zinc-700 text-zinc-300 hover:text-[#f0ede8] rounded text-[8px] font-bold uppercase transition-colors"
-                            title="Apply to all pages">
-                            <Copy size={10} />
+                    <div style={{ width: 1, height: 14, background: "rgba(255,255,255,0.08)" }} />
+                    {!sig.allPages ? (
+                        <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }} title="Apply to all pages" style={{ height: 24, padding: "0 7px", background: "rgba(124,106,255,0.12)", border: "none", borderRadius: 6, color: "#a78bfa", fontSize: 9, fontWeight: 800, cursor: "pointer", letterSpacing: "0.04em", fontFamily: "inherit" }}>
+                            All pages
+                        </button>
+                    ) : (
+                        <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }} style={{ height: 24, padding: "0 7px", background: "rgba(124,106,255,0.2)", border: "none", borderRadius: 6, color: "#a78bfa", fontSize: 9, fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                            ✓ All
                         </button>
                     )}
-                    {sig.allPages && (
-                        <button onClick={e => { e.stopPropagation(); applyToAllPages(sig); }}
-                            className="h-6 px-2 bg-blue-600/30 hover:bg-blue-600/50 text-blue-300 rounded text-[8px] font-bold uppercase transition-colors"
-                            title="Remove from all pages">
-                            All ✓
-                        </button>
-                    )}
-                    <button onClick={e => { e.stopPropagation(); pushSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); setActiveSigId(null); }}
-                        className="h-6 w-6 flex items-center justify-center hover:bg-red-600/30 hover:text-red-400 text-zinc-400 rounded transition-colors"
-                        title="Delete">
+                    <button onClick={e => { e.stopPropagation(); pushSignatures(signatures.filter((s: Signature) => s.id !== sig.id)); setActiveSigId(null); }} title="Delete" style={{ width: 24, height: 24, borderRadius: 6, background: "none", border: "none", color: "rgba(239,68,68,0.6)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "color 0.15s" }}
+                        onMouseEnter={e => (e.currentTarget.style.color = "#ef4444")}
+                        onMouseLeave={e => (e.currentTarget.style.color = "rgba(239,68,68,0.6)")}
+                    >
                         <Trash2 size={11} />
                     </button>
                 </div>
@@ -746,9 +634,16 @@ function AnnotationOverlay({ sig, dimensions, zoom, signatures, setSignatures, p
 
             {/* Resize handle */}
             <div
-                className={`absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 border border-white rounded-sm cursor-nwse-resize z-[60] transition-opacity
-                    ${isActive ? "opacity-100" : "opacity-0 group-hover/sig:opacity-100"}`}
                 onPointerDown={startResize}
+                style={{
+                    position: "absolute", bottom: -5, right: -5,
+                    width: 12, height: 12,
+                    background: V.accent, border: "2px solid #fff",
+                    borderRadius: 3, cursor: "nwse-resize", zIndex: 60,
+                    opacity: isActive ? 1 : 0,
+                    transition: "opacity 0.15s",
+                    boxShadow: `0 2px 8px rgba(124,106,255,0.5)`,
+                }}
             />
         </div>
     );

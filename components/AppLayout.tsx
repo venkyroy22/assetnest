@@ -63,6 +63,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
     }, []);
 
     const hideUI = isBillingView || isAppFullscreen || isEmbed;
+    const showSidebar = !hideUI && !isHome && pathname.replace(/\/$/, "") === "/tools";
 
     return (
         <div className="flex flex-col min-h-screen" style={{ background: "#141414", color: "#f0ede8" }}>
@@ -79,7 +80,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
             {/* Body */}
             <div className="flex flex-1">
 
-                {!hideUI && (
+                {showSidebar && (
                     <div className="z-[1000]">
                         <Sidebar />
                     </div>
@@ -88,7 +89,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                 <main
                     className={`flex flex-col flex-1 w-full transition-[padding-left] duration-500 
                     ${isNavigating ? "!transition-none" : ""} 
-                    ${(hideUI || isHome)
+                    ${(!showSidebar)
                             ? "pl-0"
                             : (isOpen ? "lg:pl-[256px]" : "lg:pl-[64px]")}`}
                 >

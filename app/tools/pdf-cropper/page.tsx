@@ -1,5 +1,6 @@
 "use client";
 
+import "@/lib/pdfjs-polyfill";
 import { useState, useRef, useCallback, useEffect } from "react";
 import {
     Upload, Download, RefreshCw, Crop, Info, X, Check,
@@ -49,8 +50,8 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
     useEffect(() => {
         let cancelled = false;
         (async () => {
-            const pdfjsLib = await import("pdfjs-dist");
-            pdfjsLib.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+            const pdfjsLib = await import("pdfjs-dist/legacy/build/pdf.mjs");
+            pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
             const ab = await file.arrayBuffer();
             const pdf = await pdfjsLib.getDocument({ data: ab }).promise;
             const page = await pdf.getPage(pageIndex + 1);

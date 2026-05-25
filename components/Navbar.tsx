@@ -80,6 +80,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const [results, setResults] = useState<typeof SEARCH_INDEX>([]);
     const [showResults, setShowResults] = useState(false);
     const searchRef = useRef<HTMLDivElement>(null);
+    const megaRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
     const pathname = usePathname();
     const { settings, updateSettings, setSettingsOpen } = useSettings();
@@ -87,7 +88,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     const showSolidBg = !isHome;
 
     const [megaOpen, setMegaOpen] = useState(false);
-    const megaTimeout = useRef<NodeJS.Timeout | null>(null);
+    const toolsLinkRef = useRef<HTMLDivElement>(null);
     const navRef = useRef<HTMLElement>(null);
 
     useEffect(() => {
@@ -128,6 +129,22 @@ const Navbar = ({ className = "" }: { className?: string }) => {
     }, []);
 
     useEffect(() => {
+        const handler = (e: MouseEvent) => {
+            if (
+                megaOpen &&
+                megaRef.current &&
+                !megaRef.current.contains(e.target as Node) &&
+                toolsLinkRef.current &&
+                !toolsLinkRef.current.contains(e.target as Node)
+            ) {
+                setMegaOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handler);
+        return () => document.removeEventListener("mousedown", handler);
+    }, [megaOpen]);
+
+    useEffect(() => {
         setMobileMenuOpen(false);
         setMobileSearchOpen(false);
         setMegaOpen(false);
@@ -162,18 +179,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const openMega = useCallback(() => {
-        if (megaTimeout.current) clearTimeout(megaTimeout.current);
-        setMegaOpen(true);
-    }, []);
 
-    const closeMega = useCallback(() => {
-        megaTimeout.current = setTimeout(() => setMegaOpen(false), 200);
-    }, []);
-
-    const keepMega = useCallback(() => {
-        if (megaTimeout.current) clearTimeout(megaTimeout.current);
-    }, []);
 
     if (!mounted) {
         return (
@@ -242,8 +248,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 <div
                                     key={link.href}
                                     className="relative"
-                                    onMouseEnter={hasMega ? openMega : undefined}
-                                    onMouseLeave={hasMega ? closeMega : undefined}
+                                    ref={link.hasMega ? toolsLinkRef : null}
                                 >
                                     <Link
                                         href={link.href}
@@ -369,6 +374,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
 
             {/* ══════════════════════ MEGA DROPDOWN ══════════════════════ */}
             <div
+                ref={megaRef}
                 className="hidden md:block fixed left-0 right-0 z-[999] transition-all duration-300"
                 style={{
                     top: "80px",
@@ -376,8 +382,6 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                     transform: megaOpen ? "translateY(0)" : "translateY(-8px)",
                     pointerEvents: megaOpen ? "auto" : "none",
                 }}
-                onMouseEnter={keepMega}
-                onMouseLeave={closeMega}
             >
                 <div className="mx-4 lg:mx-10 rounded-2xl shadow-2xl overflow-hidden"
                     style={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,0.08)" }}

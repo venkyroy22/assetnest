@@ -2,955 +2,774 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
-import { Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2, Image as ImageIcon, Smile, Star, ChevronDown, Maximize, ImagePlus, Square, Check, ShieldCheck, Info } from "lucide-react";
-import { Accordion, AccordionItem } from "@/components/Accordion";
-import HelpModal from "@/components/HelpModal";
+import {
+  Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2,
+  Image as ImageIcon, Smile, Star, ChevronDown, Maximize,
+  ImagePlus, Square, Check, ShieldCheck, Info, Zap, Lock, Globe
+} from "lucide-react";
 
-const FG_PRESETS = ['#000000', '#27272a', '#1e3a8a', '#4c1d95', '#be123c', '#047857'];
-const BG_PRESETS = ['#ffffff', '#f4f4f5', '#fffbeb', '#f0fdf4', '#eff6ff', '#faf5ff'];
+/* ─── Design Tokens ─── */
+const PALETTE = {
+  bg: "#0a0a0b",
+  surface: "#111113",
+  surfaceHover: "#18181b",
+  border: "rgba(255,255,255,0.06)",
+  borderHover: "rgba(255,255,255,0.12)",
+  accent: "#c8f135",        // vivid lime — the one bold accent
+  accentDim: "#8fb320",
+  textPrimary: "#f5f5f4",
+  textSecondary: "#a1a1aa",
+  textMuted: "#52525b",
+};
 
-type PatternType = 'square' | 'dots' | 'rounded' | 'star' | 'emoji' | 'logo';
-type CornerType = 'square' | 'dots' | 'rounded' | 'heart';
+const FG_PRESETS = ["#0a0a0b", "#1e293b", "#1e3a8a", "#581c87", "#881337", "#064e3b"];
+const BG_PRESETS = ["#ffffff", "#f8fafc", "#fffbeb", "#f0fdf4", "#eff6ff", "#fdf4ff"];
+
+type PatternType = "square" | "dots" | "rounded" | "star" | "emoji" | "logo";
+type CornerType  = "square" | "dots" | "rounded" | "heart";
+
+/* ─── Tiny helpers ─── */
+const Tag = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
+  <span style={{
+    display: "inline-flex", alignItems: "center", gap: 6,
+    padding: "4px 10px", borderRadius: 99,
+    background: "rgba(200,241,53,0.07)",
+    border: "1px solid rgba(200,241,53,0.15)",
+    fontSize: 11, fontWeight: 600, color: PALETTE.accent,
+    letterSpacing: "0.04em",
+  }}>
+    {icon}{label}
+  </span>
+);
+
+const SectionCard = ({
+  id, open, onToggle, icon, title, subtitle, children,
+}: {
+  id: string; open: boolean; onToggle: () => void;
+  icon: React.ReactNode; title: string; subtitle: string; children: React.ReactNode;
+}) => (
+  <div style={{
+    borderRadius: 20,
+    border: `1px solid ${open ? "rgba(200,241,53,0.2)" : PALETTE.border}`,
+    background: open ? "rgba(200,241,53,0.025)" : PALETTE.surface,
+    overflow: "hidden",
+    transition: "border-color 0.25s, background 0.25s",
+  }}>
+    <button
+      onClick={onToggle}
+      style={{
+        width: "100%", display: "flex", alignItems: "center",
+        justifyContent: "space-between",
+        padding: "18px 22px", cursor: "pointer",
+        background: "none", border: "none",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: 12,
+          background: open ? "rgba(200,241,53,0.1)" : "rgba(255,255,255,0.04)",
+          border: `1px solid ${open ? "rgba(200,241,53,0.25)" : PALETTE.border}`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          color: open ? PALETTE.accent : PALETTE.textMuted,
+          transition: "all 0.25s", flexShrink: 0,
+        }}>{icon}</div>
+        <div style={{ textAlign: "left" }}>
+          <div style={{ fontSize: 14, fontWeight: 700, color: PALETTE.textPrimary, lineHeight: 1.2 }}>{title}</div>
+          <div style={{ fontSize: 11, color: PALETTE.textMuted, marginTop: 2 }}>{subtitle}</div>
+        </div>
+      </div>
+      <ChevronDown size={16} style={{
+        color: PALETTE.textMuted,
+        transform: open ? "rotate(180deg)" : "rotate(0deg)",
+        transition: "transform 0.3s",
+        flexShrink: 0,
+      }} />
+    </button>
+
+    <div style={{
+      maxHeight: open ? 2000 : 0,
+      overflow: "hidden",
+      opacity: open ? 1 : 0,
+      transition: "max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s",
+    }}>
+      <div style={{
+        padding: "0 22px 22px",
+        borderTop: `1px solid rgba(255,255,255,0.05)`,
+        paddingTop: 20,
+      }}>
+        {children}
+      </div>
+    </div>
+  </div>
+);
+
+const PatternBtn = ({ id, label, icon, active, onClick }: {
+  id: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void;
+}) => (
+  <button onClick={onClick} style={{
+    display: "flex", flexDirection: "column", alignItems: "center",
+    justifyContent: "center", gap: 8,
+    padding: "14px 8px", borderRadius: 14,
+    border: `1px solid ${active ? PALETTE.accent : PALETTE.border}`,
+    background: active ? "rgba(200,241,53,0.08)" : PALETTE.bg,
+    color: active ? PALETTE.accent : PALETTE.textMuted,
+    fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+    cursor: "pointer", transition: "all 0.2s",
+    textTransform: "uppercase",
+  }}>
+    <div style={{ opacity: active ? 1 : 0.6 }}>{icon}</div>
+    <span style={{ color: active ? PALETTE.accent : PALETTE.textSecondary }}>{label}</span>
+  </button>
+);
 
 export default function QRGeneratorPage() {
-    const [url, setUrl] = useState("");
-    const [fgColor, setFgColor] = useState("#000000");
-    const [bgColor, setBgColor] = useState("#ffffff");
+  const [url, setUrl]           = useState("");
+  const [fgColor, setFgColor]   = useState("#000000");
+  const [bgColor, setBgColor]   = useState("#ffffff");
+  const [patternType, setPatternType] = useState<PatternType>("rounded");
+  const [cornerType, setCornerType]   = useState<CornerType>("rounded");
+  const [openSection, setOpenSection] = useState<string>("pattern");
+  const [mounted, setMounted]   = useState(false);
+  const [copied, setCopied]     = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxSrc, setLightboxSrc]   = useState<string | null>(null);
+  const [urlFocused, setUrlFocused]     = useState(false);
 
-    const [patternType, setPatternType] = useState<PatternType>("square");
-    const [cornerType, setCornerType] = useState<CornerType>("square");
-    const [openSection, setOpenSection] = useState<string>("");
-    const [headerVisible, setHeaderVisible] = useState(false);
-    const [showHelp, setShowHelp] = useState(false);
+  const [emojiChar, setEmojiChar]   = useState("✦");
+  const [patternLogo, setPatternLogo] = useState<string | null>(null);
+  const [centerLogo, setCenterLogo]   = useState<string | null>(null);
 
-    useEffect(() => {
-        const t = setTimeout(() => setHeaderVisible(true), 100);
-        return () => clearTimeout(t);
-    }, []);
+  const canvasRef      = useRef<HTMLCanvasElement>(null);
+  const patternInputRef = useRef<HTMLInputElement>(null);
+  const centerInputRef  = useRef<HTMLInputElement>(null);
 
-    const [emojiChar, setEmojiChar] = useState("🔥");
-    const [patternLogo, setPatternLogo] = useState<string | null>(null);
+  useEffect(() => { const t = setTimeout(() => setMounted(true), 60); return () => clearTimeout(t); }, []);
 
-    const [cornerEmojiChar, setCornerEmojiChar] = useState("💎");
-    const [cornerLogo, setCornerLogo] = useState<string | null>(null);
+  const loadImage = (src: string): Promise<HTMLImageElement> =>
+    new Promise((res, rej) => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => res(i); i.onerror = rej; i.src = src; });
 
-    const [centerLogo, setCenterLogo] = useState<string | null>(null);
+  const drawStar = (ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outer: number, inner: number) => {
+    let rot = (Math.PI / 2) * 3, step = Math.PI / spikes;
+    ctx.beginPath(); ctx.moveTo(cx, cy - outer);
+    for (let i = 0; i < spikes; i++) {
+      ctx.lineTo(cx + Math.cos(rot) * outer, cy + Math.sin(rot) * outer); rot += step;
+      ctx.lineTo(cx + Math.cos(rot) * inner, cy + Math.sin(rot) * inner); rot += step;
+    }
+    ctx.lineTo(cx, cy - outer); ctx.closePath(); ctx.fill();
+  };
 
-    const canvasRef = useRef<HTMLCanvasElement>(null);
-    const patternInputRef = useRef<HTMLInputElement>(null);
-    const cornerInputRef = useRef<HTMLInputElement>(null);
-    const centerInputRef = useRef<HTMLInputElement>(null);
+  const drawHeart = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
+    const d = Math.min(w, h), k = x + w / 2;
+    ctx.beginPath(); ctx.moveTo(k, y + d / 4);
+    ctx.quadraticCurveTo(k, y, x + w / 4, y); ctx.quadraticCurveTo(x, y, x, y + d / 2.25);
+    ctx.quadraticCurveTo(x, y + d * 0.65, k, y + d); ctx.quadraticCurveTo(x + w, y + d * 0.65, x + w, y + d / 2.25);
+    ctx.quadraticCurveTo(x + w, y, x + w * 0.75, y); ctx.quadraticCurveTo(k, y, k, y + d / 4);
+    ctx.fill();
+  };
 
-    const [lightboxOpen, setLightboxOpen] = useState(false);
-    const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const renderQR = useCallback(async (isDownload = false) => {
+    const canvas = isDownload ? document.createElement("canvas") : canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
+    const size = isDownload ? 2048 : 1024;
+    canvas.width = size; canvas.height = size;
 
-    const openLightbox = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        setLightboxSrc(canvas.toDataURL("image/png"));
-        setLightboxOpen(true);
-    };
+    let matrix: any;
+    try {
+      const qr = (QRCode as any).create(url || "https://assetnest.design", { errorCorrectionLevel: "H" });
+      matrix = qr.modules;
+    } catch { return; }
 
-    const loadImage = (src: string): Promise<HTMLImageElement> => {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.crossOrigin = "anonymous";
-            img.onload = () => resolve(img);
-            img.onerror = reject;
-            img.src = src;
-        });
-    };
+    const margin = size * 0.05;
+    const innerSize = size - margin * 2;
+    const moduleCount = matrix.size;
+    const cellSize = innerSize / moduleCount;
 
-    const drawStar = (ctx: CanvasRenderingContext2D, cx: number, cy: number, spikes: number, outerRadius: number, innerRadius: number) => {
-        let rot = (Math.PI / 2) * 3;
-        let x = cx;
-        let y = cy;
-        const step = Math.PI / spikes;
+    let pImg: HTMLImageElement | null = null;
+    if (patternType === "logo" && patternLogo) {
+      try { pImg = await loadImage(patternLogo); } catch {}
+    }
+    let cImg: HTMLImageElement | null = null;
+    if (centerLogo) { try { cImg = await loadImage(centerLogo); } catch {} }
 
-        ctx.beginPath();
-        ctx.moveTo(cx, cy - outerRadius);
-        for (let i = 0; i < spikes; i++) {
-            x = cx + Math.cos(rot) * outerRadius;
-            y = cy + Math.sin(rot) * outerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
+    ctx.fillStyle = bgColor; ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = fgColor; ctx.textAlign = "center"; ctx.textBaseline = "middle";
 
-            x = cx + Math.cos(rot) * innerRadius;
-            y = cy + Math.sin(rot) * innerRadius;
-            ctx.lineTo(x, y);
-            rot += step;
-        }
-        ctx.lineTo(cx, cy - outerRadius);
-        ctx.closePath();
-        ctx.fill();
-    };
-
-    const drawHeart = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) => {
-        const d = Math.min(w, h);
-        const k = x + w / 2;
-        ctx.beginPath();
-        ctx.moveTo(k, y + d / 4);
-        ctx.quadraticCurveTo(k, y, x + w / 4, y);
-        ctx.quadraticCurveTo(x, y, x, y + d / 2.25);
-        ctx.quadraticCurveTo(x, y + d * 0.65, k, y + d);
-        ctx.quadraticCurveTo(x + w, y + d * 0.65, x + w, y + d / 2.25);
-        ctx.quadraticCurveTo(x + w, y, x + w * 0.75, y);
-        ctx.quadraticCurveTo(k, y, k, y + d / 4);
-        ctx.fill();
-    };
-
-    const renderQR = useCallback(async (isDownload = false) => {
-        const canvas = isDownload ? document.createElement('canvas') : canvasRef.current;
-        if (!canvas) return;
-
-        const ctx = canvas.getContext('2d');
-        if (!ctx) return;
-
-        // Force native high-res render; 2048 for download, 1024 for on-screen (CSS handles scale-down)
-        const size = isDownload ? 2048 : 1024;
-        canvas.width = size;
-        canvas.height = size;
-
-        let matrix;
-        try {
-            const qr = QRCode.create(url || "https://assetnest.design", { errorCorrectionLevel: 'H' });
-            matrix = qr.modules;
-        } catch (e) {
-            return; // invalid URL data
-        }
-
-        const margin = size * 0.05; // 5% Quiet Zone minimum
-        const innerSize = size - margin * 2;
-        const moduleCount = matrix.size;
-        const cellSize = innerSize / moduleCount;
-
-        // Preload images if needed
-        let pImg: HTMLImageElement | null = null;
-        if (patternType === 'logo' && patternLogo) {
-            try { pImg = await loadImage(patternLogo); } catch (e) { console.error(e); }
-        }
-
-        let cImg: HTMLImageElement | null = null;
-        if (centerLogo) {
-            try { cImg = await loadImage(centerLogo); } catch (e) { console.error(e); }
-        }
-
-        // Fill Base Background
-        ctx.fillStyle = bgColor;
-        ctx.fillRect(0, 0, size, size);
-
-        // Prepare colors and fonts
+    const drawFinder = (startX: number, startY: number) => {
+      const x = margin + startX * cellSize, y = margin + startY * cellSize;
+      const s7 = 7 * cellSize, s5 = 5 * cellSize, s3 = 3 * cellSize;
+      ctx.fillStyle = fgColor;
+      if (cornerType === "rounded") {
+        const r = cellSize * 2;
+        ctx.beginPath(); ctx.roundRect(x, y, s7, s7, r); ctx.fill();
+        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.roundRect(x + cellSize, y + cellSize, s5, s5, r - cellSize); ctx.fill();
+        ctx.fillStyle = fgColor; ctx.beginPath(); ctx.roundRect(x + cellSize * 2, y + cellSize * 2, s3, s3, cellSize); ctx.fill();
+      } else if (cornerType === "dots") {
+        const cx = x + s7 / 2, cy = y + s7 / 2;
+        ctx.beginPath(); ctx.arc(cx, cy, s7 / 2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.arc(cx, cy, s5 / 2, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = fgColor; ctx.beginPath(); ctx.arc(cx, cy, s3 / 2, 0, Math.PI * 2); ctx.fill();
+      } else if (cornerType === "heart") {
+        const r = cellSize * 0.5;
+        ctx.beginPath(); ctx.roundRect(x, y, s7, s7, r); ctx.fill();
+        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.roundRect(x + cellSize, y + cellSize, s5, s5, 0); ctx.fill();
         ctx.fillStyle = fgColor;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const drawFinder = (startX: number, startY: number) => {
-            const x = margin + startX * cellSize;
-            const y = margin + startY * cellSize;
-            const s7 = 7 * cellSize;
-            const s5 = 5 * cellSize;
-            const s3 = 3 * cellSize;
-
-            ctx.fillStyle = fgColor;
-            // STEP 1: Always draw a strictly scannable Outer Ring (7x7 Dark, 5x5 Light)
-            // This prevents custom shapes like hearts from breaking scanner bounds
-            ctx.fillStyle = fgColor;
-            if (cornerType === 'rounded') {
-                const r = cellSize * 2;
-                ctx.beginPath();
-                ctx.roundRect(x, y, s7, s7, r);
-                ctx.fill();
-                ctx.fillStyle = bgColor;
-                ctx.beginPath();
-                ctx.roundRect(x + cellSize, y + cellSize, s5, s5, r - cellSize);
-                ctx.fill();
-            } else if (cornerType === 'dots') {
-                const cx = x + s7 / 2;
-                const cy = y + s7 / 2;
-                ctx.beginPath();
-                ctx.arc(cx, cy, s7 / 2, 0, Math.PI * 2);
-                ctx.fill();
-                ctx.fillStyle = bgColor;
-                ctx.beginPath();
-                ctx.arc(cx, cy, s5 / 2, 0, Math.PI * 2);
-                ctx.fill();
-            } else {
-                // For square, heart, emoji, and logo -> Fallback to a safe standard frame
-                // We add a subtle rounding to custom shapes for aesthetics, but keep it sharp enough to scan reliably
-                const isCustom = cornerType === 'heart';
-                const r = isCustom ? cellSize * 0.5 : 0;
-                ctx.beginPath();
-                ctx.roundRect(x, y, s7, s7, r);
-                ctx.fill();
-                ctx.fillStyle = bgColor;
-                ctx.beginPath();
-                ctx.roundRect(x + cellSize, y + cellSize, s5, s5, Math.max(0, r - cellSize));
-                ctx.fill();
-            }
-
-            // STEP 2: Draw the Inner Core (3x3 area) with the custom styling
-            if (cornerType === 'rounded') {
-                ctx.fillStyle = fgColor;
-                ctx.beginPath();
-                ctx.roundRect(x + cellSize * 2, y + cellSize * 2, s3, s3, cellSize);
-                ctx.fill();
-            } else if (cornerType === 'dots') {
-                ctx.fillStyle = fgColor;
-                const cx = x + s7 / 2;
-                const cy = y + s7 / 2;
-                ctx.beginPath();
-                ctx.arc(cx, cy, s3 / 2, 0, Math.PI * 2);
-                ctx.fill();
-            } else if (cornerType === 'heart') {
-                ctx.fillStyle = fgColor;
-                // Expanded shape to act as a solid 3x3 dark-mass block for the scanner
-                drawHeart(ctx, x + s7 / 2 - (s3 * 1.15) / 2, y + s7 / 2 - (s3 * 1.15) / 2, s3 * 1.15, s3 * 1.15);
-            } else {
-                ctx.fillStyle = fgColor;
-                ctx.fillRect(x + cellSize * 2, y + cellSize * 2, s3, s3);
-            }
-        };
-
-        // Calculate center logo bounds to avoid drawing modules underneath it
-        let logoBounds: { xMin: number, xMax: number, yMin: number, yMax: number, cWidth: number, cHeight: number, isCircle: boolean, cx: number, cy: number, radius: number } | null = null;
-        if (cImg) {
-            const maxLogoSize = innerSize * 0.22;
-
-            // Preserve Center Logo Aspect Ratio
-            const cRatio = cImg.width / cImg.height;
-            let cWidth = maxLogoSize;
-            let cHeight = maxLogoSize;
-            if (cRatio > 1) {
-                cHeight = maxLogoSize / cRatio;
-            } else {
-                cWidth = maxLogoSize * cRatio;
-            }
-
-            const padding = margin * 0.6;
-            const lx = (size - cWidth) / 2;
-            const ly = (size - cHeight) / 2;
-
-            logoBounds = {
-                xMin: lx - padding,
-                xMax: lx + cWidth + padding,
-                yMin: ly - padding,
-                yMax: ly + cHeight + padding,
-                cWidth,
-                cHeight,
-                isCircle: true,
-                cx: size / 2,
-                cy: size / 2,
-                radius: Math.max(cWidth, cHeight) / 2 + padding
-            };
-        }
-
-        // Iterating over QR matrix
-        for (let r = 0; r < moduleCount; r++) {
-            for (let c = 0; c < moduleCount; c++) {
-                const isDark = matrix.data[r * moduleCount + c];
-                if (!isDark) continue;
-
-                const cx = margin + c * cellSize + cellSize / 2;
-                const cy = margin + r * cellSize + cellSize / 2;
-                const x = margin + c * cellSize;
-                const y = margin + r * cellSize;
-
-                // Skip rendering individual finder modules, we draw them cleanly later
-                const inFinder = (r <= 6 && c <= 6) || (r <= 6 && c >= moduleCount - 7) || (r >= moduleCount - 7 && c <= 6);
-                if (inFinder) continue;
-
-                // Skip rendering modules that fall inside the center logo box
-                if (logoBounds) {
-                    if (logoBounds.isCircle) {
-                        // Calculate distance from center of QR to center of this module
-                        const dist = Math.sqrt(Math.pow(cx - logoBounds.cx, 2) + Math.pow(cy - logoBounds.cy, 2));
-                        // Give it a tiny bit of buffer based on cellSize so squares don't clip the pure circle
-                        if (dist < logoBounds.radius + cellSize * 0.4) {
-                            continue;
-                        }
-                    } else {
-                        if (
-                            x + cellSize > logoBounds.xMin &&
-                            x < logoBounds.xMax &&
-                            y + cellSize > logoBounds.yMin &&
-                            y < logoBounds.yMax
-                        ) {
-                            continue;
-                        }
-                    }
-                }
-
-                ctx.fillStyle = fgColor;
-                if (patternType === 'square') {
-                    ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
-                } else if (patternType === 'rounded') {
-                    ctx.beginPath();
-                    ctx.roundRect(x, y, cellSize, cellSize, cellSize * 0.4);
-                    ctx.fill();
-                } else if (patternType === 'dots') {
-                    ctx.beginPath();
-                    ctx.arc(cx, cy, (cellSize / 2) * 0.9, 0, Math.PI * 2);
-                    ctx.fill();
-                } else if (patternType === 'star') {
-                    drawStar(ctx, cx, cy, 5, cellSize / 1.8, cellSize / 3.8);
-                } else if (patternType === 'emoji') {
-                    ctx.font = `${cellSize * 1.0}px Arial`;
-                    ctx.fillText(emojiChar || "🔥", cx, cy + cellSize * 0.1);
-                } else if (patternType === 'logo' && pImg) {
-                    // Preserve Pattern Logo Aspect Ratio
-                    const pRatio = pImg.width / pImg.height;
-                    let pWidth = cellSize;
-                    let pHeight = cellSize;
-                    if (pRatio > 1) {
-                        pHeight = cellSize / pRatio;
-                    } else {
-                        pWidth = cellSize * pRatio;
-                    }
-                    const px = x + (cellSize - pWidth) / 2;
-                    const py = y + (cellSize - pHeight) / 2;
-                    ctx.drawImage(pImg, px, py, pWidth, pHeight);
-                } else {
-                    ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
-                }
-            }
-        }
-
-        // Draw the 3 Finders High-Res
-        drawFinder(0, 0);
-        drawFinder(moduleCount - 7, 0);
-        drawFinder(0, moduleCount - 7);
-
-        // Draw Center Logo over the QR Code
-        if (cImg && logoBounds) {
-            // Thick protective border around logo for clean scanning
-            ctx.fillStyle = bgColor;
-            ctx.beginPath();
-            if (logoBounds.isCircle) {
-                ctx.arc(logoBounds.cx, logoBounds.cy, logoBounds.radius, 0, Math.PI * 2);
-            } else {
-                ctx.roundRect(logoBounds.xMin, logoBounds.yMin, logoBounds.xMax - logoBounds.xMin, logoBounds.yMax - logoBounds.yMin, size * 0.02);
-            }
-            ctx.fill();
-
-            const lx = logoBounds.xMin + margin * 0.6;
-            const ly = logoBounds.yMin + margin * 0.6;
-            ctx.drawImage(cImg, lx, ly, logoBounds.cWidth, logoBounds.cHeight);
-        }
-
-        if (isDownload) {
-            const dataUrl = canvas.toDataURL("image/png");
-            const a = document.createElement('a');
-            a.href = dataUrl;
-            a.download = "assetnest-custom-qr.png";
-            a.click();
-        }
-    }, [url, fgColor, bgColor, patternType, emojiChar, patternLogo, centerLogo, cornerType, cornerEmojiChar, cornerLogo]);
-
-    // Re-render when dependencies change
-    useEffect(() => {
-        renderQR(false);
-    }, [renderQR]);
-
-    const handleCopyUrl = () => {
-        navigator.clipboard.writeText(url);
+        drawHeart(ctx, x + s7 / 2 - (s3 * 1.15) / 2, y + s7 / 2 - (s3 * 1.15) / 2, s3 * 1.15, s3 * 1.15);
+      } else {
+        ctx.fillRect(x, y, s7, s7);
+        ctx.fillStyle = bgColor; ctx.fillRect(x + cellSize, y + cellSize, s5, s5);
+        ctx.fillStyle = fgColor; ctx.fillRect(x + cellSize * 2, y + cellSize * 2, s3, s3);
+      }
     };
 
-    const handlePatternLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => setPatternLogo(event.target?.result as string);
-            reader.readAsDataURL(file);
+    let logoBounds: any = null;
+    if (cImg) {
+      const maxLogoSize = innerSize * 0.22;
+      const cRatio = cImg.width / cImg.height;
+      let cWidth = maxLogoSize, cHeight = maxLogoSize;
+      if (cRatio > 1) cHeight = maxLogoSize / cRatio;
+      else cWidth = maxLogoSize * cRatio;
+      const padding = margin * 0.6;
+      logoBounds = {
+        xMin: (size - cWidth) / 2 - padding, xMax: (size - cWidth) / 2 + cWidth + padding,
+        yMin: (size - cHeight) / 2 - padding, yMax: (size - cHeight) / 2 + cHeight + padding,
+        cWidth, cHeight, isCircle: true, cx: size / 2, cy: size / 2,
+        radius: Math.max(cWidth, cHeight) / 2 + padding,
+      };
+    }
+
+    for (let r = 0; r < moduleCount; r++) {
+      for (let c = 0; c < moduleCount; c++) {
+        if (!matrix.data[r * moduleCount + c]) continue;
+        const cx = margin + c * cellSize + cellSize / 2;
+        const cy = margin + r * cellSize + cellSize / 2;
+        const x  = margin + c * cellSize;
+        const y  = margin + r * cellSize;
+        if ((r <= 6 && c <= 6) || (r <= 6 && c >= moduleCount - 7) || (r >= moduleCount - 7 && c <= 6)) continue;
+        if (logoBounds?.isCircle) {
+          const dist = Math.sqrt((cx - logoBounds.cx) ** 2 + (cy - logoBounds.cy) ** 2);
+          if (dist < logoBounds.radius + cellSize * 0.4) continue;
+        } else if (logoBounds) {
+          if (x + cellSize > logoBounds.xMin && x < logoBounds.xMax && y + cellSize > logoBounds.yMin && y < logoBounds.yMax) continue;
         }
-    };
-
-    const handleCornerLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => setCornerLogo(event.target?.result as string);
-            reader.readAsDataURL(file);
+        ctx.fillStyle = fgColor;
+        if (patternType === "square") {
+          ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
+        } else if (patternType === "rounded") {
+          ctx.beginPath(); ctx.roundRect(x, y, cellSize, cellSize, cellSize * 0.35); ctx.fill();
+        } else if (patternType === "dots") {
+          ctx.beginPath(); ctx.arc(cx, cy, (cellSize / 2) * 0.85, 0, Math.PI * 2); ctx.fill();
+        } else if (patternType === "star") {
+          drawStar(ctx, cx, cy, 5, cellSize / 1.8, cellSize / 3.8);
+        } else if (patternType === "emoji") {
+          ctx.font = `${cellSize * 0.95}px Arial`;
+          ctx.fillText(emojiChar || "✦", cx, cy + cellSize * 0.1);
+        } else if (patternType === "logo" && pImg) {
+          const pRatio = pImg.width / pImg.height;
+          let pw = cellSize, ph = cellSize;
+          if (pRatio > 1) ph = cellSize / pRatio; else pw = cellSize * pRatio;
+          ctx.drawImage(pImg, x + (cellSize - pw) / 2, y + (cellSize - ph) / 2, pw, ph);
+        } else {
+          ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
         }
-    };
+      }
+    }
 
-    const handleCenterLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (event) => setCenterLogo(event.target?.result as string);
-            reader.readAsDataURL(file);
-        }
-    };
+    drawFinder(0, 0); drawFinder(moduleCount - 7, 0); drawFinder(0, moduleCount - 7);
 
-    return (
-        <div className="py-10 lg:py-16 min-h-screen bg-[#141414] px-6 md:px-10 relative">
-            {/* Page-wide background grid to match Tools page */}
-            <div
-                className="fixed inset-0 pointer-events-none z-0"
-                style={{
-                    backgroundImage: `radial-gradient(circle, rgba(255,255,255,0.035) 1px, transparent 1px)`,
-                    backgroundSize: "32px 32px",
-                    maskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
-                    WebkitMaskImage: "radial-gradient(ellipse 80% 70% at 50% 0%, #000 40%, transparent 100%)",
-                }}
-            />
+    if (cImg && logoBounds) {
+      ctx.fillStyle = bgColor;
+      ctx.beginPath(); ctx.arc(logoBounds.cx, logoBounds.cy, logoBounds.radius, 0, Math.PI * 2); ctx.fill();
+      ctx.drawImage(cImg, logoBounds.xMin + margin * 0.6, logoBounds.yMin + margin * 0.6, logoBounds.cWidth, logoBounds.cHeight);
+    }
 
-            <div className="relative z-10 w-full">
-                <header className="mb-8 lg:mb-16 text-center relative group">
-                    <button 
-                        onClick={() => setShowHelp(true)}
-                        className="absolute -top-2 -left-2 p-1.5 bg-zinc-900/80 hover:bg-white/[0.06] border border-white/[0.07] rounded-full text-zinc-400 hover:text-[#f0ede8] transition-all shadow-xl z-20"
-                        title="View Information"
-                    >
-                        <Info size={12} />
-                    </button>
-                    <div
-                        style={{
-                            opacity: headerVisible ? 1 : 0,
-                            transform: headerVisible ? "translateY(0)" : "translateY(-14px)",
-                            transition: "opacity 0.5s ease, transform 0.5s cubic-bezier(0.23,1,0.32,1)",
-                        }}
-                        className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 mb-6"
-                    >
-                        <QrCode size={12} className="text-zinc-500" />
-                        <span className="text-xs font-semibold tracking-wide text-zinc-400">Pro Utilities</span>
-                    </div>
-                    <h1
-                        style={{
-                            opacity: headerVisible ? 1 : 0,
-                            transform: headerVisible ? "translateY(0)" : "translateY(20px)",
-                            transition: "opacity 0.55s ease 0.06s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.06s",
-                        }}
-                        className="text-3xl md:text-7xl font-black tracking-tight mb-4 text-[#f0ede8] leading-none"
-                    >
-                        Custom <span className="italic text-zinc-700">QR Engine</span>
-                    </h1>
-                    <p
-                        style={{
-                            opacity: headerVisible ? 1 : 0,
-                            transform: headerVisible ? "translateY(0)" : "translateY(14px)",
-                            transition: "opacity 0.55s ease 0.12s, transform 0.55s cubic-bezier(0.23,1,0.32,1) 0.12s",
-                        }}
-                        className="text-sm text-zinc-500 max-w-xl mx-auto font-medium leading-relaxed"
-                    >
-                        The fully unrestricted QR generator. Build QRs out of stars, emojis, embedded brand patterns, and custom overlays.
-                    </p>
-                </header>
+    if (isDownload) {
+      const dataUrl = canvas.toDataURL("image/png");
+      const a = document.createElement("a"); a.href = dataUrl; a.download = "qr-code.png"; a.click();
+    }
+  }, [url, fgColor, bgColor, patternType, emojiChar, patternLogo, centerLogo, cornerType]);
 
-                <div
-                    style={{
-                        opacity: headerVisible ? 1 : 0,
-                        transform: headerVisible ? "translateY(0)" : "translateY(20px)",
-                        transition: "opacity 0.6s ease 0.2s, transform 0.6s cubic-bezier(0.23,1,0.32,1) 0.2s",
-                    }}
-                    className="max-w-6xl mx-auto flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 relative"
+  useEffect(() => { renderQR(false); }, [renderQR]);
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(url);
+    setCopied(true); setTimeout(() => setCopied(false), 2000);
+  };
+
+  const openLightbox = () => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    setLightboxSrc(canvas.toDataURL("image/png")); setLightboxOpen(true);
+  };
+
+  const toggle = (id: string) => setOpenSection(prev => prev === id ? "" : id);
+
+  const fileUpload = (ref: React.RefObject<HTMLInputElement | null>, setter: (v: string) => void) => {
+    const file = ref.current?.files?.[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => setter(e.target?.result as string);
+    reader.readAsDataURL(file);
+  };
+
+  /* ─── Fade-in ─── */
+  const fadeStyle = (delay: number) => ({
+    opacity: mounted ? 1 : 0,
+    transform: mounted ? "translateY(0)" : "translateY(16px)",
+    transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
+  });
+
+  return (
+    <div style={{
+      minHeight: "100vh",
+      background: PALETTE.bg,
+      padding: "60px 24px 80px",
+      fontFamily: "'Geist', 'Inter', system-ui, sans-serif",
+      position: "relative",
+      overflowX: "hidden",
+    }}>
+
+      {/* Background glows */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        background: `
+          radial-gradient(ellipse 60% 40% at 20% -10%, rgba(200,241,53,0.06) 0%, transparent 60%),
+          radial-gradient(ellipse 50% 30% at 80% 110%, rgba(99,102,241,0.05) 0%, transparent 60%)
+        `,
+      }} />
+
+      {/* Dot grid */}
+      <div style={{
+        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px)",
+        backgroundSize: "28px 28px",
+      }} />
+
+      <div style={{ position: "relative", zIndex: 1, maxWidth: 1120, margin: "0 auto" }}>
+
+        {/* ── Header ── */}
+        <header style={{ textAlign: "center", marginBottom: 64, ...fadeStyle(0) }}>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
+            <Tag icon={<Lock size={10} />} label="100% Private" />
+            <Tag icon={<Zap size={10} />} label="Client-side only" />
+            <Tag icon={<Globe size={10} />} label="No watermarks" />
+          </div>
+
+          <h1 style={{
+            fontSize: "clamp(2.8rem, 8vw, 6rem)",
+            fontWeight: 900, lineHeight: 1,
+            color: PALETTE.textPrimary,
+            letterSpacing: "-0.03em",
+            margin: "0 0 20px",
+          }}>
+            QR{" "}
+            <span style={{
+              background: `linear-gradient(135deg, ${PALETTE.accent} 0%, #a8e000 100%)`,
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+            }}>
+              Studio
+            </span>
+          </h1>
+
+          <p style={{
+            fontSize: 16, color: PALETTE.textSecondary,
+            maxWidth: 480, margin: "0 auto",
+            lineHeight: 1.7, fontWeight: 400,
+          }}>
+            Craft pixel-perfect QR codes with custom patterns, brand overlays, and precision color control —
+            all processed locally, never uploaded.
+          </p>
+        </header>
+
+        {/* ── Main grid ── */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "minmax(0,1fr) 380px",
+          gap: 28,
+          alignItems: "start",
+          ...fadeStyle(0.12),
+        }}>
+
+          {/* ── LEFT: Controls ── */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+
+            {/* URL input */}
+            <div style={{
+              background: PALETTE.surface,
+              border: `1px solid ${urlFocused ? "rgba(200,241,53,0.3)" : PALETTE.border}`,
+              borderRadius: 20, padding: "20px 22px",
+              transition: "border-color 0.2s",
+            }}>
+              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
+                Destination URL
+              </label>
+              <div style={{ position: "relative" }}>
+                <input
+                  type="text"
+                  value={url}
+                  onChange={e => setUrl(e.target.value)}
+                  onFocus={() => setUrlFocused(true)}
+                  onBlur={() => setUrlFocused(false)}
+                  placeholder="https://your-link.com"
+                  style={{
+                    width: "100%", boxSizing: "border-box",
+                    background: PALETTE.bg,
+                    border: `1px solid ${PALETTE.border}`,
+                    borderRadius: 12, padding: "14px 52px 14px 18px",
+                    fontSize: 14, color: PALETTE.textPrimary,
+                    outline: "none", transition: "border-color 0.2s",
+                    fontFamily: "inherit",
+                  }}
+                />
+                <button
+                  onClick={handleCopy}
+                  title="Copy URL"
+                  style={{
+                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                    background: "none", border: "none", cursor: "pointer",
+                    color: copied ? PALETTE.accent : PALETTE.textMuted,
+                    transition: "color 0.2s", padding: 4,
+                  }}
                 >
-                    {/* Controls (Spans 7 cols) */}
-                    <div className="lg:col-span-7 space-y-4 lg:space-y-6 order-2 lg:order-1 flex-1">
-                        <div className="p-5 lg:p-8 bg-[#1e1e1e]/50 border border-white/[0.07] rounded-[2.5rem] shadow-2xl backdrop-blur-sm">
-                            <h3 className="text-xs font-semibold text-zinc-500 mb-4 lg:mb-6 flex items-center gap-2">
-                                <Wand2 size={12} /> Configuration Options
-                            </h3>
-                            <div className="flex flex-wrap gap-2 mb-6">
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#141414] border border-white/[0.07]">
-                                    <ShieldCheck size={10} className="text-[#f0ede8]" />
-                                    <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#141414] border border-white/[0.07]">
-                                    <Sparkles size={10} className="text-[#f0ede8]" />
-                                    <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#141414] border border-white/[0.07]">
-                                    <Check size={10} className="text-[#f0ede8]" />
-                                    <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
-                                </div>
-                            </div>
-
-                            <div className="space-y-5 lg:space-y-8">
-                                {/* Destination URL */}
-                                <div>
-                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Destination URL</label>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            value={url}
-                                            onChange={(e) => setUrl(e.target.value)}
-                                            className="w-full bg-[#141414] border border-white/[0.07] focus:border-white transition-all px-5 py-3 lg:py-4 rounded-2xl text-sm font-medium outline-none text-zinc-200"
-                                            placeholder="Enter your link here..."
-                                        />
-                                        <button
-                                            onClick={handleCopyUrl}
-                                            className="absolute right-4 top-1/2 -translate-y-1/2 p-2 text-zinc-600 hover:text-[#f0ede8] transition-colors"
-                                        >
-                                            <Copy size={16} />
-                                        </button>
-                                    </div>
-                                </div>
-
-                                {/* ACCORDIONS */}
-                                <div className="space-y-4 pt-3 lg:pt-4 border-t border-white/[0.07]">
-
-                                    {/* SECTION 1: Master Pattern Style */}
-                                    <div className={`bg-[#1c1c1c] border ${openSection === 'pattern' ? 'border-zinc-700' : 'border-white/[0.07]'} rounded-[1.5rem] overflow-hidden transition-all duration-300`}>
-                                        <button
-                                            onClick={() => setOpenSection(openSection === 'pattern' ? '' : 'pattern')}
-                                            className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-zinc-800/80 transition-all text-left group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-xl border ${openSection === 'pattern' ? 'bg-white/[0.06] border-zinc-600 text-[#f0ede8]' : 'bg-[#141414] border-white/[0.07] text-zinc-400 group-hover:text-[#f0ede8]'} transition-colors`}>
-                                                    <QrCode size={20} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-sm font-bold text-[#f0ede8] mb-0.5">QR Code Pattern & Colors</h4>
-                                                    <p className="text-[11px] font-medium text-zinc-500 hidden sm:block">Choose a pattern for your QR code and select colors.</p>
-                                                </div>
-                                            </div>
-                                            <ChevronDown size={18} className={`text-zinc-500 transition-transform duration-300 ${openSection === 'pattern' ? 'rotate-180' : ''}`} />
-                                        </button>
-
-                                        <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'pattern' ? 'max-h-[2000px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                                            <div className="space-y-6 pt-4 border-t border-white/[0.06]">
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Pattern Style</label>
-                                                    <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-                                                        {[
-                                                            { id: 'square', label: 'Classic', icon: <div className="w-4 h-4 bg-current" /> },
-                                                            { id: 'rounded', label: 'Rounded', icon: <div className="w-4 h-4 bg-current rounded-[4px]" /> },
-                                                            { id: 'dots', label: 'Dots', icon: <div className="w-4 h-4 bg-current rounded-full" /> },
-                                                            { id: 'star', label: 'Stars', icon: <Star size={16} fill="currentColor" /> },
-                                                            { id: 'emoji', label: 'Emoji', icon: <Smile size={16} /> },
-                                                            { id: 'logo', label: 'Logo', icon: <ImageIcon size={16} /> }
-                                                        ].map((opt) => (
-                                                            <button
-                                                                key={opt.id}
-                                                                onClick={() => setPatternType(opt.id as PatternType)}
-                                                                className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all text-[10px] font-bold ${patternType === opt.id ? 'bg-[#f0ede8] text-[#141414] border-white shadow-lg shadow-white/10' : 'border-white/[0.07] text-zinc-400 hover:border-zinc-500 hover:text-[#f0ede8] bg-[#141414]'}`}
-                                                            >
-                                                                {opt.icon} <span className={patternType === opt.id ? 'text-black' : 'text-zinc-400'}>{opt.label}</span>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-
-                                                    {/* Conditional Inputs */}
-                                                    {patternType === 'emoji' && (
-                                                        <div className="mt-4 p-4 bg-[#141414] rounded-xl border border-white/[0.07] flex items-center justify-between sm:justify-start gap-4">
-                                                            <span className="text-xs font-bold text-zinc-500">Input Emoji:</span>
-                                                            <input
-                                                                type="text"
-                                                                value={emojiChar}
-                                                                onChange={e => {
-                                                                    const val = e.target.value;
-                                                                    const chars = Array.from(val);
-                                                                    if (chars.length > 0) {
-                                                                        setEmojiChar(chars[chars.length - 1]);
-                                                                    } else {
-                                                                        setEmojiChar("");
-                                                                    }
-                                                                }}
-                                                                className="bg-[#1c1c1c] border border-zinc-700 w-16 md:w-24 text-center py-2 rounded-lg text-lg focus:border-white transition-all outline-none"
-                                                            />
-                                                        </div>
-                                                    )}
-
-                                                    {patternType === 'logo' && (
-                                                        <div className="mt-4 p-4 bg-[#141414] rounded-xl border border-white/[0.07] flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                                            <span className="text-xs font-bold text-zinc-500">Upload Dots Logo:</span>
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                className="hidden"
-                                                                ref={patternInputRef}
-                                                                onChange={handlePatternLogoUpload}
-                                                            />
-                                                            <div className="flex gap-2">
-                                                                <button
-                                                                    onClick={() => patternInputRef.current?.click()}
-                                                                    className="flex items-center gap-2 bg-[#1c1c1c] hover:bg-white/[0.06] text-zinc-300 py-2 px-4 rounded-lg text-xs font-bold transition-all border border-zinc-700"
-                                                                >
-                                                                    <Upload size={14} /> Choose Image
-                                                                </button>
-                                                                {patternLogo && (
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            setPatternLogo(null);
-                                                                            if (patternInputRef.current) patternInputRef.current.value = '';
-                                                                        }}
-                                                                        className="flex items-center justify-center w-8 h-8 bg-red-500/10 text-red-500 rounded-lg hover:bg-red-500/20 transition-all border border-red-500/20"
-                                                                        title="Remove Logo"
-                                                                    >
-                                                                        <Trash2 size={14} />
-                                                                    </button>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                <div className="space-y-4 pt-3 lg:pt-4 border-t border-white/[0.06]">
-                                                    <label className="block text-xs font-semibold text-zinc-400 mb-2">Color Palette</label>
-
-                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 bg-[#141414] border border-white/[0.07] p-4 lg:p-5 rounded-[1.5rem]">
-                                                        {/* Foreground */}
-                                                        <div className="space-y-3 lg:space-y-4">
-                                                            <span className="text-[10px] font-medium text-zinc-500 block">Foreground Filter</span>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {FG_PRESETS.map(color => (
-                                                                    <button
-                                                                        key={color}
-                                                                        onClick={() => setFgColor(color)}
-                                                                        className={`w-6 h-6 rounded-full border-2 transition-all ${fgColor === color ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.3)]' : 'border-transparent hover:scale-105'}`}
-                                                                        style={{ backgroundColor: color }}
-                                                                        title={color}
-                                                                    />
-                                                                ))}
-                                                            </div>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-zinc-700 shadow-inner">
-                                                                    <input
-                                                                        type="color"
-                                                                        value={fgColor}
-                                                                        onChange={(e) => setFgColor(e.target.value)}
-                                                                        className="absolute -inset-4 w-16 h-16 cursor-pointer"
-                                                                    />
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    value={fgColor.toUpperCase()}
-                                                                    onChange={(e) => setFgColor(e.target.value)}
-                                                                    className="bg-[#1c1c1c] border border-white/[0.07] px-3 py-2 rounded-xl text-xs font-mono text-zinc-300 w-24 focus:border-white transition-all outline-none"
-                                                                />
-                                                            </div>
-                                                        </div>
-
-                                                        {/* Background */}
-                                                        <div className="space-y-3 lg:space-y-4 mt-2 md:mt-0 pt-2 md:pt-0 border-t md:border-t-0 border-white/5">
-                                                            <span className="text-[10px] font-medium text-zinc-500 block">Background</span>
-                                                            <div className="flex flex-wrap gap-2">
-                                                                {BG_PRESETS.map(color => (
-                                                                    <button
-                                                                        key={color}
-                                                                        onClick={() => setBgColor(color)}
-                                                                        className={`w-6 h-6 rounded-full border-2 transition-all ${bgColor === color ? 'border-zinc-400 scale-110 shadow-[0_0_10px_rgba(255,255,255,0.2)]' : 'border-zinc-200 hover:scale-105 shadow-sm'}`}
-                                                                        style={{ backgroundColor: color }}
-                                                                        title={color}
-                                                                    />
-                                                                ))}
-                                                            </div>
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="relative w-8 h-8 rounded-lg overflow-hidden shrink-0 border border-zinc-700 shadow-inner">
-                                                                    <input
-                                                                        type="color"
-                                                                        value={bgColor}
-                                                                        onChange={(e) => setBgColor(e.target.value)}
-                                                                        className="absolute -inset-4 w-16 h-16 cursor-pointer"
-                                                                    />
-                                                                </div>
-                                                                <input
-                                                                    type="text"
-                                                                    value={bgColor.toUpperCase()}
-                                                                    onChange={(e) => setBgColor(e.target.value)}
-                                                                    className="bg-[#1c1c1c] border border-white/[0.07] px-3 py-2 rounded-xl text-xs font-mono text-zinc-300 w-24 focus:border-white transition-all outline-none"
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* SECTION 2: QR Code Corners */}
-                                    <div className={`bg-[#1c1c1c] border ${openSection === 'corners' ? 'border-zinc-700' : 'border-white/[0.07]'} rounded-[1.5rem] overflow-hidden transition-all duration-300`}>
-                                        <button
-                                            onClick={() => setOpenSection(openSection === 'corners' ? '' : 'corners')}
-                                            className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-zinc-800/80 transition-all text-left group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-xl border ${openSection === 'corners' ? 'bg-white/[0.06] border-zinc-600 text-[#f0ede8]' : 'bg-[#141414] border-white/[0.07] text-zinc-400 group-hover:text-[#f0ede8]'} transition-colors`}>
-                                                    <Maximize size={20} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-sm font-bold text-[#f0ede8] mb-0.5">QR Code Corners</h4>
-                                                    <p className="text-[11px] font-medium text-zinc-500 hidden sm:block">Select your QR code's corner frame style</p>
-                                                </div>
-                                            </div>
-                                            <ChevronDown size={18} className={`text-zinc-500 transition-transform duration-300 ${openSection === 'corners' ? 'rotate-180' : ''}`} />
-                                        </button>
-
-                                        <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'corners' ? 'max-h-[1000px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                                            <div className="space-y-6 pt-4 border-t border-white/[0.06]">
-                                                <div>
-                                                    <label className="block text-xs font-semibold text-zinc-400 mb-3">Frame Style</label>
-                                                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                                                        {[
-                                                            { id: 'square', label: 'Classic', icon: <Square size={16} /> },
-                                                            { id: 'rounded', label: 'Rounded', icon: <Square size={16} rx={4} /> },
-                                                            { id: 'dots', label: 'Circular', icon: <div className="w-4 h-4 border-2 border-current rounded-full" /> },
-                                                            { id: 'heart', label: 'Heart', icon: <div className="text-[14px]">♥</div> }
-                                                        ].map((opt) => (
-                                                            <button
-                                                                key={opt.id}
-                                                                onClick={() => setCornerType(opt.id as CornerType)}
-                                                                className={`flex flex-col items-center justify-center gap-2 p-3 rounded-xl border transition-all text-[10px] font-bold ${cornerType === opt.id ? 'bg-[#f0ede8] text-[#141414] border-white shadow-lg shadow-white/10' : 'border-white/[0.07] text-zinc-400 hover:border-zinc-500 hover:text-[#f0ede8] bg-[#141414]'}`}
-                                                            >
-                                                                {opt.icon} <span className={cornerType === opt.id ? 'text-black' : 'text-zinc-400'}>{opt.label}</span>
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    {/* SECTION 3: Add Logo Header */}
-                                    <div className={`bg-[#1c1c1c] border ${openSection === 'logo' ? 'border-zinc-700' : 'border-white/[0.07]'} rounded-[1.5rem] overflow-hidden transition-all duration-300`}>
-                                        <button
-                                            onClick={() => setOpenSection(openSection === 'logo' ? '' : 'logo')}
-                                            className="w-full flex items-center justify-between p-4 md:p-5 hover:bg-zinc-800/80 transition-all text-left group"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <div className={`p-3 rounded-xl border ${openSection === 'logo' ? 'bg-white/[0.06] border-zinc-600 text-[#f0ede8]' : 'bg-[#141414] border-white/[0.07] text-zinc-400 group-hover:text-[#f0ede8]'} transition-colors`}>
-                                                    <ImagePlus size={20} />
-                                                </div>
-                                                <div>
-                                                    <h4 className="text-sm font-bold text-[#f0ede8] mb-0.5">Add Logo</h4>
-                                                    <p className="text-[11px] font-medium text-zinc-500 hidden sm:block">Make your QR code unique by adding your logo or image</p>
-                                                </div>
-                                            </div>
-                                            <ChevronDown size={18} className={`text-zinc-500 transition-transform duration-300 ${openSection === 'logo' ? 'rotate-180' : ''}`} />
-                                        </button>
-
-                                        <div className={`px-4 md:px-5 overflow-hidden transition-all duration-500 ${openSection === 'logo' ? 'max-h-[500px] pb-5 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
-                                            <div className="space-y-4 pt-4 border-t border-white/[0.06]">
-                                                <label className="block text-xs font-semibold text-zinc-400 mb-1">Center Overlay Branding</label>
-
-                                                <div className="flex items-center gap-3">
-                                                    <input
-                                                        type="file"
-                                                        accept="image/*"
-                                                        className="hidden"
-                                                        ref={centerInputRef}
-                                                        onChange={handleCenterLogoUpload}
-                                                    />
-                                                    <button
-                                                        onClick={() => centerInputRef.current?.click()}
-                                                        className="flex-1 flex items-center justify-center gap-2 bg-[#141414] border border-white/[0.07] hover:border-zinc-500 text-zinc-300 py-3 lg:py-4 rounded-full text-xs font-semibold tracking-wide transition-all"
-                                                    >
-                                                        <Upload size={16} /> Upload Main Logo
-                                                    </button>
-
-                                                    {centerLogo && (
-                                                        <button
-                                                            onClick={() => {
-                                                                setCenterLogo(null);
-                                                                if (centerInputRef.current) centerInputRef.current.value = '';
-                                                            }}
-                                                            className="p-4 bg-red-500/10 text-red-500 rounded-xl hover:bg-red-500/20 transition-all border border-red-500/20"
-                                                            title="Remove Main Logo"
-                                                        >
-                                                            <Trash2 size={16} />
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-
-                        <div className="p-6 border border-white/[0.05] rounded-3xl bg-[#1c1c1c]/30">
-                            <div className="flex items-start gap-4">
-                                <div className="p-3 bg-[#1c1c1c] rounded-2xl shrink-0">
-                                    <Sparkles size={16} className="text-zinc-500" />
-                                </div>
-                                <div>
-                                    <h4 className="text-xs font-bold text-[#f0ede8] mb-2">Scannability Warning</h4>
-                                    <p className="text-xs text-zinc-500 leading-relaxed font-medium">
-                                        Using custom emojis, heavy star patterns, or detailed custom logos as the actual QR code dots may trigger scanner failures on older devices. Ensure there is strong contrast. The three corner square Finders are automatically protected for stability.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Live Preview (Spans 5 cols) */}
-                    <div className="lg:col-span-5 flex flex-col items-center justify-start pointer-events-none lg:pointer-events-auto lg:pt-4 order-1 lg:order-2 sticky top-[80px] lg:top-24 z-40 self-start w-full">
-                        <div className="relative group w-full pointer-events-auto">
-                            <div className="hidden lg:block absolute inset-0 bg-white/5 blur-[80px] rounded-[3rem] lg:rounded-[4rem] group-hover:bg-white/10 transition-all duration-700" />
-
-                            <div className="relative flex flex-row lg:flex-col items-center gap-4 lg:gap-0 p-3 sm:p-4 lg:p-10 bg-[#1c1c1c]/90 lg:bg-[#1c1c1c] border border-zinc-700/50 lg:border-white/[0.07] rounded-[1.5rem] lg:rounded-[3rem] shadow-[0_20px_50px_rgba(0,0,0,0.8)] lg:shadow-[0_40px_100px_rgba(0,0,0,0.5)] backdrop-blur-2xl lg:backdrop-blur-none">
-
-                                {/* QR canvas — click/tap opens fullscreen lightbox */}
-                                <div className="flex flex-col items-center gap-2 shrink-0 lg:w-full">
-                                    <div
-                                        className="relative cursor-pointer group/qr w-[90px] h-[90px] lg:w-full lg:h-auto"
-                                        onClick={openLightbox}
-                                        title="Click to view fullscreen"
-                                    >
-                                        {/* Pulsing ring — always visible on mobile, subtle on desktop */}
-                                        <div className="absolute -inset-[3px] rounded-[1.1rem] lg:rounded-[1.6rem] border-2 border-white/30 lg:border-white/10 group-hover/qr:border-white/60 transition-all duration-300 pointer-events-none" />
-
-                                        {/* QR canvas */}
-                                        <div className="flex items-center justify-center bg-white p-2 lg:p-4 rounded-[1rem] lg:rounded-[1.5rem] overflow-hidden shadow-inner w-full h-full">
-                                            <canvas
-                                                ref={canvasRef}
-                                                className="w-full max-w-full h-auto rounded-md lg:rounded-lg"
-                                            />
-                                        </div>
-
-                                        {/* Expand icon badge — always visible top-right */}
-                                        <div className="absolute -top-2 -right-2 bg-[#1c1c1c] border border-zinc-700 rounded-lg p-1.5 shadow-lg group-hover/qr:bg-white group-hover/qr:border-white transition-all duration-200 pointer-events-none">
-                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="text-zinc-400 group-hover/qr:text-black transition-colors">
-                                                <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                                            </svg>
-                                        </div>
-                                    </div>
-
-                                    {/* "Tap to view" label — always visible on mobile only */}
-                                    <button
-                                        onClick={openLightbox}
-                                        className="lg:hidden flex items-center gap-1.5 px-4 py-2 bg-zinc-800/80 border border-zinc-700 rounded-full text-[10px] font-semibold tracking-wide text-zinc-300 active:scale-95 transition-all"
-                                    >
-                                        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                            <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-                                        </svg>
-                                        View Full Screen
-                                    </button>
-                                </div>
-
-                                <div className="flex-1 lg:w-full lg:mt-10 flex flex-col justify-center">
-                                    <div className="lg:hidden text-[11px] font-semibold tracking-wider text-zinc-400 mb-2">Live Preview</div>
-                                    <button
-                                        onClick={() => renderQR(true)}
-                                        className="w-full h-12 flex items-center justify-center gap-2 bg-[#f0ede8] text-[#141414] rounded-full text-xs sm:text-sm font-bold tracking-wide hover:bg-[#e8e5e0] transition-all active:scale-[0.98] shadow-xl"
-                                    >
-                                        <Download size={18} /> <span className="hidden sm:inline">Export PNG</span><span className="sm:hidden">Export</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                  {copied ? <Check size={16} /> : <Copy size={16} />}
+                </button>
+              </div>
             </div>
 
-            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="QR Generator Info">
-                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                            Visual Matrix Encoding Infrastructure
-                        </h3>
-                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
-                            Step into a professional-grade workspace for QR generation. AssetNest <strong>Custom QR Engine</strong> transcends basic link encoding—it provides a high-performance design studio where you can architect visual data matrices with zero data privacy risk and absolute fidelity. Whether you are generating branded codes for restaurant menus, complex marketing campaigns with embedded logos, or secure Wi-Fi access points, our tool gives you the power to transform URLs into artistic assets with industry-leading error correction and zero server dependency.
-                        </p>
-                    </section>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                                <QrCode size={20} className="text-zinc-500" />
-                                How to Encode Safely
-                            </h3>
-                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Universal Support:</strong> Encode URLs, text, and raw strings. Our engine automatically optimizes the data matrix for the density of your content.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Visual Customization:</strong> Switch from classic squares to stars or emojis, and embed brand logos with automatic protective buffer zones.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Lossless PNG Export:</strong> Export high-resolution assets ready for high-quality print production with perfect edge sharpness.</span>
-                                </li>
-                            </ul>
-                        </section>
-
-                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                                <ShieldCheck size={20} className="text-zinc-500" />
-                                Privacy Infrastructure
-                            </h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
-                                Unlike traditional cloud-based QR tools that track your link analytics and store your data on external servers, our generator operates <strong>100% locally in your browser cache</strong>.
-                            </p>
-                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
-                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
-                                    Zero-Server Generation • Static Matrix Encoding • Level H Error Correction • No Expiration
-                                </p>
-                            </div>
-                        </section>
-                    </div>
-
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
-                        <Accordion>
-                            <AccordionItem title="Do they expire?">
-                                No. Our QR codes are static and standalone. As long as your destination link is active, the code will scan forever.
-                            </AccordionItem>
-                            <AccordionItem title="Commercial Use?">
-                                Absolutely. Generate high-res assets for product packaging, billboards, and restaurant menus without watermarks.
-                            </AccordionItem>
-                            <AccordionItem title="Secure Memory?">
-                                Zero data persistence. Your QR configurations reside in browser memory and are cleared upon tool reset.
-                            </AccordionItem>
-                        </Accordion>
-                    </section>
+            {/* Section: Pattern & Colors */}
+            <SectionCard
+              id="pattern" open={openSection === "pattern"} onToggle={() => toggle("pattern")}
+              icon={<QrCode size={18} />}
+              title="Pattern & Colors"
+              subtitle="Choose a dot style and your color palette"
+            >
+              {/* Pattern grid */}
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
+                  Dot Style
                 </div>
-            </HelpModal>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
+                  {[
+                    { id: "square",  label: "Classic", icon: <div style={{ width: 16, height: 16, background: "currentColor" }} /> },
+                    { id: "rounded", label: "Soft",    icon: <div style={{ width: 16, height: 16, background: "currentColor", borderRadius: 4 }} /> },
+                    { id: "dots",    label: "Dots",    icon: <div style={{ width: 16, height: 16, background: "currentColor", borderRadius: "50%" }} /> },
+                    { id: "star",    label: "Stars",   icon: <Star size={16} fill="currentColor" /> },
+                    { id: "emoji",   label: "Emoji",   icon: <Smile size={16} /> },
+                    { id: "logo",    label: "Logo",    icon: <ImageIcon size={16} /> },
+                  ].map(opt => (
+                    <PatternBtn key={opt.id} {...opt} active={patternType === opt.id} onClick={() => setPatternType(opt.id as PatternType)} />
+                  ))}
+                </div>
 
-            {/* ── Lightbox Modal ── */}
-            {lightboxOpen && lightboxSrc && (
-                <div
-                    className="fixed inset-0 z-[500] flex flex-col items-center justify-center bg-[#141414]/95 backdrop-blur-md p-4"
-                    onClick={() => setLightboxOpen(false)}
-                >
-                    {/* Close button */}
-                    <button
-                        className="absolute top-4 right-4 p-3 bg-white/[0.06] border border-zinc-700 text-[#f0ede8] rounded-2xl hover:bg-zinc-700 transition-all active:scale-95 z-10"
-                        onClick={() => setLightboxOpen(false)}
-                    >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                            <line x1="18" y1="6" x2="6" y2="18" />
-                            <line x1="6" y1="6" x2="18" y2="18" />
-                        </svg>
+                {patternType === "emoji" && (
+                  <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: PALETTE.bg, borderRadius: 12, border: `1px solid ${PALETTE.border}` }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted }}>Emoji character</span>
+                    <input type="text" value={emojiChar}
+                      onChange={e => { const c = Array.from(e.target.value); setEmojiChar(c.length ? c[c.length - 1] : ""); }}
+                      style={{ width: 60, textAlign: "center", fontSize: 20, padding: "6px 10px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 8, color: PALETTE.textPrimary, outline: "none", fontFamily: "inherit" }}
+                    />
+                  </div>
+                )}
+
+                {patternType === "logo" && (
+                  <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: PALETTE.bg, borderRadius: 12, border: `1px solid ${PALETTE.border}` }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted }}>Pattern logo</span>
+                    <input type="file" accept="image/*" ref={patternInputRef} className="hidden" style={{ display: "none" }}
+                      onChange={() => fileUpload(patternInputRef, setPatternLogo)} />
+                    <button onClick={() => patternInputRef.current?.click()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 8, color: PALETTE.textSecondary, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
+                      <Upload size={13} /> Choose image
                     </button>
+                    {patternLogo && (
+                      <button onClick={() => { setPatternLogo(null); if (patternInputRef.current) patternInputRef.current.value = ""; }}
+                        style={{ padding: "7px 10px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, color: "#ef4444", cursor: "pointer" }}>
+                        <Trash2 size={13} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
 
-                    {/* QR Image — stop click from bubbling */}
-                    <div
-                        className="flex flex-col items-center gap-6 w-full max-w-sm"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <div className="bg-white p-4 rounded-[1.5rem] shadow-2xl w-full">
-                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                            <img
-                                src={lightboxSrc}
-                                alt="QR Code"
-                                className="w-full h-auto rounded-lg"
-                            />
-                        </div>
-
-                        <p className="text-[11px] font-medium tracking-wide text-zinc-500 mt-2">Tap outside to close</p>
-
-                        {/* Download in lightbox */}
-                        <button
-                            onClick={() => {
-                                const a = document.createElement("a");
-                                a.href = lightboxSrc!;
-                                a.download = "assetnest-custom-qr.png";
-                                a.click();
-                            }}
-                            className="w-full h-12 flex items-center justify-center gap-2 bg-[#f0ede8] text-[#141414] rounded-full text-xs sm:text-sm font-bold tracking-wide hover:bg-[#e8e5e0] active:scale-[0.98] transition-all shadow-xl"
-                        >
-                            <Download size={18} /> Download QR Code
-                        </button>
-                    </div>
+              {/* Color palette */}
+              <div style={{ borderTop: `1px solid ${PALETTE.border}`, paddingTop: 20 }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+                  Color Palette
                 </div>
-            )}
-        </div>
-    );
-}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+                  {/* Foreground */}
+                  <div>
+                    <div style={{ fontSize: 11, color: PALETTE.textMuted, marginBottom: 10 }}>Foreground</div>
+                    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                      {FG_PRESETS.map(c => (
+                        <button key={c} onClick={() => setFgColor(c)} style={{
+                          width: 22, height: 22, borderRadius: "50%", background: c, cursor: "pointer",
+                          border: `2px solid ${fgColor === c ? PALETTE.accent : "transparent"}`,
+                          transition: "border-color 0.15s, transform 0.15s",
+                          transform: fgColor === c ? "scale(1.15)" : "scale(1)",
+                        }} />
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ position: "relative", width: 32, height: 32, borderRadius: 8, overflow: "hidden", border: `1px solid ${PALETTE.border}`, flexShrink: 0 }}>
+                        <input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)}
+                          style={{ position: "absolute", inset: -8, width: 48, height: 48, cursor: "pointer" }} />
+                      </div>
+                      <input type="text" value={fgColor.toUpperCase()} onChange={e => setFgColor(e.target.value)}
+                        style={{ width: 88, padding: "5px 10px", background: PALETTE.bg, border: `1px solid ${PALETTE.border}`, borderRadius: 8, fontSize: 12, fontFamily: "monospace", color: PALETTE.textPrimary, outline: "none" }} />
+                    </div>
+                  </div>
 
+                  {/* Background */}
+                  <div>
+                    <div style={{ fontSize: 11, color: PALETTE.textMuted, marginBottom: 10 }}>Background</div>
+                    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
+                      {BG_PRESETS.map(c => (
+                        <button key={c} onClick={() => setBgColor(c)} style={{
+                          width: 22, height: 22, borderRadius: "50%", background: c, cursor: "pointer",
+                          border: `2px solid ${bgColor === c ? PALETTE.accent : "rgba(100,100,100,0.3)"}`,
+                          transition: "border-color 0.15s, transform 0.15s",
+                          transform: bgColor === c ? "scale(1.15)" : "scale(1)",
+                        }} />
+                      ))}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ position: "relative", width: 32, height: 32, borderRadius: 8, overflow: "hidden", border: `1px solid ${PALETTE.border}`, flexShrink: 0 }}>
+                        <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)}
+                          style={{ position: "absolute", inset: -8, width: 48, height: 48, cursor: "pointer" }} />
+                      </div>
+                      <input type="text" value={bgColor.toUpperCase()} onChange={e => setBgColor(e.target.value)}
+                        style={{ width: 88, padding: "5px 10px", background: PALETTE.bg, border: `1px solid ${PALETTE.border}`, borderRadius: 8, fontSize: 12, fontFamily: "monospace", color: PALETTE.textPrimary, outline: "none" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </SectionCard>
+
+            {/* Section: Corners */}
+            <SectionCard
+              id="corners" open={openSection === "corners"} onToggle={() => toggle("corners")}
+              icon={<Maximize size={18} />}
+              title="Corner Style"
+              subtitle="Customize the three finder markers"
+            >
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
+                {[
+                  { id: "square",  label: "Classic", icon: <Square size={16} /> },
+                  { id: "rounded", label: "Rounded", icon: <div style={{ width: 16, height: 16, border: "2px solid currentColor", borderRadius: 5 }} /> },
+                  { id: "dots",    label: "Circles", icon: <div style={{ width: 16, height: 16, border: "2px solid currentColor", borderRadius: "50%" }} /> },
+                  { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 15 }}>♥</span> },
+                ].map(opt => (
+                  <PatternBtn key={opt.id} {...opt} active={cornerType === opt.id} onClick={() => setCornerType(opt.id as CornerType)} />
+                ))}
+              </div>
+            </SectionCard>
+
+            {/* Section: Logo overlay */}
+            <SectionCard
+              id="logo" open={openSection === "logo"} onToggle={() => toggle("logo")}
+              icon={<ImagePlus size={18} />}
+              title="Center Logo"
+              subtitle="Embed your brand mark in the center"
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <input type="file" accept="image/*" ref={centerInputRef} style={{ display: "none" }}
+                  onChange={() => fileUpload(centerInputRef, setCenterLogo)} />
+                <button onClick={() => centerInputRef.current?.click()} style={{
+                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  padding: "13px 20px", background: "rgba(200,241,53,0.06)",
+                  border: `1px dashed rgba(200,241,53,0.25)`, borderRadius: 12,
+                  color: PALETTE.accent, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
+                  transition: "background 0.2s",
+                }}>
+                  <Upload size={15} /> Upload Logo
+                </button>
+                {centerLogo && (
+                  <button onClick={() => { setCenterLogo(null); if (centerInputRef.current) centerInputRef.current.value = ""; }}
+                    style={{ padding: "12px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, color: "#ef4444", cursor: "pointer" }}>
+                    <Trash2 size={15} />
+                  </button>
+                )}
+              </div>
+              {centerLogo && (
+                <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(200,241,53,0.04)", borderRadius: 8, border: `1px solid rgba(200,241,53,0.1)`, fontSize: 11, color: PALETTE.accent }}>
+                  ✓ Logo uploaded — using H-level error correction for best scan rate
+                </div>
+              )}
+            </SectionCard>
+
+            {/* Warning card */}
+            <div style={{
+              padding: "16px 20px",
+              background: "rgba(251,191,36,0.04)",
+              border: "1px solid rgba(251,191,36,0.12)",
+              borderRadius: 16,
+              display: "flex", gap: 12, alignItems: "flex-start",
+            }}>
+              <Sparkles size={15} style={{ color: "#fbbf24", flexShrink: 0, marginTop: 1 }} />
+              <div>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#fbbf24", marginBottom: 4 }}>Scannability tip</div>
+                <div style={{ fontSize: 12, color: PALETTE.textMuted, lineHeight: 1.6 }}>
+                  Star and emoji patterns may struggle on older scanners. Ensure strong foreground/background contrast. Corner markers are always protected.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* ── RIGHT: Preview ── */}
+          <div style={{ position: "sticky", top: 28 }}>
+            {/* Preview card */}
+            <div style={{
+              background: PALETTE.surface,
+              border: `1px solid ${PALETTE.border}`,
+              borderRadius: 28,
+              padding: 24,
+              boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+            }}>
+              {/* QR canvas area */}
+              <div
+                onClick={openLightbox}
+                style={{
+                  cursor: "pointer",
+                  position: "relative",
+                  borderRadius: 20,
+                  overflow: "hidden",
+                  background: "#fff",
+                  padding: 16,
+                  aspectRatio: "1 / 1",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "transform 0.2s",
+                }}
+                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.01)")}
+                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
+              >
+                <canvas ref={canvasRef} style={{ width: "100%", height: "auto", display: "block", borderRadius: 8 }} />
+
+                {/* Hover overlay */}
+                <div style={{
+                  position: "absolute", inset: 0,
+                  background: "rgba(0,0,0,0.45)",
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                  opacity: 0, transition: "opacity 0.2s", borderRadius: 20,
+                  backdropFilter: "blur(2px)",
+                  color: "#fff", gap: 8, fontSize: 13, fontWeight: 600,
+                }}
+                  onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
+                  onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+                >
+                  <Maximize size={22} />
+                  <span>View full size</span>
+                </div>
+              </div>
+
+              {/* Stats row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "16px 0" }}>
+                {[
+                  { label: "Error correction", value: "Level H" },
+                  { label: "Resolution", value: "2048px" },
+                  { label: "Format", value: "PNG" },
+                ].map(s => (
+                  <div key={s.label} style={{ textAlign: "center", padding: "10px 6px", background: PALETTE.bg, borderRadius: 10, border: `1px solid ${PALETTE.border}` }}>
+                    <div style={{ fontSize: 12, fontWeight: 700, color: PALETTE.textPrimary }}>{s.value}</div>
+                    <div style={{ fontSize: 9, color: PALETTE.textMuted, marginTop: 2, letterSpacing: "0.04em" }}>{s.label.toUpperCase()}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Download button */}
+              <button
+                onClick={() => renderQR(true)}
+                style={{
+                  width: "100%", padding: "15px 20px",
+                  background: PALETTE.accent,
+                  border: "none", borderRadius: 14,
+                  color: "#0a0a0b",
+                  fontSize: 14, fontWeight: 800, letterSpacing: "0.02em",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                  transition: "opacity 0.15s, transform 0.15s",
+                  fontFamily: "inherit",
+                }}
+                onMouseEnter={e => { e.currentTarget.style.opacity = "0.9"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
+                onMouseDown={e => e.currentTarget.style.transform = "translateY(1px)"}
+                onMouseUp={e => e.currentTarget.style.transform = "translateY(-1px)"}
+              >
+                <Download size={17} /> Export PNG — 2048×2048
+              </button>
+
+              {/* Privacy note */}
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 14 }}>
+                <ShieldCheck size={12} style={{ color: PALETTE.textMuted }} />
+                <span style={{ fontSize: 11, color: PALETTE.textMuted }}>Generated entirely in your browser. Zero data sent anywhere.</span>
+              </div>
+            </div>
+
+            {/* Quick presets */}
+            <div style={{ marginTop: 16, padding: "16px 20px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 20 }}>
+              <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
+                Quick Presets
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {[
+                  { label: "Minimal B&W",   fg: "#0a0a0b", bg: "#ffffff", pattern: "rounded" as PatternType, corner: "square"  as CornerType },
+                  { label: "Brand Navy",    fg: "#1e3a8a", bg: "#eff6ff", pattern: "dots"    as PatternType, corner: "rounded" as CornerType },
+                  { label: "Dark Mode",     fg: "#c8f135", bg: "#0a0a0b", pattern: "rounded" as PatternType, corner: "dots"    as CornerType },
+                  { label: "Rose Luxury",   fg: "#881337", bg: "#fff1f2", pattern: "dots"    as PatternType, corner: "rounded" as CornerType },
+                ].map(p => (
+                  <button key={p.label} onClick={() => { setFgColor(p.fg); setBgColor(p.bg); setPatternType(p.pattern); setCornerType(p.corner); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "9px 12px", background: PALETTE.bg,
+                      border: `1px solid ${PALETTE.border}`, borderRadius: 10,
+                      cursor: "pointer", transition: "border-color 0.15s",
+                      fontFamily: "inherit",
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
+                    onMouseLeave={e => (e.currentTarget.style.borderColor = PALETTE.border)}
+                  >
+                    <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                      <div style={{ width: 14, height: 14, borderRadius: "50%", background: p.fg, border: "1px solid rgba(255,255,255,0.1)" }} />
+                      <div style={{ width: 14, height: 14, borderRadius: "50%", background: p.bg, border: "1px solid rgba(0,0,0,0.15)" }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: PALETTE.textSecondary }}>{p.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Lightbox ── */}
+      {lightboxOpen && lightboxSrc && (
+        <div
+          onClick={() => setLightboxOpen(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 500,
+            background: "rgba(10,10,11,0.92)",
+            backdropFilter: "blur(16px)",
+            display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center",
+            padding: 24,
+          }}
+        >
+          <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, width: "100%", maxWidth: 420 }}>
+            <div style={{ background: "#fff", padding: 20, borderRadius: 24, width: "100%", boxShadow: "0 40px 100px rgba(0,0,0,0.8)" }}>
+              <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: 10 }} />
+            </div>
+            <button
+              onClick={() => { const a = document.createElement("a"); a.href = lightboxSrc!; a.download = "qr-code.png"; a.click(); }}
+              style={{
+                width: "100%", padding: "15px 20px",
+                background: PALETTE.accent, border: "none", borderRadius: 14,
+                color: "#0a0a0b", fontSize: 14, fontWeight: 800, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: "inherit",
+              }}
+            >
+              <Download size={17} /> Download QR Code
+            </button>
+            <span style={{ fontSize: 12, color: PALETTE.textMuted }}>Click anywhere outside to close</span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

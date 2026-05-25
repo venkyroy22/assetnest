@@ -75,7 +75,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-[#141414]/60 backdrop-blur-sm" onClick={onClose} />
             <div className="relative w-full max-w-md bg-[#1c1c1c] border border-white/[0.07] rounded-3xl shadow-2xl p-6 sm:p-8 animate-in zoom-in-95 duration-200">
                 <button 
