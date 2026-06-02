@@ -95,6 +95,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string | null>(null);
     const [isPolling, setIsPolling] = useState(false);
+    const [isQrZoomed, setIsQrZoomed] = useState(false);
 
     useEffect(() => {
         if (activeSubTab !== "draw") {
@@ -827,7 +828,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     background: rgba(124, 106, 255, 0.06);
                     color: #7c6aff;
                 }
-                @media (max-width: 600px) {
+                @media (max-width: 768px) {
                     .modal-box {
                         padding: 16px !important;
                         height: 100vh !important;
@@ -871,6 +872,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         display: none !important;
                     }
                 }
+                .mobile-qr-pill:hover {
+                    background: #5b4bd4 !important;
+                    transform: scale(1.05);
+                }
+                .mobile-qr-pill:active {
+                    transform: scale(0.95);
+                }
                 @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@600&family=Great+Vibes&family=Homemade+Apple&family=Pacifico&family=Satisfy&family=Montserrat:wght@500;700;800&display=swap');
             `}</style>
 
@@ -878,7 +886,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
             <div className="modal-box" style={{
                 position: "relative",
                 width: "100%",
-                maxWidth: "780px",
+                maxWidth: "920px",
                 height: "620px",
                 maxHeight: "90vh",
                 background: "#101012",
@@ -1360,6 +1368,37 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             onPointerUp={onPointerUp}
                                             onPointerLeave={onPointerUp}
                                         />
+                                        {/* Floating Mobile Sign Option */}
+                                        {qrCodeDataUrl && (
+                                            <button
+                                                type="button"
+                                                onClick={() => setIsQrZoomed(true)}
+                                                className="mobile-qr-pill"
+                                                style={{
+                                                    position: "absolute",
+                                                    top: "12px",
+                                                    right: "12px",
+                                                    zIndex: 10,
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    gap: "6px",
+                                                    padding: "6px 12px",
+                                                    borderRadius: "20px",
+                                                    background: "rgba(124, 106, 255, 0.9)",
+                                                    backdropFilter: "blur(4px)",
+                                                    border: "1px solid rgba(255, 255, 255, 0.15)",
+                                                    color: "#ffffff",
+                                                    fontSize: "11px",
+                                                    fontWeight: 700,
+                                                    cursor: "pointer",
+                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
+                                                    transition: "all 0.2s",
+                                                }}
+                                            >
+                                                <Smartphone size={12} />
+                                                <span>Draw on Mobile</span>
+                                            </button>
+                                        )}
                                         {isEmpty && (
                                             <div style={{
                                                 position: "absolute",
@@ -1387,10 +1426,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                         display: "flex",
                                         justifyContent: "space-between",
                                         alignItems: "center",
+                                        flexWrap: "wrap",
+                                        gap: "12px 8px",
                                         marginTop: "12px",
                                     }}>
                                         {/* Styles Picker & Color Presets */}
-                                        <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
+                                        <div style={{ display: "flex", gap: "12px", alignItems: "center", flexWrap: "wrap" }}>
                                             <div style={{ display: "flex", gap: "4px" }}>
                                                 {PEN_STYLES.map(s => {
                                                     const active = mode === "pen" && penStyle === s.id;
@@ -1485,7 +1526,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                         </div>
 
                                         {/* Undo/Redo & Trash */}
-                                        <div style={{ display: "flex", gap: "8px" }}>
+                                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                                             <button
                                                 onClick={undo}
                                                 disabled={historyIdx < 0}
@@ -1568,20 +1609,28 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                     </p>
                                     
                                     {/* Masterpiece QR Code */}
-                                    <div style={{
-                                        position: "relative",
-                                        width: "110px",
-                                        height: "110px",
-                                        background: "#ffffff",
-                                        borderRadius: "8px",
-                                        padding: "6px",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
-                                        overflow: "hidden",
-                                        boxSizing: "border-box",
-                                    }}>
+                                    <div 
+                                        onClick={() => qrCodeDataUrl && setIsQrZoomed(true)}
+                                        style={{
+                                            position: "relative",
+                                            width: "110px",
+                                            height: "110px",
+                                            background: "#ffffff",
+                                            borderRadius: "8px",
+                                            padding: "6px",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            boxShadow: "0 8px 24px rgba(0,0,0,0.12)",
+                                            overflow: "hidden",
+                                            boxSizing: "border-box",
+                                            cursor: qrCodeDataUrl ? "pointer" : "default",
+                                            transition: "all 0.2s",
+                                        }}
+                                        onMouseEnter={e => { if (qrCodeDataUrl) e.currentTarget.style.transform = "scale(1.05)"; }}
+                                        onMouseLeave={e => { if (qrCodeDataUrl) e.currentTarget.style.transform = "scale(1)"; }}
+                                        title="Click to enlarge"
+                                    >
                                         {qrCodeDataUrl ? (
                                             <>
                                                 {/* Scanner Laser effect */}
@@ -1608,6 +1657,29 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             }} />
                                         )}
                                     </div>
+
+                                    {qrCodeDataUrl && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setIsQrZoomed(true)}
+                                            style={{
+                                                background: "none",
+                                                border: "none",
+                                                color: "#7c6aff",
+                                                fontSize: "9px",
+                                                fontWeight: 800,
+                                                letterSpacing: "0.04em",
+                                                textTransform: "uppercase",
+                                                marginTop: "8px",
+                                                cursor: "pointer",
+                                                transition: "opacity 0.2s",
+                                            }}
+                                            onMouseEnter={e => e.currentTarget.style.opacity = "0.8"}
+                                            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                                        >
+                                            🔍 View Full Size
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         )}
@@ -1802,6 +1874,125 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     </div>
                 </footer>
             </div>
+
+            {/* ══ ZOOMED QR CODE MODAL OVERLAY ══ */}
+            {isQrZoomed && qrCodeDataUrl && (
+                <div 
+                    onClick={() => setIsQrZoomed(false)}
+                    style={{
+                        position: "fixed",
+                        inset: 0,
+                        zIndex: 999999,
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        background: "rgba(8, 8, 9, 0.85)",
+                        backdropFilter: "blur(16px)",
+                        padding: "24px",
+                        boxSizing: "border-box",
+                    }}
+                >
+                    <div 
+                        onClick={e => e.stopPropagation()} 
+                        style={{ 
+                            display: "flex", 
+                            flexDirection: "column", 
+                            alignItems: "center", 
+                            gap: "16px", 
+                            width: "100%", 
+                            maxWidth: "340px",
+                        }}
+                    >
+                        <div 
+                            style={{ 
+                                background: "#ffffff", 
+                                padding: "16px", 
+                                borderRadius: "20px", 
+                                width: "100%", 
+                                boxSizing: "border-box",
+                                boxShadow: "0 32px 80px rgba(0, 0, 0, 0.75)",
+                                position: "relative",
+                                overflow: "hidden",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            {/* Scanner Laser effect */}
+                            <div className="laser-line" style={{ animationDuration: "2s" }} />
+                            <img 
+                                src={qrCodeDataUrl} 
+                                alt="Scan QR Code" 
+                                style={{ 
+                                    width: "100%", 
+                                    height: "auto", 
+                                    display: "block", 
+                                    borderRadius: "8px",
+                                    zIndex: 2,
+                                }} 
+                            />
+                        </div>
+                        <div style={{ display: "flex", gap: "10px", width: "100%", justifyContent: "center" }}>
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    try {
+                                        const origin = window.location.origin;
+                                        const mobileUrl = `${origin}/tools/pdf-signer/mobile-sign?sessionId=${sessionId}`;
+                                        await navigator.clipboard.writeText(mobileUrl);
+                                        alert("Secure pairing link copied to clipboard!");
+                                    } catch (err) {
+                                        console.error(err);
+                                    }
+                                }}
+                                style={{
+                                    flex: 1,
+                                    padding: "10px 16px",
+                                    background: "rgba(255, 255, 255, 0.05)",
+                                    border: "1px solid rgba(255, 255, 255, 0.1)",
+                                    borderRadius: "99px",
+                                    color: "#f0eff5",
+                                    fontSize: "12px",
+                                    fontWeight: 700,
+                                    cursor: "pointer",
+                                    transition: "all 0.2s",
+                                }}
+                                onMouseEnter={e => e.currentTarget.style.background = "rgba(255, 255, 255, 0.15)"}
+                                onMouseLeave={e => e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)"}
+                            >
+                                🔗 Copy Pairing Link
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setIsQrZoomed(false)}
+                                style={{
+                                    flex: 1,
+                                    padding: "10px 16px",
+                                    background: "#7c6aff",
+                                    border: "none",
+                                    borderRadius: "99px",
+                                    color: "#ffffff",
+                                    fontSize: "12px",
+                                    fontWeight: 800,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.06em",
+                                    cursor: "pointer",
+                                    boxShadow: "0 4px 16px rgba(124, 106, 255, 0.4)",
+                                    transition: "all 0.2s",
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "#5b4bd4"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "#7c6aff"; }}
+                            >
+                                Close Preview
+                            </button>
+                        </div>
+                        <span style={{ fontSize: "11px", color: "#8b8a97", letterSpacing: "0.02em" }}>
+                            Click outside to close
+                        </span>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

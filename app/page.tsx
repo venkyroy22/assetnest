@@ -76,7 +76,6 @@ function VerticalHighlightList() {
     { name: "Grandmaster Chess", desc: "Play chess against Stockfish offline", href: "/tools/chess" },
     { name: "Intelligent PDF Splitter", desc: "Extract specific pages from any PDF document", href: "/tools/pdf-splitter" },
     { name: "Smart PDF Signer", desc: "Sign documents professionally and securely online", href: "/tools/pdf-signer" },
-    { name: "BrainFlow Canvas", desc: "Infinite collaborative whiteboard and mind map", href: "/tools/brainflow" },
     { name: "Kanban Board", desc: "Track tasks privately with drag-and-drop workflow", href: "/tools/kanban" },
     { name: "Pomodoro Timer", desc: "Deep work focus timer with hydration reminders", href: "/tools/pomodoro" },
     { name: "Typing Speed Tester", desc: "Challenge and improve your words-per-minute speed", href: "/tools/typing-tester" },

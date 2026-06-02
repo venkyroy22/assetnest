@@ -2,149 +2,102 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import QRCode from "qrcode";
-import {
-  Copy, Download, QrCode, Sparkles, Wand2, Upload, Trash2,
-  Image as ImageIcon, Smile, Star, ChevronDown, Maximize,
-  ImagePlus, Square, Check, ShieldCheck, Info, Zap, Lock, Globe
-} from "lucide-react";
 
-/* ─── Design Tokens ─── */
-const PALETTE = {
-  bg: "#0a0a0b",
-  surface: "#111113",
-  surfaceHover: "#18181b",
-  border: "rgba(255,255,255,0.06)",
-  borderHover: "rgba(255,255,255,0.12)",
-  accent: "#c8f135",        // vivid lime — the one bold accent
-  accentDim: "#8fb320",
-  textPrimary: "#f5f5f4",
-  textSecondary: "#a1a1aa",
-  textMuted: "#52525b",
+/* ─────────────────────────────────────────
+   DESIGN TOKENS
+───────────────────────────────────────── */
+const T = {
+  bg: "#08090a",
+  surface: "#0f1012",
+  surfaceRaised: "#161719",
+  surfaceHigh: "#1c1e21",
+  border: "rgba(255,255,255,0.055)",
+  borderMid: "rgba(255,255,255,0.10)",
+  borderHigh: "rgba(255,255,255,0.18)",
+  accent: "#c8f135",
+  accentDim: "rgba(200,241,53,0.12)",
+  accentGlow: "rgba(200,241,53,0.22)",
+  text: "#f0f0ee",
+  textSub: "#9a9a98",
+  textMuted: "#4a4a48",
+  danger: "#ef4444",
+  dangerDim: "rgba(239,68,68,0.12)",
+  warning: "#fbbf24",
+  radius: { sm: 8, md: 12, lg: 16, xl: 20, xxl: 28 },
+  font: "'DM Sans', 'Inter', system-ui, sans-serif",
 };
 
-const FG_PRESETS = ["#0a0a0b", "#1e293b", "#1e3a8a", "#581c87", "#881337", "#064e3b"];
-const BG_PRESETS = ["#ffffff", "#f8fafc", "#fffbeb", "#f0fdf4", "#eff6ff", "#fdf4ff"];
+const FG_PRESETS = ["#0a0a0b", "#1e293b", "#1e3a8a", "#581c87", "#881337", "#064e3b", "#7c2d12", "#134e4a"];
+const BG_PRESETS = ["#ffffff", "#f8fafc", "#fffbeb", "#f0fdf4", "#eff6ff", "#fdf4ff", "#fff7ed", "#f0fdfa"];
+
+const QUICK_PRESETS = [
+  { label: "Minimal", fg: "#0a0a0b", bg: "#ffffff", pattern: "rounded", corner: "square" },
+  { label: "Matrix",  fg: "#c8f135", bg: "#08090a", pattern: "rounded", corner: "dots" },
+  { label: "Ocean",   fg: "#1e3a8a", bg: "#eff6ff", pattern: "dots",    corner: "rounded" },
+  { label: "Forest",  fg: "#064e3b", bg: "#f0fdf4", pattern: "rounded", corner: "rounded" },
+  { label: "Rose",    fg: "#881337", bg: "#fff1f2", pattern: "dots",    corner: "rounded" },
+  { label: "Royal",   fg: "#581c87", bg: "#fdf4ff", pattern: "rounded", corner: "dots" },
+];
 
 type PatternType = "square" | "dots" | "rounded" | "star" | "emoji" | "logo";
 type CornerType  = "square" | "dots" | "rounded" | "heart";
 
-/* ─── Tiny helpers ─── */
-const Tag = ({ icon, label }: { icon: React.ReactNode; label: string }) => (
-  <span style={{
-    display: "inline-flex", alignItems: "center", gap: 6,
-    padding: "4px 10px", borderRadius: 99,
-    background: "rgba(200,241,53,0.07)",
-    border: "1px solid rgba(200,241,53,0.15)",
-    fontSize: 11, fontWeight: 600, color: PALETTE.accent,
-    letterSpacing: "0.04em",
-  }}>
-    {icon}{label}
-  </span>
+/* ─────────────────────────────────────────
+   ICON MICRO-COMPONENTS (inline SVG)
+───────────────────────────────────────── */
+interface IconProps {
+  d: string;
+  size?: number;
+  stroke?: string;
+  fill?: string;
+  strokeWidth?: number;
+}
+
+const Icon = ({ d, size = 18, stroke = "currentColor", fill = "none", strokeWidth = 1.75 }: IconProps) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke={stroke} strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" style={{ display: "block" }}>
+    <path d={d} />
+  </svg>
 );
 
-const SectionCard = ({
-  id, open, onToggle, icon, title, subtitle, children,
-}: {
-  id: string; open: boolean; onToggle: () => void;
-  icon: React.ReactNode; title: string; subtitle: string; children: React.ReactNode;
-}) => (
-  <div style={{
-    borderRadius: 20,
-    border: `1px solid ${open ? "rgba(200,241,53,0.2)" : PALETTE.border}`,
-    background: open ? "rgba(200,241,53,0.025)" : PALETTE.surface,
-    overflow: "hidden",
-    transition: "border-color 0.25s, background 0.25s",
-  }}>
-    <button
-      onClick={onToggle}
-      style={{
-        width: "100%", display: "flex", alignItems: "center",
-        justifyContent: "space-between",
-        padding: "18px 22px", cursor: "pointer",
-        background: "none", border: "none",
-      }}
-    >
-      <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: 12,
-          background: open ? "rgba(200,241,53,0.1)" : "rgba(255,255,255,0.04)",
-          border: `1px solid ${open ? "rgba(200,241,53,0.25)" : PALETTE.border}`,
-          display: "flex", alignItems: "center", justifyContent: "center",
-          color: open ? PALETTE.accent : PALETTE.textMuted,
-          transition: "all 0.25s", flexShrink: 0,
-        }}>{icon}</div>
-        <div style={{ textAlign: "left" }}>
-          <div style={{ fontSize: 14, fontWeight: 700, color: PALETTE.textPrimary, lineHeight: 1.2 }}>{title}</div>
-          <div style={{ fontSize: 11, color: PALETTE.textMuted, marginTop: 2 }}>{subtitle}</div>
-        </div>
-      </div>
-      <ChevronDown size={16} style={{
-        color: PALETTE.textMuted,
-        transform: open ? "rotate(180deg)" : "rotate(0deg)",
-        transition: "transform 0.3s",
-        flexShrink: 0,
-      }} />
-    </button>
+const Icons = {
+  Download: (s=18) => <Icon size={s} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" />,
+  Copy:    (s=16) => <Icon size={s} d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8zM12 11v6M9 14h6" />,
+  Check:   (s=16) => <Icon size={s} d="M20 6 9 17l-5-5" />,
+  Upload:  (s=16) => <Icon size={s} d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" />,
+  Trash:   (s=16) => <Icon size={s} d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2" />,
+  Expand:  (s=18) => <Icon size={s} d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />,
+  Close:   (s=20) => <Icon size={s} d="M18 6 6 18M6 6l12 12" />,
+  Grid:    (s=20) => <svg width={s} height={s} viewBox="0 0 24 24" fill="currentColor" style={{ display: "block" }}><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>,
+  Palette: (s=20) => <Icon size={s} d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.1 0 2-.9 2-2 0-.53-.21-1.01-.54-1.37a.996.996 0 0 1 .75-1.63H16c3.31 0 6-2.69 6-6 0-4.96-4.48-9-10-9zm-5 9c-.83 0-1.5-.67-1.5-1.5S6.17 8 7 8s1.5.67 1.5 1.5S7.83 11 7 11zm3-4c-.83 0-1.5-.67-1.5-1.5S9.17 5 10 5s1.5.67 1.5 1.5S10.83 7 10 7zm4 0c-.83 0-1.5-.67-1.5-1.5S13.17 5 14 5s1.5.67 1.5 1.5S14.83 7 14 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.17 8 17 8s1.5.67 1.5 1.5S17.83 11 17 11z" fill="currentColor" stroke="none"/>,
+  Corner:  (s=20) => <Icon size={s} d="M3 3h7v7H3zM14 3h7v7h-7zM3 14h7v7H3zM16 16m-3 0a3 3 0 1 0 6 0 3 3 0 0 0-6 0" />,
+  Image:   (s=20) => <Icon size={s} d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7M16 5h6M19 2v6M8.5 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM21 15l-5-5L5 20" />,
+  Shield:  (s=14) => <Icon size={s} d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />,
+  Zap:     (s=11) => <Icon size={s} d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />,
+  Link:    (s=16) => <Icon size={s} d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />,
+  Star:    (s=16) => <Icon size={s} d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />,
+  Smile:   (s=16) => <Icon size={s} d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01" />,
+};
 
-    <div style={{
-      maxHeight: open ? 2000 : 0,
-      overflow: "hidden",
-      opacity: open ? 1 : 0,
-      transition: "max-height 0.45s cubic-bezier(0.4,0,0.2,1), opacity 0.3s",
-    }}>
-      <div style={{
-        padding: "0 22px 22px",
-        borderTop: `1px solid rgba(255,255,255,0.05)`,
-        paddingTop: 20,
-      }}>
-        {children}
-      </div>
-    </div>
-  </div>
-);
+/* ─────────────────────────────────────────
+   CANVAS QR RENDERER
+───────────────────────────────────────── */
+interface QRRendererProps {
+  url: string;
+  fgColor: string;
+  bgColor: string;
+  patternType: PatternType;
+  cornerType: CornerType;
+  emojiChar: string;
+  patternLogo: string | null;
+  centerLogo: string | null;
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  canvasRefMobile?: React.RefObject<HTMLCanvasElement | null>;
+  transparentBg: boolean;
+  customCornerColor: boolean;
+  cornerFgColor: string;
+}
 
-const PatternBtn = ({ id, label, icon, active, onClick }: {
-  id: string; label: string; icon: React.ReactNode; active: boolean; onClick: () => void;
-}) => (
-  <button onClick={onClick} style={{
-    display: "flex", flexDirection: "column", alignItems: "center",
-    justifyContent: "center", gap: 8,
-    padding: "14px 8px", borderRadius: 14,
-    border: `1px solid ${active ? PALETTE.accent : PALETTE.border}`,
-    background: active ? "rgba(200,241,53,0.08)" : PALETTE.bg,
-    color: active ? PALETTE.accent : PALETTE.textMuted,
-    fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
-    cursor: "pointer", transition: "all 0.2s",
-    textTransform: "uppercase",
-  }}>
-    <div style={{ opacity: active ? 1 : 0.6 }}>{icon}</div>
-    <span style={{ color: active ? PALETTE.accent : PALETTE.textSecondary }}>{label}</span>
-  </button>
-);
-
-export default function QRGeneratorPage() {
-  const [url, setUrl]           = useState("");
-  const [fgColor, setFgColor]   = useState("#000000");
-  const [bgColor, setBgColor]   = useState("#ffffff");
-  const [patternType, setPatternType] = useState<PatternType>("rounded");
-  const [cornerType, setCornerType]   = useState<CornerType>("rounded");
-  const [openSection, setOpenSection] = useState<string>("pattern");
-  const [mounted, setMounted]   = useState(false);
-  const [copied, setCopied]     = useState(false);
-  const [lightboxOpen, setLightboxOpen] = useState(false);
-  const [lightboxSrc, setLightboxSrc]   = useState<string | null>(null);
-  const [urlFocused, setUrlFocused]     = useState(false);
-
-  const [emojiChar, setEmojiChar]   = useState("✦");
-  const [patternLogo, setPatternLogo] = useState<string | null>(null);
-  const [centerLogo, setCenterLogo]   = useState<string | null>(null);
-
-  const canvasRef      = useRef<HTMLCanvasElement>(null);
-  const patternInputRef = useRef<HTMLInputElement>(null);
-  const centerInputRef  = useRef<HTMLInputElement>(null);
-
-  useEffect(() => { const t = setTimeout(() => setMounted(true), 60); return () => clearTimeout(t); }, []);
-
+function useQRRenderer({ url, fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, canvasRef, canvasRefMobile, transparentBg, customCornerColor, cornerFgColor }: QRRendererProps) {
   const loadImage = (src: string): Promise<HTMLImageElement> =>
     new Promise((res, rej) => { const i = new Image(); i.crossOrigin = "anonymous"; i.onload = () => res(i); i.onerror = rej; i.src = src; });
 
@@ -163,613 +116,1372 @@ export default function QRGeneratorPage() {
     ctx.beginPath(); ctx.moveTo(k, y + d / 4);
     ctx.quadraticCurveTo(k, y, x + w / 4, y); ctx.quadraticCurveTo(x, y, x, y + d / 2.25);
     ctx.quadraticCurveTo(x, y + d * 0.65, k, y + d); ctx.quadraticCurveTo(x + w, y + d * 0.65, x + w, y + d / 2.25);
-    ctx.quadraticCurveTo(x + w, y, x + w * 0.75, y); ctx.quadraticCurveTo(k, y, k, y + d / 4);
-    ctx.fill();
+    ctx.quadraticCurveTo(x + w, y, x + w * 0.75, y); ctx.quadraticCurveTo(k, y, k, y + d / 4); ctx.fill();
   };
 
-  const renderQR = useCallback(async (isDownload = false) => {
-    const canvas = isDownload ? document.createElement("canvas") : canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d"); if (!ctx) return;
-    const size = isDownload ? 2048 : 1024;
-    canvas.width = size; canvas.height = size;
+  const render = useCallback(async (targetCanvas?: HTMLCanvasElement | null) => {
+    const drawOnCanvas = async (canvas: HTMLCanvasElement) => {
+      const ctx = canvas.getContext("2d"); if (!ctx) return;
+      const size = canvas.width === 2048 ? 2048 : 1024;
+      canvas.width = size; canvas.height = size;
 
-    let matrix: any;
-    try {
-      const qr = (QRCode as any).create(url || "https://assetnest.design", { errorCorrectionLevel: "H" });
-      matrix = qr.modules;
-    } catch { return; }
+      let matrix: any;
+      try {
+        const qr = (QRCode as any).create(url || "https://qrstudio.app", { errorCorrectionLevel: "H" });
+        matrix = qr.modules;
+      } catch { return; }
 
-    const margin = size * 0.05;
-    const innerSize = size - margin * 2;
-    const moduleCount = matrix.size;
-    const cellSize = innerSize / moduleCount;
+      const margin = size * 0.05;
+      const inner = size - margin * 2;
+      const mc = matrix.size;
+      const cell = inner / mc;
 
-    let pImg: HTMLImageElement | null = null;
-    if (patternType === "logo" && patternLogo) {
-      try { pImg = await loadImage(patternLogo); } catch {}
-    }
-    let cImg: HTMLImageElement | null = null;
-    if (centerLogo) { try { cImg = await loadImage(centerLogo); } catch {} }
+      let pImg: HTMLImageElement | null = null, cImg: HTMLImageElement | null = null;
+      if (patternType === "logo" && patternLogo) { try { pImg = await loadImage(patternLogo); } catch {} }
+      if (centerLogo) { try { cImg = await loadImage(centerLogo); } catch {} }
 
-    ctx.fillStyle = bgColor; ctx.fillRect(0, 0, size, size);
-    ctx.fillStyle = fgColor; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+      let logoBounds: any = null;
+      if (cImg) {
+        const maxLogo = inner * 0.22;
+        const ratio = cImg.width / cImg.height;
+        const cw = ratio > 1 ? maxLogo : maxLogo * ratio;
+        const ch = ratio > 1 ? maxLogo / ratio : maxLogo;
+        const pad = margin * 0.6;
+        logoBounds = { cx2: size / 2, cy2: size / 2, cw, ch, radius: Math.max(cw, ch) / 2 + pad };
+      }
 
-    const drawFinder = (startX: number, startY: number) => {
-      const x = margin + startX * cellSize, y = margin + startY * cellSize;
-      const s7 = 7 * cellSize, s5 = 5 * cellSize, s3 = 3 * cellSize;
-      ctx.fillStyle = fgColor;
-      if (cornerType === "rounded") {
-        const r = cellSize * 2;
-        ctx.beginPath(); ctx.roundRect(x, y, s7, s7, r); ctx.fill();
-        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.roundRect(x + cellSize, y + cellSize, s5, s5, r - cellSize); ctx.fill();
-        ctx.fillStyle = fgColor; ctx.beginPath(); ctx.roundRect(x + cellSize * 2, y + cellSize * 2, s3, s3, cellSize); ctx.fill();
-      } else if (cornerType === "dots") {
-        const cx = x + s7 / 2, cy = y + s7 / 2;
-        ctx.beginPath(); ctx.arc(cx, cy, s7 / 2, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.arc(cx, cy, s5 / 2, 0, Math.PI * 2); ctx.fill();
-        ctx.fillStyle = fgColor; ctx.beginPath(); ctx.arc(cx, cy, s3 / 2, 0, Math.PI * 2); ctx.fill();
-      } else if (cornerType === "heart") {
-        const r = cellSize * 0.5;
-        ctx.beginPath(); ctx.roundRect(x, y, s7, s7, r); ctx.fill();
-        ctx.fillStyle = bgColor; ctx.beginPath(); ctx.roundRect(x + cellSize, y + cellSize, s5, s5, 0); ctx.fill();
-        ctx.fillStyle = fgColor;
-        drawHeart(ctx, x + s7 / 2 - (s3 * 1.15) / 2, y + s7 / 2 - (s3 * 1.15) / 2, s3 * 1.15, s3 * 1.15);
+      if (transparentBg) {
+        ctx.clearRect(0, 0, size, size);
       } else {
-        ctx.fillRect(x, y, s7, s7);
-        ctx.fillStyle = bgColor; ctx.fillRect(x + cellSize, y + cellSize, s5, s5);
-        ctx.fillStyle = fgColor; ctx.fillRect(x + cellSize * 2, y + cellSize * 2, s3, s3);
+        ctx.fillStyle = bgColor;
+        ctx.fillRect(0, 0, size, size);
+      }
+      ctx.fillStyle = fgColor; ctx.textAlign = "center"; ctx.textBaseline = "middle";
+
+      const drawFinder = (sx: number, sy: number) => {
+        const x = margin + sx * cell, y = margin + sy * cell;
+        const s7 = 7 * cell, s5 = 5 * cell, s3 = 3 * cell;
+        const activeCornerFg = customCornerColor ? cornerFgColor : fgColor;
+        ctx.fillStyle = activeCornerFg;
+        
+        if (cornerType === "rounded") {
+          const r = cell * 2;
+          ctx.beginPath(); ctx.roundRect(x, y, s7, s7, r); ctx.fill();
+          
+          if (transparentBg) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "#000000";
+            ctx.beginPath(); ctx.roundRect(x + cell, y + cell, s5, s5, r - cell); ctx.fill();
+            ctx.globalCompositeOperation = "source-over";
+          } else {
+            ctx.fillStyle = bgColor;
+            ctx.beginPath(); ctx.roundRect(x + cell, y + cell, s5, s5, r - cell); ctx.fill();
+          }
+          
+          ctx.fillStyle = activeCornerFg;
+          ctx.beginPath(); ctx.roundRect(x + cell * 2, y + cell * 2, s3, s3, cell); ctx.fill();
+        } else if (cornerType === "dots") {
+          const cx2 = x + s7 / 2, cy2 = y + s7 / 2;
+          ctx.beginPath(); ctx.arc(cx2, cy2, s7 / 2, 0, Math.PI * 2); ctx.fill();
+          
+          if (transparentBg) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "#000000";
+            ctx.beginPath(); ctx.arc(cx2, cy2, s5 / 2, 0, Math.PI * 2); ctx.fill();
+            ctx.globalCompositeOperation = "source-over";
+          } else {
+            ctx.fillStyle = bgColor;
+            ctx.beginPath(); ctx.arc(cx2, cy2, s5 / 2, 0, Math.PI * 2); ctx.fill();
+          }
+          
+          ctx.fillStyle = activeCornerFg;
+          ctx.beginPath(); ctx.arc(cx2, cy2, s3 / 2, 0, Math.PI * 2); ctx.fill();
+        } else if (cornerType === "heart") {
+          ctx.beginPath(); ctx.roundRect(x, y, s7, s7, cell * 0.5); ctx.fill();
+          
+          if (transparentBg) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "#000000";
+            ctx.beginPath(); ctx.roundRect(x + cell, y + cell, s5, s5, 0); ctx.fill();
+            ctx.globalCompositeOperation = "source-over";
+          } else {
+            ctx.fillStyle = bgColor;
+            ctx.beginPath(); ctx.roundRect(x + cell, y + cell, s5, s5, 0); ctx.fill();
+          }
+          
+          ctx.fillStyle = activeCornerFg;
+          drawHeart(ctx, x + s7/2 - (s3*1.15)/2, y + s7/2 - (s3*1.15)/2, s3*1.15, s3*1.15);
+        } else {
+          ctx.fillRect(x, y, s7, s7);
+          
+          if (transparentBg) {
+            ctx.globalCompositeOperation = "destination-out";
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(x + cell, y + cell, s5, s5);
+            ctx.globalCompositeOperation = "source-over";
+          } else {
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(x + cell, y + cell, s5, s5);
+          }
+          
+          ctx.fillStyle = activeCornerFg;
+          ctx.fillRect(x + cell * 2, y + cell * 2, s3, s3);
+        }
+      };
+
+      for (let r = 0; r < mc; r++) {
+        for (let c = 0; c < mc; c++) {
+          if (!matrix.data[r * mc + c]) continue;
+          const cx2 = margin + c * cell + cell / 2;
+          const cy2 = margin + r * cell + cell / 2;
+          const x = margin + c * cell, y = margin + r * cell;
+          if ((r <= 6 && c <= 6) || (r <= 6 && c >= mc - 7) || (r >= mc - 7 && c <= 6)) continue;
+          if (logoBounds) {
+            const dist = Math.sqrt((cx2 - logoBounds.cx2) ** 2 + (cy2 - logoBounds.cy2) ** 2);
+            if (dist < logoBounds.radius + cell * 0.4) continue;
+          }
+          ctx.fillStyle = fgColor;
+          if (patternType === "square") ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cell), Math.ceil(cell));
+          else if (patternType === "rounded") { ctx.beginPath(); ctx.roundRect(x, y, cell, cell, cell * 0.35); ctx.fill(); }
+          else if (patternType === "dots") { ctx.beginPath(); ctx.arc(cx2, cy2, (cell/2)*0.85, 0, Math.PI*2); ctx.fill(); }
+          else if (patternType === "star") drawStar(ctx, cx2, cy2, 5, cell/1.8, cell/3.8);
+          else if (patternType === "emoji") { ctx.font = `${cell*0.95}px Arial`; ctx.fillText(emojiChar||"✦", cx2, cy2 + cell*0.1); }
+          else if (patternType === "logo" && pImg) {
+            const pr = pImg.width / pImg.height;
+            const pw = pr > 1 ? cell : cell * pr, ph = pr > 1 ? cell / pr : cell;
+            ctx.drawImage(pImg, x + (cell-pw)/2, y + (cell-ph)/2, pw, ph);
+          } else ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cell), Math.ceil(cell));
+        }
+      }
+
+      drawFinder(0, 0); drawFinder(mc - 7, 0); drawFinder(0, mc - 7);
+
+      if (cImg && logoBounds) {
+        const { cx2, cy2, cw, ch, radius } = logoBounds;
+        if (transparentBg) {
+          ctx.globalCompositeOperation = "destination-out";
+          ctx.fillStyle = "#000000";
+          ctx.beginPath(); ctx.arc(cx2, cy2, radius, 0, Math.PI*2); ctx.fill();
+          ctx.globalCompositeOperation = "source-over";
+        } else {
+          ctx.fillStyle = bgColor;
+          ctx.beginPath(); ctx.arc(cx2, cy2, radius, 0, Math.PI*2); ctx.fill();
+        }
+        ctx.drawImage(cImg, cx2 - cw/2, cy2 - ch/2, cw, ch);
       }
     };
 
-    let logoBounds: any = null;
-    if (cImg) {
-      const maxLogoSize = innerSize * 0.22;
-      const cRatio = cImg.width / cImg.height;
-      let cWidth = maxLogoSize, cHeight = maxLogoSize;
-      if (cRatio > 1) cHeight = maxLogoSize / cRatio;
-      else cWidth = maxLogoSize * cRatio;
-      const padding = margin * 0.6;
-      logoBounds = {
-        xMin: (size - cWidth) / 2 - padding, xMax: (size - cWidth) / 2 + cWidth + padding,
-        yMin: (size - cHeight) / 2 - padding, yMax: (size - cHeight) / 2 + cHeight + padding,
-        cWidth, cHeight, isCircle: true, cx: size / 2, cy: size / 2,
-        radius: Math.max(cWidth, cHeight) / 2 + padding,
-      };
+    if (targetCanvas) {
+      await drawOnCanvas(targetCanvas);
+      return;
     }
-
-    for (let r = 0; r < moduleCount; r++) {
-      for (let c = 0; c < moduleCount; c++) {
-        if (!matrix.data[r * moduleCount + c]) continue;
-        const cx = margin + c * cellSize + cellSize / 2;
-        const cy = margin + r * cellSize + cellSize / 2;
-        const x  = margin + c * cellSize;
-        const y  = margin + r * cellSize;
-        if ((r <= 6 && c <= 6) || (r <= 6 && c >= moduleCount - 7) || (r >= moduleCount - 7 && c <= 6)) continue;
-        if (logoBounds?.isCircle) {
-          const dist = Math.sqrt((cx - logoBounds.cx) ** 2 + (cy - logoBounds.cy) ** 2);
-          if (dist < logoBounds.radius + cellSize * 0.4) continue;
-        } else if (logoBounds) {
-          if (x + cellSize > logoBounds.xMin && x < logoBounds.xMax && y + cellSize > logoBounds.yMin && y < logoBounds.yMax) continue;
-        }
-        ctx.fillStyle = fgColor;
-        if (patternType === "square") {
-          ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
-        } else if (patternType === "rounded") {
-          ctx.beginPath(); ctx.roundRect(x, y, cellSize, cellSize, cellSize * 0.35); ctx.fill();
-        } else if (patternType === "dots") {
-          ctx.beginPath(); ctx.arc(cx, cy, (cellSize / 2) * 0.85, 0, Math.PI * 2); ctx.fill();
-        } else if (patternType === "star") {
-          drawStar(ctx, cx, cy, 5, cellSize / 1.8, cellSize / 3.8);
-        } else if (patternType === "emoji") {
-          ctx.font = `${cellSize * 0.95}px Arial`;
-          ctx.fillText(emojiChar || "✦", cx, cy + cellSize * 0.1);
-        } else if (patternType === "logo" && pImg) {
-          const pRatio = pImg.width / pImg.height;
-          let pw = cellSize, ph = cellSize;
-          if (pRatio > 1) ph = cellSize / pRatio; else pw = cellSize * pRatio;
-          ctx.drawImage(pImg, x + (cellSize - pw) / 2, y + (cellSize - ph) / 2, pw, ph);
-        } else {
-          ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(cellSize), Math.ceil(cellSize));
-        }
-      }
+    if (canvasRef?.current) {
+      await drawOnCanvas(canvasRef.current);
     }
-
-    drawFinder(0, 0); drawFinder(moduleCount - 7, 0); drawFinder(0, moduleCount - 7);
-
-    if (cImg && logoBounds) {
-      ctx.fillStyle = bgColor;
-      ctx.beginPath(); ctx.arc(logoBounds.cx, logoBounds.cy, logoBounds.radius, 0, Math.PI * 2); ctx.fill();
-      ctx.drawImage(cImg, logoBounds.xMin + margin * 0.6, logoBounds.yMin + margin * 0.6, logoBounds.cWidth, logoBounds.cHeight);
+    if (canvasRefMobile?.current) {
+      await drawOnCanvas(canvasRefMobile.current);
     }
+  }, [url, fgColor, bgColor, patternType, emojiChar, patternLogo, centerLogo, cornerType, canvasRef, canvasRefMobile, transparentBg, customCornerColor, cornerFgColor]);
 
-    if (isDownload) {
-      const dataUrl = canvas.toDataURL("image/png");
-      const a = document.createElement("a"); a.href = dataUrl; a.download = "qr-code.png"; a.click();
-    }
-  }, [url, fgColor, bgColor, patternType, emojiChar, patternLogo, centerLogo, cornerType]);
+  useEffect(() => { render(null); }, [render]);
 
-  useEffect(() => { renderQR(false); }, [renderQR]);
+  const download = async () => {
+    const c = document.createElement("canvas"); c.width = 2048; c.height = 2048;
+    await render(c);
+    const a = document.createElement("a"); a.href = c.toDataURL("image/png"); a.download = "qr-code.png"; a.click();
+  };
+
+  const getDataURL = () => {
+    const canvas = canvasRef?.current || canvasRefMobile?.current;
+    return canvas ? canvas.toDataURL("image/png") : null;
+  };
+
+  return { download, getDataURL };
+}
+
+/* ─────────────────────────────────────────
+   COLOR SWATCH PICKER
+───────────────────────────────────────── */
+interface ColorPickerProps {
+  label: string;
+  value: string;
+  presets: string[];
+  onChange: (val: string) => void;
+}
+
+function ColorPicker({ label, value, presets, onChange }: ColorPickerProps) {
+  return (
+    <div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 10 }}>
+        {label}
+      </div>
+      <div style={{ display: "flex", gap: 7, marginBottom: 12, flexWrap: "wrap" }}>
+        {presets.map(c => (
+          <button key={c} onClick={() => onChange(c)} style={{
+            width: 26, height: 26, borderRadius: "50%", background: c,
+            border: `2.5px solid ${value === c ? T.accent : "transparent"}`,
+            outline: value === c ? `2px solid ${T.accentDim}` : "none",
+            outlineOffset: 2,
+            cursor: "pointer", transition: "all 0.15s",
+            transform: value === c ? "scale(1.18)" : "scale(1)",
+            flexShrink: 0,
+          }} />
+        ))}
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{ position: "relative", width: 36, height: 36, borderRadius: T.radius.md, overflow: "hidden", border: `1.5px solid ${T.border}`, flexShrink: 0 }}>
+          <input type="color" value={value} onChange={e => onChange(e.target.value)}
+            style={{ position: "absolute", inset: -8, width: 52, height: 52, cursor: "pointer", border: "none" }} />
+        </div>
+        <input type="text" value={value.toUpperCase()} onChange={e => onChange(e.target.value)}
+          style={{ flex: 1, padding: "8px 12px", background: T.bg, border: `1.5px solid ${T.border}`, borderRadius: T.radius.md, fontSize: 13, fontFamily: "monospace", color: T.text, outline: "none", fontWeight: 600 }} />
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   OPTION PILL ROW
+───────────────────────────────────────── */
+interface OptionPillsProps {
+  options: { id: string; label: string; icon: React.ReactNode }[];
+  value: string;
+  onChange: (val: any) => void;
+  small?: boolean;
+}
+
+function OptionPills({ options, value, onChange, small = false }: OptionPillsProps) {
+  return (
+    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+      {options.map(o => {
+        const active = value === o.id;
+        return (
+          <button key={o.id} onClick={() => onChange(o.id)} style={{
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+            gap: 7, padding: small ? "10px 12px" : "14px 10px",
+            minWidth: small ? 72 : 64, flex: small ? "1 1 72px" : "1 1 64px",
+            borderRadius: T.radius.lg,
+            border: `1.5px solid ${active ? T.accent : T.border}`,
+            background: active ? T.accentDim : T.bg,
+            color: active ? T.accent : T.textSub,
+            fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+            cursor: "pointer", transition: "all 0.18s",
+            textTransform: "uppercase",
+          }}>
+            <div style={{ opacity: active ? 1 : 0.55 }}>{o.icon}</div>
+            <span style={{ color: active ? T.accent : T.textSub }}>{o.label}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   FILE UPLOAD SLOT
+───────────────────────────────────────── */
+interface UploadSlotProps {
+  label: string;
+  value: string | null;
+  onUpload: (val: string | null) => void;
+  onClear: () => void;
+  accept?: string;
+  inputRef: React.RefObject<HTMLInputElement | null>;
+}
+
+function UploadSlot({ label, value, onUpload, onClear, accept = "image/*", inputRef }: UploadSlotProps) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <input type="file" accept={accept} ref={inputRef} style={{ display: "none" }}
+        onChange={() => {
+          const file = inputRef.current?.files?.[0]; if (!file) return;
+          const reader = new FileReader(); reader.onload = e => onUpload(e.target?.result as string); reader.readAsDataURL(file);
+        }} />
+      <button onClick={() => inputRef.current?.click()} style={{
+        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        padding: "14px 20px",
+        background: value ? T.accentDim : "transparent",
+        border: `1.5px dashed ${value ? T.accent : T.borderMid}`,
+        borderRadius: T.radius.lg, color: value ? T.accent : T.textSub,
+        fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.2s",
+      }}>
+        {Icons.Upload(15)}
+        <span>{value ? "✓ Uploaded" : label}</span>
+      </button>
+      {value && (
+        <button onClick={() => { onClear(); if (inputRef.current) inputRef.current.value = ""; }} style={{
+          padding: "14px", background: T.dangerDim, border: `1.5px solid rgba(239,68,68,0.2)`,
+          borderRadius: T.radius.lg, color: T.danger, cursor: "pointer", flexShrink: 0,
+          display: "flex", alignItems: "center", justifyContent: "center",
+        }}>
+          {Icons.Trash(15)}
+        </button>
+      )}
+    </div>
+  );
+}
+
+interface ToggleSwitchProps {
+  label: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  description?: string;
+}
+
+function ToggleSwitch({ label, checked, onChange, description }: ToggleSwitchProps) {
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 2, textAlign: "left" }}>
+        <span style={{ fontSize: 13, fontWeight: 700, color: T.text }}>{label}</span>
+        {description && <span style={{ fontSize: 11, color: T.textMuted }}>{description}</span>}
+      </div>
+      <button 
+        onClick={() => onChange(!checked)}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        style={{
+          width: 44, height: 24, borderRadius: 12,
+          background: checked ? T.accent : "rgba(255,255,255,0.06)",
+          border: `1.5px solid ${checked ? T.accent : hovered ? T.borderHigh : T.border}`,
+          cursor: "pointer", position: "relative",
+          transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+          flexShrink: 0, padding: 0,
+          outline: "none",
+          boxShadow: checked ? `0 0 12px ${T.accentDim}` : "none",
+        }}
+      >
+        <div 
+          style={{
+            width: 16, height: 16, borderRadius: "50%",
+            background: checked ? "#08090a" : hovered ? "#ffffff" : T.textSub,
+            position: "absolute", 
+            top: "50%",
+            transform: "translateY(-50%)",
+            left: checked ? 22 : 3,
+            transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+            boxShadow: "0 2px 5px rgba(0,0,0,0.35)",
+          }}
+        />
+      </button>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   MAIN COMPONENT
+───────────────────────────────────────── */
+export default function QRStudio() {
+  const [url, setUrl] = useState("");
+  const [fgColor, setFgColor] = useState("#0a0a0b");
+  const [bgColor, setBgColor] = useState("#ffffff");
+  const [patternType, setPatternType] = useState<PatternType>("rounded");
+  const [cornerType, setCornerType]   = useState<CornerType>("rounded");
+  const [emojiChar, setEmojiChar]     = useState("✦");
+  const [patternLogo, setPatternLogo] = useState<string | null>(null);
+  const [centerLogo, setCenterLogo]   = useState<string | null>(null);
+  const [transparentBg, setTransparentBg] = useState(false);
+  const [customCornerColor, setCustomCornerColor] = useState(false);
+  const [cornerFgColor, setCornerFgColor] = useState("#0a0a0b");
+
+  const [activeTab, setActiveTab]     = useState("pattern");
+  const [lightbox, setLightbox]       = useState(false);
+  const [lightboxSrc, setLightboxSrc] = useState<string | null>(null);
+  const [copied, setCopied]           = useState(false);
+  const [mounted, setMounted]         = useState(false);
+  const [previewPulsed, setPreviewPulsed] = useState(false);
+
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const mobileCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const patternLogoRef = useRef<HTMLInputElement | null>(null);
+  const centerLogoRef  = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+
+  // Pulse the preview when settings change
+  useEffect(() => {
+    setPreviewPulsed(true);
+    const t = setTimeout(() => setPreviewPulsed(false), 400);
+    return () => clearTimeout(t);
+  }, [fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, transparentBg, customCornerColor, cornerFgColor]);
+
+  const { download, getDataURL } = useQRRenderer({
+    url, fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, canvasRef, canvasRefMobile: mobileCanvasRef, transparentBg, customCornerColor, cornerFgColor
+  });
 
   const handleCopy = async () => {
+    if (!url) return;
     await navigator.clipboard.writeText(url);
-    setCopied(true); setTimeout(() => setCopied(false), 2000);
+    setCopied(true); setTimeout(() => setCopied(false), 2200);
   };
 
   const openLightbox = () => {
-    const canvas = canvasRef.current; if (!canvas) return;
-    setLightboxSrc(canvas.toDataURL("image/png")); setLightboxOpen(true);
+    const src = getDataURL(); if (!src) return;
+    setLightboxSrc(src); setLightbox(true);
   };
 
-  const toggle = (id: string) => setOpenSection(prev => prev === id ? "" : id);
-
-  const fileUpload = (ref: React.RefObject<HTMLInputElement | null>, setter: (v: string) => void) => {
-    const file = ref.current?.files?.[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = e => setter(e.target?.result as string);
-    reader.readAsDataURL(file);
+  const applyPreset = (p: { fg: string; bg: string; pattern: string; corner: string }) => {
+    setFgColor(p.fg); setBgColor(p.bg); setPatternType(p.pattern as PatternType); setCornerType(p.corner as CornerType);
   };
 
-  /* ─── Fade-in ─── */
-  const fadeStyle = (delay: number) => ({
-    opacity: mounted ? 1 : 0,
-    transform: mounted ? "translateY(0)" : "translateY(16px)",
-    transition: `opacity 0.6s ease ${delay}s, transform 0.6s cubic-bezier(0.22,1,0.36,1) ${delay}s`,
-  });
+  /* ── Tab panel contents ── */
+  const tabPanels: { [key: string]: React.ReactNode } = {
+    pattern: (
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div>
+          <SectionLabel>Dot Style</SectionLabel>
+          <OptionPills value={patternType} onChange={setPatternType} options={[
+            { id: "square",  label: "Classic", icon: <div style={{ width: 14, height: 14, background: "currentColor" }} /> },
+            { id: "rounded", label: "Soft",    icon: <div style={{ width: 14, height: 14, background: "currentColor", borderRadius: 4 }} /> },
+            { id: "dots",    label: "Dots",    icon: <div style={{ width: 14, height: 14, background: "currentColor", borderRadius: "50%" }} /> },
+            { id: "star",    label: "Stars",   icon: Icons.Star(14) },
+            { id: "emoji",   label: "Emoji",   icon: Icons.Smile(14) },
+            { id: "logo",    label: "Logo",    icon: Icons.Image(14) },
+          ]} />
+        </div>
+
+        {patternType === "emoji" && (
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: T.surfaceRaised, borderRadius: T.radius.lg, border: `1.5px solid ${T.border}` }}>
+            <span style={{ fontSize: 12, fontWeight: 700, color: T.textMuted, flex: 1 }}>Emoji character</span>
+            <input type="text" value={emojiChar}
+              onChange={e => { const c = Array.from(e.target.value); setEmojiChar(c.length ? c[c.length - 1] : ""); }}
+              style={{ width: 64, textAlign: "center", fontSize: 22, padding: "8px 10px", background: T.surfaceHigh, border: `1.5px solid ${T.borderMid}`, borderRadius: T.radius.md, color: T.text, outline: "none", fontFamily: "inherit" }}
+            />
+          </div>
+        )}
+
+        {patternType === "logo" && (
+          <div>
+            <SectionLabel>Pattern Logo</SectionLabel>
+            <UploadSlot label="Choose dot logo image" value={patternLogo} inputRef={patternLogoRef}
+              onUpload={setPatternLogo} onClear={() => setPatternLogo(null)} />
+          </div>
+        )}
+
+        <div>
+          <SectionLabel>Quick Presets</SectionLabel>
+          <div style={{ display: "flex", gap: 8, overflowX: "auto", paddingBottom: 4, scrollbarWidth: "none" }}>
+            {QUICK_PRESETS.map(p => (
+              <button key={p.label} onClick={() => applyPreset(p)} style={{
+                display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
+                padding: "10px 14px", background: T.surfaceRaised,
+                border: `1.5px solid ${T.border}`, borderRadius: T.radius.md,
+                cursor: "pointer", fontFamily: T.font, transition: "all 0.15s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = T.borderHigh}
+                onMouseLeave={e => e.currentTarget.style.borderColor = T.border}
+              >
+                <div style={{ display: "flex", gap: 4 }}>
+                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: p.fg }} />
+                  <div style={{ width: 12, height: 12, borderRadius: "50%", background: p.bg, border: "1px solid rgba(0,0,0,0.12)" }} />
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 700, color: T.textSub, whiteSpace: "nowrap" }}>{p.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <ScanTip />
+      </div>
+    ),
+
+    colors: (
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <ToggleSwitch 
+          label="Transparent Background" 
+          checked={transparentBg} 
+          onChange={setTransparentBg}
+          description="Remove background for overlaying on design assets"
+        />
+        
+        <div style={{ height: 1, background: T.border }} />
+
+        <ColorPicker label="Foreground" value={fgColor} presets={FG_PRESETS} onChange={setFgColor} />
+        
+        <div style={{ height: 1, background: T.border }} />
+
+        <div style={{ 
+          opacity: transparentBg ? 0.35 : 1, 
+          pointerEvents: transparentBg ? "none" : "auto",
+          transition: "all 0.25s",
+        }}>
+          <ColorPicker label="Background" value={bgColor} presets={BG_PRESETS} onChange={setBgColor} />
+          {transparentBg && (
+            <div style={{ fontSize: 11, color: T.accent, marginTop: 8, fontWeight: 600, textAlign: "left" }}>
+              ⚠ Background color is hidden (transparent is enabled)
+            </div>
+          )}
+        </div>
+
+        <div style={{ height: 1, background: T.border }} />
+
+        <ToggleSwitch 
+          label="Custom Marker Color" 
+          checked={customCornerColor} 
+          onChange={setCustomCornerColor}
+          description="Style the corner finder markers differently"
+        />
+
+        {customCornerColor && (
+          <div style={{ marginTop: 12, animation: "fadeIn 0.2s ease" }}>
+            <ColorPicker label="Marker Color" value={cornerFgColor} presets={FG_PRESETS} onChange={setCornerFgColor} />
+          </div>
+        )}
+
+        <div style={{ height: 1, background: T.border }} />
+
+        <div style={{ padding: "14px 16px", background: "rgba(251,191,36,0.05)", border: `1.5px solid rgba(251,191,36,0.12)`, borderRadius: T.radius.lg }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.warning, marginBottom: 4 }}>Contrast matters</div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>For reliable scanning, ensure strong contrast between foreground and background. Aim for at least 4:1 contrast ratio.</div>
+        </div>
+      </div>
+    ),
+
+    corners: (
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <SectionLabel>Finder Marker Style</SectionLabel>
+        <OptionPills small value={cornerType} onChange={setCornerType} options={[
+          { id: "square",  label: "Classic", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor" }} /> },
+          { id: "rounded", label: "Rounded", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: 4 }} /> },
+          { id: "dots",    label: "Circles", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: "50%" }} /> },
+          { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 14 }}>♥</span> },
+        ]} />
+        <div style={{ padding: "14px 16px", background: T.surfaceRaised, border: `1.5px solid ${T.border}`, borderRadius: T.radius.lg }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textSub, marginBottom: 4 }}>What are finder markers?</div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.6 }}>The three corner squares help scanners detect and orient the QR code. These are always drawn last to ensure maximum scan reliability.</div>
+        </div>
+      </div>
+    ),
+
+    branding: (
+      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+        <div>
+          <SectionLabel>Center Logo</SectionLabel>
+          <UploadSlot label="Upload brand logo" value={centerLogo} inputRef={centerLogoRef}
+            onUpload={setCenterLogo} onClear={() => setCenterLogo(null)} />
+          {centerLogo && (
+            <div style={{ marginTop: 10, padding: "10px 14px", background: T.accentDim, borderRadius: T.radius.md, border: `1.5px solid rgba(200,241,53,0.15)`, fontSize: 12, color: T.accent, fontWeight: 600 }}>
+              ✓ Error correction set to Level H — best scan rate with logos
+            </div>
+          )}
+        </div>
+        <div style={{ padding: "14px 16px", background: T.surfaceRaised, border: `1.5px solid ${T.border}`, borderRadius: T.radius.lg }}>
+          <div style={{ fontSize: 12, fontWeight: 700, color: T.textSub, marginBottom: 4 }}>Logo guidelines</div>
+          <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.8 }}>
+            • PNG or SVG with transparent background works best<br/>
+            • Keep logo under 30% of QR width for reliability<br/>
+            • High contrast logos scan more dependably
+          </div>
+        </div>
+      </div>
+    ),
+  };
+
+  /* ── TABS config ── */
+  const tabs = [
+    { id: "pattern",  label: "Style",    icon: Icons.Grid(20) },
+    { id: "colors",   label: "Colors",   icon: Icons.Palette(20) },
+    { id: "corners",  label: "Corners",  icon: Icons.Corner(20) },
+    { id: "branding", label: "Brand",    icon: Icons.Image(20) },
+  ];
 
   return (
-    <div style={{
-      minHeight: "100vh",
-      background: PALETTE.bg,
-      padding: "60px 24px 80px",
-      fontFamily: "'Geist', 'Inter', system-ui, sans-serif",
-      position: "relative",
-      overflowX: "hidden",
-    }}>
+    <div style={{ minHeight: "100vh", background: T.bg, fontFamily: T.font, overflowX: "hidden" }}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;0,9..40,700;0,9..40,800;0,9..40,900;1,9..40,400&display=swap');
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { margin: 0; padding: 0; }
+        input[type=range] { accent-color: #c8f135; }
+        ::-webkit-scrollbar { display: none; }
 
-      {/* Background glows */}
-      <div style={{
-        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
-        background: `
-          radial-gradient(ellipse 60% 40% at 20% -10%, rgba(200,241,53,0.06) 0%, transparent 60%),
-          radial-gradient(ellipse 50% 30% at 80% 110%, rgba(99,102,241,0.05) 0%, transparent 60%)
-        `,
-      }} />
+        .qr-tab-btn:active { transform: scale(0.9) !important; }
+        .qr-dl-btn:active { transform: scale(0.97) !important; }
+        .qr-preset-scroll { -webkit-overflow-scrolling: touch; }
+        .qr-preview-pulse { animation: qrPulse 0.35s ease-out; }
+        @keyframes qrPulse {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.012); box-shadow: 0 0 0 6px rgba(200,241,53,0.12); }
+          100% { transform: scale(1); }
+        }
 
-      {/* Dot grid */}
-      <div style={{
-        position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
-        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px)",
-        backgroundSize: "28px 28px",
-      }} />
+        .transparent-checkered {
+          background-color: #ffffff !important;
+          background-image: 
+            linear-gradient(45deg, #f0f0f3 25%, transparent 25%, transparent 75%, #f0f0f3 75%, #f0f0f3), 
+            linear-gradient(45deg, #f0f0f3 25%, transparent 25%, transparent 75%, #f0f0f3 75%, #f0f0f3) !important;
+          background-size: 16px 16px !important;
+          background-position: 0 0, 8px 8px !important;
+        }
 
-      <div style={{ position: "relative", zIndex: 1, maxWidth: 1120, margin: "0 auto" }}>
+        /* Desktop grid */
+        @media (min-width: 900px) {
+          .qr-outer { max-width: 1100px; margin: 0 auto; padding: 56px 40px 80px !important; }
+          .qr-desktop-grid { display: grid !important; grid-template-columns: 1fr 400px; gap: 32px; align-items: start; }
+          .qr-mobile-only { display: none !important; }
+          .qr-desktop-only { display: flex !important; }
+          .qr-sidebar-sticky { position: sticky !important; top: 32px; }
+          .qr-bottom-safe { display: none !important; }
+          .qr-main-content { padding-bottom: 0 !important; }
+        }
 
-        {/* ── Header ── */}
-        <header style={{ textAlign: "center", marginBottom: 64, ...fadeStyle(0) }}>
+        @media (max-width: 899px) {
+          .qr-desktop-only { display: none !important; }
+          .qr-outer { padding: 0 !important; }
+        }
+      `}</style>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 28, flexWrap: "wrap" }}>
-            <Tag icon={<Lock size={10} />} label="100% Private" />
-            <Tag icon={<Zap size={10} />} label="Client-side only" />
-            <Tag icon={<Globe size={10} />} label="No watermarks" />
-          </div>
+      {/* Ambient background */}
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        background: `radial-gradient(ellipse 70% 50% at 15% -5%, rgba(200,241,53,0.05) 0%, transparent 60%),
+                     radial-gradient(ellipse 60% 40% at 90% 100%, rgba(99,102,241,0.04) 0%, transparent 55%)` }} />
+      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0,
+        backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.018) 1px, transparent 1px)",
+        backgroundSize: "24px 24px" }} />
 
-          <h1 style={{
-            fontSize: "clamp(2.8rem, 8vw, 6rem)",
-            fontWeight: 900, lineHeight: 1,
-            color: PALETTE.textPrimary,
-            letterSpacing: "-0.03em",
-            margin: "0 0 20px",
-          }}>
-            QR{" "}
-            <span style={{
-              background: `linear-gradient(135deg, ${PALETTE.accent} 0%, #a8e000 100%)`,
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}>
-              Studio
-            </span>
-          </h1>
+      <div className="qr-outer" style={{ position: "relative", zIndex: 1, padding: "0 0 120px" }}>
 
-          <p style={{
-            fontSize: 16, color: PALETTE.textSecondary,
-            maxWidth: 480, margin: "0 auto",
-            lineHeight: 1.7, fontWeight: 400,
-          }}>
-            Craft pixel-perfect QR codes with custom patterns, brand overlays, and precision color control —
-            all processed locally, never uploaded.
-          </p>
-        </header>
-
-        {/* ── Main grid ── */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "minmax(0,1fr) 380px",
-          gap: 28,
-          alignItems: "start",
-          ...fadeStyle(0.12),
-        }}>
-
-          {/* ── LEFT: Controls ── */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        {/* ─── DESKTOP LAYOUT ─── */}
+        <div className="qr-desktop-grid" style={{ display: "none" }}>
+          {/* Left: controls */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            {/* Desktop header */}
+            <div style={{ marginBottom: 8, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(12px)", transition: "all 0.5s ease" }}>
+              <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+                <Chip icon={Icons.Shield(12)} label="100% Private" />
+                <Chip icon={Icons.Zap(11)} label="Client-side" />
+              </div>
+              <h1 style={{ margin: 0, fontSize: "clamp(2.3rem,4vw,3.8rem)", fontWeight: 900, lineHeight: 1.1, color: T.text, letterSpacing: "-0.03em" }}>
+                QR Code <span style={{ background: "linear-gradient(135deg, #c8f135, #a8e000)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Generator</span>
+              </h1>
+              <p style={{ margin: "12px 0 0", fontSize: 15, color: T.textSub, lineHeight: 1.65, maxWidth: 480 }}>
+                Craft pixel-perfect QR codes with custom patterns, brand overlays, and precision color control — processed locally, never uploaded.
+              </p>
+            </div>
 
             {/* URL input */}
-            <div style={{
-              background: PALETTE.surface,
-              border: `1px solid ${urlFocused ? "rgba(200,241,53,0.3)" : PALETTE.border}`,
-              borderRadius: 20, padding: "20px 22px",
-              transition: "border-color 0.2s",
-            }}>
-              <label style={{ display: "block", fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 10 }}>
-                Destination URL
-              </label>
-              <div style={{ position: "relative" }}>
-                <input
-                  type="text"
-                  value={url}
-                  onChange={e => setUrl(e.target.value)}
-                  onFocus={() => setUrlFocused(true)}
-                  onBlur={() => setUrlFocused(false)}
-                  placeholder="https://your-link.com"
-                  style={{
-                    width: "100%", boxSizing: "border-box",
-                    background: PALETTE.bg,
-                    border: `1px solid ${PALETTE.border}`,
-                    borderRadius: 12, padding: "14px 52px 14px 18px",
-                    fontSize: 14, color: PALETTE.textPrimary,
-                    outline: "none", transition: "border-color 0.2s",
-                    fontFamily: "inherit",
-                  }}
-                />
-                <button
-                  onClick={handleCopy}
-                  title="Copy URL"
-                  style={{
-                    position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
-                    background: "none", border: "none", cursor: "pointer",
-                    color: copied ? PALETTE.accent : PALETTE.textMuted,
-                    transition: "color 0.2s", padding: 4,
-                  }}
-                >
-                  {copied ? <Check size={16} /> : <Copy size={16} />}
+            <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />
+
+            {/* Tab bar (desktop) */}
+            <div style={{ display: "flex", gap: 4, background: T.surfaceRaised, padding: 4, borderRadius: T.radius.xl, border: `1.5px solid ${T.border}` }}>
+              {tabs.map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
+                  padding: "10px 8px", borderRadius: T.radius.lg,
+                  background: activeTab === tab.id ? T.surface : "transparent",
+                  border: `1.5px solid ${activeTab === tab.id ? T.borderMid : "transparent"}`,
+                  color: activeTab === tab.id ? T.text : T.textMuted,
+                  fontSize: 12, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", fontFamily: T.font,
+                }}>
+                  <span style={{ opacity: activeTab === tab.id ? 1 : 0.6 }}>{tab.icon}</span>
+                  <span>{tab.label}</span>
                 </button>
-              </div>
+              ))}
             </div>
 
-            {/* Section: Pattern & Colors */}
-            <SectionCard
-              id="pattern" open={openSection === "pattern"} onToggle={() => toggle("pattern")}
-              icon={<QrCode size={18} />}
-              title="Pattern & Colors"
-              subtitle="Choose a dot style and your color palette"
-            >
-              {/* Pattern grid */}
-              <div style={{ marginBottom: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
-                  Dot Style
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 8 }}>
-                  {[
-                    { id: "square",  label: "Classic", icon: <div style={{ width: 16, height: 16, background: "currentColor" }} /> },
-                    { id: "rounded", label: "Soft",    icon: <div style={{ width: 16, height: 16, background: "currentColor", borderRadius: 4 }} /> },
-                    { id: "dots",    label: "Dots",    icon: <div style={{ width: 16, height: 16, background: "currentColor", borderRadius: "50%" }} /> },
-                    { id: "star",    label: "Stars",   icon: <Star size={16} fill="currentColor" /> },
-                    { id: "emoji",   label: "Emoji",   icon: <Smile size={16} /> },
-                    { id: "logo",    label: "Logo",    icon: <ImageIcon size={16} /> },
-                  ].map(opt => (
-                    <PatternBtn key={opt.id} {...opt} active={patternType === opt.id} onClick={() => setPatternType(opt.id as PatternType)} />
-                  ))}
-                </div>
+            {/* Panel */}
+            <div style={{ background: T.surface, border: `1.5px solid ${T.border}`, borderRadius: T.radius.xl, padding: 24 }}>
+              {tabPanels[activeTab]}
+            </div>
+          </div>
 
-                {patternType === "emoji" && (
-                  <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 12, padding: "12px 16px", background: PALETTE.bg, borderRadius: 12, border: `1px solid ${PALETTE.border}` }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted }}>Emoji character</span>
-                    <input type="text" value={emojiChar}
-                      onChange={e => { const c = Array.from(e.target.value); setEmojiChar(c.length ? c[c.length - 1] : ""); }}
-                      style={{ width: 60, textAlign: "center", fontSize: 20, padding: "6px 10px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 8, color: PALETTE.textPrimary, outline: "none", fontFamily: "inherit" }}
-                    />
-                  </div>
-                )}
+          {/* Right: sticky preview */}
+          <div className="qr-sidebar-sticky">
+            <PreviewCard canvasRef={canvasRef} previewPulsed={previewPulsed} onExpand={openLightbox} onDownload={download} transparentBg={transparentBg} />
+          </div>
+        </div>
 
-                {patternType === "logo" && (
-                  <div style={{ marginTop: 12, display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", background: PALETTE.bg, borderRadius: 12, border: `1px solid ${PALETTE.border}` }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted }}>Pattern logo</span>
-                    <input type="file" accept="image/*" ref={patternInputRef} className="hidden" style={{ display: "none" }}
-                      onChange={() => fileUpload(patternInputRef, setPatternLogo)} />
-                    <button onClick={() => patternInputRef.current?.click()} style={{ display: "flex", alignItems: "center", gap: 6, padding: "7px 14px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 8, color: PALETTE.textSecondary, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "inherit" }}>
-                      <Upload size={13} /> Choose image
-                    </button>
-                    {patternLogo && (
-                      <button onClick={() => { setPatternLogo(null); if (patternInputRef.current) patternInputRef.current.value = ""; }}
-                        style={{ padding: "7px 10px", background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, color: "#ef4444", cursor: "pointer" }}>
-                        <Trash2 size={13} />
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+        {/* ─── MOBILE LAYOUT ─── */}
+        <div className="qr-mobile-only qr-main-content" style={{ display: "flex", flexDirection: "column", paddingBottom: 90 }}>
 
-              {/* Color palette */}
-              <div style={{ borderTop: `1px solid ${PALETTE.border}`, paddingTop: 20 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
-                  Color Palette
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                  {/* Foreground */}
-                  <div>
-                    <div style={{ fontSize: 11, color: PALETTE.textMuted, marginBottom: 10 }}>Foreground</div>
-                    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
-                      {FG_PRESETS.map(c => (
-                        <button key={c} onClick={() => setFgColor(c)} style={{
-                          width: 22, height: 22, borderRadius: "50%", background: c, cursor: "pointer",
-                          border: `2px solid ${fgColor === c ? PALETTE.accent : "transparent"}`,
-                          transition: "border-color 0.15s, transform 0.15s",
-                          transform: fgColor === c ? "scale(1.15)" : "scale(1)",
-                        }} />
-                      ))}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ position: "relative", width: 32, height: 32, borderRadius: 8, overflow: "hidden", border: `1px solid ${PALETTE.border}`, flexShrink: 0 }}>
-                        <input type="color" value={fgColor} onChange={e => setFgColor(e.target.value)}
-                          style={{ position: "absolute", inset: -8, width: 48, height: 48, cursor: "pointer" }} />
-                      </div>
-                      <input type="text" value={fgColor.toUpperCase()} onChange={e => setFgColor(e.target.value)}
-                        style={{ width: 88, padding: "5px 10px", background: PALETTE.bg, border: `1px solid ${PALETTE.border}`, borderRadius: 8, fontSize: 12, fontFamily: "monospace", color: PALETTE.textPrimary, outline: "none" }} />
-                    </div>
-                  </div>
-
-                  {/* Background */}
-                  <div>
-                    <div style={{ fontSize: 11, color: PALETTE.textMuted, marginBottom: 10 }}>Background</div>
-                    <div style={{ display: "flex", gap: 6, marginBottom: 10, flexWrap: "wrap" }}>
-                      {BG_PRESETS.map(c => (
-                        <button key={c} onClick={() => setBgColor(c)} style={{
-                          width: 22, height: 22, borderRadius: "50%", background: c, cursor: "pointer",
-                          border: `2px solid ${bgColor === c ? PALETTE.accent : "rgba(100,100,100,0.3)"}`,
-                          transition: "border-color 0.15s, transform 0.15s",
-                          transform: bgColor === c ? "scale(1.15)" : "scale(1)",
-                        }} />
-                      ))}
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <div style={{ position: "relative", width: 32, height: 32, borderRadius: 8, overflow: "hidden", border: `1px solid ${PALETTE.border}`, flexShrink: 0 }}>
-                        <input type="color" value={bgColor} onChange={e => setBgColor(e.target.value)}
-                          style={{ position: "absolute", inset: -8, width: 48, height: 48, cursor: "pointer" }} />
-                      </div>
-                      <input type="text" value={bgColor.toUpperCase()} onChange={e => setBgColor(e.target.value)}
-                        style={{ width: 88, padding: "5px 10px", background: PALETTE.bg, border: `1px solid ${PALETTE.border}`, borderRadius: 8, fontSize: 12, fontFamily: "monospace", color: PALETTE.textPrimary, outline: "none" }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </SectionCard>
-
-            {/* Section: Corners */}
-            <SectionCard
-              id="corners" open={openSection === "corners"} onToggle={() => toggle("corners")}
-              icon={<Maximize size={18} />}
-              title="Corner Style"
-              subtitle="Customize the three finder markers"
-            >
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 8 }}>
-                {[
-                  { id: "square",  label: "Classic", icon: <Square size={16} /> },
-                  { id: "rounded", label: "Rounded", icon: <div style={{ width: 16, height: 16, border: "2px solid currentColor", borderRadius: 5 }} /> },
-                  { id: "dots",    label: "Circles", icon: <div style={{ width: 16, height: 16, border: "2px solid currentColor", borderRadius: "50%" }} /> },
-                  { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 15 }}>♥</span> },
-                ].map(opt => (
-                  <PatternBtn key={opt.id} {...opt} active={cornerType === opt.id} onClick={() => setCornerType(opt.id as CornerType)} />
-                ))}
-              </div>
-            </SectionCard>
-
-            {/* Section: Logo overlay */}
-            <SectionCard
-              id="logo" open={openSection === "logo"} onToggle={() => toggle("logo")}
-              icon={<ImagePlus size={18} />}
-              title="Center Logo"
-              subtitle="Embed your brand mark in the center"
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                <input type="file" accept="image/*" ref={centerInputRef} style={{ display: "none" }}
-                  onChange={() => fileUpload(centerInputRef, setCenterLogo)} />
-                <button onClick={() => centerInputRef.current?.click()} style={{
-                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  padding: "13px 20px", background: "rgba(200,241,53,0.06)",
-                  border: `1px dashed rgba(200,241,53,0.25)`, borderRadius: 12,
-                  color: PALETTE.accent, fontSize: 13, fontWeight: 600, cursor: "pointer", fontFamily: "inherit",
-                  transition: "background 0.2s",
-                }}>
-                  <Upload size={15} /> Upload Logo
-                </button>
-                {centerLogo && (
-                  <button onClick={() => { setCenterLogo(null); if (centerInputRef.current) centerInputRef.current.value = ""; }}
-                    style={{ padding: "12px 14px", background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 12, color: "#ef4444", cursor: "pointer" }}>
-                    <Trash2 size={15} />
-                  </button>
-                )}
-              </div>
-              {centerLogo && (
-                <div style={{ marginTop: 10, padding: "8px 12px", background: "rgba(200,241,53,0.04)", borderRadius: 8, border: `1px solid rgba(200,241,53,0.1)`, fontSize: 11, color: PALETTE.accent }}>
-                  ✓ Logo uploaded — using H-level error correction for best scan rate
-                </div>
-              )}
-            </SectionCard>
-
-            {/* Warning card */}
-            <div style={{
-              padding: "16px 20px",
-              background: "rgba(251,191,36,0.04)",
-              border: "1px solid rgba(251,191,36,0.12)",
-              borderRadius: 16,
-              display: "flex", gap: 12, alignItems: "flex-start",
-            }}>
-              <Sparkles size={15} style={{ color: "#fbbf24", flexShrink: 0, marginTop: 1 }} />
+          {/* Mobile header strip */}
+          <div style={{ padding: "20px 20px 0", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)", transition: "all 0.5s" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
               <div>
-                <div style={{ fontSize: 12, fontWeight: 700, color: "#fbbf24", marginBottom: 4 }}>Scannability tip</div>
-                <div style={{ fontSize: 12, color: PALETTE.textMuted, lineHeight: 1.6 }}>
-                  Star and emoji patterns may struggle on older scanners. Ensure strong foreground/background contrast. Corner markers are always protected.
+                <h1 style={{ margin: 0, fontSize: "1.75rem", fontWeight: 900, color: T.text, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+                  QR Code <span style={{ background: "linear-gradient(135deg, #c8f135, #a8e000)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Generator</span>
+                </h1>
+                <p style={{ margin: "4px 0 0", fontSize: 12, color: T.textMuted }}>Client-side · Zero uploads · Free forever</p>
+              </div>
+              <div style={{ display: "flex", gap: 6 }}>
+                <Chip icon={Icons.Shield(11)} label="Private" small />
+              </div>
+            </div>
+          </div>
+
+          {/* URL Input (mobile) - PLACED AT THE TOP */}
+          <div style={{ padding: "0 20px 16px" }}>
+            <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />
+          </div>
+
+          {/* ── QR PREVIEW (mobile, compact) ── */}
+          <div style={{ padding: "0 20px", marginBottom: 16 }}>
+            <div style={{
+              background: T.surface, border: `1.5px solid ${T.border}`,
+              borderRadius: T.radius.xxl, padding: 16,
+              boxShadow: "0 16px 48px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.03)",
+              opacity: mounted ? 1 : 0, transform: mounted ? "none" : "scale(0.97)",
+              transition: "all 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s",
+            }}>
+              <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+                {/* Canvas */}
+                <div
+                  className={`${previewPulsed ? "qr-preview-pulse" : ""} ${transparentBg ? "transparent-checkered" : ""}`}
+                  onClick={openLightbox}
+                  style={{
+                    width: 120, height: 120, flexShrink: 0,
+                    background: transparentBg ? undefined : "#fff", borderRadius: T.radius.lg, overflow: "hidden",
+                    cursor: "pointer", padding: 6,
+                    boxShadow: "0 4px 16px rgba(0,0,0,0.25)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <canvas ref={mobileCanvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 4 }} />
+                </div>
+
+                {/* Right meta */}
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 6, lineHeight: 1.3 }}>
+                    {url ? "Ready to scan" : "Enter a URL below"}
+                  </div>
+                  {url && (
+                    <div style={{ fontSize: 11, color: T.textMuted, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 10, maxWidth: "100%" }}>
+                      {url}
+                    </div>
+                  )}
+                  <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                    <StatPill label="Error" value="H" />
+                    <StatPill label="Format" value="PNG" />
+                    <StatPill label="Res" value="2K" />
+                  </div>
+                  {/* Expand button */}
+                  <button onClick={openLightbox} style={{
+                    display: "flex", alignItems: "center", gap: 5,
+                    padding: "7px 12px", background: "rgba(255,255,255,0.05)",
+                    border: `1.5px solid ${T.border}`, borderRadius: T.radius.md,
+                    color: T.textSub, fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: T.font,
+                  }}>
+                    {Icons.Expand(12)} Full preview
+                  </button>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ── RIGHT: Preview ── */}
-          <div style={{ position: "sticky", top: 28 }}>
-            {/* Preview card */}
+          {/* ── TAB BAR (mobile) ── */}
+          <div style={{ padding: "0 20px 4px" }}>
+            <div style={{ display: "flex", gap: 0, background: T.surfaceRaised, padding: 4, borderRadius: T.radius.xl, border: `1.5px solid ${T.border}` }}>
+              {tabs.map(tab => {
+                const active = activeTab === tab.id;
+                return (
+                  <button key={tab.id} className="qr-tab-btn" onClick={() => setActiveTab(tab.id)} style={{
+                    flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                    gap: 4, padding: "9px 4px",
+                    borderRadius: T.radius.lg,
+                    background: active ? T.surface : "transparent",
+                    border: `1.5px solid ${active ? T.borderMid : "transparent"}`,
+                    color: active ? T.text : T.textMuted,
+                    fontSize: 9, fontWeight: 800, letterSpacing: "0.06em",
+                    cursor: "pointer", transition: "all 0.18s", fontFamily: T.font,
+                    textTransform: "uppercase",
+                  }}>
+                    <span style={{ opacity: active ? 1 : 0.5 }}>{tab.icon}</span>
+                    <span style={{ color: active ? T.accent : T.textMuted }}>{tab.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* ── SETTINGS PANEL (mobile) ── */}
+          <div style={{ padding: "12px 20px 0" }}>
             <div style={{
-              background: PALETTE.surface,
-              border: `1px solid ${PALETTE.border}`,
-              borderRadius: 28,
-              padding: 24,
-              boxShadow: "0 32px 80px rgba(0,0,0,0.6)",
+              background: T.surface, border: `1.5px solid ${T.border}`,
+              borderRadius: T.radius.xxl, padding: "20px 18px",
             }}>
-              {/* QR canvas area */}
-              <div
-                onClick={openLightbox}
-                style={{
-                  cursor: "pointer",
-                  position: "relative",
-                  borderRadius: 20,
-                  overflow: "hidden",
-                  background: "#fff",
-                  padding: 16,
-                  aspectRatio: "1 / 1",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "transform 0.2s",
-                }}
-                onMouseEnter={e => (e.currentTarget.style.transform = "scale(1.01)")}
-                onMouseLeave={e => (e.currentTarget.style.transform = "scale(1)")}
-              >
-                <canvas ref={canvasRef} style={{ width: "100%", height: "auto", display: "block", borderRadius: 8 }} />
+              {tabPanels[activeTab]}
+            </div>
+          </div>
+        </div>
 
-                {/* Hover overlay */}
-                <div style={{
-                  position: "absolute", inset: 0,
-                  background: "rgba(0,0,0,0.45)",
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                  opacity: 0, transition: "opacity 0.2s", borderRadius: 20,
-                  backdropFilter: "blur(2px)",
-                  color: "#fff", gap: 8, fontSize: 13, fontWeight: 600,
+        {/* ─── MOBILE BOTTOM BAR ─── */}
+        <div className="qr-bottom-safe" style={{
+          position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
+          padding: "12px 20px 28px",
+          background: `linear-gradient(to top, ${T.bg} 60%, transparent)`,
+          display: "flex", alignItems: "center", gap: 10,
+        }}>
+          <button className="qr-dl-btn" onClick={download} style={{
+            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            padding: "17px 24px",
+            background: T.accent,
+            border: "none", borderRadius: T.radius.xl,
+            color: "#0a0a0b", fontSize: 15, fontWeight: 900,
+            cursor: "pointer", fontFamily: T.font,
+            boxShadow: "0 8px 24px rgba(200,241,53,0.3), 0 2px 8px rgba(0,0,0,0.4)",
+            transition: "all 0.15s",
+            letterSpacing: "0.01em",
+          }}>
+            {Icons.Download(18)} Export 2048×2048
+          </button>
+
+          <button onClick={handleCopy} style={{
+            width: 52, height: 52, display: "flex", alignItems: "center", justifyContent: "center",
+            background: T.surfaceHigh, border: `1.5px solid ${T.border}`,
+            borderRadius: T.radius.lg, color: copied ? T.accent : T.textSub,
+            cursor: "pointer", transition: "all 0.15s", flexShrink: 0,
+          }}>
+            {copied ? Icons.Check(18) : Icons.Copy(18)}
+          </button>
+        </div>
+
+        {/* ─── SEO RICH TEXT SECTION ─── */}
+        <div style={{
+          marginTop: 64,
+          padding: "56px 24px",
+          background: T.surface,
+          border: `1.5px solid ${T.border}`,
+          borderRadius: T.radius.xxl,
+          color: T.textSub,
+          maxWidth: "100%",
+          textAlign: "left",
+          position: "relative",
+          overflow: "hidden"
+        }}>
+          {/* Ambient section glows */}
+          <div style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", pointerEvents: "none", zIndex: 0,
+            background: `radial-gradient(circle 250px at 0% 0%, rgba(200,241,53,0.035) 0%, transparent 100%),
+                         radial-gradient(circle 250px at 100% 100%, rgba(99,102,241,0.02) 0%, transparent 100%)` }} />
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            {/* Top Badges */}
+            <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+              <Chip icon={Icons.Shield(11)} label="100% Private" />
+              <Chip icon={Icons.Zap(11)} label="Browser-Side" />
+              <Chip icon={Icons.Check(11)} label="No Watermarks" />
+            </div>
+
+            {/* Main Title & Subtitle */}
+            <div style={{ textAlign: "center", marginBottom: 48 }}>
+              <h2 style={{
+                fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
+                fontWeight: 900,
+                color: T.text,
+                letterSpacing: "-0.02em",
+                margin: "0 0 16px",
+                lineHeight: 1.2
+              }}>
+                100% Free Custom QR Code Generator with <span style={{ background: `linear-gradient(135deg, ${T.accent} 0%, #a8e000 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>No Watermarks</span>
+              </h2>
+              <p style={{
+                fontSize: 14.5,
+                color: T.textSub,
+                lineHeight: 1.65,
+                maxWidth: 720,
+                margin: "0 auto"
+              }}>
+                Generate beautiful, high-resolution custom QR codes instantly inside your browser. Processed entirely locally with zero server uploads, offering lifetime active scans with zero redirections.
+              </p>
+            </div>
+
+            {/* Grid of Key Features */}
+            <div style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 24,
+              marginBottom: 56
+            }}>
+              {[
+                {
+                  title: "Security & Privacy First",
+                  desc: "Your data is strictly confidential. All codes are rendered in your browser, meaning URLs and brand assets are never sent to external servers.",
+                  icon: Icons.Shield(16)
+                },
+                {
+                  title: "Unlimited Scans Forever",
+                  desc: "Ours are true static QR codes that embed data directly into the matrix. They will never expire and have no scan limitations.",
+                  icon: Icons.Zap(16)
+                },
+                {
+                  title: "100% Free & Clean",
+                  desc: "Absolutely no forced brand logos, watermarks, hidden subscriptions, or surprise redirects. Ready for print and digital marketing.",
+                  icon: Icons.Check(16)
+                },
+                {
+                  title: "Precision Style Control",
+                  desc: "Customize pattern dots, select soft rounded classic dots, choose custom corners, and adjust foreground and background colors.",
+                  icon: Icons.Grid(16)
+                },
+                {
+                  title: "Custom Logo Upload",
+                  desc: "Integrate your corporate logo into the center of the QR code with automatic error correction scaling to Level H.",
+                  icon: Icons.Image(16)
+                },
+                {
+                  title: "Transparent High-Res Export",
+                  desc: "Pick transparent background mode to overlay custom QR codes seamlessly on design templates or packaging assets.",
+                  icon: Icons.Download(16)
+                }
+              ].map((f, i) => (
+                <div key={i} style={{
+                  display: "flex",
+                  gap: 16,
+                  background: T.surfaceRaised,
+                  border: `1.5px solid ${T.border}`,
+                  borderRadius: 16,
+                  padding: 20,
+                  transition: "all 0.25s",
+                  textAlign: "left"
                 }}
-                  onMouseEnter={e => (e.currentTarget.style.opacity = "1")}
-                  onMouseLeave={e => (e.currentTarget.style.opacity = "0")}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderHigh; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.transform = "translateY(0)"; }}
                 >
-                  <Maximize size={22} />
-                  <span>View full size</span>
+                  <div style={{
+                    width: 38,
+                    height: 38,
+                    borderRadius: 10,
+                    background: T.surfaceHigh,
+                    border: `1.5px solid ${T.border}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: T.accent,
+                    flexShrink: 0
+                  }}>
+                    {f.icon}
+                  </div>
+                  <div>
+                    <h4 style={{ fontSize: 13, fontWeight: 800, color: T.text, margin: "0 0 6px" }}>{f.title}</h4>
+                    <p style={{ fontSize: 12, color: T.textSub, lineHeight: 1.6, margin: 0 }}>{f.desc}</p>
+                  </div>
                 </div>
-              </div>
+              ))}
+            </div>
 
-              {/* Stats row */}
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "16px 0" }}>
+            {/* Timeline / How to Section */}
+            <div style={{ margin: "0 auto 56px", borderTop: `1.5px solid ${T.border}`, paddingTop: 48, textAlign: "left" }}>
+              <h3 style={{ fontSize: 20, fontWeight: 900, color: T.text, textAlign: "center", marginBottom: 32, letterSpacing: "-0.01em" }}>
+                How to Generate Custom QR Codes for Free
+              </h3>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 24 }}>
                 {[
-                  { label: "Error correction", value: "Level H" },
-                  { label: "Resolution", value: "2048px" },
-                  { label: "Format", value: "PNG" },
-                ].map(s => (
-                  <div key={s.label} style={{ textAlign: "center", padding: "10px 6px", background: PALETTE.bg, borderRadius: 10, border: `1px solid ${PALETTE.border}` }}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: PALETTE.textPrimary }}>{s.value}</div>
-                    <div style={{ fontSize: 9, color: PALETTE.textMuted, marginTop: 2, letterSpacing: "0.04em" }}>{s.label.toUpperCase()}</div>
+                  { step: "1", title: "Input Destination URL", desc: "Type or paste your destination link into our client-side generator's URL address field." },
+                  { step: "2", title: "Customize & Brand", desc: "Select custom colors, alter pattern styles, modify corner finder shapes, or upload your logo." },
+                  { step: "3", title: "Export High-Res PNG", desc: "Click export to download your custom styled QR code as a 2048px high-resolution transparent image." }
+                ].map((item) => (
+                  <div key={item.step} style={{ background: T.surfaceRaised, border: `1.5px solid ${T.border}`, padding: "24px 20px 20px", borderRadius: 16, position: "relative" }}>
+                    <div style={{
+                      position: "absolute",
+                      top: -12,
+                      left: 16,
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      background: T.accent,
+                      color: "#08090a",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 10,
+                      fontWeight: 900,
+                      boxShadow: `0 0 10px ${T.accentGlow}`
+                    }}>
+                      {item.step}
+                    </div>
+                    <h4 style={{ fontSize: 13, fontWeight: 800, color: T.text, marginTop: 8, marginBottom: 8 }}>{item.title}</h4>
+                    <p style={{ fontSize: 12, color: T.textSub, lineHeight: 1.65, margin: 0 }}>{item.desc}</p>
                   </div>
                 ))}
               </div>
+            </div>
 
-              {/* Download button */}
-              <button
-                onClick={() => renderQR(true)}
-                style={{
-                  width: "100%", padding: "15px 20px",
-                  background: PALETTE.accent,
-                  border: "none", borderRadius: 14,
-                  color: "#0a0a0b",
-                  fontSize: 14, fontWeight: 800, letterSpacing: "0.02em",
-                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                  transition: "opacity 0.15s, transform 0.15s",
-                  fontFamily: "inherit",
-                }}
-                onMouseEnter={e => { e.currentTarget.style.opacity = "0.9"; e.currentTarget.style.transform = "translateY(-1px)"; }}
-                onMouseLeave={e => { e.currentTarget.style.opacity = "1"; e.currentTarget.style.transform = "translateY(0)"; }}
-                onMouseDown={e => e.currentTarget.style.transform = "translateY(1px)"}
-                onMouseUp={e => e.currentTarget.style.transform = "translateY(-1px)"}
-              >
-                <Download size={17} /> Export PNG — 2048×2048
-              </button>
-
-              {/* Privacy note */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 6, marginTop: 14 }}>
-                <ShieldCheck size={12} style={{ color: PALETTE.textMuted }} />
-                <span style={{ fontSize: 11, color: PALETTE.textMuted }}>Generated entirely in your browser. Zero data sent anywhere.</span>
+            {/* Static vs Dynamic Table Section */}
+            <div style={{
+              background: T.surfaceRaised,
+              border: `1.5px solid ${T.border}`,
+              borderRadius: 16,
+              padding: 24,
+              marginBottom: 56,
+              overflow: "hidden"
+            }}>
+              <h3 style={{ fontSize: 18, fontWeight: 800, color: T.text, margin: "0 0 12px", textAlign: "center" }}>
+                Understanding Static vs. Dynamic QR Codes
+              </h3>
+              <p style={{ fontSize: 12.5, color: T.textSub, textAlign: "center", marginBottom: 24, maxWidth: 540, margin: "0 auto 24px" }}>
+                Choose between visual custom static formats and server-redirect tracking dynamic options.
+              </p>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 500, fontSize: 12.5, textAlign: "left" }}>
+                  <thead>
+                    <tr style={{ background: T.surfaceHigh, borderBottom: `1.5px solid ${T.border}` }}>
+                      <th style={{ padding: "12px 16px", color: T.text, fontWeight: 800 }}>Feature</th>
+                      <th style={{ padding: "12px 16px", color: T.accent, fontWeight: 800 }}>Static QR Codes (Ours)</th>
+                      <th style={{ padding: "12px 16px", color: T.textSub, fontWeight: 800 }}>Dynamic QR Codes</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { feat: "Data Placement", ours: "Embedded directly in the code", other: "Redirects through a short link" },
+                      { feat: "Editability", ours: "Permanent, cannot be changed", other: "Can edit destination URL anytime" },
+                      { feat: "Scan Expiration", ours: "Never expires (Lifetime active)", other: "Expires if subscription ends" },
+                      { feat: "Scan Tracking", ours: "Not trackable (Full Privacy)", other: "Supports scan analytics" },
+                      { feat: "Watermarks", ours: "No watermarks", other: "Often locked behind pricing plans" }
+                    ].map((row, idx) => (
+                      <tr key={idx} style={{ borderBottom: idx < 4 ? `1px solid ${T.border}` : "none" }}>
+                        <td style={{ padding: "12px 16px", color: T.text, fontWeight: 700 }}>{row.feat}</td>
+                        <td style={{ padding: "12px 16px", color: T.accent, fontWeight: 600 }}>{row.ours}</td>
+                        <td style={{ padding: "12px 16px" }}>{row.other}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
 
-            {/* Quick presets */}
-            <div style={{ marginTop: 16, padding: "16px 20px", background: PALETTE.surface, border: `1px solid ${PALETTE.border}`, borderRadius: 20 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, color: PALETTE.textMuted, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 12 }}>
-                Quick Presets
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* FAQ Accordion Section */}
+            <div style={{ marginBottom: 56 }}>
+              <h3 style={{ fontSize: 20, fontWeight: 900, color: T.text, margin: "0 0 24px", textAlign: "center" }}>
+                Frequently Asked Questions (FAQ)
+              </h3>
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {[
-                  { label: "Minimal B&W",   fg: "#0a0a0b", bg: "#ffffff", pattern: "rounded" as PatternType, corner: "square"  as CornerType },
-                  { label: "Brand Navy",    fg: "#1e3a8a", bg: "#eff6ff", pattern: "dots"    as PatternType, corner: "rounded" as CornerType },
-                  { label: "Dark Mode",     fg: "#c8f135", bg: "#0a0a0b", pattern: "rounded" as PatternType, corner: "dots"    as CornerType },
-                  { label: "Rose Luxury",   fg: "#881337", bg: "#fff1f2", pattern: "dots"    as PatternType, corner: "rounded" as CornerType },
-                ].map(p => (
-                  <button key={p.label} onClick={() => { setFgColor(p.fg); setBgColor(p.bg); setPatternType(p.pattern); setCornerType(p.corner); }}
-                    style={{
-                      display: "flex", alignItems: "center", gap: 10,
-                      padding: "9px 12px", background: PALETTE.bg,
-                      border: `1px solid ${PALETTE.border}`, borderRadius: 10,
-                      cursor: "pointer", transition: "border-color 0.15s",
-                      fontFamily: "inherit",
-                    }}
-                    onMouseEnter={e => (e.currentTarget.style.borderColor = "rgba(255,255,255,0.15)")}
-                    onMouseLeave={e => (e.currentTarget.style.borderColor = PALETTE.border)}
-                  >
-                    <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
-                      <div style={{ width: 14, height: 14, borderRadius: "50%", background: p.fg, border: "1px solid rgba(255,255,255,0.1)" }} />
-                      <div style={{ width: 14, height: 14, borderRadius: "50%", background: p.bg, border: "1px solid rgba(0,0,0,0.15)" }} />
-                    </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: PALETTE.textSecondary }}>{p.label}</span>
-                  </button>
+                  {
+                    q: "Are these QR codes completely free to use commercially?",
+                    a: "Yes! Every QR code generated using AssetNest QR Code Generator is 100% free for both personal and commercial use. You can print them on packaging, flyers, brochures, menus, business cards, or display them on digital screens without paying any fees or licenses."
+                  },
+                  {
+                    q: "Will my QR codes expire after some time?",
+                    a: "No. Unlike other generators that deactivate your links after a trial period to force a subscription, our static QR codes write the URL directly into the matrix. They will continue to work forever as long as your destination URL remains active."
+                  },
+                  {
+                    q: "Why should I download a transparent background QR code?",
+                    a: "Exporting your QR code without a background (transparent PNG) allows designers to embed the QR code seamlessly on top of colored packaging, brochures, poster graphics, or dynamic backgrounds without ugly white boxes blocking your layout design."
+                  },
+                  {
+                    q: "Can I add my logo in the center of the QR code?",
+                    a: "Absolutely! Under the 'Brand' tab, you can upload your custom brand logo. Our studio automatically upsizes error correction to Level H (30% recovery rate) to ensure your QR code remains highly scannable even with the brand logo centered."
+                  },
+                  {
+                    q: "Is there a limit to the number of QR codes I can create?",
+                    a: "No, there are no limits. You can generate unlimited, custom, high-resolution QR codes without any watermarks or hidden costs. Everything runs securely on your own device."
+                  }
+                ].map((faq, i) => (
+                  <FAQItem key={i} question={faq.q} answer={faq.a} />
                 ))}
-              </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      {/* ── Lightbox ── */}
-      {lightboxOpen && lightboxSrc && (
-        <div
-          onClick={() => setLightboxOpen(false)}
-          style={{
-            position: "fixed", inset: 0, zIndex: 500,
-            background: "rgba(10,10,11,0.92)",
-            backdropFilter: "blur(16px)",
-            display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center",
-            padding: 24,
-          }}
-        >
-          <div onClick={e => e.stopPropagation()} style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 20, width: "100%", maxWidth: 420 }}>
-            <div style={{ background: "#fff", padding: 20, borderRadius: 24, width: "100%", boxShadow: "0 40px 100px rgba(0,0,0,0.8)" }}>
-              <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: 10 }} />
+      {/* ─── LIGHTBOX ─── */}
+      {lightbox && lightboxSrc && (
+        <div onClick={() => setLightbox(false)} style={{
+          position: "fixed", inset: 0, zIndex: 200,
+          background: "rgba(8,9,10,0.94)", backdropFilter: "blur(20px)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          padding: "24px 20px",
+          animation: "fadeIn 0.2s ease",
+        }}>
+          <style>{`@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }`}</style>
+          <div onClick={e => e.stopPropagation()} style={{ width: "100%", maxWidth: 380, display: "flex", flexDirection: "column", gap: 16 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <span style={{ fontSize: 13, fontWeight: 700, color: T.textSub }}>Preview · 2048×2048</span>
+              <button onClick={() => setLightbox(false)} style={{ background: T.surfaceRaised, border: `1.5px solid ${T.border}`, borderRadius: T.radius.md, padding: "6px", color: T.textSub, cursor: "pointer", display: "flex" }}>
+                {Icons.Close(18)}
+              </button>
+            </div>
+            <div 
+              className={transparentBg ? "transparent-checkered" : ""}
+              style={{ 
+                background: transparentBg ? undefined : "#fff", 
+                borderRadius: T.radius.xxl, padding: 20, 
+                boxShadow: "0 32px 80px rgba(0,0,0,0.7)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: T.radius.lg }} />
             </div>
             <button
               onClick={() => { const a = document.createElement("a"); a.href = lightboxSrc!; a.download = "qr-code.png"; a.click(); }}
               style={{
-                width: "100%", padding: "15px 20px",
-                background: PALETTE.accent, border: "none", borderRadius: 14,
-                color: "#0a0a0b", fontSize: 14, fontWeight: 800, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: "inherit",
-              }}
-            >
-              <Download size={17} /> Download QR Code
+                width: "100%", padding: "16px", background: T.accent, border: "none", borderRadius: T.radius.xl,
+                color: "#0a0a0b", fontSize: 15, fontWeight: 900, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: T.font,
+                boxShadow: "0 8px 24px rgba(200,241,53,0.25)",
+              }}>
+              {Icons.Download(17)} Download PNG
             </button>
-            <span style={{ fontSize: 12, color: PALETTE.textMuted }}>Click anywhere outside to close</span>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, fontSize: 11, color: T.textMuted }}>
+              {Icons.Shield(12)} Generated in your browser · Zero data sent
+            </div>
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────
+   SMALL SHARED COMPONENTS
+───────────────────────────────────────── */
+interface SectionLabelProps {
+  children: React.ReactNode;
+}
+
+function SectionLabel({ children }: SectionLabelProps) {
+  return (
+    <div style={{ fontSize: 10, fontWeight: 800, color: T.textMuted, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+      {children}
+    </div>
+  );
+}
+
+interface StatPillProps {
+  label: string;
+  value: string;
+}
+
+function StatPill({ label, value }: StatPillProps) {
+  return (
+    <div style={{ padding: "4px 8px", background: T.surfaceHigh, border: `1px solid ${T.border}`, borderRadius: 6, textAlign: "center" }}>
+      <div style={{ fontSize: 11, fontWeight: 800, color: T.text }}>{value}</div>
+      <div style={{ fontSize: 9, color: T.textMuted, letterSpacing: "0.04em" }}>{label}</div>
+    </div>
+  );
+}
+
+interface ChipProps {
+  icon: React.ReactNode;
+  label: string;
+  small?: boolean;
+}
+
+function Chip({ icon, label, small = false }: ChipProps) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 5,
+      padding: small ? "4px 9px" : "4px 10px",
+      borderRadius: 99, background: "rgba(200,241,53,0.07)",
+      border: "1px solid rgba(200,241,53,0.14)",
+      fontSize: small ? 10 : 11, fontWeight: 700, color: "#c8f135", letterSpacing: "0.04em",
+    }}>
+      {icon}{label}
+    </span>
+  );
+}
+
+function ScanTip() {
+  return (
+    <div style={{
+      padding: "14px 16px", background: "rgba(251,191,36,0.04)",
+      border: "1.5px solid rgba(251,191,36,0.11)", borderRadius: T.radius.lg,
+      display: "flex", gap: 10, alignItems: "flex-start",
+    }}>
+      <span style={{ fontSize: 16, flexShrink: 0 }}>⚡</span>
+      <div style={{ textAlign: "left" }}>
+        <div style={{ fontSize: 12, fontWeight: 700, color: T.warning, marginBottom: 3 }}>Scannability tip</div>
+        <div style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.65 }}>
+          Star and emoji patterns may struggle on older scanners. Use high contrast colors and ensure corner markers are clear.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface FAQItemProps {
+  question: string;
+  answer: string;
+}
+
+function FAQItem({ question, answer }: FAQItemProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
+  return (
+    <div 
+      onClick={() => setIsOpen(!isOpen)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      style={{
+        background: T.surfaceRaised,
+        border: `1.5px solid ${isOpen ? T.accentGlow : hovered ? T.borderHigh : T.border}`,
+        borderRadius: T.radius.xl,
+        padding: "20px 24px",
+        cursor: "pointer",
+        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+        display: "flex",
+        flexDirection: "column",
+        boxShadow: isOpen ? "0 12px 30px rgba(0,0,0,0.4), 0 0 0 1px rgba(255,255,255,0.02)" : "none",
+        transform: hovered && !isOpen ? "translateY(-1px)" : "none",
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+        <h4 style={{ 
+          fontSize: 14, 
+          fontWeight: 800, 
+          color: isOpen ? T.text : T.textSub, 
+          margin: 0, 
+          display: "flex", 
+          gap: 10,
+          textAlign: "left",
+          alignItems: "flex-start",
+          transition: "color 0.2s"
+        }}>
+          <span style={{ color: T.accent, flexShrink: 0 }}>Q:</span> 
+          <span>{question}</span>
+        </h4>
+        <div style={{ 
+          color: isOpen ? T.accent : T.textMuted,
+          transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+          transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
+          flexShrink: 0,
+          display: "flex"
+        }}>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
+      <div style={{
+        maxHeight: isOpen ? 500 : 0,
+        opacity: isOpen ? 1 : 0,
+        overflow: "hidden",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        pointerEvents: isOpen ? "auto" : "none",
+        marginTop: isOpen ? 12 : 0,
+      }}>
+        <p style={{ 
+          fontSize: 13, 
+          color: T.textSub, 
+          lineHeight: 1.6, 
+          margin: 0, 
+          paddingLeft: 22,
+          textAlign: "left",
+        }}>
+          {answer}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+interface URLInputProps {
+  url: string;
+  setUrl: (val: string) => void;
+  copied: boolean;
+  onCopy: () => void;
+}
+
+function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
+  const [focused, setFocused] = useState(false);
+  return (
+    <div style={{
+      background: focused ? "rgba(200,241,53,0.03)" : "#0f1012",
+      border: `1.5px solid ${focused ? "rgba(200,241,53,0.25)" : "rgba(255,255,255,0.07)"}`,
+      borderRadius: 16, padding: "14px 16px",
+      transition: "all 0.2s",
+      boxShadow: focused ? "0 0 0 4px rgba(200,241,53,0.06)" : "none",
+    }}>
+      <label style={{ display: "block", fontSize: 10, fontWeight: 800, color: "#4a4a48", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8, textAlign: "left" }}>
+        Destination URL
+      </label>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <span style={{ color: "#4a4a48", flexShrink: 0, display: "flex" }}>
+          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+          </svg>
+        </span>
+        <input
+          type="url"
+          value={url}
+          onChange={e => setUrl(e.target.value)}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
+          placeholder="https://your-link.com"
+          style={{
+            flex: 1, background: "none", border: "none", outline: "none",
+            fontSize: 14, color: "#f0f0ee", fontFamily: "'DM Sans','Inter',system-ui,sans-serif",
+            fontWeight: 500, minWidth: 0,
+          }}
+        />
+        {url && (
+          <button onClick={onCopy} style={{
+            padding: "6px 8px", background: copied ? "rgba(200,241,53,0.12)" : "rgba(255,255,255,0.06)",
+            border: `1px solid ${copied ? "rgba(200,241,53,0.2)" : "rgba(255,255,255,0.08)"}`,
+            borderRadius: 8, color: copied ? "#c8f135" : "#9a9a98",
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 11,
+            fontWeight: 700, transition: "all 0.15s", fontFamily: "inherit", whiteSpace: "nowrap",
+          }}>
+            {copied
+              ? <><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M20 6 9 17l-5-5"/></svg> Copied</>
+              : <><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z"/></svg> Copy</>
+            }
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface PreviewCardProps {
+  canvasRef: React.RefObject<HTMLCanvasElement | null>;
+  previewPulsed: boolean;
+  onExpand: () => void;
+  onDownload: () => void;
+  transparentBg: boolean;
+}
+
+function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transparentBg }: PreviewCardProps) {
+  return (
+    <div style={{
+      background: "#0f1012", border: "1.5px solid rgba(255,255,255,0.055)",
+      borderRadius: 28, padding: 24,
+      boxShadow: "0 32px 80px rgba(0,0,0,0.55)",
+    }}>
+      {/* Canvas */}
+      <div 
+        className={`${previewPulsed ? "qr-preview-pulse" : ""} ${transparentBg ? "transparent-checkered" : ""}`} 
+        onClick={onExpand} 
+        style={{
+          background: transparentBg ? undefined : "#fff", 
+          borderRadius: 20, padding: 16, cursor: "pointer",
+          aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center",
+          overflow: "hidden", transition: "transform 0.2s",
+          position: "relative",
+        }}
+        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.01)"}
+        onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+      >
+        <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 8 }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: "#fff", fontSize: 13, fontWeight: 700, opacity: 0, transition: "opacity 0.2s", borderRadius: 20 }}
+          onMouseEnter={e => { e.stopPropagation(); e.currentTarget.style.opacity = "1"; }}
+          onMouseLeave={e => { e.currentTarget.style.opacity = "0"; }}>
+          <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.75} style={{ display: "block" }}><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          Full size
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "16px 0" }}>
+        {[["Level H", "Error Corr."], ["2048px", "Resolution"], ["PNG", "Format"]].map(([v, l]) => (
+          <div key={l} style={{ textAlign: "center", padding: "10px 6px", background: "#08090a", borderRadius: 10, border: "1px solid rgba(255,255,255,0.055)" }}>
+            <div style={{ fontSize: 13, fontWeight: 800, color: "#f0f0ee" }}>{v}</div>
+            <div style={{ fontSize: 9, color: "#4a4a48", marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase" }}>{l}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* Download */}
+      <button onClick={onDownload} style={{
+        width: "100%", padding: "15px 20px", background: "#c8f135",
+        border: "none", borderRadius: 16, color: "#0a0a0b",
+        fontSize: 14, fontWeight: 800, cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        fontFamily: T.font, transition: "opacity 0.15s",
+      }}>
+        {Icons.Download(18)} Export 2048×2048
+      </button>
     </div>
   );
 }
