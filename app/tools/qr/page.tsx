@@ -288,7 +288,16 @@ function useQRRenderer({ url, fgColor, bgColor, patternType, cornerType, emojiCh
   const download = async () => {
     const c = document.createElement("canvas"); c.width = 2048; c.height = 2048;
     await render(c);
-    const a = document.createElement("a"); a.href = c.toDataURL("image/png"); a.download = "qr-code.png"; a.click();
+    const filename = "qr-code.png";
+    const a = document.createElement("a"); a.href = c.toDataURL("image/png"); a.download = filename; a.click();
+
+    // Trigger global celebration popper & thank you modal!
+    window.dispatchEvent(new CustomEvent("assetnest-download", {
+      detail: {
+        filename: filename,
+        size: "2048 × 2048px"
+      }
+    }));
   };
 
   const getDataURL = () => {
@@ -1203,7 +1212,13 @@ export default function QRStudio() {
               <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: T.radius.lg }} />
             </div>
             <button
-              onClick={() => { const a = document.createElement("a"); a.href = lightboxSrc!; a.download = "qr-code.png"; a.click(); }}
+              onClick={() => { 
+              const filename = "qr-code.png";
+              const a = document.createElement("a"); a.href = lightboxSrc!; a.download = filename; a.click(); 
+              window.dispatchEvent(new CustomEvent("assetnest-download", {
+                detail: { filename: filename, size: "2048 × 2048px" }
+              }));
+            }}
               style={{
                 width: "100%", padding: "16px", background: T.accent, border: "none", borderRadius: T.radius.xl,
                 color: "#0a0a0b", fontSize: 15, fontWeight: 900, cursor: "pointer",

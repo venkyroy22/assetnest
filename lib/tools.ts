@@ -1,4 +1,4 @@
-import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown, Unlock } from "lucide-react";
+import { FileImage, QrCode, Timer, Receipt, RefreshCw, Keyboard, Grid3X3, Crop, Eraser, Sparkles, FileText, Combine, Split, Minimize2, ImagePlus, NotebookPen, FileEdit, Hash, Table, WholeWord, Gamepad2, Calculator, PenTool, CreditCard, Palette, Shapes, Images, KanbanSquare, CropIcon, ScanLine, Crown, Unlock, Gift } from "lucide-react";
 
 export type ToolCategory = "Images" | "Generate" | "Productivity" | "Business" | "PDF" | "Games" | "Design Training";
 
@@ -443,5 +443,20 @@ export const ALL_TOOLS: Tool[] = [
         accent: "#ffffff",
         category: "PDF",
         image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfpasswordremover-1779426433126.webp"
+    },
+    {
+        id: "wish-studio",
+        name: "Interactive Wish Studio",
+        description: "Create and send gorgeous digital wish boxes for birthdays, anniversaries, and special moments. Recipients drag the ribbon to unwrap your glowing customized gift card with a custom 20-second confetti celebration, procedurally synthesized music chimes, and interactive scratch surprises.",
+        href: "/tools/wish-studio",
+        badge: "Free",
+        icon: Gift,
+        tags: [
+            "wish", "gift", "birthday", "anniversary", "unwrapping", "interactive", 
+            "surprise", "scratch card", "greeting card", "card", "wishes"
+        ],
+        accent: "#ffffff",
+        category: "Generate",
+        image: "https://images.unsplash.com/photo-1549465220-1a8b9238cd48?q=80&w=600&auto=format&fit=crop"
     }
 ];

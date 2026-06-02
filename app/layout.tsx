@@ -6,6 +6,7 @@ import CookieConsent from "@/components/CookieConsent";
 import SmoothScroll from "@/components/SmoothScroll";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
+import CelebrationPortal from "@/components/CelebrationPortal";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -110,6 +111,7 @@ export default function RootLayout({
         <CookieConsent />
         <SpeedInsights />
         <Analytics />
+        <CelebrationPortal />
 
         {/* JSON-LD Structured Data for Google */}
         <script

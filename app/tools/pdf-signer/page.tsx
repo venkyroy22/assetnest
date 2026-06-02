@@ -1062,6 +1062,14 @@ export default function PdfSignerPage() {
                                         <a
                                             href={outputUrl}
                                             download={`signed_${file.name}`}
+                                            onClick={() => {
+                                                window.dispatchEvent(new CustomEvent("assetnest-download", {
+                                                    detail: {
+                                                        filename: `signed_${file.name}`,
+                                                        size: "Finalized PDF"
+                                                    }
+                                                }));
+                                            }}
                                             style={{
                                                 height: 48, borderRadius: 99, background: T.accent, color: "#fff",
                                                 fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em",
