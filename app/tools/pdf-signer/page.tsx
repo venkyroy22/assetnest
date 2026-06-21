@@ -7,7 +7,7 @@ import {
     MousePointer2, Layers, FileText, Share2, PencilLine, Sparkles,
     Trash2, ShieldCheck, User, Type, Calendar, CheckSquare,
     Undo2, Redo2, Stamp, Palette, Bold, Italic, Underline,
-    Zap, Lock, Globe, ChevronDown, ChevronUp
+    Zap, Lock, Globe, ChevronDown, ChevronUp, ArrowLeft
 } from "lucide-react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import dynamic from "next/dynamic";
@@ -127,20 +127,20 @@ const PdfViewer = dynamic<any>(
 
 /* ─── Design System ─── */
 const T = {
-    bg:          "#080809",
-    surface:     "#101012",
-    surfaceHi:   "#161618",
-    surfaceHov:  "#1c1c1f",
-    border:      "rgba(255,255,255,0.055)",
-    borderHover: "rgba(255,255,255,0.12)",
+    bg:          "#F4ECD8",
+    surface:     "#ffffff",
+    surfaceHi:   "#f4ecd8",
+    surfaceHov:  "#f9f5eb",
+    border:      "#000000",
+    borderHover: "#000000",
     accent:      "#7c6aff",       // violet — trust, legal, authority
     accentDim:   "#5b4bd4",
     accentGlow:  "rgba(124,106,255,0.15)",
-    success:     "#22c55e",
-    danger:      "#ef4444",
-    textPri:     "#f0eff5",
-    textSec:     "#8b8a97",
-    muted:       "#42414d",
+    success:     "#a7f3d0",
+    danger:      "#fca5a5",
+    textPri:     "#000000",
+    textSec:     "#1f2937",
+    muted:       "#4b5563",
 };
 
 const TOOLS = [
@@ -212,6 +212,74 @@ const jsonLd = {
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
+
+const GLOBAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.ig-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #000;
+}
+.ig-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.ig-label {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #000;
+}
+.ig-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.ig-btn:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+`;
+
+function LocalAccordion({ children }: { children: React.ReactNode }) {
+    return <div className="space-y-4 w-full">{children}</div>;
+}
+
+interface LocalAccordionItemProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
+            >
+                <span className="font-bold text-sm sm:text-base text-black pr-4">
+                    {title}
+                </span>
+                <ChevronDown
+                    size={18}
+                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                />
+            </button>
+            <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
+                }`}
+            >
+                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function PdfSignerPage() {
     const [file,        setFile]        = useState<File | null>(null);
@@ -596,18 +664,9 @@ export default function PdfSignerPage() {
     });
 
     return (
-        <div style={{
-            height: file ? "calc(100vh - var(--header-height))" : "auto",
-            minHeight: file ? "calc(100vh - var(--header-height))" : "100vh",
-            background: T.bg,
-            fontFamily: "'Geist', 'Inter', system-ui, sans-serif",
-            padding: file ? 0 : "48px 20px 80px",
-            position: "relative",
-            display: "flex",
-            flexDirection: "column",
-            overflow: file ? "hidden" : "visible",
-        }}>
+        <div className={`w-full min-h-screen bg-[#F4ECD8] text-black font-sans relative overflow-hidden ig-root flex flex-col ${file ? "h-[calc(100vh-var(--header-height))] min-h-[calc(100vh-var(--header-height))] overflow-hidden pb-0" : "pb-24"}`}>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            <style>{GLOBAL_STYLES}</style>
             <style>{`
                 :root {
                     --header-height: 80px;
@@ -654,56 +713,55 @@ export default function PdfSignerPage() {
                 }
             `}</style>
 
-            {/* Background glows */}
-            <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, background: `radial-gradient(ellipse 50% 35% at 15% -5%, rgba(124,106,255,0.07) 0%, transparent 60%), radial-gradient(ellipse 40% 30% at 85% 100%, rgba(6,182,212,0.04) 0%, transparent 60%)` }} />
-            <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0, backgroundImage: "radial-gradient(circle, rgba(255,255,255,0.02) 1px, transparent 1px)", backgroundSize: "28px 28px" }} />
+            {/* Background grid */}
+            <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:28px_28px]" />
 
             {/* LANDING PAGE / UPLOAD STATE */}
             {!file && (
-                <div style={{ position: "relative", zIndex: 1, maxWidth: 1360, margin: "0 auto", width: "100%", padding: isMobile ? "0 16px" : 0 }}>
-                    {/* Hero */}
-                    <header style={{ textAlign: "center", marginBottom: isMobile ? 28 : 48, ...fadeIn(0), position: "relative" }}>
-                        <button
-                            onClick={() => setShowHelp(true)}
-                            style={{
-                                position: "absolute", top: -8, left: 0,
-                                padding: "8px",
-                                background: "rgba(16,16,18,0.8)",
-                                border: `1px solid ${T.border}`, borderRadius: "50%",
-                                color: T.textSec, cursor: "pointer", transition: "all 0.2s",
-                                zIndex: 20,
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                            }}
-                            onMouseEnter={e => {
-                                e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-                                e.currentTarget.style.color = T.textPri;
-                                e.currentTarget.style.borderColor = T.borderHover;
-                            }}
-                            onMouseLeave={e => {
-                                e.currentTarget.style.background = "rgba(16,16,18,0.8)";
-                                e.currentTarget.style.color = T.textSec;
-                                e.currentTarget.style.borderColor = T.border;
-                            }}
-                            title="View Information"
+                <div className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6">
+                    <header className="max-w-5xl mx-auto pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
+                        <Link
+                            href="/tools"
+                            className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
                         >
-                            <Info size={14} />
-                        </button>
-
-                        <div style={{ display: "flex", justifyContent: "center", gap: 8, marginBottom: 24, flexWrap: "wrap" }}>
-                            <Badge icon={<Lock size={10} />} label="100% Private" />
-                            <Badge icon={<Zap size={10} />} label="Browser-Side Only" color="#06b6d4" />
-                            <Badge icon={<Globe size={10} />} label="No Watermarks" color="#10b981" />
-                        </div>
-                        <h1 style={{ fontSize: "clamp(2.2rem,6vw,4.5rem)", fontWeight: 900, color: T.textPri, letterSpacing: "-0.03em", lineHeight: 1.1, margin: "0 0 12px" }}>
-                            Free PDF{" "}
-                            <span style={{ background: `linear-gradient(135deg, ${T.accent} 0%, #a78bfa 100%)`, WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-                                Signer Online
+                            <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                        </Link>
+                        <div className="flex items-center gap-2 sm:gap-3 relative z-10">
+                            <div className="w-8 h-8 rounded-lg bg-red-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
+                                <PenTool size={14} />
+                            </div>
+                            <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
+                                PDF Signer
                             </span>
+                        </div>
+                        <button 
+                            onClick={() => setShowHelp(true)}
+                            className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+                            title="Help Guide"
+                        >
+                            <Info size={12} strokeWidth={2.5} /> INFO
+                        </button>
+                    </header>
+
+                    <div className="text-center mt-6 mb-12 relative z-10">
+                        <div className="flex justify-center gap-2 mb-6 flex-wrap">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
+                                <Lock size={10} /> 100% Private
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
+                                <Zap size={10} /> Browser-Side Only
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-100 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
+                                <Globe size={10} /> No Watermarks
+                            </span>
+                        </div>
+                        <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tight leading-none mb-4 ig-display">
+                            Free PDF <span className="bg-yellow-300 px-2 py-0.5 border-2 border-black inline-block transform -rotate-1 shadow-[2px_2px_0_#000]">Signer Online</span>
                         </h1>
-                        <p style={{ fontSize: 14, color: T.textSec, maxWidth: 540, margin: "0 auto", lineHeight: 1.7 }}>
+                        <p className="text-sm sm:text-base text-zinc-800 max-w-xl mx-auto leading-relaxed font-bold">
                             Fill and sign PDF online free. Create your digital signature on PDF documents instantly and securely. Processed entirely inside your browser — <strong>no sign-up</strong>, <strong>no server uploads</strong>, and <strong>no watermarks</strong>.
                         </p>
-                    </header>
+                    </div>
 
                     {/* Upload zone */}
                     <div style={fadeIn(0.1)}>
@@ -712,39 +770,23 @@ export default function PdfSignerPage() {
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={onDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            style={{
-                            maxWidth: 680, margin: isMobile ? "0 auto 40px" : "0 auto 64px",
-                                padding: isMobile ? "40px 20px" : "64px 40px",
-                                borderRadius: 32,
-                                border: `2px dashed ${isDragging ? T.accent : T.border}`,
-                                background: isDragging ? T.accentGlow : T.surface,
-                                cursor: "pointer",
-                                transition: "all 0.3s",
-                                textAlign: "center",
-                            }}
+                            className={`max-w-[680px] mx-auto p-10 bg-white border-2 border-black rounded-[2rem] shadow-[4px_4px_0_#000] text-center cursor-pointer hover:bg-zinc-50 transition-all ${isDragging ? "bg-emerald-50 border-emerald-500 shadow-none scale-[0.99]" : ""}`}
                         >
                             <input ref={fileInputRef} type="file" accept="application/pdf" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} style={{ display: "none" }} />
-                            <div style={{
-                                width: 80, height: 80, borderRadius: 20,
-                                background: T.accent, color: "#fff",
-                                display: "flex", alignItems: "center", justifyContent: "center",
-                                margin: "0 auto 28px",
-                                boxShadow: `0 16px 40px ${T.accentGlow}`,
-                                transition: "transform 0.3s",
-                            }}>
-                                <Upload size={32} strokeWidth={2} />
+                            <div className="w-16 h-16 bg-red-500 border-2 border-black rounded-2xl flex items-center justify-center text-white mx-auto mb-6 shadow-[2px_2px_0_#000]">
+                                <Upload size={24} strokeWidth={2.5} />
                             </div>
-                            <h2 style={{ fontSize: 28, fontWeight: 900, color: T.textPri, letterSpacing: "-0.02em", marginBottom: 10 }}>
+                            <h2 className="text-2xl font-black text-black tracking-tight mb-2 ig-display">
                                 Drop your PDF here
                             </h2>
-                            <p style={{ fontSize: 14, color: T.textSec, marginBottom: 28 }}>or click to browse your files</p>
-                            <div style={{ display: "flex", justifyContent: "center", gap: 8, flexWrap: "wrap" }}>
+                            <p className="text-xs text-zinc-650 font-bold mb-6">or click to browse your files</p>
+                            <div className="flex justify-center gap-2 flex-wrap">
                                 {[
-                                    { icon: <ShieldCheck size={11} />, label: "100% Private", c: T.success },
-                                    { icon: <Zap size={11} />, label: "No Server Upload", c: T.accent },
-                                    { icon: <Check size={11} />, label: "Free Forever", c: "#f59e0b" },
+                                    { icon: <ShieldCheck size={11} />, label: "100% Private", c: "bg-emerald-100" },
+                                    { icon: <Zap size={11} />, label: "No Server Upload", c: "bg-yellow-100" },
+                                    { icon: <Check size={11} />, label: "Free Forever", c: "bg-blue-100" },
                                 ].map(item => (
-                                    <div key={item.label} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 12px", borderRadius: 99, background: `${item.c}10`, border: `1px solid ${item.c}25`, fontSize: 11, fontWeight: 700, color: item.c }}>
+                                    <div key={item.label} className={`flex items-center gap-1.5 px-3 py-1 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider ${item.c}`}>
                                         {item.icon}{item.label}
                                     </div>
                                 ))}
@@ -752,7 +794,7 @@ export default function PdfSignerPage() {
                         </div>
 
                         {/* Feature grid */}
-                        <div style={{ maxWidth: 780, margin: "0 auto", display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: isMobile ? 16 : 24, borderTop: `1px solid ${T.border}`, paddingTop: 40 }}>
+                        <div className="max-w-[780px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black/10 pt-12 mt-12">
                             {[
                                 { icon: ShieldCheck, title: "Security & Privacy First", desc: "Your documents remain strictly confidential. With zero data tracking and no storage, we ensure your sensitive information stays private and secure." },
                                 { icon: Zap, title: "Local Process, No File Upload", desc: "Sign PDF directly in your browser. Since files are processed locally, your documents never leave your device, offering maximum security without server uploads." },
@@ -761,55 +803,55 @@ export default function PdfSignerPage() {
                                 { icon: Palette, title: "Define Your Signature Style", desc: "Draw or type signature overlays with customizable colors (Royal Blue) and elegant fonts to make every signed document fit your brand style." },
                                 { icon: MonitorSmartphone, title: "Sign Anywhere, on Any Device", desc: "Access our secure online tool on Mac, Windows, iOS, or Android. Sign your PDF documents anytime, anywhere, with just a web browser." },
                             ].map(f => (
-                                <div key={f.title} style={{ display: "flex", gap: 16, padding: "16px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16, textAlign: "left" }}>
-                                    <div style={{ width: 40, height: 40, borderRadius: 10, background: T.surfaceHi, border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, flexShrink: 0 }}>
-                                        <f.icon size={16} />
+                                <div key={f.title} className="flex gap-4 p-5 bg-white border-2 border-black rounded-3xl text-left shadow-[3px_3px_0_#000]">
+                                    <div className="w-10 h-10 rounded-xl bg-[#F4ECD8] border-2 border-black flex items-center justify-center text-red-500 flex-shrink-0 shadow-[1.5px_1.5px_0_#000]">
+                                        <f.icon size={16} strokeWidth={2.5} />
                                     </div>
                                     <div>
-                                        <div style={{ fontSize: 12, fontWeight: 800, color: T.textPri, marginBottom: 6 }}>{f.title}</div>
-                                        <div style={{ fontSize: 11.5, color: T.textSec, lineHeight: 1.6 }}>{f.desc}</div>
+                                        <div className="text-xs font-black text-black mb-1.5 ig-display">{f.title}</div>
+                                        <div className="text-[11px] text-zinc-650 font-bold leading-relaxed">{f.desc}</div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
                         {/* How to Timeline Section */}
-                        <div style={{ maxWidth: 780, margin: "64px auto 0", borderTop: `1px solid ${T.border}`, paddingTop: 40, textAlign: "left" }}>
-                            <h2 style={{ fontSize: 20, fontWeight: 900, color: T.textPri, textAlign: "center", marginBottom: 28, letterSpacing: "-0.01em" }}>
+                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 text-left">
+                            <h2 className="text-xl sm:text-2xl font-black text-black text-center mb-10 ig-display">
                                 How to eSign PDF Online for Free
                             </h2>
-                            <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? 16 : 20 }}>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 {[
                                     { step: "1", title: "Upload PDF File", desc: "Click 'Select PDF File' or drag and drop your document into our secure browser-side signer upload zone." },
                                     { step: "2", title: "Sign & Annotate", desc: "Draw your signature, place initials, add text, select dates, or place checkbox checkmarks on the canvas." },
                                     { step: "3", title: "Download File", desc: "Click 'Finalise & Sign' to compile and download your signed digital PDF document in seconds." }
                                 ].map((item) => (
-                                    <div key={item.step} style={{ background: T.surface, border: `1px solid ${T.border}`, padding: "24px 20px 20px", borderRadius: 16, position: "relative" }}>
-                                        <div style={{ position: "absolute", top: -12, left: 16, width: 26, height: 26, borderRadius: "50%", background: T.accent, color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, fontWeight: 900, boxShadow: `0 0 10px ${T.accentGlow}` }}>
+                                    <div key={item.step} className="bg-white border-2 border-black p-6 rounded-3xl relative shadow-[3.5px_3.5px_0_#000] pt-8">
+                                        <div className="absolute -top-3.5 left-4 w-7 h-7 rounded-full bg-yellow-300 border-2 border-black flex items-center justify-center text-xs font-black shadow-[1.5px_1.5px_0_#000] text-black">
                                             {item.step}
                                         </div>
-                                        <h4 style={{ fontSize: 13, fontWeight: 800, color: T.textPri, marginTop: 8, marginBottom: 8 }}>{item.title}</h4>
-                                        <p style={{ fontSize: 12, color: T.textSec, lineHeight: 1.6, margin: 0 }}>{item.desc}</p>
+                                        <h4 className="text-xs font-black text-black mb-2 ig-display">{item.title}</h4>
+                                        <p className="text-[11px] text-zinc-650 font-bold leading-relaxed m-0">{item.desc}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Contrast Table Section */}
-                        <div style={{ maxWidth: 780, margin: "64px auto 0", borderTop: `1px solid ${T.border}`, paddingTop: 40, textAlign: "left" }}>
-                            <h2 style={{ fontSize: 20, fontWeight: 900, color: T.textPri, textAlign: "center", marginBottom: 8, letterSpacing: "-0.01em" }}>
+                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 text-left">
+                            <h2 className="text-xl sm:text-2xl font-black text-black text-center mb-2 ig-display">
                                 Electronic vs. Digital Signatures: Which Do You Need?
                             </h2>
-                            <p style={{ fontSize: 13, color: T.textSec, textAlign: "center", marginBottom: 28, maxWidth: 520, margin: "0 auto 28px", lineHeight: 1.6 }}>
+                            <p className="text-xs text-zinc-600 text-center mb-8 max-w-lg mx-auto leading-relaxed font-bold">
                                 Discover the differences between visual electronic overlays and certificate-backed cryptographic digital signatures.
                             </p>
-                            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 16, overflow: "hidden" }}>
-                                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 12 }}>
+                            <div className="bg-white border-2 border-black rounded-3xl overflow-hidden shadow-[4px_4px_0_#000]">
+                                <table className="w-full border-collapse text-left text-xs">
                                     <thead>
-                                        <tr style={{ background: T.surfaceHi, borderBottom: `1px solid ${T.border}` }}>
-                                            <th style={{ padding: isMobile ? "10px 8px" : "14px 18px", fontWeight: 800, color: T.textPri, fontSize: isMobile ? 10 : 12 }}>Capability</th>
-                                            <th style={{ padding: isMobile ? "10px 8px" : "14px 18px", fontWeight: 800, color: T.accent, fontSize: isMobile ? 10 : 12 }}>PDF Electronic Signature (This Tool)</th>
-                                            <th style={{ padding: isMobile ? "10px 8px" : "14px 18px", fontWeight: 800, color: T.textSec, fontSize: isMobile ? 10 : 12 }}>PDF Digital Signature</th>
+                                        <tr className="bg-zinc-50 border-b-2 border-black">
+                                            <th className="p-4 font-black text-black text-[11px] uppercase tracking-wider ig-label">Capability</th>
+                                            <th className="p-4 font-black text-red-500 text-[11px] uppercase tracking-wider ig-label">PDF Electronic Signature (This Tool)</th>
+                                            <th className="p-4 font-black text-zinc-600 text-[11px] uppercase tracking-wider ig-label">PDF Digital Signature</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -820,10 +862,10 @@ export default function PdfSignerPage() {
                                             { cap: "Process Location", es: "Instant inside your browser (local only)", ds: "Requires third-party servers / key managers" },
                                             { cap: "Ease of Use", es: "Extremely fast, free, and no sign-up", ds: "Requires registration and setup keys" },
                                         ].map((row, idx) => (
-                                            <tr key={idx} style={{ borderBottom: idx < 4 ? `1px solid ${T.border}` : "none" }}>
-                                                <td style={{ padding: isMobile ? "10px 8px" : "14px 18px", fontWeight: 800, color: T.textPri, fontSize: isMobile ? 10 : 12 }}>{row.cap}</td>
-                                                <td style={{ padding: isMobile ? "10px 8px" : "14px 18px", color: T.textSec, fontSize: isMobile ? 10 : 12 }}>{row.es}</td>
-                                                <td style={{ padding: isMobile ? "10px 8px" : "14px 18px", color: T.textSec, fontSize: isMobile ? 10 : 12 }}>{row.ds}</td>
+                                            <tr key={idx} className="border-b-2 border-black/10 last:border-b-0">
+                                                <td className="p-4 font-bold text-black border-r border-black/10 bg-zinc-50/50">{row.cap}</td>
+                                                <td className="p-4 text-zinc-700 font-bold border-r border-black/10">{row.es}</td>
+                                                <td className="p-4 text-zinc-700 font-bold">{row.ds}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -832,11 +874,11 @@ export default function PdfSignerPage() {
                         </div>
 
                         {/* SEO FAQ Accordion */}
-                        <div style={{ maxWidth: 780, margin: "64px auto 0", borderTop: `1px solid ${T.border}`, paddingTop: 40, textAlign: "left" }}>
-                            <h3 style={{ fontSize: 18, fontWeight: 900, color: T.textPri, textAlign: "center", marginBottom: 28, letterSpacing: "-0.01em" }}>
+                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 mb-8 text-left">
+                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-10 ig-display">
                                 Frequently Asked Questions — PDF Signature Online
                             </h3>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                            <LocalAccordion>
                                 {[
                                     {
                                         q: "Is it really a free PDF signature tool with no sign up?",
@@ -855,32 +897,11 @@ export default function PdfSignerPage() {
                                         a: "Absolutely. If you want a fast, free, private, and secure alternative to bulky platforms like ilovepdf signature, this lightweight, client-side signature tool is the perfect option."
                                     }
                                 ].map((faq, idx) => (
-                                    <details 
-                                        key={idx} 
-                                        style={{ 
-                                            background: T.surface, 
-                                            border: `1px solid ${T.border}`, 
-                                            borderRadius: 12, 
-                                            padding: "14px 18px",
-                                            cursor: "pointer",
-                                            transition: "all 0.2s"
-                                        }}
-                                        onToggle={e => {
-                                            const isOpen = (e.target as HTMLDetailsElement).open;
-                                            (e.target as HTMLElement).style.borderColor = isOpen ? T.accent : T.border;
-                                            (e.target as HTMLElement).style.background = isOpen ? T.surfaceHi : T.surface;
-                                        }}
-                                    >
-                                        <summary style={{ fontSize: 13, fontWeight: 800, color: T.textPri, outline: "none", listStyle: "none", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                            <span>{faq.q}</span>
-                                            <ChevronDown size={14} style={{ color: T.textSec }} />
-                                        </summary>
-                                        <p style={{ fontSize: 13, color: T.textSec, marginTop: 12, lineHeight: 1.6, cursor: "default" }}>
-                                            {faq.a}
-                                        </p>
-                                    </details>
+                                    <LocalAccordionItem key={idx} title={faq.q}>
+                                        {faq.a}
+                                    </LocalAccordionItem>
                                 ))}
-                            </div>
+                            </LocalAccordion>
                         </div>
                     </div>
                 </div>
@@ -899,32 +920,25 @@ export default function PdfSignerPage() {
                     background: T.bg
                 }}>
                     {/* 1. TOP TOOLBAR */}
-                    <header style={{
-                        height: isMobile ? 52 : 64,
-                        borderBottom: `1px solid ${T.border}`,
-                        background: T.surface,
-                        padding: isMobile ? "0 12px" : "0 24px",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexShrink: 0,
-                        zIndex: 10
-                    }}>
+                    <header className="h-16 border-b-2 border-black bg-white px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-10 relative">
                         {/* Filename dropdown */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                            <div style={{ width: 34, height: 34, borderRadius: 10, background: `${T.accent}12`, border: `1px solid ${T.accent}30`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                <FileText size={16} style={{ color: T.accent }} />
+                        <div 
+                            className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50 border-2 border-black rounded-xl cursor-pointer hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
+                            onClick={() => setShowHelp(true)}
+                        >
+                            <div className="w-6 h-6 rounded-lg bg-red-500 border border-black flex items-center justify-center text-white">
+                                <FileText size={12} />
                             </div>
                             {!isMobile && (
-                                <div style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }} onClick={() => setShowHelp(true)}>
-                                    <span style={{ fontSize: 13, fontWeight: 700, color: T.textPri, maxWidth: 180, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{file.name}</span>
-                                    <ChevronDown size={14} style={{ color: T.textSec }} />
+                                <div className="flex items-center gap-1.5">
+                                    <span className="text-xs font-bold text-black max-w-[180px] truncate">{file.name}</span>
+                                    <ChevronDown size={14} className="text-zinc-650" />
                                 </div>
                             )}
                         </div>
 
                         {/* Page controls */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div className="flex items-center gap-2">
                             <button
                                 onClick={() => {
                                     const prev = Math.max(0, activePage - 1);
@@ -932,13 +946,11 @@ export default function PdfSignerPage() {
                                     document.getElementById(`pdf-page-${prev}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
                                 disabled={activePage === 0}
-                                style={{
-                                    width: 32, height: 32, borderRadius: "50%", background: "none", border: `1px solid ${T.border}`, color: activePage === 0 ? T.muted : T.textSec, cursor: activePage === 0 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s"
-                                }}
+                                className="ig-btn w-8 h-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
                             >
-                                <ChevronUp size={14} />
+                                <ChevronUp size={14} strokeWidth={2.5} />
                             </button>
-                            <span style={{ fontSize: 11, fontWeight: 800, color: T.textPri, width: 64, textAlign: "center", fontVariantNumeric: "tabular-nums" }}>
+                            <span className="text-xs font-black text-black w-16 text-center tabular-nums ig-display">
                                 {activePage + 1} / {pageCount}
                             </span>
                             <button
@@ -948,69 +960,47 @@ export default function PdfSignerPage() {
                                     document.getElementById(`pdf-page-${next}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
                                 disabled={activePage === pageCount - 1}
-                                style={{
-                                    width: 32, height: 32, borderRadius: "50%", background: "none", border: `1px solid ${T.border}`, color: activePage === pageCount - 1 ? T.muted : T.textSec, cursor: activePage === pageCount - 1 ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s"
-                                }}
+                                className="ig-btn w-8 h-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
                             >
-                                <ChevronDown size={14} />
+                                <ChevronDown size={14} strokeWidth={2.5} />
                             </button>
                         </div>
 
                         {/* Action buttons (Undo/Redo/Reset) */}
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                            <div style={{ display: "flex", gap: 4, paddingRight: 8, borderRight: `1px solid ${T.border}` }}>
+                        <div className="flex items-center gap-2.5">
+                            <div className="flex gap-1.5 pr-2.5 border-r-2 border-black/10">
                                 <button
                                     onClick={undo}
                                     disabled={!canUndo}
                                     title="Undo (⌘Z)"
-                                    style={{
-                                        width: 32, height: 32, borderRadius: 8, background: T.surfaceHov, border: `1px solid ${T.border}`, color: canUndo ? T.textPri : T.muted, cursor: canUndo ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", opacity: canUndo ? 1 : 0.4, transition: "all 0.15s"
-                                    }}
+                                    className="ig-btn w-8 h-8 rounded-lg border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
                                 >
-                                    <Undo2 size={13} />
+                                    <Undo2 size={13} strokeWidth={2.5} />
                                 </button>
                                 <button
                                     onClick={redo}
                                     disabled={!canRedo}
                                     title="Redo (⌘Y)"
-                                    style={{
-                                        width: 32, height: 32, borderRadius: 8, background: T.surfaceHov, border: `1px solid ${T.border}`, color: canRedo ? T.textPri : T.muted, cursor: canRedo ? "pointer" : "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", opacity: canRedo ? 1 : 0.4, transition: "all 0.15s"
-                                    }}
+                                    className="ig-btn w-8 h-8 rounded-lg border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
                                 >
-                                    <Redo2 size={13} />
+                                    <Redo2 size={13} strokeWidth={2.5} />
                                 </button>
                             </div>
                             <button
                                 onClick={reset}
-                                style={{
-                                    height: 32, padding: isMobile ? "0 8px" : "0 12px", borderRadius: 8, background: "transparent", border: `1px solid ${T.border}`, color: T.textSec, fontSize: 11, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, transition: "all 0.15s"
-                                }}
-                                onMouseEnter={e => { e.currentTarget.style.color = T.danger; e.currentTarget.style.borderColor = "rgba(239,68,68,0.3)"; }}
-                                onMouseLeave={e => { e.currentTarget.style.color = T.textSec; e.currentTarget.style.borderColor = T.border; }}
+                                className="ig-btn h-8 px-3 rounded-lg border-2 border-black bg-red-100 hover:bg-red-200 text-black text-xs font-black flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] transition-all"
                             >
-                                <RefreshCw size={11} />{!isMobile && " Reset"}
+                                <RefreshCw size={11} strokeWidth={2.5} />{!isMobile && " Reset"}
                             </button>
                         </div>
                     </header>
 
                     {/* 2. BODY CONTENT (3 COLUMNS) */}
-                    <div style={{ display: "flex", flex: 1, overflow: "hidden", width: "100%", minHeight: 0 }}>
+                    <div className="flex flex-1 overflow-hidden w-full min-h-0">
                         {/* COLUMN 1: LEFT SIDEBAR (~100px) */}
                         <aside 
                             data-lenis-prevent="true"
-                            style={{
-                                width: 100,
-                                borderRight: `1px solid ${T.border}`,
-                                background: T.surface,
-                                overflowY: "auto",
-                                overscrollBehavior: "contain",
-                                display: isMobile ? "none" : "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                padding: "16px 0",
-                                gap: 12,
-                                flexShrink: 0,
-                            }}
+                            className="w-24 border-r-2 border-black bg-white overflow-y-auto overscroll-contain flex flex-col items-center py-4 gap-3 shrink-0 hidden md:flex"
                         >
                             {Array.from({ length: pageCount }, (_, i) => (
                                 <PdfThumbnail
@@ -1029,36 +1019,21 @@ export default function PdfSignerPage() {
                         {/* COLUMN 2: CENTER CANVAS (flex-grow) */}
                         <main 
                             data-lenis-prevent="true"
-                            style={{
-                                flex: 1,
-                                background: T.bg,
-                                padding: isMobile ? "12px 8px 100px" : "24px 20px",
-                                display: "flex",
-                                flexDirection: "column",
-                                gap: 14,
-                                overflowY: "auto",
-                                overscrollBehavior: "contain",
-                                position: "relative",
-                                minWidth: 0
-                            }}
+                            className="flex-1 bg-[#F4ECD8] p-3 sm:p-6 pb-24 flex flex-col gap-4 overflow-y-auto overscroll-contain relative min-w-0"
                         >
 
 
                             {/* Success Card */}
                             {outputUrl && (
-                                <div style={{
-                                    background: T.surface, border: `1px solid ${T.border}`, padding: "40px 20px", borderRadius: 24,
-                                    display: "flex", flexDirection: "column", alignItems: "center", gap: 24,
-                                    textAlign: "center", maxWidth: 640, margin: "40px auto"
-                                }}>
-                                    <div style={{ width: 64, height: 64, background: T.accent, color: "#fff", borderRadius: 16, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                <div className="bg-white border-2 border-black p-8 sm:p-12 rounded-[2rem] shadow-[5px_5px_0_#000] flex flex-col items-center gap-6 text-center max-w-xl mx-auto my-10 relative overflow-hidden">
+                                    <div className="w-16 h-16 bg-emerald-100 border-2 border-black rounded-2xl flex items-center justify-center text-black shadow-[2.5px_2.5px_0_#000] mb-2">
                                         <Check size={28} strokeWidth={3.5} />
                                     </div>
                                     <div>
-                                        <h3 style={{ fontSize: 28, fontWeight: 900, color: T.textPri, letterSpacing: "-0.02em" }}>Document Signed</h3>
-                                        <p style={{ color: T.textSec, fontSize: 14, marginTop: 6 }}>Your finalized PDF is ready for download.</p>
+                                        <h3 className="text-2xl sm:text-3xl font-black text-black tracking-tight ig-display">Document Signed</h3>
+                                        <p className="text-xs text-zinc-650 font-bold mt-1">Your finalized PDF is ready for download.</p>
                                     </div>
-                                    <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, width: "100%", maxWidth: 380 }}>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-sm mt-4">
                                         <a
                                             href={outputUrl}
                                             download={`signed_${file.name}`}
@@ -1070,31 +1045,19 @@ export default function PdfSignerPage() {
                                                     }
                                                 }));
                                             }}
-                                            style={{
-                                                height: 48, borderRadius: 99, background: T.accent, color: "#fff",
-                                                fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em",
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, textDecoration: "none",
-                                            }}
+                                            className="ig-btn h-11 rounded-xl bg-emerald-305 border-2 border-black text-black text-xs font-black flex items-center justify-center gap-2 shadow-[2.5px_2.5px_0_#000] hover:bg-emerald-300 hover:scale-105 active:scale-95 transition-all text-center uppercase tracking-wider bg-[#a7f3d0]"
                                         >
                                             <Download size={16} /> Download PDF
                                         </a>
                                         <button
                                             onClick={() => setIsSharing(true)}
-                                            style={{
-                                                height: 48, borderRadius: 99, background: T.surfaceHov, border: `1px solid ${T.border}`, color: T.textPri,
-                                                fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.04em",
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, cursor: "pointer",
-                                            }}
+                                            className="ig-btn h-11 rounded-xl bg-white border-2 border-black text-black text-xs font-black flex items-center justify-center gap-2 shadow-[2.5px_2.5px_0_#000] hover:bg-zinc-100 hover:scale-105 active:scale-95 transition-all text-center uppercase tracking-wider"
                                         >
                                             <Share2 size={16} /> Share File
                                         </button>
                                         <button
                                             onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                            style={{
-                                                gridColumn: isMobile ? "span 1" : "span 2", background: "none", border: "none", color: T.textSec, cursor: "pointer",
-                                                fontSize: 10, fontWeight: 800, textTransform: "uppercase", letterSpacing: "0.08em",
-                                                marginTop: 8,
-                                            }}
+                                            className="col-span-1 sm:col-span-2 ig-btn h-10 rounded-xl bg-white border-2 border-black text-black text-xs font-black flex items-center justify-center gap-1.5 shadow-[2px_2px_0_#000] hover:bg-zinc-50 transition-all uppercase tracking-wider mt-2"
                                         >
                                             ← Back to Editor
                                         </button>
@@ -1104,7 +1067,7 @@ export default function PdfSignerPage() {
 
                             {/* Document Viewer Canvas */}
                             {!outputUrl && (
-                                <div style={{ flex: 1, background: "rgba(255,255,255,0.01)", border: `1px solid ${T.border}`, borderRadius: 24, padding: 4, position: "relative" }}>
+                                <div className="flex-1 bg-white border-2 border-black rounded-3xl p-2 relative shadow-[4px_4px_0_#000]">
                                     {signatures.length === 0 && !dismissHint && (
                                         <div 
                                             style={{ 
@@ -1286,33 +1249,23 @@ export default function PdfSignerPage() {
                         </main>
 
                         {/* COLUMN 3: RIGHT SIGNING OPTIONS PANEL (~320px) */}
-                        <aside style={{
-                            width: 320,
-                            borderLeft: `1px solid ${T.border}`,
-                            background: T.surface,
-                            display: isMobile ? "none" : "flex",
-                            flexDirection: "column",
-                            height: "100%",
-                            minHeight: 0,
-                            flexShrink: 0,
-                            position: "relative"
-                        }}>
+                        <aside className="w-80 border-l-2 border-black bg-white flex flex-col h-full min-h-0 shrink-0 relative hidden md:flex">
                             {/* Scrollable contents */}
                             <div 
                                 data-lenis-prevent="true"
-                                style={{ flex: 1, overflowY: "auto", overscrollBehavior: "contain", padding: 20, display: "flex", flexDirection: "column", gap: 24, paddingBottom: 100 }}
+                                className="flex-1 overflow-y-auto overscroll-contain p-5 flex flex-col gap-6 pb-24"
                             >
                                 <div>
-                                    <h2 style={{ fontSize: 16, fontWeight: 800, color: T.textPri, margin: "0 0 4px", letterSpacing: "-0.01em" }}>Signing options</h2>
-                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0 }}>Configure your signature types and place elements.</p>
+                                    <h2 className="text-sm font-black text-black ig-display uppercase tracking-wider">Signing options</h2>
+                                    <p className="text-[10px] text-zinc-650 font-bold mt-0.5">Configure your signature types and place elements.</p>
                                 </div>
 
 
 
                                 {/* Required fields */}
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                <div className="flex flex-col gap-2.5">
                                     <SectionLabel><User size={9} />Required fields</SectionLabel>
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                    <div className="flex flex-col gap-2">
                                         {/* 1. Signature */}
                                         {(() => {
                                             const signatureItem = signatures.find(s => s.type === "signature");
@@ -1323,17 +1276,15 @@ export default function PdfSignerPage() {
                                                         setActiveBox(null);
                                                         setIsPadOpen(true);
                                                     }}
-                                                    style={{
-                                                        padding: "12px 14px", borderRadius: 12, background: activeTool === "signature" ? "rgba(124,106,255,0.04)" : T.surfaceHov, border: `1px solid ${activeTool === "signature" ? T.accent : T.border}`, cursor: "pointer", transition: "all 0.15s", display: "flex", alignItems: "center", justifyContent: "space-between"
-                                                    }}
+                                                    className={`p-3 border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-between ${activeTool === "signature" ? "bg-emerald-50" : "bg-zinc-50"}`}
                                                 >
-                                                    <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: `${T.accent}12`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent }}>
+                                                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                        <div className="w-7 h-7 rounded-lg bg-emerald-100 border border-black flex items-center justify-center text-black shadow-[1px_1px_0_#000]">
                                                             <User size={13} />
                                                         </div>
-                                                        <div style={{ minWidth: 0, flex: 1 }}>
-                                                            <div style={{ fontSize: 11, fontWeight: 800, color: T.textPri }}>Signature</div>
-                                                            <div style={{ fontSize: 9, color: T.textSec, marginTop: 2 }}>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-[11px] font-black text-black">Signature</div>
+                                                            <div className="text-[9px] text-zinc-655 font-bold mt-0.5 leading-none">
                                                                 {signatureItem ? "Signature placed" : "Click to place signature"}
                                                             </div>
                                                         </div>
@@ -1352,17 +1303,15 @@ export default function PdfSignerPage() {
                                                         setActiveBox(null);
                                                         setIsPadOpen(true);
                                                     }}
-                                                    style={{
-                                                        padding: "12px 14px", borderRadius: 12, background: activeTool === "initials" ? "rgba(6,182,212,0.04)" : T.surfaceHov, border: `1px solid ${activeTool === "initials" ? "#06b6d4" : T.border}`, cursor: "pointer", transition: "all 0.15s", display: "flex", alignItems: "center", justifyContent: "space-between"
-                                                    }}
+                                                    className={`p-3 border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-between ${activeTool === "initials" ? "bg-[#e0f7fa]" : "bg-zinc-50"}`}
                                                 >
-                                                    <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1, minWidth: 0 }}>
-                                                        <div style={{ width: 28, height: 28, borderRadius: 8, background: `rgba(6,182,212,0.12)`, display: "flex", alignItems: "center", justifyContent: "center", color: "#06b6d4" }}>
+                                                    <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                                                        <div className="w-7 h-7 rounded-lg bg-[#b2ebf2] border border-black flex items-center justify-center text-cyan-700 shadow-[1px_1px_0_#000]">
                                                             <PencilLine size={13} />
                                                         </div>
-                                                        <div style={{ minWidth: 0, flex: 1 }}>
-                                                            <div style={{ fontSize: 11, fontWeight: 800, color: T.textPri }}>Initials</div>
-                                                            <div style={{ fontSize: 9, color: T.textSec, marginTop: 2 }}>
+                                                        <div className="min-w-0 flex-1">
+                                                            <div className="text-[11px] font-black text-black">Initials</div>
+                                                            <div className="text-[9px] text-zinc-655 font-bold mt-0.5 leading-none">
                                                                 {initialsItem ? "Initials placed" : "Click to place initials"}
                                                             </div>
                                                         </div>
@@ -1374,31 +1323,27 @@ export default function PdfSignerPage() {
                                 </div>
 
                                 {/* Optional fields */}
-                                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                                <div className="flex flex-col gap-2.5">
                                     <SectionLabel><Layers size={9} />Optional fields</SectionLabel>
-                                    <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                                    <div className="flex flex-col gap-2">
                                         {[
-                                            { id: "text", icon: Type, label: "Text Field", desc: "Typeable standard textbox", color: "#f59e0b" },
-                                            { id: "date", icon: Calendar, label: "Date Placer", desc: "Auto-populates current date", color: "#10b981" },
-                                            { id: "checkmark", icon: CheckSquare, label: "Checkbox", desc: "Interactive verification box", color: "#ef4444" },
-                                            { id: "stamp", icon: Stamp, label: "Company Stamp", desc: "Custom seal status mark", color: "#f97316" }
+                                            { id: "text", icon: Type, label: "Text Field", desc: "Typeable standard textbox", color: "text-[#f59e0b] bg-[#fef3c7]" },
+                                            { id: "date", icon: Calendar, label: "Date Placer", desc: "Auto-populates current date", color: "text-[#10b981] bg-[#d1fae5]" },
+                                            { id: "checkmark", icon: CheckSquare, label: "Checkbox", desc: "Interactive verification box", color: "text-[#ef4444] bg-[#fee2e2]" },
+                                            { id: "stamp", icon: Stamp, label: "Company Stamp", desc: "Custom seal status mark", color: "text-[#f97316] bg-[#ffedd5]" }
                                         ].map(item => (
                                             <div
                                                 key={item.id}
                                                 onClick={() => {
                                                     setActiveTool(item.id as ToolId);
                                                 }}
-                                                style={{
-                                                    padding: "10px 12px", borderRadius: 10, background: activeTool === item.id ? `${item.color}06` : "transparent", border: `1px solid ${activeTool === item.id ? item.color + "30" : T.border}`, cursor: "pointer", transition: "all 0.15s", display: "flex", alignItems: "center", gap: 10
-                                                }}
-                                                onMouseEnter={e => { if (activeTool !== item.id) e.currentTarget.style.background = "rgba(255,255,255,0.02)"; }}
-                                                onMouseLeave={e => { if (activeTool !== item.id) e.currentTarget.style.background = "transparent"; }}
+                                                className={`p-2.5 border-2 border-black rounded-xl cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-2.5 ${activeTool === item.id ? "bg-yellow-50" : "bg-zinc-50"}`}
                                             >
-                                                <div style={{ width: 24, height: 24, borderRadius: 6, background: `${item.color}14`, display: "flex", alignItems: "center", justifyContent: "center", color: item.color }}>
+                                                <div className={`w-6 h-6 rounded-lg border border-black flex items-center justify-center shadow-[0.5px_0.5px_0_#000] ${item.color}`}>
                                                     <item.icon size={12} />
                                                 </div>
-                                                <div style={{ flex: 1, minWidth: 0 }}>
-                                                    <div style={{ fontSize: 10, fontWeight: 800, color: T.textPri }}>{item.label}</div>
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-[10px] font-black text-black">{item.label}</div>
                                                 </div>
                                             </div>
                                         ))}
@@ -1411,23 +1356,27 @@ export default function PdfSignerPage() {
                                     const showProps = activeSig && ["text", "date", "stamp", "checkmark"].includes(activeSig.type);
                                     if (!showProps) return null;
                                     return (
-                                        <div style={{ padding: 16, background: "rgba(124,106,255,0.03)", border: `1px solid ${T.accent}30`, borderRadius: 16, display: "flex", flexDirection: "column", gap: 12, animation: "fadeIn 0.2s ease" }}>
-                                            <div style={{ fontSize: 9, fontWeight: 800, color: T.accent, letterSpacing: "0.06em", textTransform: "uppercase" }}>Field Properties</div>
+                                        <div className="p-4 bg-yellow-50/50 border-2 border-black rounded-2xl flex flex-col gap-3.5 shadow-[2px_2px_0_#000] animate-in fade-in zoom-in-95 duration-150">
+                                            <div className="text-[10px] font-black text-black uppercase tracking-wider ig-label">Field Properties</div>
 
                                             {(activeSig.type === "text" || activeSig.type === "date") && (
-                                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                                    <select value={selectedFont} onChange={e => handleFontChange(e.target.value)} style={{ width: "100%", padding: "7px 10px", background: T.surfaceHov, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 11, color: T.textSec, outline: "none", fontFamily: "inherit", cursor: "pointer" }}>
+                                                <div className="flex flex-col gap-2.5">
+                                                    <select value={selectedFont} onChange={e => handleFontChange(e.target.value)} className="w-full px-2.5 py-1.5 bg-white border-2 border-black rounded-lg text-xs font-bold text-black outline-none cursor-pointer">
                                                         <option value="Helvetica">Helvetica</option>
                                                         <option value="Times-Roman">Times New Roman</option>
                                                         <option value="Courier">Courier</option>
                                                     </select>
-                                                    <div style={{ display: "flex", gap: 4 }}>
+                                                    <div className="flex gap-1.5">
                                                         {[
                                                             { label: <Bold size={12} strokeWidth={3} />, active: isBold, onClick: handleBoldClick },
                                                             { label: <Italic size={12} strokeWidth={3} />, active: isItalic, onClick: handleItalicClick },
                                                             { label: <Underline size={12} strokeWidth={3} />, active: isUnderline, onClick: handleUnderlineClick },
                                                         ].map((btn, i) => (
-                                                            <button key={i} onClick={btn.onClick} style={{ flex: 1, height: 30, borderRadius: 7, background: btn.active ? T.accent : T.surfaceHov, border: `1px solid ${btn.active ? T.accent : T.border}`, color: btn.active ? "#fff" : T.textSec, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
+                                                            <button 
+                                                                key={i} 
+                                                                onClick={btn.onClick} 
+                                                                className={`flex-grow h-8 rounded-lg border-2 border-black flex items-center justify-center transition-all ${btn.active ? "bg-yellow-300 text-black shadow-[1.5px_1.5px_0_#000] font-black" : "bg-white text-zinc-650 font-bold hover:bg-zinc-55 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"}`}
+                                                            >
                                                                 {btn.label}
                                                             </button>
                                                         ))}
@@ -1436,10 +1385,14 @@ export default function PdfSignerPage() {
                                             )}
 
                                             {activeSig.type === "stamp" && (
-                                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                                                    <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                                <div className="flex flex-col gap-2.5">
+                                                    <div className="flex flex-wrap gap-1.5">
                                                         {PRESET_STAMPS.map(s => (
-                                                            <button key={s} onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer", background: selectedStamp === s ? T.accent : T.surfaceHov, border: `1px solid ${selectedStamp === s ? T.accent : T.border}`, color: selectedStamp === s ? "#fff" : T.textSec, transition: "all 0.15s" }}>
+                                                            <button 
+                                                                key={s} 
+                                                                onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} 
+                                                                className={`px-2 py-1 rounded-md border-2 border-black text-[9px] font-black uppercase tracking-wider transition-all ${selectedStamp === s ? "bg-yellow-300 text-black shadow-[1.5px_1.5px_0_#000]" : "bg-white text-zinc-650 hover:bg-zinc-55 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"}`}
+                                                            >
                                                                 {s}
                                                             </button>
                                                         ))}
@@ -1457,15 +1410,26 @@ export default function PdfSignerPage() {
                                                         }}
                                                         onPointerDown={e => e.stopPropagation()}
                                                         placeholder="Custom stamp text…"
-                                                        style={{ width: "100%", padding: "6px 10px", background: T.surfaceHov, border: `1px solid ${T.border}`, borderRadius: 8, fontSize: 10, color: T.textPri, outline: "none", fontFamily: "inherit", textTransform: "uppercase", letterSpacing: "0.08em" }}
+                                                        className="w-full px-2.5 py-1.5 bg-white border-2 border-black rounded-lg text-xs font-bold text-black outline-none placeholder-zinc-400 uppercase tracking-wider"
                                                     />
                                                 </div>
                                             )}
 
                                             {/* Color swatches */}
-                                            <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 4 }}>
+                                            <div className="flex gap-2 justify-center mt-1">
                                                 {PRESET_COLORS.map(c => (
-                                                    <button key={c.value} onClick={() => handleColorClick(c.value)} title={c.name} style={{ width: 22, height: 22, borderRadius: "50%", background: c.value, cursor: "pointer", border: `2px solid ${selectedColor === c.value ? T.accent : "transparent"}`, transform: selectedColor === c.value ? "scale(1.2)" : "scale(1)", transition: "all 0.15s", boxShadow: selectedColor === c.value ? `0 0 0 2px ${T.surface}, 0 0 0 4px ${T.accent}` : "none" }} />
+                                                    <button 
+                                                        key={c.value} 
+                                                        onClick={() => handleColorClick(c.value)} 
+                                                        title={c.name} 
+                                                        className="w-5.5 h-5.5 rounded-full cursor-pointer transition-all border border-black/20"
+                                                        style={{ 
+                                                            background: c.value, 
+                                                            border: selectedColor === c.value ? "2px solid black" : "1px solid rgba(0,0,0,0.2)", 
+                                                            transform: selectedColor === c.value ? "scale(1.25)" : "scale(1)", 
+                                                            boxShadow: selectedColor === c.value ? "0 0 0 1.5px #fff, 0 0 0 3px #000" : "none" 
+                                                        }} 
+                                                    />
                                                 ))}
                                             </div>
                                         </div>
@@ -1474,37 +1438,26 @@ export default function PdfSignerPage() {
 
                                 {/* Saved signatures library list */}
                                 {savedSignatures.length > 0 && (
-                                    <div style={{ padding: 16, background: T.surfaceHov, border: `1px solid ${T.border}`, borderRadius: 16 }}>
+                                    <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[3px_3px_0_#000]">
                                         <SectionLabel><Save size={9} />My Signatures</SectionLabel>
-                                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                        <div className="flex flex-col gap-2">
                                             {savedSignatures.slice(0, 3).map(sig => {
                                                 const isSelected = selectedLibraryItem?.id === sig.id;
                                                 return (
                                                     <div 
                                                         key={sig.id} 
                                                         onClick={() => placeFromLibrary(sig)} 
-                                                        style={{ 
-                                                            position: "relative", 
-                                                            height: 48, 
-                                                            background: "#fff", 
-                                                            borderRadius: 8, 
-                                                            padding: 6, 
-                                                            cursor: "pointer", 
-                                                            border: `2px solid ${isSelected ? T.accent : T.border}`, 
-                                                            boxShadow: isSelected ? `0 0 12px ${T.accentGlow}` : "none",
-                                                            overflow: "hidden", 
-                                                            transition: "all 0.15s" 
-                                                        }}
+                                                        className={`relative h-12 bg-white rounded-lg p-1.5 cursor-pointer border-2 border-black transition-all ${isSelected ? "border-yellow-500 scale-[1.02] shadow-[2px_2px_0_#000]" : "shadow-[1.5px_1.5px_0_#000]"}`}
                                                     >
-                                                        <img src={sig.dataUrl} alt="saved sig" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
-                                                        <button onClick={e => deleteFromLibrary(sig.id, e)} style={{ position: "absolute", top: 2, right: 2, width: 18, height: 18, borderRadius: 4, background: "rgba(239,68,68,0.9)", border: "none", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer" }}>
-                                                            <Trash2 size={10} />
+                                                        <img src={sig.dataUrl} alt="saved sig" className="w-full h-full object-contain" />
+                                                        <button onClick={e => deleteFromLibrary(sig.id, e)} className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 border border-black rounded-md flex items-center justify-center text-white cursor-pointer transition-colors shadow-[0.5px_0.5px_0_#000]">
+                                                            <Trash2 size={8} strokeWidth={2.5} />
                                                         </button>
                                                     </div>
                                                 );
                                             })}
                                         </div>
-                                        <div style={{ fontSize: 9, color: selectedLibraryItem ? T.accent : T.textSec, textAlign: "center", marginTop: 8, fontWeight: selectedLibraryItem ? 700 : 500, fontStyle: selectedLibraryItem ? "normal" : "italic", transition: "all 0.2s" }}>
+                                        <div className={`text-[9px] text-center mt-2.5 font-bold ${selectedLibraryItem ? "text-yellow-600" : "text-zinc-650 italic"}`}>
                                             {selectedLibraryItem ? "Signature loaded! Drag on PDF to place." : "Select signature then drag on PDF to place"}
                                         </div>
                                     </div>
@@ -1512,43 +1465,19 @@ export default function PdfSignerPage() {
                             </div>
 
                             {/* Sticky sign action footer in Right Column */}
-                            <footer style={{
-                                position: "absolute",
-                                bottom: 0,
-                                left: 0,
-                                right: 0,
-                                padding: 20,
-                                background: T.surface,
-                                borderTop: `1px solid ${T.border}`,
-                                zIndex: 10
-                            }}>
+                            <footer className="absolute bottom-0 left-0 right-0 p-5 bg-white border-t-2 border-black z-10">
                                 <button
                                     onClick={exportSignedPdf}
                                     disabled={signatures.length === 0 || isExporting}
-                                    style={{
-                                        width: "100%",
-                                        height: 48,
-                                        borderRadius: 12,
-                                        background: T.accent,
-                                        border: "none",
-                                        color: "#fff",
-                                        fontSize: 12,
-                                        fontWeight: 850,
-                                        letterSpacing: "0.06em",
-                                        textTransform: "uppercase",
-                                        cursor: signatures.length === 0 || isExporting ? "not-allowed" : "pointer",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        gap: 8,
-                                        opacity: signatures.length === 0 ? 0.35 : 1,
-                                        transition: "all 0.2s",
-                                        boxShadow: signatures.length > 0 ? `0 4px 20px ${T.accentGlow}` : "none"
-                                    }}
+                                    className={`w-full h-12 rounded-xl border-2 border-black text-xs font-black flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
+                                        signatures.length === 0 || isExporting
+                                            ? "bg-zinc-100 border-black/40 text-zinc-400 cursor-not-allowed opacity-60"
+                                            : "bg-yellow-300 text-black shadow-[2.5px_2.5px_0_#000] hover:bg-yellow-400 hover:scale-[1.02] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none"
+                                    }`}
                                 >
                                     {isExporting ? (
                                         <>
-                                            <div style={{ width: 16, height: 16, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                                             Exporting…
                                         </>
                                     ) : (
@@ -1564,17 +1493,7 @@ export default function PdfSignerPage() {
 
                     {/* ── MOBILE BOTTOM TOOLBAR ── */}
                     {isMobile && (
-                        <div style={{
-                            position: "fixed",
-                            bottom: 0,
-                            left: 0,
-                            right: 0,
-                            zIndex: 200,
-                            background: T.surface,
-                            borderTop: `1px solid ${T.border}`,
-                            boxShadow: "0 -4px 24px rgba(0,0,0,0.4)",
-                            paddingBottom: "env(safe-area-inset-bottom, 0px)",
-                        }}>
+                        <div className="fixed bottom-0 left-0 right-0 z-[200] bg-white border-t-2 border-black pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
                             {(() => {
                                 const activeSig = signatures.find(s => s.id === activeSigId);
                                 const showProps = activeSig && ["text", "date", "stamp", "checkmark"].includes(activeSig.type);
@@ -1582,25 +1501,25 @@ export default function PdfSignerPage() {
                                 if (showProps && activeSig) {
                                     /* ── Properties panel for the selected annotation ── */
                                     return (
-                                        <div style={{ padding: "10px 14px 12px", display: "flex", flexDirection: "column", gap: 10 }}>
-                                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                                                <span style={{ fontSize: 10, fontWeight: 800, color: T.accent, letterSpacing: "0.1em", textTransform: "uppercase" }}>Field Properties</span>
-                                                <div style={{ display: "flex", gap: 8 }}>
+                                        <div className="p-3.5 flex flex-col gap-2.5">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-black text-black uppercase tracking-wider ig-label">Field Properties</span>
+                                                <div className="flex gap-2">
                                                     <button
                                                         onClick={() => { removeSignature(activeSig.id); setActiveSigId(null); }}
-                                                        style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", color: T.danger, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
+                                                        className="w-8 h-8 rounded-lg bg-red-105 border-2 border-black text-black flex items-center justify-center cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all bg-[#fee2e2]"
                                                     >
-                                                        <Trash2 size={13} />
+                                                        <Trash2 size={13} strokeWidth={2.5} />
                                                     </button>
                                                     <button
                                                         onClick={() => toggleAllPages(activeSig.id)}
-                                                        style={{ height: 30, padding: "0 10px", borderRadius: 8, background: activeSig.allPages ? `${T.accent}20` : T.surfaceHov, border: `1px solid ${activeSig.allPages ? T.accent : T.border}`, color: activeSig.allPages ? T.accent : T.textSec, cursor: "pointer", fontSize: 9, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase" }}
+                                                        className={`h-8 px-3 rounded-lg border-2 border-black text-[9px] font-black uppercase tracking-wider cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all ${activeSig.allPages ? "bg-yellow-300 text-black" : "bg-white text-black"}`}
                                                     >
                                                         All Pages
                                                     </button>
                                                     <button
                                                         onClick={() => setActiveSigId(null)}
-                                                        style={{ height: 30, padding: "0 14px", borderRadius: 8, background: T.accent, border: "none", color: "#fff", cursor: "pointer", fontSize: 10, fontWeight: 800, letterSpacing: "0.06em" }}
+                                                        className="h-8 px-3.5 rounded-lg border-2 border-black bg-yellow-300 hover:bg-yellow-400 text-black cursor-pointer text-[10px] font-black uppercase tracking-wider shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
                                                     >
                                                         Done
                                                     </button>
@@ -1608,21 +1527,35 @@ export default function PdfSignerPage() {
                                             </div>
 
                                             {/* Color swatches + formatting row */}
-                                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                                                <span style={{ fontSize: 9, fontWeight: 700, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.1em", flexShrink: 0 }}>Color</span>
-                                                <div style={{ display: "flex", gap: 8 }}>
+                                            <div className="flex items-center gap-2.5">
+                                                <span className="text-[9px] font-black text-zinc-650 uppercase tracking-wider">Color</span>
+                                                <div className="flex gap-2">
                                                     {PRESET_COLORS.map(c => (
-                                                        <button key={c.value} onClick={() => handleColorClick(c.value)} title={c.name} style={{ width: 26, height: 26, borderRadius: "50%", background: c.value, cursor: "pointer", border: `2.5px solid ${selectedColor === c.value ? T.accent : "transparent"}`, transform: selectedColor === c.value ? "scale(1.15)" : "scale(1)", transition: "all 0.15s" }} />
+                                                        <button 
+                                                            key={c.value} 
+                                                            onClick={() => handleColorClick(c.value)} 
+                                                            title={c.name} 
+                                                            className="w-6 h-6 rounded-full cursor-pointer transition-all border border-black/20"
+                                                            style={{ 
+                                                                background: c.value, 
+                                                                border: selectedColor === c.value ? "2px solid black" : "1px solid rgba(0,0,0,0.2)",
+                                                                transform: selectedColor === c.value ? "scale(1.15)" : "scale(1)"
+                                                            }} 
+                                                        />
                                                     ))}
                                                 </div>
                                                 {(activeSig.type === "text" || activeSig.type === "date") && (
-                                                    <div style={{ display: "flex", gap: 4, marginLeft: "auto" }}>
+                                                    <div className="flex gap-1 ml-auto">
                                                         {[
                                                             { label: <Bold size={12} strokeWidth={3} />, active: isBold, onClick: handleBoldClick },
                                                             { label: <Italic size={12} strokeWidth={3} />, active: isItalic, onClick: handleItalicClick },
                                                             { label: <Underline size={12} strokeWidth={3} />, active: isUnderline, onClick: handleUnderlineClick },
                                                         ].map((btn, i) => (
-                                                            <button key={i} onClick={btn.onClick} style={{ width: 30, height: 30, borderRadius: 7, background: btn.active ? T.accent : T.surfaceHov, border: `1px solid ${btn.active ? T.accent : T.border}`, color: btn.active ? "#fff" : T.textSec, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s" }}>
+                                                            <button 
+                                                                key={i} 
+                                                                onClick={btn.onClick} 
+                                                                className={`w-8 h-8 rounded-lg border-2 border-black flex items-center justify-center cursor-pointer transition-all ${btn.active ? "bg-yellow-300 text-black shadow-[1px_1px_0_#000]" : "bg-white text-zinc-650 hover:bg-zinc-50 shadow-[1px_1px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"}`}
+                                                            >
                                                                 {btn.label}
                                                             </button>
                                                         ))}
@@ -1631,9 +1564,13 @@ export default function PdfSignerPage() {
                                             </div>
 
                                             {activeSig.type === "stamp" && (
-                                                <div style={{ display: "flex", gap: 4, overflowX: "auto", paddingBottom: 2 }}>
+                                                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
                                                     {PRESET_STAMPS.map(s => (
-                                                        <button key={s} onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} style={{ padding: "4px 8px", borderRadius: 6, fontSize: 9, fontWeight: 800, letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer", background: selectedStamp === s ? T.accent : T.surfaceHov, border: `1px solid ${selectedStamp === s ? T.accent : T.border}`, color: selectedStamp === s ? "#fff" : T.textSec, whiteSpace: "nowrap", flexShrink: 0, transition: "all 0.15s" }}>
+                                                        <button 
+                                                            key={s} 
+                                                            onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} 
+                                                            className={`px-2 py-1 rounded-md border-2 border-black text-[9px] font-black uppercase tracking-wider cursor-pointer whitespace-nowrap shrink-0 transition-all ${selectedStamp === s ? "bg-yellow-300 text-black shadow-[1px_1px_0_#000]" : "bg-white text-zinc-650 shadow-[1px_1px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"}`}
+                                                        >
                                                             {s}
                                                         </button>
                                                     ))}
@@ -1645,26 +1582,20 @@ export default function PdfSignerPage() {
 
                                 /* ── Default: Finalise button + tool strip ── */
                                 return (
-                                    <div style={{ padding: "10px 12px 12px", display: "flex", flexDirection: "column", gap: 8 }}>
+                                    <div className="p-3 flex flex-col gap-2.5">
                                         {/* Finalise button */}
                                         <button
                                             onClick={exportSignedPdf}
                                             disabled={signatures.length === 0 || isExporting}
-                                            style={{
-                                                width: "100%", height: 44,
-                                                borderRadius: 10, background: T.accent, border: "none",
-                                                color: "#fff", fontSize: 12, fontWeight: 800,
-                                                letterSpacing: "0.06em", textTransform: "uppercase",
-                                                cursor: signatures.length === 0 || isExporting ? "not-allowed" : "pointer",
-                                                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-                                                opacity: signatures.length === 0 ? 0.35 : 1,
-                                                transition: "all 0.2s",
-                                                boxShadow: signatures.length > 0 ? `0 4px 16px ${T.accentGlow}` : "none"
-                                            }}
+                                            className={`w-full h-11 rounded-xl border-2 border-black text-xs font-black flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
+                                                signatures.length === 0 || isExporting
+                                                    ? "bg-zinc-100 border-black/40 text-zinc-400 cursor-not-allowed opacity-60"
+                                                    : "bg-yellow-300 text-black shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                            }`}
                                         >
                                             {isExporting ? (
                                                 <>
-                                                    <div style={{ width: 14, height: 14, border: "2px solid rgba(255,255,255,0.3)", borderTopColor: "#fff", borderRadius: "50%", animation: "spin 0.7s linear infinite" }} />
+                                                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                                                     Exporting…
                                                 </>
                                             ) : (
@@ -1676,7 +1607,7 @@ export default function PdfSignerPage() {
                                         </button>
 
                                         {/* Tool strip */}
-                                        <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
+                                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                                             {TOOLS.map(tool => {
                                                 const Icon = tool.icon;
                                                 const isActive = activeTool === tool.id;
@@ -1692,19 +1623,14 @@ export default function PdfSignerPage() {
                                                                 setActiveTool(tool.id as ToolId);
                                                             }
                                                         }}
-                                                        style={{
-                                                            flex: "0 0 auto",
-                                                            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                                                            gap: 3, padding: "6px 10px", borderRadius: 10,
-                                                            background: isActive ? `${tool.color}18` : T.surfaceHov,
-                                                            border: `1px solid ${isActive ? tool.color + "50" : T.border}`,
-                                                            color: isActive ? tool.color : T.textSec,
-                                                            cursor: "pointer", transition: "all 0.15s",
-                                                            minWidth: 52,
-                                                        }}
+                                                        className={`shrink-0 flex flex-col items-center justify-center gap-1 py-1.5 px-2.5 rounded-xl border-2 border-black transition-all min-w-[60px] cursor-pointer ${
+                                                            isActive 
+                                                                ? "bg-yellow-105 text-black shadow-[1.5px_1.5px_0_#000] bg-yellow-100" 
+                                                                : "bg-white text-zinc-650 hover:bg-zinc-50 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+                                                        }`}
                                                     >
-                                                        <Icon size={16} />
-                                                        <span style={{ fontSize: 9, fontWeight: 800, letterSpacing: "0.04em", whiteSpace: "nowrap" }}>{tool.label}</span>
+                                                        <Icon size={14} />
+                                                        <span className="text-[8px] font-black uppercase tracking-wider whitespace-nowrap">{tool.label}</span>
                                                     </button>
                                                 );
                                             })}
@@ -1712,24 +1638,18 @@ export default function PdfSignerPage() {
 
                                         {/* Saved signatures strip (if any) */}
                                         {savedSignatures.length > 0 && (
-                                            <div style={{ display: "flex", gap: 6, overflowX: "auto", paddingBottom: 2 }}>
+                                            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
                                                 {savedSignatures.slice(0, 5).map(sig => {
                                                     const isSel = selectedLibraryItem?.id === sig.id;
                                                     return (
                                                         <div
                                                             key={sig.id}
                                                             onClick={() => placeFromLibrary(sig)}
-                                                            style={{
-                                                                flex: "0 0 auto", width: 52, height: 34,
-                                                                background: "#fff", borderRadius: 7,
-                                                                border: `2px solid ${isSel ? T.accent : T.border}`,
-                                                                overflow: "hidden", cursor: "pointer",
-                                                                display: "flex", alignItems: "center", justifyContent: "center",
-                                                                padding: 3, transition: "all 0.15s",
-                                                                boxShadow: isSel ? `0 0 8px ${T.accentGlow}` : "none",
-                                                            }}
+                                                            className={`shrink-0 w-12 h-8 bg-white rounded-lg border-2 border-black overflow-hidden cursor-pointer flex items-center justify-center p-1 transition-all ${
+                                                                isSel ? "border-yellow-500 scale-[1.02] shadow-[1.5px_1.5px_0_#000]" : "shadow-[1px_1px_0_#000]"
+                                                            }`}
                                                         >
-                                                            <img src={sig.dataUrl} alt="saved" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
+                                                            <img src={sig.dataUrl} alt="saved" className="w-full h-full object-contain" />
                                                         </div>
                                                     );
                                                 })}
@@ -1744,13 +1664,15 @@ export default function PdfSignerPage() {
             )}
 
             <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Signer Info">
-                <div style={{ display: "flex", flexDirection: "column", gap: 24, color: T.textSec, lineHeight: 1.7, fontSize: 14, textAlign: "left", padding: "12px 0 24px" }}>
-                    <div style={{ background: "rgba(255,255,255,0.015)", border: `1px solid ${T.border}`, padding: 24, borderRadius: 20 }}>
-                        <h3 style={{ fontSize: 16, fontWeight: 700, color: T.textPri, marginBottom: 12 }}>Smart PDF Signature Infrastructure</h3>
-                        <p style={{ margin: 0 }}>
+                <div className="space-y-12 text-zinc-700 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
+                            Smart PDF Signature Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-700 font-medium">
                             Elevate your document workflow with AssetNest <strong>Professional PDF Signer</strong>. In an era of digital-first business, the ability to execute agreements instantly and securely is critical. Our Smart Signer engine allows you to place high-fidelity digital signatures across multi-page documents with pixel-perfect precision. By utilizing advanced client-side processing, we eliminate the need for third-party servers, ensuring your sensitive legal, financial, and corporate documents never leave the safety of your local environment.
                         </p>
-                    </div>
+                    </section>
                 </div>
             </HelpModal>
 

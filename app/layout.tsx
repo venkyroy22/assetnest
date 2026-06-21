@@ -7,6 +7,7 @@ import SmoothScroll from "@/components/SmoothScroll";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Analytics } from "@vercel/analytics/next";
 import CelebrationPortal from "@/components/CelebrationPortal";
+import CryptoPolyfill from "@/components/CryptoPolyfill";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -103,6 +104,7 @@ export default function RootLayout({
       </head>
 
       <body className="antialiased font-sans flex flex-col min-h-screen">
+        <CryptoPolyfill />
         <SmoothScroll>
           <AppLayout>
             {children}

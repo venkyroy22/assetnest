@@ -952,6 +952,167 @@ export default function PomodoroPage() {
                 </div>
             </div>
 
+            {/* ─── SEO RICH TEXT SECTION ─── */}
+            <div className="max-w-5xl mx-auto mt-20 p-8 sm:p-12 bg-[#1c1c1c]/30 border border-white/[0.06] rounded-[2.5rem] text-left relative overflow-hidden text-zinc-400">
+                {/* Ambient glows */}
+                <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_300px_at_0%_0%,rgba(34,211,238,0.03),transparent)]" />
+                <div className="absolute inset-0 pointer-events-none z-0 bg-[radial-gradient(circle_300px_at_100%_100%,rgba(16,185,129,0.02),transparent)]" />
+
+                <div className="relative z-10 space-y-12">
+                    {/* Top Badges */}
+                    <div className="flex flex-wrap justify-center gap-2.5">
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <Brain size={11} className="text-zinc-500" /> 100% Free Focus
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <Zap size={11} className="text-zinc-500" /> Client-Side Timer
+                        </span>
+                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-white/[0.07] bg-white/[0.03] text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                            <Music size={11} className="text-zinc-500" /> Lofi Beats Included
+                        </span>
+                    </div>
+
+                    {/* Main Title & Subtitle */}
+                    <div className="text-center space-y-4 max-w-3xl mx-auto">
+                        <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-white leading-tight">
+                            The Ultimate Free Aesthetic <span className="bg-gradient-to-r from-cyan-400 via-teal-400 to-emerald-400 bg-clip-text text-transparent">Pomodoro Timer</span> for Focused Work
+                        </h2>
+                        <p className="text-sm sm:text-base text-zinc-500 leading-relaxed">
+                            Supercharge your study sessions, writing, and coding blocks. Our client-side Pomodoro app integrates the scientifically-backed Pomodoro Technique with dynamic lo-fi ambient tracks, YouTube player controls, hydration reminders, and motivational achievements, completely free.
+                        </p>
+                    </div>
+
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                        {[
+                            {
+                                title: "Proven Pomodoro Loop",
+                                desc: "Work in dedicated 25-minute sprints followed by structured 5-minute break resets to maximize mental endurance and prevent cognitive burnout.",
+                                icon: <Brain size={16} />
+                            },
+                            {
+                                title: "Integrated Ambient Sounds",
+                                desc: "Access native soundtracks including Lofi Beats, Rainy Night, Coffee Shop, and Deep Forest. Block out noise and drop into the flow state immediately.",
+                                icon: <Music size={16} />
+                            },
+                            {
+                                title: "Custom YouTube Audio",
+                                desc: "Stream your favorite lofi streams or study music by pasting any public YouTube URL directly into the built-in media deck player.",
+                                icon: <LinkIcon size={16} />
+                            },
+                            {
+                                title: "Gamified Achievements",
+                                desc: "Earn achievement badges like Flow State and Legendary as you log consecutive sessions. Turn daily focus routines into a satisfying game.",
+                                icon: <Trophy size={16} />
+                            },
+                            {
+                                title: "Immersive Water Prompts",
+                                desc: "Activate smart hydration overlays to periodically prompt you to step away and drink water, keeping your health aligned with your productivity.",
+                                icon: <Droplets size={16} />
+                            },
+                            {
+                                title: "100% Private & Local",
+                                desc: "All timer durations, unlocked achievements, and configurations are handled client-side. We never track, store, or upload your data to external servers.",
+                                icon: <Settings size={16} />
+                            }
+                        ].map((f, i) => (
+                            <div key={i} className="p-6 bg-[#1c1c1c]/45 border border-white/[0.05] rounded-3xl transition-all duration-300 hover:border-white/[0.12] hover:-translate-y-0.5">
+                                <div className="w-10 h-10 rounded-xl bg-zinc-900 border border-white/[0.07] flex items-center justify-center text-cyan-400 mb-4">
+                                    {f.icon}
+                                </div>
+                                <h4 className="text-sm font-bold text-white mb-2">{f.title}</h4>
+                                <p className="text-xs text-zinc-500 leading-relaxed">{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* How to Step Timeline */}
+                    <div className="border-t border-white/[0.06] pt-10">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white text-center mb-8 tracking-tight">
+                            How to Achieve Flow State with Our Pomodoro Timer
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                { step: "1", title: "Set Your Focus Goals", desc: "Select or edit your focus time (default 25m), short break (5m), and long break (15m) inside settings to match your capacity." },
+                                { step: "2", title: "Choose Ambient Focus Audio", desc: "Select a custom lofi or nature ambience track, or paste a public YouTube link to stream custom background music directly." },
+                                { step: "3", title: "Start and Rest Regularly", desc: "Focus completely during the countdown. When prompted, take a break to play our integrated mini-games or drink some water." }
+                            ].map((s) => (
+                                <div key={s.step} className="relative p-6 bg-[#1c1c1c]/20 border border-white/[0.05] rounded-3xl pt-8">
+                                    <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-cyan-400 text-zinc-950 font-black text-xs flex items-center justify-center shadow-[0_0_12px_rgba(34,211,238,0.4)]">
+                                        {s.step}
+                                    </div>
+                                    <h4 className="text-sm font-bold text-white mb-2">{s.title}</h4>
+                                    <p className="text-xs text-zinc-500 leading-relaxed">{s.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Comparison Table */}
+                    <div className="border-t border-white/[0.06] pt-10">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white text-center mb-4 tracking-tight">
+                            Pomodoro vs. Traditional Work Habits
+                        </h3>
+                        <p className="text-xs text-zinc-500 text-center mb-8 max-w-lg mx-auto">
+                            See how structured interval training beats raw, unstructured working hours for cognitive performance.
+                        </p>
+                        <div className="overflow-x-auto rounded-2xl border border-white/[0.05] bg-white/[0.01]">
+                            <table className="w-full border-collapse text-left text-xs min-w-[500px]">
+                                <thead>
+                                    <tr className="bg-[#1c1c1c]/50 border-b border-white/[0.06]">
+                                        <th className="p-4 text-zinc-300 font-bold">Feature</th>
+                                        <th className="p-4 text-cyan-400 font-bold">Pomodoro Focus Timer</th>
+                                        <th className="p-4 text-zinc-500 font-bold">Continuous Working</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/[0.04]">
+                                    {[
+                                        { feat: "Focus Commitment", ours: "Dedicated, distraction-free 25-minute sprints", other: "Multitasking with constant tab/phone hopping" },
+                                        { feat: "Cognitive Fatigue", ours: "Low (structured breaks reset short-term memory)", other: "High (extended sessions accumulate brain fog)" },
+                                        { feat: "Burnout Prevention", ours: "High (compulsory break times enforce active pacing)", other: "Low (extended grinding leads to mid-day crashes)" },
+                                        { feat: "Physical Health", ours: "Regular reminders to stretch and drink water", other: "Hours of static sitting, screen glare, and eye strain" },
+                                        { feat: "Tracking Accuracy", ours: "Saves total focus blocks and cycle counts locally", other: "Vague estimation of hours spent working" }
+                                    ].map((row, idx) => (
+                                        <tr key={idx} className="hover:bg-white/[0.02] transition-colors">
+                                            <td className="p-4 text-white font-semibold">{row.feat}</td>
+                                            <td className="p-4 text-cyan-400 font-medium">{row.ours}</td>
+                                            <td className="p-4 text-zinc-500">{row.other}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    {/* FAQ Section */}
+                    <div className="border-t border-white/[0.06] pt-10">
+                        <h3 className="text-xl sm:text-2xl font-bold text-white text-center mb-8 tracking-tight">
+                            Frequently Asked Questions
+                        </h3>
+                        <Accordion>
+                            <AccordionItem title="Is this Pomodoro Timer completely free?">
+                                Yes. The AssetNest Pomodoro Timer is 100% free with no premium tiers, subscriptions, or paywalls. All features, including YouTube music embedding and the break games, are fully accessible.
+                            </AccordionItem>
+                            <AccordionItem title="Can I modify the default work and break intervals?">
+                                Absolutely. Click the settings gear icon above the timer to set custom durations for your Focus sessions, Short Breaks, and Long Breaks to fit your exact flow style.
+                            </AccordionItem>
+                            <AccordionItem title="Are my sessions and achievements saved if I close the tab?">
+                                Yes. We utilize browser local storage (localStorage) to save your custom settings, completed session count, and unlocked achievements, so your progress is preserved when you return.
+                            </AccordionItem>
+                            <AccordionItem title="How does YouTube integration work?">
+                                You can paste any public YouTube video or playlist URL into the input field under the player, click play, and the audio will stream in the background while you focus.
+                            </AccordionItem>
+                            <AccordionItem title="What are the break mini-games for?">
+                                Taking a true cognitive break helps refresh your mind. Our selection of light, low-stakes mini-games gives you a fun way to reset during breaks without opening social media.
+                            </AccordionItem>
+                            <AccordionItem title="Is my productivity data private?">
+                                Yes, absolutely. All processing is run client-side. We do not track, collect, store, or sell any of your focus history, YouTube playlists, or achievement details.
+                            </AccordionItem>
+                        </Accordion>
+                    </div>
+                </div>
+            </div>
+
             <HelpModal 
                 isOpen={showHelp} 
                 onClose={() => setShowHelp(false)} 

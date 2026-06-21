@@ -20,8 +20,7 @@ export const GUIDE_CATEGORIES = [
   "Productivity",
   "Web Design",
   "Business",
-  "Social Media",
-  "Games & Design"
+  "Social Media"
 ] as const;
 
 export type GuideCategory = (typeof GUIDE_CATEGORIES)[number];
@@ -270,39 +269,7 @@ export const ALL_GUIDE_POSTS: GuidePost[] = [
     tags: ["pdf", "cropping", "margins", "documents"],
     toolLink: { label: "Crop Your PDF Now", href: "/tools/pdf-cropper" }
   },
-  {
-    slug: "master-your-eye-pixel-perfect",
-    title: "Master Your Eye: The Ultimate Guide to Pixel Perfect Estimation",
-    description: "Think you know your pixels? Learn how to calibrate your eye for height and width estimation like a pro designer. Challenge yourself across modes and track your precision score.",
-    category: "Games & Design",
-    readTime: "4 min read",
-    publishedAt: "2026-04-08",
-    icon: "Target",
-    tags: ["design", "precision", "pixels", "calibration", "game"],
-    toolLink: { label: "Play Pixel Perfect", href: "/tools/pixel-perfect" }
-  },
-  {
-    slug: "is-it-centered-the-optical-perfection-test",
-    title: "Is It Centered? The Ultimate Optical Perfection Test",
-    description: "One pixel can make or break a design. Test your visual alignment skills and see if you can spot the difference between absolute center and 'almost' center in this high-stakes geometric challenge.",
-    category: "Games & Design",
-    readTime: "3 min read",
-    publishedAt: "2026-04-08",
-    icon: "Maximize2",
-    tags: ["design", "alignment", "precision", "optical illusion", "game"],
-    toolLink: { label: "Play Is It Centered?", href: "/tools/is-it-centered" }
-  },
-  {
-    slug: "chess-masterclass-strategy-and-tactics",
-    title: "Chess Masterclass: Essential Strategies for Modern Players",
-    description: "From the Sicilian Defense to end-game precision-level up your chess game. Learn how to think like a Grandmaster and utilize our Computer Engine to sharpen your tactical vision.",
-    category: "Games & Design",
-    readTime: "8 min read",
-    publishedAt: "2026-04-16",
-    icon: "Crown",
-    tags: ["chess", "strategy", "engine training", "game tactics", "productivity"],
-    toolLink: { label: "Practice Against Our Engine", href: "/tools/chess" }
-  },
+
   {
     slug: "how-to-unlock-pdf-passwords",
     title: "How to Remove Passwords and Restrictions from PDFs",

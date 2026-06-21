@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
     title: "Image to Text Converter — Free OCR & Text Extraction",
     description: "Extract text from images (JPG, PNG, WebP) instantly using our free online OCR tool. 100% private, browser-based text extraction.",
-    keywords: ["image to text", "ocr online", "extract text from image", "photo to text", "free ocr"],
+    keywords: ["image to text", "ocr online", "extract text from image", "photo to text", "free ocr", "image to text converter", "free image to text", "online ocr", "extract text from photo"],
     alternates: {
         canonical: "https://www.assetnest.space/tools/image-to-text",
     },

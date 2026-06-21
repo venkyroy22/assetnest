@@ -12,6 +12,7 @@ export const metadata: Metadata = {
         "avif to jpg",
         "heic to jpg",
         "free image converter",
+        "image converter free",
         "image format converter",
         "online image converter",
         "convert to webp",

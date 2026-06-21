@@ -38,7 +38,7 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0, transition: { duration: 0.2, delay: 0.1 } }}
                     transition={{ duration: 0.4, ease: "easeOut" }}
-                    className="fixed inset-0 z-[99999] overflow-y-auto overscroll-contain bg-[#141414]/80 backdrop-blur-3xl py-4 sm:py-10 md:py-20 px-4 md:px-0"
+                    className="fixed inset-0 z-[99999] overflow-y-auto overscroll-contain bg-black/50 backdrop-blur-sm py-4 sm:py-10 md:py-20 px-4 md:px-0"
                     onWheel={(e) => e.stopPropagation()}
                     onClick={onClose}
                     data-lenis-prevent
@@ -64,17 +64,17 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                                 stiffness: 400,
                                 mass: 0.8
                             }}
-                            className="relative w-full max-w-4xl bg-[#1c1c1c] border border-zinc-900 rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 md:p-16 shadow-[0_50px_100px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto"
+                            className="relative w-full max-w-4xl bg-[#F4ECD8] border-2 border-black rounded-[2rem] sm:rounded-[2.5rem] p-6 sm:p-12 md:p-16 shadow-[8px_8px_0_#000] overflow-hidden pointer-events-auto"
                             onClick={(e) => e.stopPropagation()}
                         >
                             
                             {/* Background watermark icon */}
                             <motion.div 
                                 initial={{ opacity: 0, rotate: -5 }}
-                                animate={{ opacity: 0.15, rotate: 12 }}
+                                animate={{ opacity: 0.06, rotate: 12 }}
                                 exit={{ opacity: 0, rotate: 0, scale: 0.8 }}
                                 transition={{ delay: 0, duration: 0.3 }}
-                                className="absolute -top-12 -right-12 text-zinc-800 pointer-events-none"
+                                className="absolute -top-12 -right-12 text-black pointer-events-none"
                             >
                                 <Info size={280} strokeWidth={1} />
                             </motion.div>
@@ -82,10 +82,10 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                             {/* Simple Close Button */}
                             <button 
                                 onClick={onClose} 
-                                className="absolute top-4 right-4 sm:top-8 sm:right-8 p-3 text-zinc-500 hover:text-[#f0ede8] bg-white/5 hover:bg-white/10 rounded-full transition-all z-50 border border-white/5 hover:scale-110 active:scale-95 shadow-2xl"
+                                className="absolute top-4 right-4 sm:top-8 sm:right-8 w-10 h-10 bg-white border-2 border-black rounded-xl flex items-center justify-center text-black hover:bg-zinc-100 transition-all z-50 shadow-[2px_2px_0_#000] hover:scale-110 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
                                 title="Close"
                             >
-                                <X size={20} />
+                                <X size={18} strokeWidth={2.5} />
                             </button>
 
                             {/* Standardized Header */}
@@ -95,10 +95,10 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                                     animate={{ opacity: 1, x: 0 }}
                                     exit={{ opacity: 0, x: 10 }}
                                     transition={{ duration: 0.2 }}
-                                    className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-zinc-900/50 rounded-full mb-6 sm:mb-8 shadow-inner"
+                                    className="inline-flex items-center gap-2 px-3 py-1 border-2 border-black bg-white rounded-full mb-6 sm:mb-8 shadow-[1.5px_1.5px_0_#000]"
                                 >
-                                    <div className="w-1.5 h-1.5 rounded-full bg-zinc-500 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">Documentation</span>
+                                    <div className="w-1.5 h-1.5 rounded-full bg-black animate-pulse" />
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-black">Documentation</span>
                                 </motion.div>
 
                                 <motion.h1 
@@ -106,7 +106,8 @@ export default function HelpModal({ isOpen, onClose, title, children }: HelpModa
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.2 }}
-                                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 sm:mb-14 text-[#f0ede8] leading-tight pr-12 sm:pr-0"
+                                    className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight mb-8 sm:mb-14 text-black leading-tight pr-12 sm:pr-0"
+                                    style={{ fontFamily: "'Space Grotesk', system-ui, sans-serif" }}
                                 >
                                     {title}
                                 </motion.h1>

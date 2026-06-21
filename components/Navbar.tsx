@@ -44,7 +44,7 @@ const TAG_COLORS: Record<string, string> = {
     Page: "text-zinc-400",
 };
 
-const TOOL_CATEGORIES: ToolCategory[] = ["Images", "PDF", "Generate", "Productivity", "Business", "Games", "Design Training"];
+const TOOL_CATEGORIES: ToolCategory[] = ["Images", "PDF", "Generate", "Productivity", "Business"];
 
 const CATEGORY_ICONS: Record<ToolCategory, any> = {
     "Images": ImageIcon,
@@ -52,8 +52,6 @@ const CATEGORY_ICONS: Record<ToolCategory, any> = {
     "Generate": Sparkles,
     "Productivity": Timer,
     "Business": Briefcase,
-    "Games": Gamepad2,
-    "Design Training": Ruler,
 };
 
 const TOOLS_BY_CATEGORY = TOOL_CATEGORIES.map(cat => ({

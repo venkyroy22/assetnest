@@ -657,13 +657,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
             justifyContent: "center",
             boxSizing: "border-box",
         }}>
-            {/* Backdrop with elegant blur */}
+            {/* Backdrop */}
             <div 
                 style={{
                     position: "absolute",
                     inset: 0,
-                    background: "rgba(8, 8, 9, 0.7)",
-                    backdropFilter: "blur(12px)",
+                    background: "rgba(0, 0, 0, 0.5)",
+                    backdropFilter: "blur(4px)",
                 }} 
                 onClick={onCancel} 
             />
@@ -672,26 +672,31 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
             <style>{`
                 .modal-input {
                     width: 100%;
-                    background: rgba(255, 255, 255, 0.015);
-                    border: 1px solid rgba(255, 255, 255, 0.06);
-                    border-radius: 6px;
+                    background: #fff;
+                    border: 2px solid #000;
+                    border-radius: 10px;
                     padding: 10px 14px;
-                    color: #f0eff5;
+                    color: #000;
                     font-size: 14px;
+                    font-weight: 600;
                     outline: none;
                     transition: all 0.2s ease;
+                    box-shadow: 1.5px 1.5px 0 #000;
                 }
                 .modal-input:focus {
-                    border-color: rgba(255, 255, 255, 0.15);
-                    border-bottom: 2.5px solid #7c6aff;
-                    background: rgba(255, 255, 255, 0.035);
+                    border-color: #000;
+                    box-shadow: 2.5px 2.5px 0 #000;
+                    background: #fff;
+                }
+                .modal-input::placeholder {
+                    color: #9ca3af;
                 }
                 .tab-button {
                     position: relative;
                     padding: 12px 18px;
                     font-size: 13.5px;
-                    font-weight: 700;
-                    color: #8b8a97;
+                    font-weight: 800;
+                    color: #6b7280;
                     background: transparent;
                     border: none;
                     cursor: pointer;
@@ -701,32 +706,34 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     gap: 8px;
                 }
                 .tab-button:hover {
-                    color: #f0eff5;
+                    color: #000;
                 }
                 .tab-button.active {
-                    color: #7c6aff;
+                    color: #000;
                 }
                 .subtab-button {
                     width: 44px;
                     height: 44px;
-                    border-radius: 8px;
+                    border-radius: 10px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #8b8a97;
+                    color: #6b7280;
                     background: transparent;
-                    border: 1px solid transparent;
+                    border: 2px solid transparent;
                     cursor: pointer;
                     transition: all 0.2s;
                 }
                 .subtab-button:hover {
-                    color: #f0eff5;
-                    background: rgba(255, 255, 255, 0.04);
+                    color: #000;
+                    background: #f9f5eb;
+                    border-color: #000;
                 }
                 .subtab-button.active {
-                    color: #7c6aff;
-                    background: rgba(124, 106, 255, 0.08);
-                    border-color: rgba(124, 106, 255, 0.15);
+                    color: #000;
+                    background: #fef9c3;
+                    border-color: #000;
+                    box-shadow: 1.5px 1.5px 0 #000;
                 }
                 .cursive-list {
                     max-height: 240px;
@@ -734,55 +741,52 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     overscroll-behavior: contain;
                     -webkit-overflow-scrolling: touch;
                     scrollbar-width: thin;
-                    scrollbar-color: rgba(124, 106, 255, 0.4) rgba(255, 255, 255, 0.02);
+                    scrollbar-color: #000 transparent;
                     display: flex;
                     flex-direction: column;
                     padding-right: 6px;
                 }
                 .cursive-list::-webkit-scrollbar {
-                    width: 6px;
+                    width: 4px;
                 }
                 .cursive-list::-webkit-scrollbar-track {
-                    background: rgba(255, 255, 255, 0.02);
-                    border-radius: 3px;
+                    background: transparent;
+                    border-radius: 2px;
                 }
                 .cursive-list::-webkit-scrollbar-thumb {
-                    background: rgba(124, 106, 255, 0.4);
-                    border-radius: 3px;
-                    transition: background 0.2s;
-                }
-                .cursive-list::-webkit-scrollbar-thumb:hover {
-                    background: rgba(124, 106, 255, 0.6);
+                    background: #000;
+                    border-radius: 2px;
                 }
                 .cursive-row {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
                     padding: 14px 18px;
-                    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+                    border-bottom: 2px solid rgba(0,0,0,0.06);
                     cursor: pointer;
                     transition: all 0.2s;
-                    border-radius: 8px;
+                    border-radius: 10px;
                 }
                 .cursive-row:hover {
-                    background: rgba(255, 255, 255, 0.02);
+                    background: #f9f5eb;
                 }
                 .cursive-row.selected {
-                    background: rgba(124, 106, 255, 0.04);
-                    border-color: rgba(124, 106, 255, 0.1);
+                    background: #fef9c3;
+                    border-color: #000;
                 }
                 .cancel-btn:hover {
-                    color: #f0eff5;
-                    background: rgba(255, 255, 255, 0.04);
-                    border-color: rgba(255, 255, 255, 0.15);
+                    color: #000;
+                    background: #f4f4f5;
+                    border-color: #000;
                 }
                 .apply-btn:hover:not(:disabled) {
-                    background: #5b4bd4 !important;
+                    background: #facc15 !important;
                     transform: translateY(-1px);
-                    box-shadow: 0 6px 24px rgba(124,106,255,0.35) !important;
+                    box-shadow: 3px 3px 0 #000 !important;
                 }
                 .apply-btn:active:not(:disabled) {
-                    transform: translateY(0);
+                    transform: translate(2px, 2px);
+                    box-shadow: none !important;
                 }
                 .apply-btn:disabled {
                     opacity: 0.3;
@@ -801,32 +805,33 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     left: 0;
                     right: 0;
                     height: 2px;
-                    background: #7c6aff;
-                    box-shadow: 0 0 8px #7c6aff;
+                    background: #000;
+                    box-shadow: 0 0 4px rgba(0,0,0,0.3);
                     animation: laser 3s infinite linear;
                     z-index: 5;
                 }
                 .stamp-style-card {
-                    border: 1px solid rgba(255, 255, 255, 0.06);
-                    background: rgba(255, 255, 255, 0.01);
-                    border-radius: 8px;
+                    border: 2px solid #000;
+                    background: #fff;
+                    border-radius: 10px;
                     padding: 12px;
                     text-align: center;
                     cursor: pointer;
                     transition: all 0.2s;
-                    color: #8b8a97;
+                    color: #6b7280;
                     font-size: 12px;
-                    font-weight: 600;
+                    font-weight: 700;
+                    box-shadow: 1.5px 1.5px 0 #000;
                 }
                 .stamp-style-card:hover {
-                    background: rgba(255, 255, 255, 0.03);
-                    border-color: rgba(255, 255, 255, 0.12);
-                    color: #f0eff5;
+                    background: #f9f5eb;
+                    color: #000;
                 }
                 .stamp-style-card.selected {
-                    border-color: #7c6aff;
-                    background: rgba(124, 106, 255, 0.06);
-                    color: #7c6aff;
+                    border-color: #000;
+                    background: #fef9c3;
+                    color: #000;
+                    box-shadow: 2px 2px 0 #000;
                 }
                 @media (max-width: 768px) {
                     .modal-box {
@@ -873,7 +878,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     }
                 }
                 .mobile-qr-pill:hover {
-                    background: #5b4bd4 !important;
+                    background: #facc15 !important;
                     transform: scale(1.05);
                 }
                 .mobile-qr-pill:active {
@@ -889,12 +894,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                 maxWidth: "920px",
                 height: "620px",
                 maxHeight: "90vh",
-                background: "#101012",
-                border: "1px solid rgba(255,255,255,0.06)",
-                borderRadius: "12px",
+                background: "#F4ECD8",
+                border: "2px solid #000",
+                borderRadius: "20px",
                 padding: "32px",
                 boxSizing: "border-box",
-                boxShadow: "0 24px 60px rgba(0, 0, 0, 0.65)",
+                boxShadow: "8px 8px 0 #000",
                 display: "flex",
                 flexDirection: "column",
                 zIndex: 100000,
@@ -910,10 +915,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                 }}>
                     <h2 style={{
                         fontSize: "20px",
-                        fontWeight: 700,
-                        color: "#f0eff5",
+                        fontWeight: 900,
+                        color: "#000",
                         letterSpacing: "-0.02em",
                         margin: 0,
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
                     }}>Set your signature details</h2>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -921,19 +927,20 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                             onClick={onCancel}
                             style={{
                                 cursor: "pointer",
-                                border: "none",
-                                background: "transparent",
-                                padding: "6px",
-                                color: "#8b8a97",
+                                border: "2px solid #000",
+                                background: "#fff",
+                                width: 36,
+                                height: 36,
+                                borderRadius: 10,
+                                color: "#000",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
-                                transition: "color 0.2s",
+                                transition: "all 0.15s",
+                                boxShadow: "1.5px 1.5px 0 #000",
                             }}
-                            onMouseEnter={(e) => e.currentTarget.style.color = "#f0eff5"}
-                            onMouseLeave={(e) => e.currentTarget.style.color = "#8b8a97"}
                         >
-                            <X size={20} />
+                            <X size={18} strokeWidth={2.5} />
                         </button>
                     </div>
                 </header>
@@ -948,7 +955,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         <label style={{
                             fontSize: "10px",
                             fontWeight: 800,
-                            color: "#8b8a97",
+                            color: "#000",
                             letterSpacing: "0.15em",
                             textTransform: "uppercase",
                         }}>Full Name</label>
@@ -982,7 +989,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                 <nav ref={tabNavRef} style={{
                     position: "relative",
                     display: "flex",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
+                    borderBottom: "2px solid rgba(0,0,0,0.1)",
                     marginBottom: "20px",
                     paddingBottom: "1px",
                 }}>
@@ -1016,8 +1023,8 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         style={{
                             position: "absolute",
                             bottom: 0,
-                            height: "2px",
-                            background: "#7c6aff",
+                            height: "3px",
+                            background: "#000",
                             borderRadius: "2px 2px 0 0",
                             transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                             left: underlineStyle.left,
@@ -1039,7 +1046,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         display: "flex",
                         flexDirection: "column",
                         gap: "10px",
-                        borderRight: "1px solid rgba(255,255,255,0.05)",
+                        borderRight: "2px solid rgba(0,0,0,0.1)",
                         paddingRight: "16px",
                     }}>
                         <button

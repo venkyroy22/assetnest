@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, Download, RefreshCw, Info, X, Minimize2, CheckCircle, Undo, Redo, Share2, Zap, Check, ShieldCheck } from "lucide-react";
-import { Accordion, AccordionItem } from "@/components/Accordion";
+import { Upload, Download, RefreshCw, Info, X, Minimize2, CheckCircle, Undo, Redo, Share2, Zap, Check, ShieldCheck, Sparkles, Package, Lock as LockIcon, FileText, Combine, ChevronDown, ArrowLeft } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import ShareModal from "@/components/ShareModal";
+import Link from "next/link";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -18,6 +18,74 @@ const jsonLd = {
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
+
+const GLOBAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.ig-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #000;
+}
+.ig-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.ig-label {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #000;
+}
+.ig-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.ig-btn:active {
+  transform: translate(2px, 2px) !important;
+  box-shadow: none !important;
+}
+`;
+
+function LocalAccordion({ children }: { children: React.ReactNode }) {
+    return <div className="space-y-4 w-full">{children}</div>;
+}
+
+interface LocalAccordionItemProps {
+    title: string;
+    children: React.ReactNode;
+}
+
+function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
+    const [isOpen, setIsOpen] = useState(false);
+    return (
+        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
+            >
+                <span className="font-bold text-sm sm:text-base text-black pr-4">
+                    {title}
+                </span>
+                <ChevronDown
+                    size={18}
+                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
+                />
+            </button>
+            <div
+                className={`transition-all duration-300 ease-in-out overflow-hidden ${
+                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
+                }`}
+            >
+                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+}
 
 export default function PdfCompressorPage() {
     const [file, setFile, undo, redo, canUndo, canRedo, resetHistory] = useUndoRedo<File | null>(null);
@@ -69,8 +137,6 @@ export default function PdfCompressorPage() {
             const arrayBuffer = await file.arrayBuffer();
             const pdf = await PDFDocument.load(arrayBuffer, { ignoreEncryption: true });
 
-            // pdf-lib re-saves with cross-reference streams (smaller than tables)
-            // and strips redundant objects — this is the core compression
             const compressed = await pdf.save({
                 useObjectStreams: true,
                 addDefaultPage: false,
@@ -112,253 +178,308 @@ export default function PdfCompressorPage() {
     };
 
     return (
-        <div className="min-h-[70vh] py-8 px-4 md:px-8 max-w-3xl mx-auto">
+        <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
+            <style>{GLOBAL_STYLES}</style>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            {/* Header */}
-            <div className="text-center mb-10 relative group">
+            <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
+                <Link
+                    href="/tools"
+                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+                >
+                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                </Link>
+                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
+                    <div className="w-8 h-8 rounded-lg bg-red-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
+                        <Minimize2 size={14} />
+                    </div>
+                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
+                        PDF Compressor
+                    </span>
+                </div>
                 <button 
                     onClick={() => setShowHelp(true)}
-                    className="absolute -top-2 -left-2 p-2 rounded-full bg-zinc-900/80 border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] transition-all opacity-100 md:opacity-0 md:group-hover:opacity-100 z-30 shadow-lg"
-                    title="View Information"
+                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+                    title="Help Guide"
                 >
-                    <Info size={16} />
+                    <Info size={12} strokeWidth={2.5} /> INFO
                 </button>
-                <div className="inline-flex items-center gap-2 px-3 py-1 border border-white/[0.07] bg-[#1e1e1e]/50 mb-6">
-                    <Minimize2 size={11} className="text-[#f0ede8]" />
-                    <span className="text-xs font-semibold tracking-wide text-zinc-300">PDF Utility</span>
-                </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tight text-[#f0ede8] mb-4">
-                    PDF <span className="text-[#f0ede8]">Compressor</span>
-                </h1>
-                <p className="text-zinc-500 text-sm font-medium max-w-xl mx-auto">
-                    Reduce PDF file size instantly in your browser. Your documents stay 100% private — nothing is uploaded.
-                </p>
-            </div>
+            </header>
 
-            {/* Error */}
-            {error && (
-                <div className="mb-6 p-4 border border-red-500/20 bg-red-500/5 flex items-center gap-3 rounded-2xl">
-                    <Info size={16} className="text-red-400 shrink-0" />
-                    <span className="text-xs font-medium text-red-100">{error}</span>
-                    <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-[#f0ede8]"><X size={16} /></button>
-                </div>
-            )}
+            <main className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 relative z-10 space-y-6">
+                {error && (
+                    <div className="p-4 border-2 border-black bg-red-50 flex items-center gap-3 rounded-2xl">
+                        <Info size={16} className="text-red-650 shrink-0" />
+                        <span className="text-xs font-bold text-black">{error}</span>
+                        <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-black"><X size={16} /></button>
+                    </div>
+                )}
 
-            {!result ? (
-                <div className="space-y-5">
-                    {/* Dropzone */}
-                    {!file && (
-                        <div className="flex items-center gap-1 justify-end mb-2">
-                            <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg border border-white/[0.07] hover:bg-white/[0.06] bg-[#1c1c1c] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
-                            <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg border border-white/[0.07] hover:bg-white/[0.06] bg-[#1c1c1c] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
-                        </div>
-                    )}
-                    <div
-                        onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-                        onDragLeave={() => setIsDragging(false)}
-                        onDrop={handleDrop}
-                        onClick={() => fileInputRef.current?.click()}
-                        className={`min-h-[260px] border-2 border-dashed rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer relative ${isDragging ? "border-white bg-white/5" : file ? "border-white/40 bg-[#1c1c1c]" : "border-white/[0.07] bg-[#1c1c1c] hover:bg-[#1e1e1e]/50"}`}
-                    >
+                {!result ? (
+                    <div className="space-y-6 animate-in fade-in duration-300">
+                        {/* Undo/Redo tools */}
                         {file && (
-                            <div className="absolute top-4 right-4 flex items-center gap-1 bg-zinc-900/80 p-1 rounded-xl border border-white/[0.07] z-10" onClick={(e) => e.stopPropagation()}>
-                                <button onClick={undo} disabled={!canUndo} className="p-1.5 rounded-lg hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors" title="Undo (Ctrl+Z)"><Undo size={14} /></button>
-                                <button onClick={redo} disabled={!canRedo} className="p-1.5 rounded-lg hover:bg-white/[0.06] disabled:opacity-30 disabled:hover:bg-transparent text-zinc-400 hover:text-[#f0ede8] transition-colors" title="Redo (Ctrl+Y)"><Redo size={14} /></button>
+                            <div className="flex items-center justify-end gap-1.5 bg-white p-1.5 rounded-2xl border-2 border-black w-fit ml-auto shadow-[2px_2px_0_#000]">
+                                <button onClick={undo} disabled={!canUndo} className="p-2 rounded-xl hover:bg-zinc-100 disabled:opacity-30 text-black transition-colors" title="Undo"><Undo size={16} /></button>
+                                <button onClick={redo} disabled={!canRedo} className="p-2 rounded-xl hover:bg-zinc-100 disabled:opacity-30 text-black transition-colors" title="Redo"><Redo size={16} /></button>
                             </div>
                         )}
-                        <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => {
-                            if (e.target.files?.[0]) handleFile(e.target.files[0]);
-                            if (fileInputRef.current) fileInputRef.current.value = "";
-                        }} />
-                        {file ? (
-                            <div className="text-center px-8 space-y-4">
-                                <div className="w-16 h-16 bg-white/10 border border-white/20 rounded-2xl flex items-center justify-center mx-auto">
-                                    <Minimize2 size={28} className="text-[#f0ede8]" />
-                                </div>
-                                <div>
-                                    <p className="text-sm font-black text-[#f0ede8] truncate max-w-xs mx-auto">{file.name}</p>
-                                    <p className="text-xs text-zinc-500 mt-1">{formatSize(file.size)}</p>
-                                </div>
-                                <p className="text-[11px] text-zinc-500 font-medium tracking-wide">Click to change file</p>
-                            </div>
-                        ) : (
-                            <div className="text-center px-8 space-y-4">
-                                <div className="w-16 h-16 bg-[#1c1c1c] border border-white/[0.07] rounded-2xl flex items-center justify-center mx-auto">
-                                    <Upload size={24} className="text-zinc-500" />
-                                </div>
-                                <div>
-                                    <h2 className="text-lg font-bold text-[#f0ede8] tracking-tight">Drag & Drop or Click Here</h2>
-                                    <div className="flex flex-wrap justify-center gap-2 mt-3">
-                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
-                                            <ShieldCheck size={10} className="text-[#f0ede8]" />
-                                            <span className="text-[10px] font-semibold text-zinc-300">100% Private</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
-                                            <Zap size={10} className="text-[#f0ede8]" />
-                                            <span className="text-[10px] font-semibold text-zinc-300">No Server Upload</span>
-                                        </div>
-                                        <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-[#1c1c1c] border border-white/[0.07]">
-                                            <Check size={10} className="text-[#f0ede8]" />
-                                            <span className="text-[10px] font-semibold text-zinc-300">Free Forever</span>
-                                        </div>
+                        
+                        <div
+                            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                            onDragLeave={() => setIsDragging(false)}
+                            onDrop={handleDrop}
+                            onClick={() => fileInputRef.current?.click()}
+                            className={`relative min-h-[260px] border-2 sm:border-4 border-dashed border-black rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group/dropzone ${
+                                isDragging 
+                                    ? "bg-red-50" 
+                                    : "bg-white hover:bg-zinc-50 shadow-[5px_5px_0_#000]"
+                            }`}
+                        >
+                            <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => {
+                                if (e.target.files?.[0]) handleFile(e.target.files[0]);
+                                if (fileInputRef.current) fileInputRef.current.value = "";
+                            }} />
+                            
+                            {file ? (
+                                <div className="text-center px-8 py-6 space-y-4">
+                                    <div className="w-16 h-16 bg-white border-2 border-black rounded-2xl flex items-center justify-center mx-auto shadow-[3px_3px_0_#000]">
+                                        <Minimize2 size={28} className="text-black animate-pulse" />
                                     </div>
-                                    <p className="text-zinc-500 text-[10px] font-medium mt-3 uppercase tracking-wider">Reduce PDF File Size</p>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-black text-black truncate max-w-xs sm:max-w-md mx-auto ig-display">{file.name}</p>
+                                        <p className="text-xs text-zinc-650">{formatSize(file.size)}</p>
+                                    </div>
+                                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-black bg-[#a7f3d0] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
+                                        Ready to Compress
+                                    </span>
+                                </div>
+                            ) : (
+                                <div className="text-center px-8 py-6 space-y-6">
+                                    <div className="w-14 h-14 bg-white border-2 border-black rounded-2xl flex items-center justify-center mx-auto shadow-[3px_3px_0_#000]">
+                                        {isLoading ? <RefreshCw className="animate-spin text-black" size={24} /> : <Upload size={24} className="text-black" />}
+                                    </div>
+                                    <div>
+                                        <h2 className="text-base font-black text-black tracking-tight ig-display">Drag & Drop PDF or Click to Browse</h2>
+                                        <p className="text-xs text-zinc-600 mt-1 font-medium leading-relaxed max-w-sm mx-auto">
+                                            Reduce your PDF size in seconds. Calculations are processed 100% locally in your browser cache.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            onClick={compress}
+                            disabled={!file || isLoading}
+                            className={`w-full h-12 font-black tracking-widest text-xs uppercase rounded-full flex items-center justify-center gap-2 border-2 border-black transition-all active:scale-[0.98] ig-btn ${
+                                !file || isLoading 
+                                    ? "bg-white text-zinc-400 cursor-not-allowed opacity-55" 
+                                    : "bg-[#fde047] text-black shadow-[4px_4px_0_#000]"
+                            }`}
+                        >
+                            {isLoading ? <><RefreshCw size={14} className="animate-spin" /> Compressing...</> : <>Compress PDF</>}
+                        </button>
+                    </div>
+                ) : (
+                    <div className="space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
+                        {/* Stats */}
+                        <div className="bg-white border-2 border-black rounded-[2.5rem] p-8 sm:p-10 shadow-[6px_6px_0_#000] relative overflow-hidden">
+                            <div className="relative z-10 flex items-center gap-4 mb-8">
+                                <div className="w-12 h-12 bg-[#a7f3d0] border-2 border-black rounded-2xl flex items-center justify-center shrink-0 shadow-[2px_2px_0_#000]">
+                                    <CheckCircle size={24} className="text-black" />
+                                </div>
+                                <div className="min-w-0">
+                                    <h2 className="text-lg font-black text-black tracking-tight ig-display">Compression Complete!</h2>
+                                    <p className="text-xs text-zinc-650 font-bold truncate max-w-[200px] sm:max-w-md mt-0.5">{file?.name}</p>
                                 </div>
                             </div>
-                        )}
-                    </div>
 
-                    <button
-                        onClick={compress}
-                        disabled={!file || isLoading}
-                        className={`w-full h-14 font-bold tracking-wide text-sm rounded-full flex items-center justify-center gap-3 transition-all ${!file || isLoading ? "bg-[#1c1c1c] text-zinc-500 border border-white/[0.07] cursor-not-allowed" : "bg-[#f0ede8] text-[#141414] hover:bg-white shadow-lg shadow-white/20"}`}
-                    >
-                        {isLoading ? <><RefreshCw size={18} className="animate-spin" /> Compressing...</> : <>Compress PDF</>}
-                    </button>
-                </div>
-            ) : (
-                <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom duration-500">
-                    {/* Stats */}
-                    <div className="bg-[#1c1c1c] border border-white/[0.07] rounded-[2rem] p-5 sm:p-8 shadow-2xl">
-                        <div className="flex items-center gap-3 mb-6 sm:mb-8">
-                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                <CheckCircle size={20} className="text-[#f0ede8]" />
+                            {/* Progress bar visual */}
+                            <div className="relative z-10 space-y-4 mb-8 bg-zinc-50 p-6 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000]">
+                                <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-zinc-500 ig-label">
+                                    <span>Original File</span>
+                                    <span className="text-emerald-700">Optimized File</span>
+                                </div>
+                                <div className="relative h-4 bg-zinc-200 border-2 border-black rounded-full overflow-hidden">
+                                    <div className="absolute inset-y-0 left-0 bg-zinc-400 rounded-full" style={{ width: "100%" }} />
+                                    <div
+                                        className="absolute inset-y-0 left-0 bg-[#a7f3d0] rounded-full transition-all duration-1000"
+                                        style={{ width: `${100 - savingsPercent}%` }}
+                                    />
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-xs font-bold text-zinc-500">{formatSize(result.originalSize)}</span>
+                                    <span className="text-xs font-black text-black">{formatSize(result.compressedSize)}</span>
+                                </div>
                             </div>
-                            <div className="min-w-0">
-                                <h2 className="text-base sm:text-lg font-bold text-[#f0ede8] tracking-tight">Compression Done!</h2>
-                                <p className="text-[10px] sm:text-xs text-zinc-500 font-medium truncate max-w-[200px] sm:max-w-md">{file?.name}</p>
-                            </div>
-                        </div>
 
-                        {/* Progress bar visual */}
-                        <div className="space-y-3 mb-6 sm:mb-8">
-                            <div className="flex justify-between text-[10px] sm:text-[11px] font-semibold tracking-wider text-zinc-400">
-                                <span>Original</span>
-                                <span>Compressed</span>
+                            {/* Stat boxes */}
+                            <div className="relative z-10 grid grid-cols-3 gap-4 mb-8 pb-8 border-b-2 border-black/10">
+                                <div className="text-center">
+                                    <span className="block text-xl sm:text-3xl font-black text-zinc-500 leading-tight">{formatSize(result.originalSize)}</span>
+                                    <span className="text-[9px] font-bold tracking-wider text-zinc-650 uppercase block mt-1 ig-label">Original</span>
+                                </div>
+                                <div className="text-center">
+                                    <span className="block text-xl sm:text-3xl font-black text-black leading-tight">{savingsPercent}%</span>
+                                    <span className="text-[9px] font-bold tracking-wider text-zinc-650 uppercase block mt-1 ig-label">Savings</span>
+                                </div>
+                                <div className="text-center">
+                                    <span className="block text-xl sm:text-3xl font-black text-black leading-tight">{formatSize(result.compressedSize)}</span>
+                                    <span className="text-[9px] font-bold tracking-wider text-emerald-700 uppercase block mt-1 ig-label">New Size</span>
+                                </div>
                             </div>
-                            <div className="relative h-2.5 sm:h-3 bg-[#1c1c1c] rounded-full overflow-hidden">
-                                <div className="absolute inset-y-0 left-0 bg-zinc-700 rounded-full" style={{ width: "100%" }} />
-                                <div
-                                    className="absolute inset-y-0 left-0 bg-gradient-to-r from-white to-white rounded-full transition-all duration-1000"
-                                    style={{ width: `${100 - savingsPercent}%` }}
-                                />
-                            </div>
-                            <div className="flex justify-between">
-                                <span className="text-[10px] sm:text-xs font-bold text-zinc-500">{formatSize(result.originalSize)}</span>
-                                <span className="text-[10px] sm:text-xs font-bold text-[#f0ede8]">{formatSize(result.compressedSize)}</span>
-                            </div>
-                        </div>
 
-                        {/* Stat boxes */}
-                        <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8 pb-4 sm:pb-8 border-b border-white/[0.05]">
-                            <div className="text-center">
-                                <span className="block text-lg sm:text-2xl font-black text-[#f0ede8] leading-tight">{formatSize(result.originalSize)}</span>
-                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Original</span>
-                            </div>
-                            <div className="text-center">
-                                <span className="block text-lg sm:text-2xl font-black text-[#f0ede8] leading-tight">{savingsPercent}%</span>
-                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">Saved</span>
-                            </div>
-                            <div className="text-center">
-                                <span className="block text-lg sm:text-2xl font-black text-[#f0ede8] leading-tight">{formatSize(result.compressedSize)}</span>
-                                <span className="text-[8px] sm:text-[11px] font-semibold tracking-wider text-zinc-500 uppercase">New Size</span>
+                            <div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button onClick={download} className="h-12 px-6 bg-[#fde047] border-2 border-black text-black font-black tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-yellow-350 transition-all active:scale-[0.98] shadow-[2.5px_2.5px_0_#000] ig-btn">
+                                    <Download size={16} /> 
+                                    <span>Download PDF</span>
+                                </button>
+                                <button 
+                                    onClick={() => setIsSharing(true)} 
+                                    className="h-12 px-6 bg-white border-2 border-black text-black font-bold tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-zinc-50 transition-all active:scale-[0.98] shadow-[2.5px_2.5px_0_#000] ig-btn"
+                                >
+                                    <Share2 size={16} /> 
+                                    <span>Share to Mobile</span>
+                                </button>
+                                <button onClick={reset} className="sm:col-span-2 h-12 px-6 bg-transparent border-2 border-black text-zinc-600 hover:text-black font-bold tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-zinc-50 transition-all active:scale-[0.98] shadow-[2.5px_2.5px_0_#000] ig-btn">
+                                    <RefreshCw size={14} /> Compress Another PDF
+                                </button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <button onClick={download} className="h-12 px-6 bg-[#f0ede8] text-[#141414] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#e8e5e0] transition-all active:scale-[0.98] shadow-xl">
-                                <Download size={18} /> 
-                                <span className="hidden sm:inline">Download Compressed PDF</span>
-                                <span className="sm:hidden">Download PDF</span>
-                            </button>
-                            <button 
-                                onClick={() => setIsSharing(true)} 
-                                className="h-12 px-6 bg-[#1c1c1c] border border-white/[0.07] text-[#f0ede8] font-bold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-white/[0.06] transition-all active:scale-[0.98] shadow-xl"
-                            >
-                                <Share2 size={18} /> 
-                                <span className="hidden sm:inline">Share to Mobile</span>
-                                <span className="sm:hidden">Share File</span>
-                            </button>
-                            <button onClick={reset} className="sm:col-span-2 h-12 px-6 bg-transparent border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] font-semibold tracking-wide text-xs sm:text-sm rounded-full flex items-center justify-center gap-2 hover:bg-[#1c1c1c] transition-all">
-                                <RefreshCw size={14} /> Compress Another PDF
-                            </button>
-                        </div>
-                    </div>
-
-                    {savingsPercent < 5 && (
-                        <div className="p-4 border border-white/20 bg-white/5 rounded-2xl">
-                            <p className="text-xs text-[#f0ede8] font-medium leading-relaxed">
-                                <span className="font-black">Note:</span> This PDF was already well-optimized — only {savingsPercent}% additional savings were possible. PDFs with lots of embedded fonts or images get the biggest gains.
-                            </p>
-                        </div>
-                    )}
-                </div>
-            )}
-
-            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Compressor Info">
-                <div className="space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                            Visual Data Density Infrastructure
-                        </h3>
-                        <p className="text-base leading-relaxed text-zinc-400 font-medium">
-                            Step into a professional-grade workspace for document optimization. AssetNest <strong>Smart PDF Compressor</strong> transcends basic file shrinking—it provides a high-performance engine where you can minimize PDF data streams with pixel-perfect fidelity and absolute data privacy. Whether you are optimizing massive legal briefs for electronic filing, compression-heavy portolios for email distribution, or complex technical manuals for server storage, our tool gives you the power to reduce file weight with industry-leading stream mapping and zero server dependency.
-                        </p>
-                    </section>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                                <Zap size={20} className="text-zinc-500" />
-                                How to Compress Safely
-                            </h3>
-                            <ul className="space-y-4 text-sm text-zinc-400 font-medium">
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Universal Support:</strong> Drop any standard PDF container. Our engine automatically identifies redundant object streams for pruning.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Hardware Acceleration:</strong> We utilize client-side PDF stream re-saving to compress your data locally. Blazing fast, ultra-secure.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-[#f0ede8]" /></div>
-                                    <span><strong>Fidelity Preservation:</strong> Advanced algorithms prioritize text vector and high-res graphic integrity while stripping hidden metadata.</span>
-                                </li>
-                            </ul>
-                        </section>
-
-                        <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                                <ShieldCheck size={20} className="text-zinc-500" />
-                                Privacy Infrastructure
-                            </h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed font-bold">
-                                Unlike traditional cloud-based tools that store your sensitive document data on external servers, our compressor operates <strong>100% locally in your browser cache</strong>.
-                            </p>
-                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-zinc-300">Technical Spec</p>
-                                <p className="text-[11px] text-zinc-600 mt-2 font-bold tracking-tight uppercase leading-relaxed">
-                                    Zero-Server Buffer Mapping • Lossless Stream Re-Cataloging • Metadata Stripping • No Watermarks
+                        {savingsPercent < 5 && (
+                            <div className="p-5 border-2 border-black bg-white rounded-[1.5rem] shadow-[3px_3px_0_#000]">
+                                <p className="text-xs text-zinc-700 leading-relaxed font-semibold">
+                                    <span className="font-bold text-black uppercase ig-label block mb-1">Optimization Note:</span> This PDF was already highly optimized. Our engine could only prune an additional {savingsPercent}% of data streams. PDF files with non-optimized images or un-subsetted embedded fonts will see significantly higher compression rates.
                                 </p>
                             </div>
-                        </section>
+                        )}
                     </div>
+                )}
 
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] border-t border-white/[0.05] pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Documentation FAQ</h3>
-                        <Accordion>
-                            <AccordionItem title="Lossy vs Lossless?">
-                                We prioritize lossless optimization, preserving vector sharpness while shrinking data overhead.
-                            </AccordionItem>
-                            <AccordionItem title="File Limits?">
-                                None. Process documents of any size. Large files may require additional system memory to map streams.
-                            </AccordionItem>
-                            <AccordionItem title="Secure Uploads?">
-                                There are no uploads. All processing happens locally on your computer or device hardware.
-                            </AccordionItem>
-                        </Accordion>
+                {/* ─── SEO RICH TEXT SECTION ─── */}
+                <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
+                    <div className="relative z-10 space-y-12">
+                        {/* Top Badges */}
+                        <div className="flex flex-wrap justify-center gap-2.5">
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fbcfe8] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
+                                <ShieldCheck size={11} className="text-black" /> 100% In-Browser Privacy
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#a7f3d0] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
+                                <Sparkles size={11} className="text-black" /> Free & Unlimited
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fde047] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
+                                <Package size={11} className="text-black" /> No Server Uploads
+                            </span>
+                        </div>
+
+                        {/* Main Title & Description */}
+                        <div className="text-center space-y-4 max-w-3xl mx-auto">
+                            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-black leading-tight ig-display">
+                                Free PDF Compressor Online — Reduce PDF File Size Privately
+                            </h2>
+                            <p className="text-sm text-zinc-650 leading-relaxed">
+                                Compress and optimize your PDF documents instantly in your browser. Our secure, local-first PDF compressor reduces file size while retaining high resolution vector assets, fonts, and layout formats. Keep your sensitive documents completely private — no watermarks, no signups, and zero server uploads.
+                            </p>
+                        </div>
+
+                        {/* Features Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                            {[
+                                {
+                                    title: "Local-First PDF Optimizer",
+                                    desc: "Optimize document sizes locally. Your files stay securely inside browser memory and are never sent to external servers.",
+                                    icon: <Minimize2 size={16} />
+                                },
+                                {
+                                    title: "Lossless Structural Pruning",
+                                    desc: "Reduces layout file size by stream re-saving and catalog stripping, keeping font rendering and vector shapes crisp.",
+                                    icon: <Combine size={16} />
+                                },
+                                {
+                                    title: "No File Size Constraints",
+                                    desc: "Process and shrink small drafts or massive multi-page manuals alike. We do not enforce file dimensions or page limits.",
+                                    icon: <Sparkles size={16} />
+                                },
+                                {
+                                    title: "Blazing Fast Compile",
+                                    desc: "Calculated directly by your local CPU in milliseconds. Bypasses long network upload or download queue wait times.",
+                                    icon: <Zap size={16} />
+                                },
+                                {
+                                    title: "Clean Watermark-Free Export",
+                                    desc: "Your output document remains completely clean. We never inject branding watermarks, stamps, or advertising.",
+                                    icon: <LockIcon size={16} />
+                                },
+                                {
+                                    title: "Universal OS Compatibility",
+                                    desc: "Runs on any standard browser. Fully compatible with Windows, macOS, Android, and iOS mobile devices.",
+                                    icon: <Package size={16} />
+                                }
+                            ].map((f, i) => (
+                                <div key={i} className="p-6 bg-zinc-55 border-2 border-black rounded-2xl transition-all duration-300 shadow-[3px_3px_0_#000] hover:bg-zinc-100">
+                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black mb-4 shadow-[1.5px_1.5px_0_#000]">
+                                        {f.icon}
+                                    </div>
+                                    <h4 className="text-sm font-bold text-black mb-2 ig-display">{f.title}</h4>
+                                    <p className="text-xs text-zinc-650 leading-relaxed">{f.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Step Timeline */}
+                        <div className="border-t-2 border-black pt-10">
+                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
+                                How to Reduce PDF File Size Online for Free
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {[
+                                    { step: "1", title: "Select PDF Document", desc: "Drag and drop your target PDF file into the secure compression dropbox or select it from your file folder." },
+                                    { step: "2", title: "Run Compression Calculations", desc: "Click the 'Compress PDF' button. The engine strips redundant streams and optimizes cross-references instantly." },
+                                    { step: "3", title: "Save Optimized PDF", desc: "Inspect original vs compressed sizes, check percentage savings, and download the optimized PDF instantly." }
+                                ].map((s) => (
+                                    <div key={s.step} className="relative p-6 bg-zinc-55 border-2 border-black rounded-2xl pt-8 shadow-[3px_3px_0_#000]">
+                                        <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-[#fde047] border-2 border-black text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
+                                            {s.step}
+                                        </div>
+                                        <h4 className="text-sm font-bold text-black mb-2 ig-display">{s.title}</h4>
+                                        <p className="text-xs text-zinc-655 leading-relaxed">{s.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* FAQ Accordion Section */}
+                        <div className="border-t-2 border-black pt-10">
+                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
+                                PDF Compressor FAQ
+                            </h3>
+                            <LocalAccordion>
+                                <LocalAccordionItem title="How does the browser-side PDF compressor protect my document privacy?">
+                                    AssetNest utilizes pdf-lib compiled locally in browser WebAssembly to run stream compression directly in your device's memory. Since no files are ever uploaded or transmitted to external web servers, your private documents, financial sheets, and legal papers remain 100% confidential.
+                                </LocalAccordionItem>
+                                <LocalAccordionItem title="Will compressing my PDF reduce the visual quality of text or images?">
+                                    Our engine performs lossless optimization by stripping unused structural metadata, re-cataloging stream objects, and optimizing cross-references. Vector lines, text strings, and font assets remain completely sharp. If your PDF contains high-res raster images, the file size is reduced without degrading text legibility.
+                                </LocalAccordionItem>
+                                <LocalAccordionItem title="Is there a limit on how many megabytes my PDF file can be?">
+                                    No. AssetNest does not impose any file size caps. The compression capacity is determined entirely by your browser's allocated memory and device hardware resources.
+                                </LocalAccordionItem>
+                            </LocalAccordion>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Compressor Info">
+                <div className="space-y-12 text-zinc-700 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
+                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
+                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
+                            Visual Data Density Infrastructure
+                        </h3>
+                        <p className="text-base leading-relaxed text-zinc-700 font-medium">
+                            Step into a professional-grade workspace for document optimization. AssetNest <strong>Smart PDF Compressor</strong> transcends basic file shrinking—it provides a high-performance engine where you can minimize PDF data streams with pixel-perfect fidelity and absolute data privacy. Whether you are optimizing massive legal briefs for electronic filing, compression-heavy portolios for email distribution, or complex technical manuals for server storage, our tool gives you the power to reduce file weight with industry-leading stream mapping and zero server dependency.
+                        </p>
                     </section>
                 </div>
             </HelpModal>

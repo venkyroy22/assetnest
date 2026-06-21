@@ -1,154 +1,254 @@
 "use client";
 
-import React, { useState } from "react";
-import { Sparkles } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
 
 interface GiftBoxVisualProps {
     theme: "gold" | "cyber" | "pastel" | "holo";
     isOpen: boolean;
     onOpen: () => void;
+    customBoxColor?: string;
+    customRibbonColor?: string;
+    customLockColor?: string;
 }
 
-export default function GiftBoxVisual({
-    theme = "gold",
-    isOpen,
-    onOpen
-}: GiftBoxVisualProps) {
-    const [isHovered, setIsHovered] = useState(false);
-    const [isRattling, setIsRattling] = useState(false);
+const THEME_MAP = {
+    gold: { chest: "#FDE047", band: "#F97316", lock: "#3B82F6", particles: ["#F97316", "#FDE047", "#3B82F6", "#EF4444", "#10B981"] },
+    cyber: { chest: "#F472B6", band: "#3B82F6", lock: "#10B981", particles: ["#F472B6", "#3B82F6", "#10B981", "#A855F7", "#FBBF24"] },
+    pastel: { chest: "#C4B5FD", band: "#FDE047", lock: "#F472B6", particles: ["#C4B5FD", "#FDE047", "#F472B6", "#6EE7B7", "#3B82F6"] },
+    holo: { chest: "#22D3EE", band: "#FBBF24", lock: "#A855F7", particles: ["#22D3EE", "#FBBF24", "#A855F7", "#EC4899", "#10B981"] },
+};
 
-    // Trigger a rattle sound effect (visual shake) on click before open
-    const handleBoxClick = () => {
-        if (isOpen) return;
-        setIsRattling(true);
-        setTimeout(() => setIsRattling(false), 500);
-        onOpen();
+type ParticleShape = "circle" | "star" | "diamond";
+interface Particle { id: number; x: number; y: number; r: number; a: number; d: number; shape: ParticleShape; }
+
+export default function GiftBoxVisual({ theme = "gold", isOpen, onOpen, customBoxColor, customRibbonColor, customLockColor }: GiftBoxVisualProps) {
+    const [hovered, setHovered] = useState(false);
+    const [rattling, setRattling] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+    const [particles, setParticles] = useState<Particle[]>([]);
+
+    useEffect(() => {
+        const check = () => setIsMobile(window.innerWidth < 640);
+        check();
+        window.addEventListener("resize", check);
+        return () => window.removeEventListener("resize", check);
+    }, []);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const shapes: ParticleShape[] = ["circle", "star", "diamond"];
+        setParticles(Array.from({ length: 32 }, (_, i) => ({
+            id: i,
+            x: 38 + Math.random() * 24,
+            y: 28 + Math.random() * 14,
+            r: 5 + Math.random() * 8,
+            a: Math.random() * 360,
+            d: 55 + Math.random() * 110,
+            shape: shapes[i % 3],
+        })));
+        const t = setTimeout(() => setParticles([]), 1600);
+        return () => clearTimeout(t);
+    }, [isOpen]);
+
+    const handleClick = () => {
+        if (isOpen || rattling) return;
+        setRattling(true);
+        setTimeout(() => { setRattling(false); onOpen(); }, 850);
     };
 
-    // Helper to get theme styles
-    const getThemeStyles = () => {
-        switch (theme) {
-            case "cyber":
-                return {
-                    boxBg: "bg-zinc-900 border border-fuchsia-500/30 shadow-[0_0_35px_rgba(240,70,250,0.15)]",
-                    ribbonBg: "bg-gradient-to-r from-fuchsia-500 via-pink-500 to-cyan-400",
-                    glowColor: "rgba(240,70,250,0.3)",
-                    lidBorder: "border-b border-fuchsia-500/20"
-                };
-            case "pastel":
-                return {
-                    boxBg: "bg-white/10 border border-white/20 backdrop-blur-md shadow-[0_15px_35px_rgba(255,255,255,0.05)]",
-                    ribbonBg: "bg-gradient-to-r from-pink-300 via-rose-300 to-pink-400",
-                    glowColor: "rgba(244,143,177,0.2)",
-                    lidBorder: "border-b border-white/10"
-                };
-            case "holo":
-                return {
-                    boxBg: "bg-gradient-to-tr from-cyan-950/40 via-zinc-900/90 to-pink-950/40 border border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.6)]",
-                    ribbonBg: "bg-gradient-to-r from-cyan-400 via-pink-400 to-yellow-300",
-                    glowColor: "rgba(34,211,238,0.25)",
-                    lidBorder: "border-b border-white/5"
-                };
-            case "gold":
-            default:
-                return {
-                    boxBg: "bg-zinc-950 border border-amber-500/20 shadow-[0_20px_50px_rgba(0,0,0,0.7)]",
-                    ribbonBg: "bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-600",
-                    glowColor: "rgba(245,158,11,0.25)",
-                    lidBorder: "border-b border-amber-500/10"
-                };
-        }
-    };
-
-    const s = getThemeStyles();
+    const T = THEME_MAP[theme];
+    const boxClr = customBoxColor || T.chest;
+    const ribbonClr = customRibbonColor || T.band;
+    const lockClr = customLockColor || T.lock;
+    const size = isMobile ? 220 : 280;
 
     return (
-        <div 
-            className="relative flex items-center justify-center w-[300px] h-[300px] cursor-pointer perspective-[1000px] select-none"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
-            onClick={handleBoxClick}
+        <div
+            style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: size, height: size + 48, userSelect: "none" }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            onClick={handleClick}
         >
             <style>{`
-                @keyframes rattle {
-                    0% { transform: rotate(0deg) scale(1); }
-                    15% { transform: rotate(4deg) scale(1.02); }
-                    30% { transform: rotate(-4deg) scale(1.02); }
-                    45% { transform: rotate(3deg) scale(1.01); }
-                    60% { transform: rotate(-3deg) scale(1.01); }
-                    75% { transform: rotate(1.5deg) scale(1.005); }
-                    90% { transform: rotate(-1.5deg) scale(1.005); }
-                    100% { transform: rotate(0deg) scale(1); }
+                @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700&display=swap');
+
+                @keyframes giftFloat {
+                    0%,100% { transform: translateY(0px) rotate(0deg); }
+                    50%     { transform: translateY(-9px) rotate(1.2deg); }
                 }
-                .rattle-anim {
-                    animation: rattle 0.45s ease-in-out;
+                @keyframes giftRattle {
+                    0%   { transform: rotate(0deg) translateX(0); }
+                    12%  { transform: rotate(-7deg) translateX(-7px); }
+                    28%  { transform: rotate(7deg) translateX(7px); }
+                    44%  { transform: rotate(-5deg) translateX(-5px); }
+                    60%  { transform: rotate(5deg) translateX(5px); }
+                    76%  { transform: rotate(-2deg) translateX(-2px); }
+                    90%  { transform: rotate(2deg) translateX(2px); }
+                    100% { transform: rotate(0deg) translateX(0); }
                 }
+                @keyframes lidFly {
+                    0%   { transform-origin: 94px 103px; transform: rotate(0deg); opacity: 1; }
+                    100% { transform-origin: 94px 103px; transform: rotate(-115deg) translate(-44px,-18px); opacity: 0; }
+                }
+                @keyframes boxShrink {
+                    0%   { opacity: 1; transform: scale(1); }
+                    100% { opacity: 0; transform: scale(0.78) translateY(28px); }
+                }
+                @keyframes particlePop {
+                    0%   { opacity: 1; transform: translate(0,0) scale(1) rotate(0deg); }
+                    100% { opacity: 0; transform: translate(var(--tx),var(--ty)) scale(0) rotate(var(--rot)); }
+                }
+                @keyframes cueBreath {
+                    0%,100% { transform: translateX(-50%) translateY(0); }
+                    50%     { transform: translateX(-50%) translateY(-4px); }
+                }
+                @keyframes shadowPulse {
+                    0%,100% { transform: translateX(-50%) scaleX(1); opacity: 0.85; }
+                    50%     { transform: translateX(-50%) scaleX(0.88); opacity: 0.5; }
+                }
+                .gift-float   { animation: giftFloat  3.6s ease-in-out infinite; }
+                .gift-rattle  { animation: giftRattle 0.85s ease-in-out; }
+                .gift-vanish  { animation: boxShrink  0.65s cubic-bezier(0.4,0,1,1) forwards; }
+                .cue-breath   { animation: cueBreath  2.2s ease-in-out infinite; }
+                .shadow-pulse { animation: shadowPulse 3.6s ease-in-out infinite; }
             `}</style>
 
-            {/* Glowing Ambient Halo behind the box */}
-            <div 
-                className={`absolute w-48 h-48 rounded-full blur-3xl opacity-40 transition-all duration-700 pointer-events-none ${
-                    isOpen ? "scale-150 opacity-0" : (isHovered ? "scale-110 opacity-60" : "scale-100")
-                }`}
-                style={{ backgroundColor: s.glowColor }}
-            />
+            {/* Ground shadow */}
+            {!isOpen && (
+                <div
+                    className="shadow-pulse"
+                    style={{
+                        position: "absolute",
+                        bottom: isMobile ? 44 : 52,
+                        left: "50%",
+                        width: size * 0.58,
+                        height: isMobile ? 10 : 13,
+                        background: "#000",
+                        borderRadius: 8,
+                        transform: "translateX(-50%)",
+                        pointerEvents: "none",
+                    }}
+                />
+            )}
 
-            {/* THE GIFT BOX WRAPPER */}
-            <div 
-                className={`relative w-48 h-48 transition-all duration-700 ${
-                    isOpen ? "scale-90 opacity-0 pointer-events-none translate-y-12" : ""
-                } ${isRattling ? "rattle-anim" : (isHovered ? "scale-105" : "scale-100")}`}
+            {/* Particles */}
+            {particles.map(p => {
+                const color = T.particles[p.id % T.particles.length];
+                const angle = (p.a * Math.PI) / 180;
+                const tx = Math.cos(angle) * p.d;
+                const ty = Math.sin(angle) * p.d - 44;
+                const rot = (Math.random() - 0.5) * 720;
+                const starPath = "M0,-5 L1.2,-1.8 L5,-1.8 L2,0.9 L3.1,4.8 L0,2.8 L-3.1,4.8 L-2,0.9 L-5,-1.8 L-1.2,-1.8 Z";
+                const diamondPath = "M0,-5 L3.5,0 L0,5 L-3.5,0 Z";
+
+                const baseStyle: React.CSSProperties = {
+                    position: "absolute",
+                    left: `${p.x}%`,
+                    top: `${p.y}%`,
+                    // @ts-ignore
+                    "--tx": `${tx}px`,
+                    "--ty": `${ty}px`,
+                    "--rot": `${rot}deg`,
+                    animation: "particlePop 1.25s cubic-bezier(0.15,0.85,0.35,1) forwards",
+                    animationDelay: `${(p.id % 4) * 0.03}s`,
+                    pointerEvents: "none",
+                };
+
+                if (p.shape === "circle") return (
+                    <div key={p.id} style={{ ...baseStyle, width: p.r, height: p.r, background: color, border: "2px solid #000", borderRadius: "50%", boxShadow: "2px 2px 0 #000" }} />
+                );
+                return (
+                    <svg key={p.id} style={{ ...baseStyle, filter: "drop-shadow(2px 2px 0 #000)" }} width={p.r * 2.5} height={p.r * 2.5} viewBox="-6 -6 12 12">
+                        <path d={p.shape === "star" ? starPath : diamondPath} fill={color} stroke="#000" strokeWidth="1.2" />
+                    </svg>
+                );
+            })}
+
+            {/* Box wrapper */}
+            <div
+                className={isOpen ? "gift-vanish" : rattling ? "gift-rattle" : "gift-float"}
                 style={{
-                    transformStyle: "preserve-3d",
-                    transform: isHovered && !isRattling ? "rotateY(10deg) rotateX(5deg)" : "rotateY(0deg) rotateX(0deg)"
+                    position: "relative",
+                    width: size * 0.74,
+                    height: size * 0.74 * (210 / 200),
+                    cursor: isOpen ? "default" : "pointer",
+                    transition: "transform 0.25s cubic-bezier(0.22,1,0.36,1)",
+                    transform: hovered && !isOpen && !rattling ? "translateY(-5px)" : undefined,
                 }}
             >
-                {/* 1. LID (Lifts up on Open) */}
-                <div 
-                    className={`absolute -top-4 -left-2 w-[208px] h-12 rounded-t-xl z-30 transition-all duration-700 ease-out origin-bottom-left ${
-                        isOpen ? "-translate-y-24 rotate-[-25deg] opacity-0" : ""
-                    } ${s.boxBg} ${s.lidBorder}`}
+                <svg viewBox="0 0 200 210" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style={{ overflow: "visible" }}>
+
+                    {/* Body shadow */}
+                    {!isOpen && <rect x="14" y="108" width="180" height="90" rx="10" fill="#000" />}
+
+                    {/* Body */}
+                    <rect x="10" y="104" width="180" height="90" rx="10" fill={boxClr} stroke="#000" strokeWidth="3.5" />
+
+                    {/* Horizontal ribbon */}
+                    <rect x="10" y="139" width="180" height="18" fill={ribbonClr} stroke="#000" strokeWidth="3.5" />
+
+                    {/* Vertical ribbon */}
+                    <rect x="85" y="104" width="30" height="90" fill={ribbonClr} stroke="#000" strokeWidth="3.5" />
+
+                    {/* Lid group */}
+                    <g style={{ animation: isOpen ? "lidFly 0.65s cubic-bezier(0.22,1,0.38,1) forwards" : "none" }}>
+                        {/* Lid shadow */}
+                        <rect x="10" y="59" width="188" height="50" rx="8" fill="#000" />
+
+                        {/* Bow loops */}
+                        <path d="M100,54 Q80,20 67,33 Q61,43 85,50 Z" fill={ribbonClr} stroke="#000" strokeWidth="3.5" strokeLinejoin="round" />
+                        <path d="M100,54 Q120,20 133,33 Q139,43 115,50 Z" fill={ribbonClr} stroke="#000" strokeWidth="3.5" strokeLinejoin="round" />
+
+                        {/* Bow knot */}
+                        <circle cx="100" cy="51" r="11" fill={ribbonClr} stroke="#000" strokeWidth="3.5" />
+
+                        {/* Lid body */}
+                        <rect x="6" y="54" width="188" height="50" rx="8" fill={boxClr} stroke="#000" strokeWidth="3.5" />
+
+                        {/* Lid vertical ribbon */}
+                        <rect x="85" y="54" width="30" height="50" fill={ribbonClr} stroke="#000" strokeWidth="3.5" />
+                    </g>
+
+                    {/* Lock / flower */}
+                    {!isOpen && (
+                        <g transform="translate(100,148)">
+                            <path
+                                d="M0,-22 C6,-22,10,-17,12,-12 C17,-14,22,-10,22,-5 C25,-2,25,2,22,5 C22,10,17,14,12,12 C10,17,6,22,0,22 C-6,22,-10,17,-12,12 C-17,14,-22,10,-22,5 C-25,2,-25,-2,-22,-5 C-22,-10,-17,-14,-12,-12 C-10,-17,-6,-22,0,-22 Z"
+                                fill={lockClr} stroke="#000" strokeWidth="3.5" strokeLinejoin="round"
+                            />
+                            <circle cx="0" cy="0" r="7" fill="#000" />
+                        </g>
+                    )}
+                </svg>
+            </div>
+
+            {/* Cue label */}
+            {!isOpen && (
+                <div
+                    className="cue-breath"
                     style={{
-                        boxShadow: "0 4px 10px rgba(0,0,0,0.3)"
+                        position: "absolute",
+                        bottom: 2,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        padding: "7px 16px",
+                        background: "#fff",
+                        border: "2.5px solid #000",
+                        borderRadius: 10,
+                        boxShadow: "3px 3px 0 #000",
+                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                        fontWeight: 700,
+                        fontSize: 10,
+                        letterSpacing: "0.1em",
+                        textTransform: "uppercase",
+                        color: "#000",
+                        whiteSpace: "nowrap",
+                        pointerEvents: "none",
                     }}
                 >
-                    {/* Horizontal Ribbon on Lid */}
-                    <div className={`absolute top-0 bottom-0 left-[90px] w-7 z-30 ${s.ribbonBg}`} />
-                    
-                    {/* Floating Bow Knots */}
-                    <div className="absolute -top-6 left-[84px] w-[38px] h-6 flex items-center justify-center z-40">
-                        {/* Bow Loop Left */}
-                        <div className={`w-6 h-6 rounded-full border border-white/10 rotate-[-30deg] origin-right mr-[-4px] ${s.ribbonBg} shadow-md`} />
-                        {/* Bow Loop Right */}
-                        <div className={`w-6 h-6 rounded-full border border-white/10 rotate-[30deg] origin-left ml-[-4px] ${s.ribbonBg} shadow-md`} />
-                        {/* Center Knot */}
-                        <div className="absolute w-4 h-4 rounded-md bg-white border border-white/20 z-50 shadow-inner flex items-center justify-center">
-                            <Sparkles size={8} className="text-amber-500 animate-pulse" />
-                        </div>
-                    </div>
+                    {isMobile ? "Tap to Unwrap ⚡" : "Click to Unwrap ⚡"}
                 </div>
-
-                {/* 2. BODY CONTAINER */}
-                <div className={`absolute inset-0 rounded-b-xl z-10 overflow-hidden ${s.boxBg}`}>
-                    {/* Vertical Ribbon */}
-                    <div className={`absolute top-0 bottom-0 left-[88px] w-6 z-20 ${s.ribbonBg}`} />
-                    {/* Horizontal Ribbon */}
-                    <div className={`absolute left-0 right-0 top-[88px] h-6 z-20 ${s.ribbonBg}`} />
-                    
-                    {/* Geometric panel decorations (Diagonal shading lines for premium depth) */}
-                    <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_45%,rgba(255,255,255,0.015)_50%,transparent_55%)] [background-size:24px_24px] pointer-events-none" />
-                </div>
-
-                {/* 3. PULL RIBBON TAB CUE */}
-                <div 
-                    className={`absolute -bottom-10 left-12 right-12 text-center text-[10.5px] font-extrabold uppercase tracking-widest text-zinc-400 flex items-center justify-center gap-1.5 transition-all duration-500 ${
-                        isHovered ? "text-white translate-y-1" : "translate-y-0 opacity-70"
-                    }`}
-                >
-                    <Sparkles size={11} className="text-emerald-400 animate-spin" style={{ animationDuration: "3s" }} />
-                    Unwrap Gift Box
-                </div>
-            </div>
+            )}
         </div>
     );
 }

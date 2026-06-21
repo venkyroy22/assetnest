@@ -32,10 +32,6 @@ function getCategoryBg(category: ToolCategory): string {
             return "linear-gradient(135deg, #0d1a25 0%, #060c11 100%)";
         case "Business":
             return "linear-gradient(135deg, #251b0d 0%, #110c06 100%)";
-        case "Games":
-            return "linear-gradient(135deg, #100d25 0%, #080611 100%)"; // Dark Indigo
-        case "Design Training":
-            return "linear-gradient(135deg, #250d21 0%, #11060f 100%)";
         default:
             return "linear-gradient(135deg, #161616 0%, #0a0a0a 100%)";
     }
@@ -59,10 +55,6 @@ function getCategoryHoverColors(category: ToolCategory): HoverColors {
             return { solid: "#2563eb", glow: "rgba(37, 99, 235, 0.16)" }; // Cobalt Blue
         case "Business":
             return { solid: "#d97706", glow: "rgba(217, 119, 6, 0.16)" }; // Warm Amber
-        case "Games":
-            return { solid: "#4f46e5", glow: "rgba(79, 70, 229, 0.16)" }; // Premium Indigo
-        case "Design Training":
-            return { solid: "#db2777", glow: "rgba(219, 39, 119, 0.16)" }; // Magenta Rose
         default:
             return { solid: "#475569", glow: "rgba(71, 85, 105, 0.16)" }; // Sleek Slate
     }
@@ -318,7 +310,7 @@ export default function ToolsPage() {
     const categories = useMemo(() => {
         const cats = Array.from(new Set(ALL_TOOLS.map(t => t.category)));
         cats.sort((a, b) => {
-            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4, "Games": 5 };
+            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4 };
             return (order[a] ?? 99) - (order[b] ?? 99);
         });
         return ["All", ...cats] as const;
@@ -347,7 +339,7 @@ export default function ToolsPage() {
         }
         const regularCategories = Array.from(new Set(filtered.map(t => t.category)));
         regularCategories.sort((a, b) => {
-            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4, "Games": 5 };
+            const order: Record<string, number> = { "Productivity": 0, "Images": 1, "PDF": 2, "Generate": 3, "Business": 4 };
             return (order[a] ?? 99) - (order[b] ?? 99);
         });
         regularCategories.forEach(cat => {
