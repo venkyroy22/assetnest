@@ -350,46 +350,47 @@ export default function TypingTesterPage() {
         };
     }, [supabase]);
 
+    const rafRef = useRef<number | null>(null);
+
     const updateCaret = useCallback(() => {
-        if (!isFocused || isFinished || countdown !== null) return;
-        const container = wordsRef.current;
-        if (!container) return;
+        if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        rafRef.current = requestAnimationFrame(() => {
+            if (!wordsRef.current || !wrapperRef.current) return;
+            const wordEls = wordsRef.current.querySelectorAll<HTMLSpanElement>(".word-el");
+            const currentWordEl = wordEls[currentWordIdx];
+            if (!currentWordEl) return;
 
-        const activeWordEl = container.querySelector(".word-el.relative") as HTMLElement;
-        if (!activeWordEl) return;
+            const charEls = currentWordEl.querySelectorAll<HTMLSpanElement>(".char-el");
+            const caretCharIdx = currentInput.length;
+            const containerRect = wordsRef.current.getBoundingClientRect();
+            let top = 0, left = 0;
 
-        const charEls = activeWordEl.querySelectorAll(".char-el");
-        const typedLen = currentInput.length;
-        let targetEl = charEls[typedLen] as HTMLElement;
-
-        if (!targetEl && charEls.length > 0) {
-            targetEl = charEls[charEls.length - 1] as HTMLElement;
-            if (targetEl) {
-                const rect = targetEl.getBoundingClientRect();
-                setCaretPos({
-                    top: targetEl.offsetTop,
-                    left: targetEl.offsetLeft + rect.width,
-                });
-                return;
+            if (caretCharIdx < charEls.length) {
+                const r = charEls[caretCharIdx].getBoundingClientRect();
+                top = r.top - containerRect.top;
+                left = r.left - containerRect.left;
+            } else if (charEls.length > 0) {
+                const r = charEls[charEls.length - 1].getBoundingClientRect();
+                top = r.top - containerRect.top;
+                left = r.left - containerRect.left + r.width;
             }
-        }
+            setCaretPos({ top, left });
 
-        if (targetEl) {
-            setCaretPos({
-                top: targetEl.offsetTop,
-                left: targetEl.offsetLeft,
-            });
-        } else {
-            setCaretPos({
-                top: activeWordEl.offsetTop,
-                left: activeWordEl.offsetLeft,
-            });
-        }
-    }, [currentInput, currentWordIdx, isFocused, isFinished, countdown]);
+            // Auto-scroll: robust fixed positioning using offsetTop
+            if (wrapperRef.current && wordsRef.current) {
+                const wordOffsetTop = currentWordEl.offsetTop;
+                if (wordOffsetTop > 35) {
+                    wordsRef.current.style.transform = `translateY(-${wordOffsetTop - 35}px)`;
+                } else {
+                    wordsRef.current.style.transform = `translateY(0px)`;
+                }
+            }
+        });
+    }, [currentWordIdx, currentInput]);
 
     useEffect(() => {
         updateCaret();
-    }, [currentInput, currentWordIdx, isFocused, isFinished, countdown, updateCaret]);
+    }, [currentInput, currentWordIdx, words, updateCaret]);
 
     useEffect(() => {
         const handleResize = () => updateCaret();
@@ -397,29 +398,8 @@ export default function TypingTesterPage() {
         return () => window.removeEventListener("resize", handleResize);
     }, [updateCaret]);
 
-    const scrollWordsIfNeeded = useCallback(() => {
-        const container = wordsRef.current;
-        const wrapper = wrapperRef.current;
-        if (!container || !wrapper) return;
-
-        const activeWordEl = container.querySelector(".word-el.relative") as HTMLElement;
-        if (!activeWordEl) return;
-
-        const wordTop = activeWordEl.offsetTop;
-        const wrapperHeight = wrapper.clientHeight;
-        const lineOffset = 36;
-
-        if (wordTop > wrapperHeight / 2) {
-            const shift = -(wordTop - lineOffset);
-            container.style.transform = `translateY(${shift}px)`;
-        } else {
-            container.style.transform = "translateY(0)";
-        }
-    }, [currentWordIdx]);
-
-    useEffect(() => {
-        scrollWordsIfNeeded();
-    }, [currentWordIdx, scrollWordsIfNeeded]);
+    // Cleanup RAF on unmount
+    useEffect(() => () => { if (rafRef.current) cancelAnimationFrame(rafRef.current); }, []);
 
     const calcStats = useCallback((completed: WordData[], currentTyped: string, timeSec: number) => {
         let correctChars = 0;
