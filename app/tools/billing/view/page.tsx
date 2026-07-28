@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Download, Globe, Loader2 } from "lucide-react";
+import { Download, Globe, Loader2, ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface LineItem { n: string; q: number; r: number; t: number; }
@@ -68,7 +69,7 @@ const UI: Record<LangCode, {
         generated: "ఇది కంప్యూటర్ రూపొందించిన డిజిటల్ ఇన్వాయిస్.",
         poweredBy: "AssetNest ద్వారా",
         noData: "చెల్లని బిల్ లింక్", noDataSub: "ఈ QR కోడ్‌లో చెల్లుబాటు అయ్యే బిల్ లేదు.",
-        download: "ఇన్వాయిస్ డౌన్‌లోడ్ చేయండి", translating: "అనువదిస్తోంది…",
+        download: "invois downlod cheyandi", translating: "అనువదిస్తోంది…",
     },
     ta: {
         title: "டிஜிட்டல் வரி விலைப்பட்டியல்", invoiceNo: "விலைப்பட்டியல் எண்.", dateTime: "தேதி & நேரம்",
@@ -82,7 +83,7 @@ const UI: Record<LangCode, {
     },
     kn: {
         title: "ಡಿಜಿಟಲ್ ತೆರಿಗೆ ಇನ್ವಾಯ್ಸ್", invoiceNo: "ಇನ್ವಾಯ್ಸ್ ಸಂ.", dateTime: "ದಿನಾಂಕ & ಸಮಯ",
-        item: "ವಸ್ತು", qty: "ಪ್ರಮಾಣ", amount: "ಮೊತ್ತ", subtotal: "ಉಪ-ಒಟ್ಟು",
+        item: "ವಸ್ತು", qty: "ಪ್ರಮಾಣ", amount: "ಮೊತ್ತ", subtotal: "ಒಟ್ಟು ತೆರಿಗೆ",
         totalTax: "ಒಟ್ಟು ತೆರಿಗೆ", totalAmount: "ಒಟ್ಟು ಮೊತ್ತ", cgst: "ಸಿಜಿಎಸ್ಟಿ", sgst: "ಎಸ್ಜಿಎಸ್ಟಿ", on: "ನಲ್ಲಿ",
         thank: "ನಿಮ್ಮ ಖರೀದಿಗೆ ಧನ್ಯವಾದಗಳು! 🙏",
         generated: "ಇದು ಕಂಪ್ಯೂಟರ್ ರಚಿಸಿದ ಡಿಜಿಟಲ್ ಇನ್ವಾಯ್ಸ್.",
@@ -94,11 +95,23 @@ const UI: Record<LangCode, {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function decode(enc: string): BillPayload | null {
-    try { return JSON.parse(decodeURIComponent(atob(enc))); } catch { return null; }
+    try {
+        const binaryStr = atob(enc);
+        const utf8Bytes = new Uint8Array(binaryStr.length);
+        for (let i = 0; i < binaryStr.length; i++) {
+            utf8Bytes[i] = binaryStr.charCodeAt(i);
+        }
+        const jsonStr = new TextDecoder().decode(utf8Bytes);
+        return JSON.parse(jsonStr);
+    } catch {
+        return null;
+    }
 }
+
 function fmtINR(n: number) {
     return "₹" + n.toLocaleString("en-IN", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
+
 function fmtDate(iso: string) {
     try {
         return new Date(iso).toLocaleString("en-IN", {
@@ -107,6 +120,7 @@ function fmtDate(iso: string) {
         });
     } catch { return iso; }
 }
+
 function lineTotal(item: LineItem) {
     const base = item.q * item.r;
     const tax  = (base * item.t) / 100;
@@ -127,6 +141,28 @@ async function translateBatch(texts: string[], targetLang: string): Promise<stri
     }
     return results;
 }
+
+const GLOBAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=DM+Sans:wght@500;700&display=swap');
+
+.ig-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #000;
+}
+.ig-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.ig-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.ig-btn:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: none !important;
+}
+`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 function BillViewer() {
@@ -161,18 +197,19 @@ function BillViewer() {
 
     // ── Error ─────────────────────────────────────────────────────────────────
     if (error) return (
-        <div className="min-h-screen bg-[#1c1c1c] flex items-center justify-center p-6">
-            <div className="text-center">
+        <div className="min-h-screen bg-[#F4ECD8] flex items-center justify-center p-6 text-black ig-root">
+            <style>{GLOBAL_STYLES}</style>
+            <div className="text-center bg-white border-2 border-black p-8 rounded-[2rem] shadow-[4px_4px_0_#000] max-w-sm">
                 <div className="text-5xl mb-4">🧾</div>
-                <p className="text-[#f0ede8] font-black text-lg mb-2">{t.noData}</p>
-                <p className="text-zinc-500 text-sm">{t.noDataSub}</p>
+                <h3 className="font-black text-lg mb-1.5 uppercase ig-display">{t.noData}</h3>
+                <p className="text-zinc-500 text-xs font-semibold uppercase tracking-wide">{t.noDataSub}</p>
             </div>
         </div>
     );
 
     // ── Loading ───────────────────────────────────────────────────────────────
     if (!bill) return (
-        <div className="min-h-screen bg-[#fafafc] flex items-center justify-center">
+        <div className="min-h-screen bg-[#F4ECD8] flex items-center justify-center">
             <div className="w-12 h-12 border-[4px] border-black border-t-transparent rounded-full animate-spin" />
         </div>
     );
@@ -188,7 +225,8 @@ function BillViewer() {
 
     // ── Render ────────────────────────────────────────────────────────────────
     return (
-        <>
+        <div className="ig-root">
+            <style>{GLOBAL_STYLES}</style>
             {/* Print styles */}
             <style dangerouslySetInnerHTML={{ __html: `
                 * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -202,146 +240,149 @@ function BillViewer() {
                 @media screen { .print-only { display: none !important; } }
             `}} />
 
-            <div className="min-h-screen bg-[#fafafc] flex flex-col items-center py-8 px-4 font-sans antialiased text-zinc-900">
+            <div className="min-h-screen bg-[#F4ECD8] flex flex-col items-center py-8 px-4 font-sans text-black relative">
 
                 {/* ── Language Switcher (screen only) ── */}
-                <div className="no-print w-full max-w-md mb-5">
-                    <div className="flex items-center gap-2 mb-2">
-                        <Globe size={13} className="text-zinc-500" />
-                        <span className="text-xs font-semibold tracking-wide text-zinc-500">Language / भाषा</span>
+                <div className="no-print w-full max-w-md mb-6 bg-white border-2 border-black p-4 rounded-3xl shadow-[4px_4px_0_#000]">
+                    <div className="flex items-center gap-2 mb-3">
+                        <Globe size={13} className="text-black" />
+                        <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Receipt Language / भाषा</span>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-1.5">
                         {LANGS.map(l => (
                             <button
                                 key={l.code}
                                 onClick={() => setLang(l.code)}
-                                className={`px-3 py-1.5 rounded-full text-[11px] font-black border transition-all ${
-                                    lang === l.code
-                                        ? "bg-white border-white text-black"
-                                        : "bg-[#1c1c1c] border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-[#f0ede8]"
-                                }`}
+                                className="ig-btn px-3 py-1.5 border border-black rounded-lg text-[10px] font-black uppercase tracking-wide transition-all shadow-[1.5px_1.5px_0_#000]"
+                                style={{
+                                    background: lang === l.code ? "#fde047" : "#ffffff",
+                                }}
                             >
                                 {l.native}
                             </button>
                         ))}
                     </div>
                     {translating && (
-                        <div className="flex items-center gap-2 mt-2">
-                            <Loader2 size={12} className="text-zinc-600 animate-spin" />
-                            <span className="text-xs text-zinc-600 font-semibold tracking-wide">{t.translating}</span>
+                        <div className="flex items-center gap-2 mt-3 bg-zinc-50 p-2 rounded-xl border border-black">
+                            <Loader2 size={12} className="text-black animate-spin" />
+                            <span className="text-[9px] text-zinc-500 font-black uppercase tracking-wider">{t.translating}</span>
                         </div>
                     )}
                 </div>
 
                 {/* ══════════════════════════════════════════════════════════
-                    SCREEN RECEIPT (dark card — hidden during print)
+                    SCREEN RECEIPT
                 ══════════════════════════════════════════════════════════ */}
                 <div className="screen-only w-full max-w-md" ref={printRef}>
 
                     {/* Badge */}
-                    <div className="no-print flex items-center justify-center gap-2 mb-5">
-                        <div className="w-7 h-7 bg-[#141414] rounded-lg flex items-center justify-center border border-white/10">
-                            <span className="text-[#f0ede8] text-sm font-black">₹</span>
+                    <div className="no-print flex items-center justify-center gap-2 mb-6">
+                        <div className="w-8 h-8 bg-black rounded-xl flex items-center justify-center border-2 border-black shadow-[2px_2px_0_#F4ECD8]">
+                            <span className="text-white text-sm font-black">₹</span>
                         </div>
-                        <span className="text-xs font-semibold tracking-wide text-zinc-400">{t.title}</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-zinc-550">{t.title}</span>
                     </div>
 
-                    <div className="bg-white rounded-3xl overflow-hidden shadow-[0_32px_64px_-12px_rgba(0,0,0,0.14)] border border-zinc-200">
+                    <div className="bg-white rounded-[2rem] overflow-hidden border-2 border-black shadow-[6px_6px_0_#000]">
                         {/* Shop Header */}
-                        <div className="bg-white px-8 pt-10 pb-6 text-center border-b border-zinc-100">
-                            <div className="inline-block px-3 py-1 bg-[#f0ede8] text-[#141414] rounded-full text-[10px] font-semibold tracking-wide mb-4">Official Receipt</div>
-                            <p className="text-2xl font-bold text-black mb-1.5 uppercase tracking-tight">{bill.s}</p>
+                        <div className="bg-white px-6 pt-8 pb-5 text-center border-b-2 border-dashed border-zinc-200">
+                            <div className="inline-block px-3 py-1 border border-black bg-zinc-50 rounded-full text-[9px] font-black uppercase tracking-wider mb-4 shadow-[1.5px_1.5px_0_#000]">Official Receipt</div>
+                            <h1 className="text-xl sm:text-2xl font-black text-black mb-1 uppercase tracking-tight ig-display">{bill.s}</h1>
                             {bill.a && <p className="text-xs text-zinc-500 font-bold max-w-xs mx-auto leading-relaxed">{bill.a}</p>}
-                            <div className="flex items-center justify-center gap-5 mt-4 flex-wrap">
-                                {bill.p && <p className="text-[11px] text-zinc-400 font-bold">📞 {bill.p}</p>}
-                                {bill.g && <p className="text-[10px] text-zinc-400 font-bold tracking-tight bg-zinc-50 px-3 py-1 rounded-lg">GSTIN: {bill.g}</p>}
+                            <div className="flex items-center justify-center gap-4 mt-3 flex-wrap">
+                                {bill.p && <p className="text-[10px] text-zinc-500 font-black uppercase">📞 {bill.p}</p>}
+                                {bill.g && <p className="text-[9px] text-zinc-500 font-black uppercase tracking-wider bg-zinc-50 border border-black px-2.5 py-0.5 rounded-lg shadow-[1px_1px_0_#000]">GSTIN: {bill.g}</p>}
                             </div>
                         </div>
 
                         {/* Invoice meta */}
-                        <div className="bg-zinc-50/50 px-8 py-4 flex items-center justify-between border-b border-zinc-100">
+                        <div className="bg-zinc-50/50 px-6 py-3 flex items-center justify-between border-b-2 border-black text-xs font-semibold">
                             <div>
-                                <p className="text-xs font-semibold tracking-wide text-zinc-400 mb-0.5">{t.invoiceNo}</p>
-                                <p className="text-sm font-black text-black font-mono tracking-tighter">{bill.i}</p>
+                                <p className="text-[9px] font-black uppercase tracking-wider text-zinc-400 mb-0.5">{t.invoiceNo}</p>
+                                <p className="text-xs font-black text-black font-mono tracking-tighter">{bill.i}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-xs font-semibold tracking-wide text-zinc-400 mb-0.5">{t.dateTime}</p>
-                                <p className="text-[11px] font-black text-zinc-800">{fmtDate(bill.d)}</p>
+                                <p className="text-[9px] font-black uppercase tracking-wider text-zinc-400 mb-0.5">{t.dateTime}</p>
+                                <p className="text-[10px] font-black text-zinc-700">{fmtDate(bill.d)}</p>
                             </div>
                         </div>
+                        
                         {/* Items */}
                         <div className="px-5 py-4">
-                            <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 pb-2 border-b-2 border-zinc-200 mb-1">
-                                <p className="text-xs font-semibold tracking-wide text-zinc-500">{t.item}</p>
-                                <p className="text-xs font-semibold tracking-wide text-zinc-500 text-center">{t.qty}</p>
-                                <p className="text-xs font-semibold tracking-wide text-zinc-500 text-right">{t.amount}</p>
+                            <div className="grid grid-cols-[1fr_auto_auto] gap-x-3 pb-2 border-b-2 border-black mb-1 text-[10px] font-black uppercase tracking-wider text-zinc-450">
+                                <p>{t.item}</p>
+                                <p className="text-center">{t.qty}</p>
+                                <p className="text-right">{t.amount}</p>
                             </div>
                             <div className="divide-y divide-zinc-100">
                                 {bill.l.map((item, idx) => {
                                     const { tax, total } = lineTotal(item);
                                     return (
-                                        <div key={idx} className="py-2.5 grid grid-cols-[1fr_auto_auto] gap-x-3 items-start">
+                                        <div key={idx} className="py-3 grid grid-cols-[1fr_auto_auto] gap-x-3 items-start">
                                             <div>
-                                                <p className={`text-[13px] font-bold text-black ${translating ? "opacity-30" : ""}`}>
+                                                <p className={`text-xs font-black text-black ${translating ? "opacity-30" : ""}`}>
                                                     {txNames?.[idx] ?? item.n}
                                                 </p>
-                                                <p className="text-[10px] text-zinc-400 font-bold mt-0.5">
+                                                <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">
                                                     {fmtINR(item.r)}{item.t > 0 ? ` + ${item.t}% GST` : ""}
                                                 </p>
                                             </div>
-                                            <p className="text-sm font-bold text-zinc-600 text-center mt-0.5">×{item.q}</p>
+                                            <p className="text-xs font-black text-zinc-500 text-center mt-0.5">×{item.q}</p>
                                             <div className="text-right">
-                                                <p className="text-sm font-black text-zinc-900">{fmtINR(total)}</p>
-                                                {item.t > 0 && <p className="text-[9px] text-zinc-400">tax {fmtINR(tax)}</p>}
+                                                <p className="text-xs font-black text-black">{fmtINR(total)}</p>
+                                                {item.t > 0 && <p className="text-[9px] text-zinc-400 font-bold uppercase">tax {fmtINR(tax)}</p>}
                                             </div>
                                         </div>
                                     );
                                 })}
                             </div>
+                            
                             {/* Totals */}
-                            <div className="my-3 border-t-2 border-dashed border-zinc-300" />
-                            <div className="space-y-1.5 mb-3">
-                                <div className="flex justify-between text-sm text-zinc-500">
+                            <div className="my-2 border-t-2 border-dashed border-zinc-200" />
+                            <div className="space-y-1.5 mb-4">
+                                <div className="flex justify-between text-xs font-bold text-zinc-500 uppercase tracking-wider">
                                     <span>{t.subtotal}</span>
-                                    <span className="font-bold text-zinc-700">{fmtINR(subtotal)}</span>
+                                    <span className="font-black text-black">{fmtINR(subtotal)}</span>
                                 </div>
-                                {gstBreakdown.map(g => (
-                                    <div key={g.rate}>
-                                        <div className="flex justify-between text-xs text-zinc-400">
+                                {gstBreakdown.map((g, i) => (
+                                    <div key={i} className="space-y-1">
+                                        <div className="flex justify-between text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
                                             <span>{t.cgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                             <span>{fmtINR(g.half)}</span>
                                         </div>
-                                        <div className="flex justify-between text-xs text-zinc-400">
+                                        <div className="flex justify-between text-[10px] font-semibold text-zinc-400 uppercase tracking-wider">
                                             <span>{t.sgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                             <span>{fmtINR(g.half)}</span>
                                         </div>
                                     </div>
                                 ))}
                                 {totalTax > 0 && (
-                                    <div className="flex justify-between text-sm text-zinc-500">
+                                    <div className="flex justify-between text-xs font-bold text-zinc-500 uppercase tracking-wider">
                                         <span>{t.totalTax}</span>
-                                        <span className="font-bold text-zinc-700">{fmtINR(totalTax)}</span>
+                                        <span className="font-black text-black">{fmtINR(totalTax)}</span>
                                     </div>
                                 )}
                             </div>
+
                             {/* Grand Total */}
-                            <div className="bg-[#141414] rounded-[1.25rem] px-6 py-5 flex items-center justify-between shadow-xl shadow-black/10 transition-transform active:scale-[0.98]">
+                            <div className="bg-[#fde047] border-2 border-black rounded-xl px-5 py-4 flex items-center justify-between shadow-[2px_2px_0_#000]">
                                 <div>
-                                    <p className="text-xs font-bold uppercase tracking-wide text-zinc-400 mb-0.5">{t.totalAmount}</p>
-                                    <p className="text-[10px] text-zinc-500 font-bold">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
+                                    <p className="text-[9px] font-black uppercase tracking-wider text-black mb-0.5">{t.totalAmount}</p>
+                                    <p className="text-[9px] text-zinc-500 font-bold uppercase">{bill.l.length} {bill.l.length === 1 ? "item" : "items"}</p>
                                 </div>
-                                <p className="text-3xl font-black text-[#f0ede8]">{fmtINR(grandTotal)}</p>
+                                <p className="text-2xl font-black text-black leading-none">{fmtINR(grandTotal)}</p>
                             </div>
                         </div>
+
                         {/* Footer */}
-                        <div className="bg-zinc-50/50 border-t border-zinc-100 px-8 py-8 text-center bg-[radial-gradient(ellipse_at_top,rgba(0,0,0,0.02),transparent)]">
-                            <p className="text-xs font-black text-black mb-1.5">{t.thank}</p>
-                            <p className="text-xs text-zinc-400 font-semibold tracking-wide mb-6">{t.generated}</p>
-                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-zinc-200 rounded-2xl shadow-sm">
-                                <div className="w-5 h-5 bg-[#141414] rounded-lg flex items-center justify-center">
-                                    <span className="text-[#f0ede8] text-[9px] font-black">A</span>
+                        <div className="border-t-2 border-dashed border-zinc-200 px-6 py-6 text-center bg-zinc-50/50">
+                            <p className="text-xs font-black text-black mb-1">{t.thank}</p>
+                            <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-wider mb-4 leading-relaxed">{t.generated}</p>
+                            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl shadow-[1.5px_1.5px_0_#000]">
+                                <div className="w-4 h-4 bg-black rounded flex items-center justify-center">
+                                    <span className="text-white text-[8px] font-black">A</span>
                                 </div>
-                                <span className="text-xs font-semibold text-zinc-600 tracking-wide">{t.poweredBy}</span>
+                                <span className="text-[10px] font-bold text-black uppercase tracking-wide">{t.poweredBy}</span>
                             </div>
                         </div>
                     </div>
@@ -349,33 +390,30 @@ function BillViewer() {
                     {/* Download button */}
                     <button
                         onClick={() => window.print()}
-                        className="no-print mt-5 w-full flex items-center justify-center gap-2.5 bg-[#141414] text-[#f0ede8] py-4 rounded-full text-sm font-bold tracking-wide hover:bg-[#1c1c1c] active:scale-[0.98] transition-all shadow-lg shadow-black/20"
+                        className="ig-btn no-print mt-5 w-full flex items-center justify-center gap-2 bg-black hover:bg-zinc-900 text-white border-2 border-black py-3.5 rounded-xl text-xs font-black uppercase tracking-widest shadow-[3px_3px_0_#000]"
                     >
-                        <Download size={16} />
+                        <Download size={14} />
                         {t.download}
                     </button>
 
-                    <p className="no-print text-center text-[10px] text-zinc-700 font-medium mt-5 leading-relaxed">
-                        This receipt was shared digitally — no paper needed.<br />
-                        No personal data is collected or stored.
+                    <p className="no-print text-center text-[9px] text-zinc-500 font-semibold uppercase tracking-wider mt-5 leading-relaxed">
+                        This receipt was generated digitally — no paper needed.<br />
+                        Browser-processed client receipt.
                     </p>
                 </div>
 
                 {/* ══════════════════════════════════════════════════════════
-                    PRINT-ONLY WHITE GST INVOICE (shown only when printing)
+                    PRINT-ONLY RECEIPT
                 ══════════════════════════════════════════════════════════ */}
-                <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", color: "#09090b", border: "1px solid #d4d4d8", width: "100%" }}>
-
-                    {/* Title bar */}
+                <div className="print-only" style={{ fontFamily: "'Segoe UI', Arial, sans-serif", color: "#09090b", border: "2px solid #000000", width: "100%" }}>
                     <div style={{ background: "#000", padding: "10px 24px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                        <span style={{ color: "#fff", fontSize: "18px", fontWeight: 900, letterSpacing: "0.12em", textTransform: "uppercase" }}>Tax Invoice</span>
-                        <span style={{ color: "#71717a", fontSize: "11px", fontWeight: 600 }}>Powered by AssetNest</span>
+                        <span style={{ color: "#fff", fontSize: "16px", fontWeight: 905, letterSpacing: "0.1em", textTransform: "uppercase" }}>Tax Invoice</span>
+                        <span style={{ color: "#71717a", fontSize: "10px", fontWeight: 650 }}>Powered by AssetNest</span>
                     </div>
 
-                    {/* Two-column header */}
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #09090b" }}>
-                        <div style={{ padding: "14px 20px", borderRight: "1px solid #d4d4d8" }}>
-                            <div style={{ fontSize: "16px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{bill.s}</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", borderBottom: "2px solid #000" }}>
+                        <div style={{ padding: "14px 20px", borderRight: "2px solid #000" }}>
+                            <div style={{ fontSize: "15px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: "6px" }}>{bill.s}</div>
                             {bill.a && <div style={{ fontSize: "11px", color: "#52525b", marginBottom: "3px" }}>{bill.a}</div>}
                             {bill.p && <div style={{ fontSize: "11px", color: "#52525b", marginBottom: "3px" }}>📞 {bill.p}</div>}
                             {bill.g && <div style={{ fontSize: "11px", color: "#52525b", fontWeight: 600 }}>GSTIN: {bill.g}</div>}
@@ -383,42 +421,41 @@ function BillViewer() {
                         <div style={{ padding: "14px 20px", background: "#f9fafb" }}>
                             <div style={{ marginBottom: "10px" }}>
                                 <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a", marginBottom: "3px" }}>{t.invoiceNo}</div>
-                                <div style={{ fontSize: "15px", fontWeight: 800, fontFamily: "monospace" }}>{bill.i}</div>
+                                <div style={{ fontSize: "14px", fontWeight: 800, fontFamily: "monospace" }}>{bill.i}</div>
                             </div>
                             <div>
                                 <div style={{ fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.1em", color: "#71717a", marginBottom: "3px" }}>{t.dateTime}</div>
-                                <div style={{ fontSize: "12px", fontWeight: 600, color: "#3f3f46" }}>{fmtDate(bill.d)}</div>
+                                <div style={{ fontSize: "11px", fontWeight: 600, color: "#3f3f46" }}>{fmtDate(bill.d)}</div>
                             </div>
                         </div>
                     </div>
 
-                    {/* Items table */}
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12px" }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "11px" }}>
                         <thead>
-                            <tr style={{ background: "#f4f4f5", borderBottom: "2px solid #09090b" }}>
-                                <th style={{ padding: "8px 12px", textAlign: "left",   fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>#</th>
-                                <th style={{ padding: "8px 8px",  textAlign: "left",   fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.item}</th>
-                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.qty}</th>
-                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>Rate</th>
-                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>Taxable</th>
-                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>GST%</th>
-                                <th style={{ padding: "8px 12px", textAlign: "right",  fontSize: "9px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#52525b" }}>{t.amount}</th>
+                            <tr style={{ background: "#f4f4f5", borderBottom: "2px solid #000" }}>
+                                <th style={{ padding: "8px 12px", textAlign: "left",   fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>#</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "left",   fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>{t.item}</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>{t.qty}</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>Rate</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "right",  fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>Taxable</th>
+                                <th style={{ padding: "8px 8px",  textAlign: "center", fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>GST%</th>
+                                <th style={{ padding: "8px 12px", textAlign: "right",  fontSize: "9px", fontWeight: 750, textTransform: "uppercase", color: "#52525b" }}>{t.amount}</th>
                             </tr>
                         </thead>
                         <tbody>
                             {bill.l.map((item, idx) => {
                                 const { base, tax, total } = lineTotal(item);
                                 return (
-                                    <tr key={idx} style={{ borderBottom: "1px solid #e4e4e7", background: idx % 2 === 1 ? "#fafafa" : "#fff" }}>
-                                        <td style={{ padding: "9px 12px", color: "#a1a1aa", fontSize: "11px" }}>{idx + 1}</td>
-                                        <td style={{ padding: "9px 8px", fontWeight: 600 }}>
+                                    <tr key={idx} style={{ borderBottom: "1px solid #000", background: idx % 2 === 1 ? "#fafafa" : "#fff" }}>
+                                        <td style={{ padding: "9px 12px", color: "#a1a1aa", fontSize: "10px" }}>{idx + 1}</td>
+                                        <td style={{ padding: "9px 8px", fontWeight: 700 }}>
                                             {txNames?.[idx] ?? item.n}
-                                            {item.t > 0 && <span style={{ fontSize: "10px", color: "#71717a", fontWeight: 400, marginLeft: "6px" }}>(tax {fmtINR(tax)})</span>}
+                                            {item.t > 0 && <span style={{ fontSize: "9px", color: "#71717a", fontWeight: 400, marginLeft: "6px" }}>(tax {fmtINR(tax)})</span>}
                                         </td>
-                                        <td style={{ padding: "9px 8px", textAlign: "center", color: "#52525b" }}>{item.q}</td>
-                                        <td style={{ padding: "9px 8px", textAlign: "right",  color: "#52525b" }}>{fmtINR(item.r)}</td>
-                                        <td style={{ padding: "9px 8px", textAlign: "right",  color: "#52525b" }}>{fmtINR(base)}</td>
-                                        <td style={{ padding: "9px 8px", textAlign: "center", color: "#52525b" }}>{item.t > 0 ? `${item.t}%` : "—"}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "center" }}>{item.q}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "right" }}>{fmtINR(item.r)}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "right" }}>{fmtINR(base)}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "center" }}>{item.t > 0 ? `${item.t}%` : "—"}</td>
                                         <td style={{ padding: "9px 12px", textAlign: "right", fontWeight: 700 }}>{fmtINR(total)}</td>
                                     </tr>
                                 );
@@ -426,53 +463,50 @@ function BillViewer() {
                         </tbody>
                     </table>
 
-                    {/* Totals — right aligned */}
-                    <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "2px solid #09090b" }}>
-                        <div style={{ minWidth: "280px", padding: "14px 20px" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", paddingBottom: "6px", marginBottom: "6px", borderBottom: "1px dashed #d4d4d8" }}>
+                    <div style={{ display: "flex", justifyContent: "flex-end", borderTop: "2px solid #000" }}>
+                        <div style={{ minWidth: "260px", padding: "14px 20px" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#52525b", paddingBottom: "6px", marginBottom: "6px", borderBottom: "1px dashed #000" }}>
                                 <span>{t.subtotal}</span>
-                                <span style={{ fontWeight: 600 }}>{fmtINR(subtotal)}</span>
+                                <span style={{ fontWeight: 650 }}>{fmtINR(subtotal)}</span>
                             </div>
-                            {gstBreakdown.map(g => (
-                                <div key={g.rate}>
-                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a", marginBottom: "3px" }}>
+                            {gstBreakdown.map((g, i) => (
+                                <div key={i}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#71717a", marginBottom: "3px" }}>
                                         <span>{t.cgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                         <span>{fmtINR(g.half)}</span>
                                     </div>
-                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#71717a", marginBottom: "3px" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#71717a", marginBottom: "3px" }}>
                                         <span>{t.sgst} @ {g.rate / 2}% {t.on} {fmtINR(g.taxable)}</span>
                                         <span>{fmtINR(g.half)}</span>
                                     </div>
                                 </div>
                             ))}
                             {totalTax > 0 && (
-                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#52525b", marginTop: "4px", paddingTop: "6px", borderTop: "1px dashed #d4d4d8" }}>
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", color: "#52525b", marginTop: "4px", paddingTop: "6px", borderTop: "1px dashed #000" }}>
                                     <span>{t.totalTax}</span>
-                                    <span style={{ fontWeight: 600 }}>{fmtINR(totalTax)}</span>
+                                    <span style={{ fontWeight: 650 }}>{fmtINR(totalTax)}</span>
                                 </div>
                             )}
-                            {/* Grand Total */}
-                            <div style={{ marginTop: "12px", padding: "12px 16px", background: "#f8f8f8", border: "2px solid #000", borderRadius: "6px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <span style={{ fontSize: "11px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#000" }}>{t.totalAmount}</span>
-                                <span style={{ fontSize: "24px", fontWeight: 900, color: "#000" }}>{fmtINR(grandTotal)}</span>
+                            <div style={{ marginTop: "12px", padding: "10px 14px", background: "#f8f8f8", border: "2px solid #000", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <span style={{ fontSize: "10px", fontWeight: 750, textTransform: "uppercase" }}>{t.totalAmount}</span>
+                                <span style={{ fontSize: "20px", fontWeight: 900 }}>{fmtINR(grandTotal)}</span>
                             </div>
                         </div>
                     </div>
 
-                    {/* Footer */}
-                    <div style={{ borderTop: "1px solid #e4e4e7", padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f9fafb" }}>
+                    <div style={{ borderTop: "2px solid #000", padding: "12px 20px", display: "flex", justifyContent: "space-between", alignItems: "center", background: "#f9fafb" }}>
                         <div>
-                            <p style={{ margin: 0, fontSize: "12px", fontWeight: 700, color: "#09090b" }}>{t.thank}</p>
-                            <p style={{ margin: "3px 0 0", fontSize: "10px", color: "#a1a1aa" }}>{t.generated}</p>
+                            <p style={{ margin: 0, fontSize: "11px", fontWeight: 700 }}>{t.thank}</p>
+                            <p style={{ margin: "2px 0 0", fontSize: "9px", color: "#71717a" }}>{t.generated}</p>
                         </div>
-                        <div style={{ textAlign: "right", fontSize: "9px", color: "#a1a1aa", textTransform: "uppercase", letterSpacing: "0.08em", lineHeight: "1.6" }}>
-                            Powered by<br /><strong style={{ color: "#000", fontSize: "11px" }}>AssetNest</strong>
+                        <div style={{ textAlign: "right", fontSize: "9px", color: "#71717a", textTransform: "uppercase", lineHeight: "1.4" }}>
+                            Powered by<br /><strong style={{ color: "#000", fontSize: "10px" }}>AssetNest</strong>
                         </div>
                     </div>
                 </div>
 
             </div>
-        </>
+        </div>
     );
 }
 
@@ -480,12 +514,11 @@ function BillViewer() {
 export default function BillViewPage() {
     return (
         <Suspense fallback={
-            <div className="min-h-screen bg-[#1c1c1c] flex items-center justify-center">
-                <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            <div className="min-h-screen bg-[#F4ECD8] flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
             </div>
         }>
             <BillViewer />
         </Suspense>
     );
 }
-

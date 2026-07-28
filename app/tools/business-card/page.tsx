@@ -8,7 +8,7 @@ import {
     LayoutDashboard, Paintbrush, Info, Move, RotateCcw, Plus, Trash2, Layers,
     Maximize2, Minimize2, Type, AlignLeft, AlignCenter, AlignRight, Eye, EyeOff, Lock, Unlock,
     Smartphone, Search, MousePointer2, Settings, Sparkles, SlidersHorizontal, Undo2, Redo2,
-    ChevronDown, ChevronUp, GripVertical, X, Home
+    ChevronDown, ChevronUp, GripVertical, X, ArrowLeft
 } from "lucide-react";
 import html2canvas from "html2canvas";
 import { Accordion, AccordionItem } from "@/components/Accordion";
@@ -41,6 +41,50 @@ const DEFAULT_ELEMENTS: DragElement[] = [
     { id: "brand-icon", type: "icon", content: "Zap", x: 500, y: 150, size: 120, rotation: 0, opacity: 0.1, visible: true, locked: false, zIndex: 5 }
 ];
 
+const GLOBAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=DM+Sans:wght@500;700&display=swap');
+
+.ig-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #000;
+}
+.ig-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.ig-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.ig-btn:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: none !important;
+}
+
+/* Custom range inputs */
+.ig-slider {
+  -webkit-appearance: none;
+  background: #E5E7EB;
+  height: 6px;
+  border-radius: 9999px;
+  outline: none;
+  border: 2px solid #000000;
+}
+.ig-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 18px;
+  width: 18px;
+  border-radius: 50%;
+  background: #fde047;
+  border: 2px solid #000000;
+  cursor: pointer;
+}
+.ig-slider::-webkit-slider-thumb:hover {
+  background: #facc15;
+}
+`;
+
 export default function BusinessCardPage() {
     const cardRef = useRef<HTMLDivElement>(null);
     const canvasContainerRef = useRef<HTMLDivElement>(null);
@@ -58,7 +102,6 @@ export default function BusinessCardPage() {
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
     const [canvasScale, setCanvasScale] = useState(0.85);
     const [showHelp, setShowHelp] = useState(false);
-
 
     // Style State
     const [themeColor, setThemeColor] = useState("#0f172a");
@@ -192,7 +235,6 @@ export default function BusinessCardPage() {
         const el = elements.find(el => el.id === id);
         if (el?.locked) return;
         
-        // Use setPointerCapture to ensure move/up events are caught even if finger leaves the element
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
         
         setSelectedId(id);
@@ -216,7 +258,6 @@ export default function BusinessCardPage() {
     const onPointerUp = (e: React.PointerEvent) => {
         if (draggedId) {
             saveToHistory(elements);
-            // Release capture
             try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
         }
         setDraggedId(null);
@@ -234,73 +275,81 @@ export default function BusinessCardPage() {
     };
 
     return (
-        <div className="relative flex flex-col bg-[#141414] text-[#f0ede8] font-sans select-none overflow-hidden" style={{ height: "calc(100vh - 80px)" }}>
+        <div className="relative flex flex-col bg-[#F4ECD8] text-black font-sans select-none overflow-hidden ig-root" style={{ height: "calc(100vh - 80px)" }}>
+            <style>{GLOBAL_STYLES}</style>
             
             {/* STICKY TOOL HEADER */}
-            <div className="h-16 border-b border-white/5 px-3 sm:px-6 flex items-center justify-between bg-[#141414]/80 backdrop-blur-3xl shrink-0 z-40">
+            <div className="h-16 border-b-2 border-black px-3 sm:px-6 flex items-center justify-between bg-[#F4ECD8] shrink-0 z-40">
                 <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <Link
+                        href="/tools"
+                        className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50 shrink-0"
+                    >
+                        <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                    </Link>
+
                     {/* MOBILE LEFT TOGGLE */}
                     <button 
                         onClick={() => setLeftPanelOpen(!leftPanelOpen)}
-                        className="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/10 text-zinc-400 hover:text-[#f0ede8] shrink-0"
+                        className="lg:hidden w-8 h-8 flex items-center justify-center rounded-xl bg-white border-2 border-black text-black hover:bg-zinc-55 shrink-0 shadow-[1.5px_1.5px_0_#000] ig-btn"
                     >
                         <SlidersHorizontal size={14} />
                     </button>
 
                     <button 
                         onClick={() => setShowHelp(true)}
-                        className="w-8 h-8 flex items-center justify-center bg-white/5 border border-white/10 rounded-full text-zinc-500 hover:text-[#f0ede8] transition-all shrink-0"
+                        className="w-8 h-8 flex items-center justify-center bg-white border-2 border-black rounded-full text-black hover:bg-zinc-55 transition-all shrink-0 shadow-[1.5px_1.5px_0_#000] ig-btn"
                         title="Information"
                     >
                         <Info size={14} />
                     </button>
 
                     <div className="flex flex-col min-w-0">
-                        <span className="text-[8px] font-black tracking-widest text-zinc-600 uppercase leading-none mb-1 truncate hidden xs:block">StudioMaster</span>
-                        <h1 className="text-[10px] font-black text-[#f0ede8] uppercase leading-none tracking-[0.1em] truncate">Studio</h1>
+                        <span className="text-[8px] font-black tracking-widest text-zinc-550 uppercase leading-none mb-1 truncate hidden xs:block">Card Studio</span>
+                        <h1 className="text-[10px] font-black text-black uppercase leading-none tracking-[0.1em] truncate ig-display">Business Card Maker</h1>
                     </div>
                 </div>
 
                 <div className="flex items-center gap-1 sm:gap-3">
-                    <div className="flex items-center gap-1 bg-[#1c1c1c]/40 p-1 rounded-xl border border-white/5">
+                    <div className="flex items-center gap-1 bg-white p-1 rounded-xl border-2 border-black shadow-[2px_2px_0_#000]">
                         <button 
                             onClick={undo} 
                             disabled={history.length === 0} 
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-[#f0ede8] disabled:opacity-20 transition-all hover:bg-white/5"
-                            title="Undo"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-zinc-50 disabled:opacity-25 transition-all"
+                            title="Undo (Ctrl+Z)"
                         >
-                            <Undo2 size={14} />
+                            <Undo2 size={13} />
                         </button>
                         <button 
                             onClick={redo} 
                             disabled={redoStack.length === 0} 
-                            className="w-8 h-8 flex items-center justify-center rounded-lg text-zinc-500 hover:text-[#f0ede8] disabled:opacity-20 transition-all hover:bg-white/5"
-                            title="Redo"
+                            className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-zinc-50 disabled:opacity-25 transition-all"
+                            title="Redo (Ctrl+Y)"
                         >
-                            <Redo2 size={14} />
+                            <Redo2 size={13} />
                         </button>
                     </div>
 
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => addElement("text", "New Layer")} className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-zinc-500 hover:text-[#f0ede8] hover:border-white/20 transition-all" title="Add Element">
+                    <div className="flex items-center gap-1 bg-white p-1 rounded-xl border-2 border-black shadow-[2px_2px_0_#000]">
+                        <button onClick={() => addElement("text", "New Layer")} className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-zinc-50 transition-all" title="Add Layer Text">
                             <Plus size={14} />
                         </button>
-                        <label className="w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 border border-white/5 text-zinc-500 hover:text-[#f0ede8] hover:border-white/20 transition-all cursor-pointer" title="Upload Image">
+                        <label className="w-8 h-8 flex items-center justify-center rounded-lg text-black hover:bg-zinc-50 transition-all cursor-pointer" title="Upload Custom Logo/Image">
                             <Upload size={14} />
                             <input type="file" className="hidden" onChange={(e) => handleFileUpload(e, "logo")} />
                         </label>
                     </div>
 
-                    <div className="h-6 w-px bg-white/5 hidden sm:block" />
+                    <div className="h-6 w-px bg-black hidden sm:block" />
 
                     <button 
                         onClick={handleGenerate} 
                         disabled={isGenerating} 
-                        className="h-9 px-3 sm:px-4 bg-[#f0ede8] text-[#141414] rounded-full flex items-center gap-2 hover:bg-[#e8e5e0] transition-all disabled:opacity-20 active:scale-95 shadow-xl shadow-white/10 shrink-0"
+                        className="ig-btn h-9 px-3.5 bg-[#fde047] text-black border-2 border-black rounded-xl flex items-center gap-1.5 hover:bg-yellow-400 transition-all disabled:opacity-30 shadow-[2px_2px_0_#000] shrink-0"
                     >
                         {isGenerating ? <RotateCcw size={12} className="animate-spin" /> : <Download size={12} />}
                         <span className="text-[9px] font-black uppercase tracking-widest hidden xs:inline">
-                            {isGenerating ? "Wait" : "Save"}
+                            {isGenerating ? "Processing" : "Export Card"}
                         </span>
                     </button>
                 </div>
@@ -311,58 +360,67 @@ export default function BusinessCardPage() {
                 {/* MOBILE BACKDROP */}
                 {(leftPanelOpen || rightPanelOpen) && (
                     <div 
-                        className="lg:hidden fixed inset-0 bg-[#141414]/60 z-[45] backdrop-blur-sm animate-in fade-in"
+                        className="lg:hidden absolute inset-0 bg-black/35 z-[45] backdrop-blur-sm"
                         onClick={() => { setLeftPanelOpen(false); setRightPanelOpen(false); }}
                     />
                 )}
                 
                 {/* LEFT DRAWER (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-[#1c1c1c] border-r border-white/[0.05] flex flex-col z-50 transition-transform duration-300
-                    ${leftPanelOpen ? "translate-x-0 shadow-[20px_0_60px_rgba(0,0,0,0.8)]" : "-translate-x-full lg:translate-x-0"}
+                    absolute lg:relative top-0 bottom-0 left-0 w-72 bg-[#F4ECD8] border-r-2 border-black flex flex-col z-50 transition-transform duration-300
+                    ${leftPanelOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
                 `}>
-                    <div className="flex items-center justify-between border-b border-white/5 p-2 bg-white/[0.02]">
-                        <div className="flex flex-1 gap-1">
+                    <div className="flex items-center justify-between border-b-2 border-black p-2 bg-white">
+                        <div className="flex flex-1 gap-1.5 p-1 bg-zinc-50 border-2 border-black rounded-xl shadow-[1.5px_1.5px_0_#000]">
                             {["design", "layers"].map((t) => (
-                                <button key={t} onClick={() => setActiveTab(t as any)} className={`flex-1 py-2 text-[9px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${activeTab === t ? "text-[#f0ede8] bg-white/10" : "text-zinc-500 hover:text-[#f0ede8]"}`}>{t}</button>
+                                <button key={t} onClick={() => setActiveTab(t as any)} className={`flex-1 py-1.5 text-[9px] font-black uppercase tracking-[0.2em] rounded-lg transition-all ${activeTab === t ? "bg-[#fde047] text-black" : "text-zinc-500 hover:text-black"}`}>{t}</button>
                             ))}
                         </div>
-                        <button onClick={() => setLeftPanelOpen(false)} className="lg:hidden p-2 text-zinc-500"><X size={16}/></button>
+                        <button onClick={() => setLeftPanelOpen(false)} className="lg:hidden p-2 text-black"><X size={16}/></button>
                     </div>
 
-                    <div data-lenis-prevent className="flex-grow overflow-y-auto p-6 custom-scrollbar space-y-10 pb-32 bg-[#141414]">
+                    <div data-lenis-prevent className="flex-grow overflow-y-auto p-5 space-y-6 pb-20 bg-white border-r-2 border-black">
                         {activeTab === "design" && (
                             <>
-                                <section>
-                                    <h3 className="text-[10px] font-black text-[#f0ede8] uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Palette size={14}/> Appearance</h3>
-                                    <div className="space-y-4">
-                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/30 transition-all">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-[#f0ede8] transition-colors">Surface</span>
-                                            <input type="color" value={themeColor} onChange={e => setThemeColor(e.target.value)} className="w-10 h-10 rounded-xl bg-transparent cursor-pointer border-none" />
-                                        </div>
-                                        <div className="flex items-center justify-between p-4 bg-white/[0.03] border border-white/10 rounded-2xl group hover:border-white/30 transition-all">
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-[#f0ede8] transition-colors">Pattern</span>
-                                            <input type="color" value={patternColor} onChange={e => setPatternColor(e.target.value)} className="w-10 h-10 rounded-xl bg-transparent cursor-pointer border-none" />
-                                        </div>
+                                <section className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-black uppercase tracking-wider flex items-center gap-2 border-b-2 border-black pb-2 ig-display"><Palette size={14}/> Appearance</h3>
+                                    
+                                    <div className="flex items-center justify-between p-3.5 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000]">
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500">Surface Fill</span>
+                                        <input type="color" value={themeColor} onChange={e => setThemeColor(e.target.value)} className="w-8 h-8 rounded-lg bg-transparent cursor-pointer border-2 border-black shadow-[1px_1px_0_#000]" />
+                                    </div>
+                                    <div className="flex items-center justify-between p-3.5 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000]">
+                                        <span className="text-[9px] font-black uppercase tracking-wider text-zinc-500">Pattern Color</span>
+                                        <input type="color" value={patternColor} onChange={e => setPatternColor(e.target.value)} className="w-8 h-8 rounded-lg bg-transparent cursor-pointer border-2 border-black shadow-[1px_1px_0_#000]" />
                                     </div>
                                 </section>
 
-                                <section>
-                                    <h3 className="text-[10px] font-black text-[#f0ede8] uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Layers size={14}/> Textures</h3>
-                                    <div className="grid grid-cols-4 gap-3">
+                                <section className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-black uppercase tracking-wider flex items-center gap-2 border-b-2 border-black pb-2 ig-display"><Layers size={14}/> Texture Overlay</h3>
+                                    <div className="grid grid-cols-4 gap-2">
                                         {["none", "hexagons", "waves", "grid", "carbon", "diamonds", "noise"].map(t => (
-                                            <button key={t} onClick={() => setActiveTexture(t as any)} className={`w-12 h-12 rounded-xl border transition-all flex items-center justify-center ${activeTexture === t ? "bg-white border-white text-black shadow-lg" : "bg-white/5 border-white/10 text-zinc-600 hover:border-white/50 hover:text-[#f0ede8]"}`}>
-                                                <Layers size={16} />
+                                            <button key={t} onClick={() => setActiveTexture(t as any)} className={`w-10 h-10 rounded-xl border-2 border-black transition-all flex items-center justify-center font-black uppercase text-[8px] tracking-tighter shadow-[1.5px_1.5px_0_#000] ig-btn ${activeTexture === t ? "bg-[#fde047] text-black" : "bg-white text-zinc-500 hover:bg-zinc-50"}`}>
+                                                {t === "none" ? "Ø" : t.slice(0,3)}
                                             </button>
                                         ))}
                                     </div>
                                 </section>
 
-                                <section>
-                                    <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><Briefcase size={14}/> Metadata</h3>
-                                    <div className="space-y-4">
-                                        {[ {v: phone, s: setPhone, p: "Phone Number"}, {v: email, s: setEmail, p: "Email Address"}, {v: website, s: setWebsite, p: "Personal Website"}, {v: address, s: setAddress, p: "Corporate Location"} ].map((f, i) => (
-                                             <input key={i} type="text" placeholder={f.p} value={f.v} onChange={e => f.s(e.target.value)} className="w-full bg-white/[0.03] border border-white/10 rounded-2xl px-5 py-4 text-[11px] text-zinc-400 focus:border-white focus:bg-white/5 outline-none transition-all shadow-inner tracking-wide" />
+                                <section className="space-y-4">
+                                    <h3 className="text-[10px] font-black text-black uppercase tracking-wider flex items-center gap-2 border-b-2 border-black pb-2 ig-display"><Briefcase size={14}/> Contact Info</h3>
+                                    <div className="space-y-3.5">
+                                        {[
+                                            { v: phone, s: setPhone, p: "Phone Number", icon: <Phone size={11}/> },
+                                            { v: email, s: setEmail, p: "Email Address", icon: <Mail size={11}/> },
+                                            { v: website, s: setWebsite, p: "Personal Website", icon: <Globe size={11}/> },
+                                            { v: address, s: setAddress, p: "Corporate Location", icon: <MapPin size={11}/> }
+                                        ].map((f, i) => (
+                                             <div key={i} className="relative">
+                                                 <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-zinc-400">
+                                                     {f.icon}
+                                                 </div>
+                                                 <input type="text" placeholder={f.p} value={f.v} onChange={e => f.s(e.target.value)} className="w-full bg-zinc-50 border-2 border-black rounded-xl pl-9 pr-4 py-2.5 text-xs font-bold text-black outline-none focus:bg-white placeholder:text-zinc-400" />
+                                             </div>
                                         ))}
                                     </div>
                                 </section>
@@ -372,15 +430,15 @@ export default function BusinessCardPage() {
                         {activeTab === "layers" && (
                             <div className="space-y-2">
                                 {[...elements].reverse().map((el) => (
-                                    <div key={el.id} onClick={() => setSelectedId(el.id)} className={`flex items-center gap-3 p-3.5 rounded-xl border transition-all group cursor-pointer ${selectedId === el.id ? "bg-white/10 border-white/30 shadow-inner" : "bg-[#1c1c1c] border-white/[0.05] hover:border-white/[0.07]"}`}>
-                                        <div className="w-8 h-8 rounded-lg bg-[#141414] flex items-center justify-center text-zinc-600 group-hover:text-[#f0ede8] transition-colors">
-                                            <GripVertical size={14} />
+                                    <div key={el.id} onClick={() => { setSelectedId(el.id); setRightPanelOpen(true); }} className={`flex items-center gap-3 p-3.5 rounded-xl border-2 border-black transition-all group cursor-pointer shadow-[2px_2px_0_#000] ${selectedId === el.id ? "bg-[#fde047]" : "bg-white hover:bg-zinc-50"}`}>
+                                        <div className="w-7 h-7 rounded-lg bg-zinc-100 border border-black flex items-center justify-center text-black">
+                                            <GripVertical size={13} />
                                         </div>
                                         <div className="flex-grow overflow-hidden">
-                                            <p className="text-[10px] font-black text-zinc-300 uppercase truncate">{el.type === "text" ? el.content : el.id}</p>
-                                            <p className="text-[8px] text-zinc-600 uppercase font-bold tracking-tighter">{el.type}</p>
+                                            <p className="text-[10px] font-black text-black uppercase truncate">{el.type === "text" ? el.content : el.id}</p>
+                                            <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-wider mt-0.5">{el.type}</p>
                                         </div>
-                                        <button onClick={(e) => { e.stopPropagation(); updateElement(el.id, { visible: !el.visible }, true); }} className="text-zinc-600 hover:text-[#f0ede8] transition-colors">
+                                        <button onClick={(e) => { e.stopPropagation(); updateElement(el.id, { visible: !el.visible }, true); }} className="text-black hover:scale-115 transition-transform">
                                             {el.visible ? <Eye size={14} /> : <EyeOff size={14} />}
                                         </button>
                                     </div>
@@ -391,25 +449,23 @@ export default function BusinessCardPage() {
                 </div>
 
                 {/* WORKSPACE */}
-                <div ref={canvasContainerRef} className="flex-grow bg-[#0c0c0e] relative flex flex-col items-center justify-center overflow-hidden h-full">
+                <div ref={canvasContainerRef} className="flex-grow bg-[#E6DEC9] relative flex flex-col items-center justify-center overflow-hidden h-full">
                     
                     {/* Zoom Info */}
-                    <div className="absolute top-8 left-1/2 -translate-x-1/2 px-6 py-2.5 bg-[#1c1c1c]/80 backdrop-blur-3xl border border-white/[0.05] rounded-full shadow-2xl z-20 flex items-center gap-3">
-                         <span className="text-[9px] font-black text-[#f0ede8] uppercase tracking-[0.2em]">Studio Fit: {Math.round(canvasScale * 100)}%</span>
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-white border-2 border-black rounded-full shadow-[2.5px_2.5px_0_#000] z-20 flex items-center gap-2">
+                         <span className="text-[9px] font-black text-black uppercase tracking-wider">Canvas: {Math.round(canvasScale * 100)}%</span>
                     </div>
 
                     <div 
                         onPointerMove={onPointerMove}
                         onPointerUp={onPointerUp}
                         onPointerLeave={onPointerUp}
-                        className="relative group/canvas flex items-center justify-center touch-none"
+                        className="relative flex items-center justify-center touch-none"
                         style={{ 
                             width: `${1050 * canvasScale}px`,
                             height: `${600 * canvasScale}px`,
                         }}
                     >
-                        <div className="absolute inset-0 bg-white/10 blur-[200px] rounded-full scale-150 opacity-40 group-hover/canvas:opacity-60 transition-opacity" />
-
                         <div 
                             style={{ 
                                 transform: `scale(${canvasScale})`,
@@ -423,7 +479,7 @@ export default function BusinessCardPage() {
                                 ref={cardRef}
                                 id="card-studio-render"
                                 style={{ width: "1050px", height: "600px", background: themeColor, overflow: "hidden", position: "relative" }} 
-                                className="rounded-[3rem] shadow-[0_100px_300px_rgba(0,0,0,1)] ring-1 ring-white/10 shrink-0 select-none animate-in fade-in duration-700"
+                                className="rounded-[2.5rem] shadow-[12px_12px_0_#000] border-4 border-black shrink-0 select-none"
                             >
                             {activeTexture !== "none" && (
                                 <div className="absolute inset-0 pointer-events-none z-[1]" style={{ backgroundImage: `url("${getPatternSvg(activeTexture, patternColor)}")`, backgroundRepeat: "repeat", opacity: 0.8 }} />
@@ -440,12 +496,12 @@ export default function BusinessCardPage() {
                                         position: "absolute",
                                         cursor: el.locked ? "default" : "move",
                                         padding: "8px",
-                                        outline: selectedId === el.id ? "3px solid #ffffff" : "none",
-                                        outlineOffset: "8px",
+                                        outline: selectedId === el.id ? "3px solid #fde047" : "none",
+                                        outlineOffset: "4px",
                                         minWidth: "max-content",
                                         display: "inline-block"
                                     }}
-                                    className="transition-all duration-75 group/item"
+                                    className="transition-all duration-75"
                                 >
                                     {el.type === "text" && (
                                         <div style={{ fontSize: el.size, fontWeight: el.fontWeight as any, letterSpacing: el.letterSpacing, color: el.color || "#ffffff" }} className="whitespace-nowrap leading-none">
@@ -456,17 +512,17 @@ export default function BusinessCardPage() {
                                         <Zap size={el.size} strokeWidth={1} style={{ color: el.color || "#ffffff" }} />
                                     )}
                                     {(el.type === "logo" || el.type === "image") && (
-                                        <img src={el.content} style={{ height: el.size }} className="w-auto pointer-events-none block object-contain" alt="asset" />
+                                        <img src={el.content} style={{ height: el.size }} className="w-auto pointer-events-none block object-contain" alt="brand asset" />
                                     )}
                                 </div>
                             ))}
 
-                             {/* Metadata Overlay */}
-                             <div className="absolute bottom-16 right-16 flex flex-col items-end gap-3 pointer-events-none opacity-40 z-10 transition-opacity group-hover/canvas:opacity-60">
-                                {phone && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{phone} <Phone size={11} className="text-zinc-500" /></div>}
-                                {email && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{email} <Mail size={11} className="text-zinc-500" /></div>}
-                                {website && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{website} <Globe size={11} className="text-zinc-500" /></div>}
-                                {address && <div className="text-[13px] font-black tracking-[0.3em] uppercase flex items-center gap-3">{address} <MapPin size={11} className="text-zinc-500" /></div>}
+                             {/* Contact Details overlay */}
+                             <div className="absolute bottom-16 right-16 flex flex-col items-end gap-3 pointer-events-none opacity-50 z-10">
+                                {phone && <div className="text-[13px] font-black tracking-[0.2em] uppercase flex items-center gap-3">{phone} <Phone size={11} className="text-zinc-400" /></div>}
+                                {email && <div className="text-[13px] font-black tracking-[0.2em] uppercase flex items-center gap-3">{email} <Mail size={11} className="text-zinc-400" /></div>}
+                                {website && <div className="text-[13px] font-black tracking-[0.2em] uppercase flex items-center gap-3">{website} <Globe size={11} className="text-zinc-400" /></div>}
+                                {address && <div className="text-[13px] font-black tracking-[0.2em] uppercase flex items-center gap-3">{address} <MapPin size={11} className="text-zinc-400" /></div>}
                              </div>
                             </div>
                         </div>
@@ -475,217 +531,153 @@ export default function BusinessCardPage() {
 
                 {/* RIGHT PROPERTY INSPECTOR (Responsive) */}
                 <div className={`
-                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-[#1c1c1c] border-l border-white/[0.05] flex flex-col z-50 transition-transform duration-300
-                    ${rightPanelOpen ? "translate-x-0 shadow-[-20px_0_60px_rgba(0,0,0,0.8)]" : "translate-x-full lg:translate-x-0"}
+                    absolute lg:relative top-0 bottom-0 right-0 w-80 bg-[#F4ECD8] border-l-2 border-black flex flex-col z-50 transition-transform duration-300
+                    ${rightPanelOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"}
                 `}>
                     {selectedElement ? (
-                        <div className="flex flex-col h-full overflow-hidden">
-                             <div className="p-4 border-b border-white/[0.05] flex items-center justify-between bg-[#1c1c1c]/50">
-                                <div className="flex items-center gap-3">
-                                     <button onClick={() => setRightPanelOpen(false)} className="lg:hidden p-1 text-zinc-500"><X size={18}/></button>
-                                     <h3 className="text-[10px] font-black text-[#f0ede8] uppercase tracking-widest">Properties</h3>
+                        <div className="flex flex-col h-full overflow-hidden bg-white border-l-2 border-black">
+                             <div className="p-4 border-b-2 border-black flex items-center justify-between bg-white">
+                                <div className="flex items-center gap-2">
+                                     <button onClick={() => setRightPanelOpen(false)} className="lg:hidden p-1 text-black"><X size={16}/></button>
+                                     <h3 className="text-[10px] font-black text-black uppercase tracking-wider ig-display">Inspector</h3>
                                 </div>
-                                <button onClick={() => { saveToHistory(elements.filter(el => el.id !== selectedId)); setSelectedId(null); setRightPanelOpen(false); }} className="p-2 text-zinc-600 hover:text-red-500 transition-colors bg-red-500/5 rounded-lg border border-red-500/10"><Trash2 size={16} /></button>
+                                <button onClick={() => { saveToHistory(elements.filter(el => el.id !== selectedId)); setSelectedId(null); setRightPanelOpen(false); }} className="ig-btn p-2 border-2 border-black hover:bg-red-50 text-red-650 bg-red-100/35 rounded-xl shadow-[1.5px_1.5px_0_#000]"><Trash2 size={14} /></button>
                              </div>
 
-                              <div data-lenis-prevent className="flex-grow overflow-y-auto p-8 custom-scrollbar space-y-12 pb-32 bg-[#141414]">
-                                <section className="space-y-10">
+                              <div data-lenis-prevent className="flex-grow overflow-y-auto p-6 space-y-6 pb-20 bg-white">
+                                <section className="space-y-6">
                                     <div>
-                                        <div className="flex justify-between mb-5">
-                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Master Scale</span>
-                                            <span className="text-[10px] font-mono text-zinc-400 bg-white/5 border border-white/5 px-2 py-0.5 rounded-md">{selectedElement.size}px</span>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-wider">Dimension Size</span>
+                                            <span className="text-[9px] font-mono text-zinc-500 bg-zinc-50 border border-zinc-200 px-2 py-0.5 rounded-md">{selectedElement.size}px</span>
                                         </div>
-                                        <div className="flex items-center gap-4">
-                                            <button onClick={() => updateElement(selectedElement.id, { size: Math.max(4, selectedElement.size - 5) }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-white/50 text-zinc-500 hover:text-[#f0ede8] transition-all shadow-inner"><Minimize2 size={16} /></button>
-                                             <input type="range" min="4" max="1000" value={selectedElement.size} onChange={e => updateElement(selectedElement.id, { size: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="flex-grow scrollbar-indigo white" />
-                                             <button onClick={() => updateElement(selectedElement.id, { size: selectedElement.size + 5 }, true)} className="w-12 h-12 bg-white/5 rounded-2xl border border-white/10 flex items-center justify-center hover:border-white/50 text-zinc-500 hover:text-[#f0ede8] transition-all shadow-inner"><Maximize2 size={16} /></button>
+                                        <div className="flex items-center gap-3">
+                                             <button onClick={() => updateElement(selectedElement.id, { size: Math.max(4, selectedElement.size - 5) }, true)} className="ig-btn w-10 h-10 bg-white rounded-xl border-2 border-black flex items-center justify-center hover:bg-zinc-50 shadow-[1.5px_1.5px_0_#000]"><Minimize2 size={14} /></button>
+                                             <input type="range" min="4" max="800" value={selectedElement.size} onChange={e => updateElement(selectedElement.id, { size: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="flex-grow ig-slider" />
+                                             <button onClick={() => updateElement(selectedElement.id, { size: selectedElement.size + 5 }, true)} className="ig-btn w-10 h-10 bg-[#fde047] rounded-xl border-2 border-black flex items-center justify-center hover:bg-yellow-400 shadow-[1.5px_1.5px_0_#000]"><Maximize2 size={14} /></button>
                                         </div>
                                     </div>
 
                                     <div>
-                                        <div className="flex justify-between mb-5">
-                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Transparency</span>
-                                             <span className="text-[10px] font-mono text-[#f0ede8] bg-white/10 px-2 py-0.5 rounded-md">{Math.round(selectedElement.opacity * 100)}%</span>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-wider">Layer Opacity</span>
+                                            <span className="text-[9px] font-mono text-zinc-500 bg-zinc-50 border border-zinc-200 px-2 py-0.5 rounded-md">{Math.round(selectedElement.opacity * 100)}%</span>
                                         </div>
-                                        <input type="range" min="0" max="1" step="0.01" value={selectedElement.opacity} onChange={e => updateElement(selectedElement.id, { opacity: parseFloat(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full white" />
+                                        <input type="range" min="0" max="1" step="0.01" value={selectedElement.opacity} onChange={e => updateElement(selectedElement.id, { opacity: parseFloat(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full ig-slider" />
                                     </div>
 
                                     <div>
-                                        <div className="flex justify-between mb-5">
-                                            <span className="text-[10px] font-black text-zinc-500 uppercase tracking-[0.3em]">Orientation</span>
-                                            <div className="flex items-center gap-3">
-                                                 <button onClick={() => updateElement(selectedElement.id, { rotation: 0 }, true)} className="text-[9px] font-black text-[#f0ede8] hover:text-[#f0ede8] transition-colors tracking-widest">RESET</button>
-                                                 <span className="text-[10px] font-mono text-[#f0ede8] bg-white/10 px-2 py-0.5 rounded-md">{selectedElement.rotation}°</span>
+                                        <div className="flex justify-between mb-2">
+                                            <span className="text-[9px] font-black text-zinc-500 uppercase tracking-wider">Rotation Angle</span>
+                                            <div className="flex items-center gap-2">
+                                                 <button onClick={() => updateElement(selectedElement.id, { rotation: 0 }, true)} className="text-[8px] font-black text-zinc-500 hover:text-black uppercase tracking-wider">RESET</button>
+                                                 <span className="text-[9px] font-mono text-zinc-500 bg-zinc-50 border border-zinc-200 px-2 py-0.5 rounded-md">{selectedElement.rotation}°</span>
                                             </div>
                                         </div>
-                                        <input type="range" min="-180" max="180" value={selectedElement.rotation} onChange={e => updateElement(selectedElement.id, { rotation: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full white" />
+                                        <input type="range" min="-180" max="180" value={selectedElement.rotation} onChange={e => updateElement(selectedElement.id, { rotation: parseInt(e.target.value) })} onMouseUp={() => saveToHistory(elements)} className="w-full ig-slider" />
                                     </div>
                                 </section>
 
                                 {selectedElement.type === "text" && (
-                                    <section className="space-y-10 pt-12 border-t border-white/5">
-                                          <h3 className="text-[10px] font-black text-[#f0ede8] uppercase tracking-[0.3em] flex items-center gap-3"><Type size={14}/> Typography</h3>
-                                         <div>
-                                            <label className="text-[9px] font-black text-zinc-600 uppercase mb-5 block tracking-[0.2em]">Ink Swatch</label>
-                                            <div className="flex gap-4">
-                                                <input type="color" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 cursor-pointer p-1.5 transition-transform active:scale-95 shadow-lg" />
-                                                 <input type="text" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="flex-grow bg-white/5 border border-white/10 rounded-2xl px-5 text-sm font-mono uppercase text-zinc-400 outline-none focus:border-white shadow-inner" />
+                                    <section className="space-y-6 pt-6 border-t-2 border-dashed border-zinc-200">
+                                        <h3 className="text-[10px] font-black text-black uppercase tracking-wider flex items-center gap-2 ig-display"><Type size={14}/> Typography</h3>
+                                        <div>
+                                            <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-wider">Ink Swatch</label>
+                                            <div className="flex gap-3">
+                                                <input type="color" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="w-10 h-10 rounded-xl bg-white border-2 border-black cursor-pointer p-1 transition-transform shadow-[1.5px_1.5px_0_#000] shrink-0" />
+                                                <input type="text" value={selectedElement.color || "#ffffff"} onChange={e => updateElement(selectedElement.id, { color: e.target.value }, true)} className="flex-grow bg-zinc-50 border-2 border-black rounded-xl px-4 text-xs font-mono uppercase text-black outline-none focus:bg-white" />
                                             </div>
-                                         </div>
-                                         <div>
-                                            <label className="text-[9px] font-black text-zinc-600 uppercase mb-5 block tracking-[0.2em]">Live Layer Content</label>
-                                             <textarea value={selectedElement.content} onChange={e => updateElement(selectedElement.id, { content: e.target.value })} onBlur={() => saveToHistory(elements)} className="w-full bg-white/5 border border-white/10 rounded-3xl p-5 text-[11px] text-[#f0ede8] focus:border-white outline-none h-32 resize-none leading-relaxed transition-all shadow-inner" />
-                                         </div>
-                                         <div className="grid grid-cols-2 gap-3">
+                                        </div>
+                                        <div>
+                                            <label className="text-[9px] font-black text-zinc-500 uppercase mb-2 block tracking-wider">Layer Text Content</label>
+                                            <textarea value={selectedElement.content} onChange={e => updateElement(selectedElement.id, { content: e.target.value })} onBlur={() => saveToHistory(elements)} className="w-full bg-zinc-50 border-2 border-black rounded-2xl p-4 text-xs text-black focus:bg-white outline-none h-24 resize-none leading-relaxed transition-all" />
+                                        </div>
+                                        <div className="grid grid-cols-2 gap-2">
                                             {[ {l: "Black", w: "900"}, {l: "Bold", w: "700"}, {l: "Medium", w: "400"}, {l: "Light", w: "200"} ].map(w => (
-                                                <button key={w.w} onClick={() => updateElement(selectedElement.id, { fontWeight: w.w }, true)} className={`py-4 text-[9px] font-black uppercase rounded-2xl border transition-all tracking-[0.1em] ${selectedElement.fontWeight === w.w ? "bg-[#f0ede8] text-[#141414] border-white shadow-2xl scale-[1.03]" : "bg-white/5 text-zinc-500 border-white/10 hover:text-[#f0ede8] hover:bg-white/10"}`}>
+                                                <button key={w.w} onClick={() => updateElement(selectedElement.id, { fontWeight: w.w }, true)} className={`ig-btn py-2 text-[9px] font-black uppercase rounded-xl border-2 border-black transition-all tracking-wider shadow-[1.5px_1.5px_0_#000] ${selectedElement.fontWeight === w.w ? "bg-[#fde047] text-black" : "bg-white text-zinc-550 hover:bg-zinc-50"}`}>
                                                     {w.l}
                                                 </button>
                                             ))}
-                                         </div>
+                                        </div>
                                     </section>
                                 )}
 
-                                <section className="pt-12 border-t border-white/5">
-                                    <h3 className="text-[10px] font-black text-[#f0ede8] uppercase tracking-[0.3em] mb-6 flex items-center gap-3"><AlignLeft size={14}/> Studio Align</h3>                                     <div className="space-y-3">
-                                        <button onClick={() => updateElement(selectedElement.id, { x: 525 - (elWidth(selectedElement)/2) }, true)} className="w-full h-12 rounded-xl bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white/[0.12] transition-all flex items-center justify-center gap-3">
+                                <section className="pt-6 border-t-2 border-dashed border-zinc-200">
+                                    <h3 className="text-[10px] font-black text-black uppercase tracking-wider mb-4 flex items-center gap-2 ig-display"><AlignLeft size={14}/> Layout Alignment</h3>
+                                    <div className="grid grid-cols-1 gap-2">
+                                        <button onClick={() => updateElement(selectedElement.id, { x: 525 - (elWidth(selectedElement)/2) }, true)} className="ig-btn w-full h-11 rounded-xl bg-white border-2 border-black hover:bg-zinc-50 text-black transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0_#000]">
                                             <AlignCenter size={14} />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">Align Horizontal</span>
+                                            <span className="text-[9px] font-black uppercase tracking-wider">Align Center Horizontally</span>
                                         </button>
-                                        <button onClick={() => updateElement(selectedElement.id, { y: 300 - (selectedElement.size/2) }, true)} className="w-full h-12 rounded-xl bg-[#1c1c1c] border border-white/[0.07] text-zinc-400 hover:text-[#f0ede8] hover:border-white/[0.12] transition-all flex items-center justify-center gap-3">
+                                        <button onClick={() => updateElement(selectedElement.id, { y: 300 - (selectedElement.size/2) }, true)} className="ig-btn w-full h-11 rounded-xl bg-white border-2 border-black hover:bg-zinc-50 text-black transition-all flex items-center justify-center gap-2 shadow-[2px_2px_0_#000]">
                                             <AlignLeft size={14} className="rotate-90" />
-                                            <span className="text-[9px] font-black uppercase tracking-[0.2em]">Align Vertical</span>
+                                            <span className="text-[9px] font-black uppercase tracking-wider">Align Center Vertically</span>
                                         </button>
                                     </div>
-
                                 </section>
-                             </div>
+                              </div>
                         </div>
                     ) : (
-                        <div className="h-full flex flex-col items-center justify-center text-center p-10 space-y-8">
+                        <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-6 bg-white border-l-2 border-black">
                             <div className="relative">
-                                <div className="w-20 h-20 bg-white/5 rounded-[2.5rem] flex items-center justify-center text-zinc-600 border border-white/10 shadow-2xl relative backdrop-blur-3xl">
-                                    <Sparkles size={32} strokeWidth={1} />
+                                <div className="w-16 h-16 bg-[#F4ECD8] rounded-[2rem] flex items-center justify-center text-black border-2 border-black shadow-[3px_3px_0_#000]">
+                                    <Sparkles size={26} />
                                 </div>
                             </div>
-                            <div className="space-y-4">
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-[#f0ede8]">Perspective Stage</h3>
-                                <p className="text-[9px] font-bold text-zinc-600 uppercase leading-[2.5] tracking-widest max-w-[200px] mx-auto">Select a layer element to access professional-grade property controllers.</p>
+                            <div className="space-y-2 max-w-[220px]">
+                                <h3 className="text-[10px] font-black uppercase tracking-wider text-black ig-display">No Layer Selected</h3>
+                                <p className="text-[9px] font-bold text-zinc-500 uppercase leading-relaxed tracking-wider">Select an element on the canvas to customize text weight, rotate, opacity, size and alignments.</p>
                             </div>
                         </div>
                     )}
                 </div>
             </div>
 
-            <style jsx global>{`
-                .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-                .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-                .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255,0.3); }
-                
-                input[type='range'] {
-                    -webkit-appearance: none;
-                    background: rgba(255,255,255,0.05);
-                    height: 2px;
-                    border-radius: 10px;
-                }
-
-                input[type='range']::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    height: 16px;
-                    width: 16px;
-                    border-radius: 50%;
-                    background: #fff;
-                    cursor: pointer;
-                    box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-                    border: 2px solid #000;
-                    transition: all 0.2s ease;
-                }
-
-                input[type='range']::-webkit-slider-thumb:hover {
-                    transform: scale(1.2);
-                    box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
-                }
-            `}</style>
-
             <HelpModal 
                 isOpen={showHelp} 
                 onClose={() => setShowHelp(false)} 
-                title="Professional Design Infrastructure"
+                title="Business Card Maker Guide"
             >
-                <div className="max-w-6xl mx-auto space-y-12 sm:space-y-24 text-left pb-12 sm:pb-24 px-2 sm:px-0">
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-[2rem] sm:rounded-3xl border border-white/[0.06] text-center space-y-4 sm:space-y-6 max-w-4xl mx-auto animate-in fade-in duration-1000">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6">
-                            The Future of Networking: Professional Business Card Studio
-                        </h3>
-                        <p className="text-sm sm:text-lg md:text-xl leading-relaxed text-zinc-500 font-medium">
-                            Welcome to the AssetNest <strong>Business Card Design Studio</strong>—the world&apos;s most intuitive, browser-based professional design environment. Stop relying on generic templates and static creators. Our StudioMaster engine provides an interactive, layer-based workflow that allows you to drag, rotate, and scale every element with pixel perfection. Whether you are a corporate executive or a creative freelancer, our tool ensures your first impression is not just a card, but a piece of modern art.
+                <div className="max-w-2xl mx-auto space-y-8 py-4 text-black text-left">
+                    <section className="space-y-3">
+                        <h3 className="text-lg font-bold text-black ig-display">Interactive Corporate Brand Designer</h3>
+                        <p className="text-sm text-zinc-650 leading-relaxed font-medium">
+                            Create professional business cards using an intuitive, layers-based designer. With full drag-and-drop mechanics and custom texture synthesizers, you can create modern networking assets for free.
                         </p>
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-10">
-                        <div className="p-6 sm:p-10 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-white/[0.12] transition-all">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1c1c1c] rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-[#f0ede8] transition-colors">
-                                <PenTool size={24} className="sm:w-7 sm:h-7" />
-                            </div>
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6">Layer-Based Workflow</h3>
-                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Full control over z-index and visibility. Manage your design like a pro in Photoshop, but without the complexity.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000] space-y-2">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5"><PenTool size={13}/> Live Layering</h4>
+                            <p className="text-[11px] text-zinc-600 font-semibold leading-relaxed">
+                                Control depth layers with full drag alignment, customization of individual text properties, and relative sizing.
+                            </p>
                         </div>
-                        <div className="p-6 sm:p-10 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-white/[0.12] transition-all">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1c1c1c] rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-[#f0ede8] transition-colors">
-                                <Palette size={24} className="sm:w-7 sm:h-7" />
-                            </div>
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6">Texture Synthesis</h3>
-                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">Apply organic textures like Linen, Mesh, and Carbon Fiber to your card surface for a premium physical feel.</p>
+                        <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000] space-y-2">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5"><Palette size={13}/> Surface Textures</h4>
+                            <p className="text-[11px] text-zinc-600 font-semibold leading-relaxed">
+                                Overlay professional patterns onto your card structure such as hexagons, grids, waves, or carbon textures.
+                            </p>
                         </div>
-                        <div className="p-6 sm:p-10 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2rem] sm:rounded-[3rem] space-y-4 sm:space-y-6 group hover:border-white/[0.12] transition-all">
-                            <div className="w-12 h-12 sm:w-14 sm:h-14 bg-[#1c1c1c] rounded-xl sm:rounded-2xl flex items-center justify-center text-zinc-500 group-hover:text-[#f0ede8] transition-colors">
-                                <ShieldCheck size={24} className="sm:w-7 sm:h-7" />
-                            </div>
-                            <h3 className="text-lg sm:text-xl md:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6">100% Private Export</h3>
-                            <p className="text-[11px] sm:text-sm text-zinc-600 leading-relaxed font-bold uppercase tracking-tight">We never store your contact data. Everything is processed locally in your browser for absolute security.</p>
+                        <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000] space-y-2">
+                            <h4 className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5"><ShieldCheck size={13}/> Private Rendering</h4>
+                            <p className="text-[11px] text-zinc-600 font-semibold leading-relaxed">
+                                No remote database records or cookies trackers. Card assets compile inside your client browser memory securely.
+                            </p>
                         </div>
                     </div>
 
-                    <div className="bg-[#1c1c1c]/30 border border-white/[0.05] rounded-[2rem] sm:rounded-[4rem] p-6 sm:p-12 md:p-20">
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-20">
-                            <div className="space-y-6 sm:space-y-10">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6">Design Briefing & FAQ</h3>
-                                <Accordion>
-                                    <AccordionItem title="What is the export resolution?">
-                                        Our StudioMaster engine exports in Ultra-High Resolution (4x Scale), making it ready for professional offset or digital printing without loss of quality.
-                                    </AccordionItem>
-                                    <AccordionItem title="Can I upload my own logo?">
-                                        Yes! Use the &quot;Image&quot; upload button in the top toolbar to import your brand assets. We support PNG, JPG, and SVG formats.
-                                    </AccordionItem>
-                                    <AccordionItem title="How do I align elements to the center?">
-                                        Select any element and use the &quot;Studio Align&quot; buttons in the right panel to perfectly center them horizontally or vertically.
-                                    </AccordionItem>
-                                </Accordion>
-                            </div>
-                            <div className="space-y-6 sm:space-y-10 flex flex-col justify-center bg-[#1c1c1c]/40 p-6 sm:p-12 rounded-[2rem] sm:rounded-[3rem] border border-white/5">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-2 sm:mb-6 flex items-center gap-2">
-                                    <Sparkles className="text-zinc-500" size={24} />
-                                    Pro Tip: Studio Shortcuts
-                                </h3>
-                                <div className="space-y-2 sm:space-y-4">
-                                     <div className="flex items-center justify-between py-2 sm:py-3 border-b border-white/5">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Undo Change</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-[#f0ede8] font-mono uppercase tracking-tighter whitespace-nowrap">Ctrl + Z</kbd>
-                                     </div>
-                                     <div className="flex items-center justify-between py-2 sm:py-3 border-b border-white/5">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Redo Change</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-[#f0ede8] font-mono uppercase tracking-tighter whitespace-nowrap">Ctrl + Y</kbd>
-                                     </div>
-                                     <div className="flex items-center justify-between py-2 sm:py-3">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest whitespace-nowrap mr-2">Delete Layer</span>
-                                        <kbd className="px-2 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-black text-[#f0ede8] font-mono uppercase tracking-tighter whitespace-nowrap">Delete</kbd>
-                                     </div>
-                                </div>
-                                <p className="text-[9px] text-zinc-700 font-bold uppercase tracking-widest text-center mt-4 sm:mt-6 italic">© 2026 AssetNest Studio Solutions</p>
-                            </div>
-                        </div>
-                    </div>
+                    <section className="space-y-3">
+                        <h3 className="text-lg font-bold text-black ig-display">Frequently Asked Questions</h3>
+                        <Accordion>
+                            <AccordionItem title="Can I customize the export dimensions?">
+                                Yes. The exported PNG renders at 4x target print density, preventing blurred text or stutters in print-shops.
+                            </AccordionItem>
+                            <AccordionItem title="How do I upload brand templates/logos?">
+                                Click the Upload button in the top toolbar to upload any standard image file (PNG, JPG) and position it as a card layer.
+                            </AccordionItem>
+                        </Accordion>
+                    </section>
                 </div>
             </HelpModal>
         </div>
