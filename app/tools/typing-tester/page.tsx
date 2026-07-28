@@ -1259,6 +1259,157 @@ export default function TypingTesterPage() {
                 </div>
             </main>
 
+            {/* ─── SEO RICH TEXT SECTION ─── */}
+            {!isActive && !isFinished && (
+                <div className="max-w-5xl mx-auto mt-20 mb-20 p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden text-black shadow-[6px_6px_0_#000] font-sans">
+                    <div className="relative z-10 space-y-12">
+                        {/* Top Badges */}
+                        <div className="flex flex-wrap justify-center gap-2.5">
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fef08a] text-[10px] font-black uppercase tracking-wider text-black">
+                                ⚡ Free Typing Speed Tester
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#bfdbfe] text-[10px] font-black uppercase tracking-wider text-black">
+                                ⌨️ Complete Alphabet Practice
+                            </span>
+                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#bbf7d0] text-[10px] font-black uppercase tracking-wider text-black">
+                                ⏱️ Custom Time Sprints
+                            </span>
+                        </div>
+
+                        {/* Main Title & Subtitle */}
+                        <div className="text-center space-y-4 max-w-3xl mx-auto">
+                            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-black leading-tight ig-display">
+                                Become a <span className="underline decoration-yellow-400 decoration-wavy">Typing Master</span> with Our Free Speed Typing Online Tool
+                            </h2>
+                            <p className="text-sm sm:text-base text-zinc-650 leading-relaxed font-semibold">
+                                Measure and improve your fingers' velocity with our premium, developer-oriented <strong className="font-bold">speed typing test online</strong>. Whether you need a quick <strong className="font-bold">5 minute typing test</strong>, a detailed <strong className="font-bold">online typing test 10 minutes</strong> session, or targeted <strong className="font-bold">speed typing practice</strong> with punctuation and numbers, our test is 100% free, private, and calculated in real-time.
+                            </p>
+                        </div>
+
+                        {/* Features Grid */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                            {[
+                                {
+                                    title: "Accurate Speed Typing Online",
+                                    desc: "Track your WPM (Words Per Minute), raw keystrokes, and real-time accuracy percentages instantly with no delay or buffering.",
+                                    icon: "⚡"
+                                },
+                                {
+                                    title: "Custom Typing Practice",
+                                    desc: "Train your muscle memory with standard, lowercase-only mode or enable numbers and punctuation to simulate realistic programming and writing sessions.",
+                                    icon: "⌨️"
+                                },
+                                {
+                                    title: "Versatile Time Durations",
+                                    desc: "Take a standard 1 minute speed typing test, push your limits with a 5 minute typing test, or run a comprehensive online typing test 10 minutes block.",
+                                    icon: "⏱️"
+                                },
+                                {
+                                    title: "Lobby Realtime Duels",
+                                    desc: "Connect with friend codes to race live! Track each other's progress line in real-time with full realtime channel synchronization.",
+                                    icon: "🤝"
+                                },
+                                {
+                                    title: "100% Free & Open-Access",
+                                    desc: "No subscriptions, sign-ups, or annoying advertisements. Complete your typing master practice directly inside your browser for free.",
+                                    icon: "🎁"
+                                },
+                                {
+                                    title: "Detailed Analytics Chart",
+                                    desc: "Get an interactive chart output of your words-per-minute fluctuations and visual markers where keyboard stutter/errors occurred.",
+                                    icon: "📈"
+                                }
+                            ].map((f, i) => (
+                                <div key={i} className="p-6 bg-zinc-50 border-2 border-black rounded-3xl transition-all duration-350 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000]">
+                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-lg mb-4 shadow-[2px_2px_0_#000]">
+                                        {f.icon}
+                                    </div>
+                                    <h4 className="text-sm font-black text-black mb-2 uppercase tracking-wide">{f.title}</h4>
+                                    <p className="text-xs text-zinc-500 font-semibold leading-relaxed">{f.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Step Timeline */}
+                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
+                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-8 tracking-tight ig-display">
+                                How to Master Speed Typing Online
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                {[
+                                    { step: "1", title: "Select Mode & Parameters", desc: "Choose time, words, or both. Toggle punctuation or numbers if you are testing professional coding/technical transcription." },
+                                    { step: "2", title: "Alphabet & Speed Test", desc: "Start typing the highlighted characters. Keep your eyes on the text block while the cursor tracks your inputs with zero lag." },
+                                    { step: "3", title: "Review Performance Charts", desc: "Evaluate WPM peaks, raw keystrokes, accuracy margins, and identify keys causing stutter errors to target your practice." }
+                                ].map((s) => (
+                                    <div key={s.step} className="relative p-6 bg-zinc-50 border-2 border-black rounded-3xl pt-8 shadow-[2px_2px_0_#000]">
+                                        <div className="absolute -top-3 left-6 w-8 h-8 rounded-full border-2 border-black bg-yellow-400 text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
+                                            {s.step}
+                                        </div>
+                                        <h4 className="text-sm font-black text-black mb-2 uppercase tracking-wide">{s.title}</h4>
+                                        <p className="text-xs text-zinc-500 font-semibold leading-relaxed">{s.desc}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Comparison Table */}
+                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
+                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-2 tracking-tight ig-display">
+                                Why Practice with a Dedicated Speed Typing Test?
+                            </h3>
+                            <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider text-center mb-8 max-w-lg mx-auto">
+                                Compare structured typing tests with unstructured keyboard practice.
+                            </p>
+                            <div className="overflow-x-auto rounded-2xl border-2 border-black shadow-[4px_4px_0_#000]">
+                                <table className="w-full border-collapse text-left text-xs min-w-[500px]">
+                                    <thead>
+                                        <tr className="bg-zinc-100 border-b-2 border-black">
+                                            <th className="p-4 text-black font-black uppercase tracking-wider">Metrics Checked</th>
+                                            <th className="p-4 text-emerald-700 font-black uppercase tracking-wider">Structured Typing Tester</th>
+                                            <th className="p-4 text-rose-700 font-black uppercase tracking-wider">Regular Keyboard Usage</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y-2 divide-black bg-white">
+                                        {[
+                                            { feat: "Real-time WPM Calculation", ours: "Calculated dynamically and logged per second on interactive charts", other: "No visibility into current speed and speed fluctuations" },
+                                            { feat: "Accuracy Validation", ours: "Checks every typed letter against target word list immediately", other: "Errors go unnoticed and lead to bad muscle memory habits" },
+                                            { feat: "Special Character practice", ours: "Toggle options for speed typing test online alphabet, symbols, numbers", other: "Relies heavily on letters, leaving numbers/symbols slower" },
+                                            { feat: "Realtime Battle Racing", ours: "Play multiplayer duels against online opponents synchronous", other: "Only solo, unmonitored typing sessions with no comparison" },
+                                            { feat: "Zero-Distraction Layout", ours: "Clean, themeable viewport optimized for absolute focus", other: "Surrounded by notifications, ads, and visual clutter" }
+                                        ].map((row, idx) => (
+                                            <tr key={idx} className="hover:bg-zinc-50 transition-colors">
+                                                <td className="p-4 text-black font-black">{row.feat}</td>
+                                                <td className="p-4 text-emerald-800 font-semibold">{row.ours}</td>
+                                                <td className="p-4 text-zinc-500 font-medium">{row.other}</td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        {/* FAQ Accordion */}
+                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
+                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-8 tracking-tight ig-display">
+                                Frequently Asked Questions
+                            </h3>
+                            <Accordion>
+                                <AccordionItem title="Is this speed typing practice tool completely free?">
+                                    Yes! Our speed typing test online free application has no premium tiers, paywalls, or feature limitations.
+                                </AccordionItem>
+                                <AccordionItem title="Can I take a 5 minute typing test or a 10 minute typing test?">
+                                    Yes. Click the configurations cog next to the tester to specify any custom time duration in seconds. You can easily set it to 300 seconds (5 minutes) or 600 seconds (10 minutes).
+                                </AccordionItem>
+                                <AccordionItem title="How does the alphabet practice mode work?">
+                                    The typing practice list includes random distributions from the English dictionary, exercising all letters of the alphabet to form consistent finger movements.
+                                </AccordionItem>
+                            </Accordion>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
             {/* ── Results Screen ─────────────────────────────────────────────── */}
             {isFinished && (
                 <div
