@@ -1212,7 +1212,7 @@ export default function TypingTesterPage() {
                                 return (
                                     <span
                                         key={wIdx}
-                                        className="word-el relative inline-flex"
+                                        className={`word-el inline-flex ${isCurrent ? "relative" : ""}`}
                                         style={{
                                             opacity: isCurrent ? 1 : isPast ? 1 : 0.5,
                                             textDecorationLine: isCurrent && wordData.hasError ? "underline" : "none",
