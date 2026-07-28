@@ -101,11 +101,7 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
           crossOrigin="anonymous"
         />
-        {/* Monetization Network Script */}
-        <script
-          async
-          src="https://pl30573991.effectivecpmnetwork.com/17/20/2b/17202bb25e2a84c0a9bf3eee7da992c9.js"
-        />
+        {/* Monetization Network Script (Popunder) */}
         <script
           async
           src="https://pl30573990.effectivecpmnetwork.com/95/18/16/9518166894fdde3ffb07543fb513f74b.js"

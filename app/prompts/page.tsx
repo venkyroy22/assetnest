@@ -5,6 +5,7 @@ import { Copy, Check, Terminal, Sparkles, ZoomIn, ChevronLeft, ChevronRight, Hea
 import { useState, useEffect, useMemo } from "react";
 import Container from "@/components/Container";
 import Tooltip from "@/components/Tooltip";
+import AdBanner from "@/components/AdBanner";
 
 // --- Sub-component for auto-sliding carousel images ---
 function CarouselImage({ images, title }: { images: string[], title: string }) {
@@ -161,6 +162,10 @@ export default function PromptsPage() {
                     <h1 className="text-3xl md:text-5xl font-black text-[#f0ede8] uppercase tracking-tighter">
                         AI Image <span className="text-zinc-700">Prompts</span>
                     </h1>
+                </div>
+
+                <div className="py-2">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
                 </div>
 
                 {/* ── Compact Grid ── */}

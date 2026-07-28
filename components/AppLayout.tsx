@@ -98,7 +98,7 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                         {children}
                     </div>
 
-                    {!hideUI && <AdBanner />}
+                    {!hideUI && <AdBanner adKey="55aee0849c6a8229bb8b98992dbb8a17" width={728} height={90} />}
 
                     {isHome && <Footer />}
                 </main>

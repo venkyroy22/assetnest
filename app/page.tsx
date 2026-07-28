@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import FadeReveal from "@/components/FadeReveal";
+import AdBanner from "@/components/AdBanner";
 
 
 
@@ -701,6 +702,10 @@ export default function Home() {
             </div>
           </section>
         </FadeReveal>
+
+        <div className="py-8 flex justify-center">
+            <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+        </div>
 
         {/* ══════════════════════════ WHY ASSETNEST ══════════════════════════ */}
         <FadeReveal distance={15}>
