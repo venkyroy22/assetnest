@@ -30,7 +30,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/smartpdfsigner-1779426458578.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/smartpdfsigner-1785231254019.webp",
     },
     {
         id: "image-compressor",
@@ -42,7 +42,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "compress", "jpeg", "png", "webp", "optimize", "resize"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imagecompressor-1779426394515.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imagecompressor-1785231257266.webp",
     },
     {
         id: "bg-remover",
@@ -54,7 +54,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "background", "remover", "bg", "ai", "remove", "transparent", "creator"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/background-remover-1779426349609.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/background-remover-1785231262173.webp",
     },
     {
         id: "qr",
@@ -66,7 +66,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["qr", "qrcode", "barcode", "link", "generate", "scan"],
         accent: "#ffffff",
         category: "Generate",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/qrcode-1779426447695.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/qrcode-1785231265027.webp",
     },
 
     {
@@ -79,7 +79,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["signature", "esign", "sign", "digital signature", "draw", "transparent", "png", "svg"],
         accent: "#ffffff",
         category: "Generate",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/e-signature-1779426382948.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/e-signature-1785231268884.webp",
     },
     {
         id: "pomodoro",
@@ -91,7 +91,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["pomodoro", "timer", "focus", "productivity", "study", "work", "deep work", "break", "water reminder", "hydration", "drink water"],
         accent: "#ffffff",
         category: "Productivity",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pomodorotimer-1779426444178.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pomodorotimer-1785231272173.webp",
     },
     {
         id: "typing-tester",
@@ -103,7 +103,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["typing", "speed", "test", "tester", "wpm", "accuracy", "practice", "keyboard", "typist"],
         accent: "#ffffff",
         category: "Productivity",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/typingspeedtester-1779426467158.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/typingspeedtester-1785231274872.webp",
     },
     {
         id: "billing",
@@ -115,7 +115,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["billing", "invoice", "gst", "receipt", "barcode", "qr", "merchant", "shop", "india", "retail", "pos"],
         accent: "#ffffff",
         category: "Business",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/smartbillingtool-1779426453044.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/smartbillingtool-1785231277449.webp",
     },
     {
         id: "business-card",
@@ -127,7 +127,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["business card", "maker", "generator", "design", "corporate", "card", "branding"],
         accent: "#ffffff",
         category: "Business",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/businesscardmaker-1779426354852.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/businesscardmaker-1785231280059.webp",
     },
     {
         id: "image-converter",
@@ -139,7 +139,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "convert", "jpg", "jpeg", "png", "webp", "format", "converter", "batch"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imageconverter-1779426397019.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imageconverter-1785231282780.webp",
     },
     {
         id: "ig-grid",
@@ -151,7 +151,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["instagram", "grid", "planner", "feed", "social", "media", "preview", "drag", "drop", "layout"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/instagramgridplanner-1779426408153.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/instagramgridplanner-1785231285931.webp",
     },
     {
         id: "image-cropper",
@@ -163,7 +163,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "crop", "cropper", "resize", "aspect", "ratio", "dimensions"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imagecropper-1779426399794.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imagecropper-1785231289513.webp",
     },
     {
         id: "image-to-text",
@@ -175,7 +175,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["image", "ocr", "text", "extract", "scanner", "image to text", "photo to text"],
         accent: "#ffffff",
         category: "Images",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imagetotext-1779426405275.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imagetotext-1785231293123.webp",
     },
     {
         id: "pdf-merger",
@@ -191,7 +191,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfmerger-1779426430363.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfmerger-1785231296798.webp",
     },
     {
         id: "pdf-compressor",
@@ -208,7 +208,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfcompressor-1779426425015.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfcompressor-1785231299811.webp",
     },
     {
         id: "pdf-splitter",
@@ -225,7 +225,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfsplitter-1779426435888.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfsplitter-1785231302721.webp",
     },
     {
         id: "pdf-cropper",
@@ -242,7 +242,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfcropper-1779426427669.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfcropper-1785231305382.webp",
     },
     {
         id: "pdf-text-extractor",
@@ -258,7 +258,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdftextextractor-1779426438671.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdftextextractor-1785231307941.webp",
     },
     {
         id: "notes",
@@ -270,7 +270,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["notes", "workspace", "editor", "markdown", "write", "draft", "document", "text"],
         accent: "#ffffff",
         category: "Productivity",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/smartnotes-1779426455798.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/smartnotes-1785231310626.webp",
     },
     {
         id: "kanban",
@@ -282,7 +282,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["kanban", "board", "task", "project", "management", "workflow", " productivity", "organization", "dnd"],
         accent: "#ffffff",
         category: "Productivity",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/kanbanboard-1779426413769.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/kanbanboard-1785231313257.webp",
     },
     {
         id: "image-to-pdf",
@@ -299,7 +299,7 @@ export const ALL_TOOLS: Tool[] = [
         ],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imagetopdf-1779426402494.webp",
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imagetopdf-1785231316216.webp",
     },
 
     {
@@ -312,7 +312,7 @@ export const ALL_TOOLS: Tool[] = [
         tags: ["pdf", "unlock", "password", "remove", "decrypt", "security", "unprotect", "pdf password remover"],
         accent: "#ffffff",
         category: "PDF",
-        image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/pdfpasswordremover-1779426433126.webp"
+        image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfpasswordremover-1785231318883.webp"
     },
     {
         id: "wish-studio",

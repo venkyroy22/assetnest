@@ -30,10 +30,10 @@ export async function POST(req: Request) {
     let endpoint = "";
 
     if (isImage) {
-      endpoint = "https://api.streamlet.in/api-key/upload-image";
+      endpoint = "https://api.streamletedge.com/api-key/upload-image";
       uploadForm.append("image", file);
     } else if (isPdf) {
-      endpoint = "https://api.streamlet.in/api-key/upload-document";
+      endpoint = "https://api.streamletedge.com/api-key/upload-document";
       uploadForm.append("document", file);
     } else {
       return NextResponse.json(

@@ -21,8 +21,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "heroic-portrait",
     description: "Professional editorial lighting setup for 'Heroic' feel portraits.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagel454rnl454rnl454-1779426746644.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage1e7stc1e7stc1e7s-1779426717472.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagel454rnl454rnl454-1785231324096.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage1e7stc1e7stc1e7s-1785231329544.webp"
     ],
     author: "Gemini",
     sections: [
@@ -57,8 +57,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "matchflame-closeup-portrait",
     description: "Dramatic cinematic close-up portrait with a lit match flame as the key light source against a deep warm red background.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimageeueuboeueuboeueu-1779426743157.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage9wzf9i9wzf9i9wzf-1779426735608.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimageeueuboeueuboeueu-1785231335106.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage9wzf9i9wzf9i9wzf-1785231342784.webp"
     ],
     author: "Gemini",
     sections: [
@@ -93,8 +93,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "monochrome-dutch-tilt",
     description: "Cinematic black & white portrait with surreal diagonal light patterns and high texture detail.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage7lmyk07lmyk07lmy-1779426731989.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage4eu1o04eu1o04eu1-1779426728387.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage7lmyk07lmyk07lmy-1785231365367.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage4eu1o04eu1o04eu1-1785231375391.webp"
     ],
     author: "Gemini",
     sections: [
@@ -129,8 +129,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "shattered-mirror-portrait",
     description: "Ultra-realistic 8K cinematic portrait featuring shattered glass reflections and low-key lighting.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagebedjqybedjqybedj-1779426739320.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagewdjvrjwdjvrjwdjv-1779426761490.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagebedjqybedjqybedj-1785231381226.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagewdjvrjwdjvrjwdjv-1785231387066.webp"
     ],
     author: "Gemini",
     sections: [
@@ -165,8 +165,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "emerald-profile-portrait",
     description: "Cinematic close-up profile portrait with saturated deep-green monochromatic lighting and high-fashion aesthetic.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage3cqyo23cqyo23cqy-1779426724530.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagex27iwsx27iwsx27i-1779426766352.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage3cqyo23cqyo23cqy-1785231392709.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagex27iwsx27iwsx27i-1785231407955.webp"
     ],
     author: "Gemini",
     sections: [
@@ -201,8 +201,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "icy-blue-futuristic-halo",
     description: "Futuristic closet-up portrait with a neon halo effect and cool monochromatic icy blue lighting.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagevgqpw8vgqpw8vgqp-1779426757126.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimage24e81424e81424e8-1779426720965.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagevgqpw8vgqpw8vgqp-1785231413307.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimage24e81424e81424e8-1785231420471.webp"
     ],
     author: "Gemini",
     sections: [
@@ -237,8 +237,8 @@ export const aiPrompts: PromptItem[] = [
     slug: "minimalist-studio-suit",
     description: "Artistic black and white portrait in a minimalist fashion studio with sharp tailored suit lines.",
     images: [
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagev0rvz9v0rvz9v0rv-1779426753619.webp",
-      "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/geminigeneratedimagetuqosttuqosttuqo-1779426750194.webp"
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagev0rvz9v0rvz9v0rv-1785231425721.webp",
+      "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/geminigeneratedimagetuqosttuqosttuqo-1785231430656.webp"
     ],
     author: "Gemini",
     sections: [

@@ -240,8 +240,8 @@ function BentoGridSection() {
             </h3>
           </div>
           <ResponsiveImage
-            desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/layout1-1779426416489.webp"
-            mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/layout1mobile-1779426419230.webp"
+            desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/layout1-1785231434599.webp"
+            mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/layout1mobile-1785231437442.webp"
             alt="Every tool layout"
           />
         </div>
@@ -259,8 +259,8 @@ function BentoGridSection() {
             </h3>
           </div>
           <ResponsiveImage
-            desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card2-1779426358312.webp"
-            mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card2mobile-1779426361023.webp"
+            desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card2-1785231440382.webp"
+            mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card2mobile-1785231443300.webp"
             alt="Workflow layout"
           />
         </div>
@@ -285,8 +285,8 @@ function BentoGridSection() {
             </h3>
           </div>
           <ResponsiveImage
-            desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card3-1779426363654.webp"
-            mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card3mobile-1779426366324.webp"
+            desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card3-1785231445838.webp"
+            mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card3mobile-1785231448689.webp"
             alt="One place layout"
           />
         </div>
@@ -308,8 +308,8 @@ function BentoGridSection() {
             </h3>
           </div>
           <ResponsiveImage
-            desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card4-1779426368894.webp"
-            mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card4mobile-1779426371521.webp"
+            desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card4-1785231451811.webp"
+            mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card4mobile-1785231454514.webp"
             alt="Instant layout"
           />
         </div>
@@ -346,8 +346,8 @@ function BentoGridSection() {
           </p>
         </div>
         <ResponsiveImage
-          desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/layout1-1779426416489.webp"
-          mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/layout1mobile-1779426419230.webp"
+          desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/layout1-1785231434599.webp"
+          mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/layout1mobile-1785231437442.webp"
           alt="Every tool layout"
         />
       </div>
@@ -367,8 +367,8 @@ function BentoGridSection() {
           </h3>
         </div>
         <ResponsiveImage
-          desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card2-1779426358312.webp"
-          mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card2mobile-1779426361023.webp"
+          desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card2-1785231440382.webp"
+          mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card2mobile-1785231443300.webp"
           alt="Workflow layout"
         />
       </div>
@@ -395,8 +395,8 @@ function BentoGridSection() {
           </h3>
         </div>
         <ResponsiveImage
-          desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card3-1779426363654.webp"
-          mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card3mobile-1779426366324.webp"
+          desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card3-1785231445838.webp"
+          mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card3mobile-1785231448689.webp"
           alt="One place layout"
         />
       </div>
@@ -420,8 +420,8 @@ function BentoGridSection() {
           </h3>
         </div>
         <ResponsiveImage
-          desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card4-1779426368894.webp"
-          mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/card4mobile-1779426371521.webp"
+          desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card4-1785231451811.webp"
+          mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/card4mobile-1785231454514.webp"
           alt="Instant layout"
         />
       </div>
@@ -441,22 +441,22 @@ export default function Home() {
   }, []);
 
   const creativeTools = [
-    { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/aiimageprompts-1779426344558.webp" },
-    { name: "Background Remover", href: "/tools/bg-remover", icon: Eraser, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/background-remover-1779426349609.webp" },
-    { name: "Image Compressor", href: "/tools/image-compressor", icon: FileImage, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/imagecompressor-1779426394515.webp" },
-    { name: "Smart PDF Signer", href: "/tools/pdf-signer", icon: PenTool, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/smartpdfsigner-1779426458578.webp" },
-    { name: "QR Code Generator", href: "/tools/qr", icon: QrCode, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/qrcode-1779426447695.webp" },
-    { name: "Smart Notes", href: "/tools/notes", icon: NotebookPen, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/smartnotes-1779426455798.webp" },
-    { name: "Typing Speed Tester", href: "/tools/typing-tester", icon: Keyboard, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/typingspeedtester-1779426467158.webp" },
-    { name: "All tools", href: "/tools", icon: Wrench, image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/alltools-1779426347045.webp" },
+    { name: "AI Image Prompts", href: "/prompts", icon: Sparkles, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/aiimageprompts-1785231457182.webp" },
+    { name: "Background Remover", href: "/tools/bg-remover", icon: Eraser, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/background-remover-1785231262173.webp" },
+    { name: "Image Compressor", href: "/tools/image-compressor", icon: FileImage, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/imagecompressor-1785231257266.webp" },
+    { name: "Smart PDF Signer", href: "/tools/pdf-signer", icon: PenTool, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/smartpdfsigner-1785231254019.webp" },
+    { name: "QR Code Generator", href: "/tools/qr", icon: QrCode, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/qrcode-1785231265027.webp" },
+    { name: "Smart Notes", href: "/tools/notes", icon: NotebookPen, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/smartnotes-1785231310626.webp" },
+    { name: "Typing Speed Tester", href: "/tools/typing-tester", icon: Keyboard, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/typingspeedtester-1785231274872.webp" },
+    { name: "All tools", href: "/tools", icon: Wrench, image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/alltools-1785231459741.webp" },
   ];
 
   const whyCards = [
-    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#ffffff", image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/whyprivate-1779426480755.webp" },
-    { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#ffffff", image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/whyfast-1779426469756.webp" },
-    { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#ffffff", image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/whynosignup-1779426475248.webp" },
-    { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#ffffff", image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/whypremium-1779426477962.webp" },
-    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ffffff", image: "https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/whyfree-1779426472511.webp" },
+    { icon: Lock, title: "100% Private", desc: "All tools run entirely in your browser. Your files never leave your device.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyprivate-1785231462388.webp" },
+    { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyfast-1785231465559.webp" },
+    { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whynosignup-1785231468597.webp" },
+    { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whypremium-1785231471506.webp" },
+    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyfree-1785231474471.webp" },
   ];
 
   if (!mounted) return <div className="min-h-screen" style={{ background: "#141414" }} />;
@@ -477,8 +477,8 @@ export default function Home() {
           }}
         >
           <ResponsiveImage
-            desktopSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/herosectionimage-1779426385809.webp"
-            mobileSrc="https://cdn.streamlet.in/6a0fe18049e42bdad2a338ff/images/herosectionimagemobile-1779426388893.webp"
+            desktopSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/herosectionimage-1785231477555.webp"
+            mobileSrc="https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/herosectionimagemobile-1785231480804.webp"
             alt="Hero Background"
             className="w-full h-full object-cover object-center"
             style={{ transform: "scaleX(-1)" }}
