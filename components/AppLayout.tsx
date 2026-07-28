@@ -11,6 +11,7 @@ import { PinProvider } from "@/components/PinProvider";
 import { MusicProvider } from "@/components/MusicProvider";
 import { SettingsProvider, useSettings } from "@/components/SettingsProvider";
 import SettingsModal from "@/components/SettingsModal";
+import AdBanner from "@/components/AdBanner";
 
 function AppLayoutContent({ children, isBillingView }: { children: React.ReactNode; isBillingView: boolean }) {
     const { isOpen, isNavigating, isAppFullscreen } = useSidebar();
@@ -96,6 +97,8 @@ function AppLayoutContent({ children, isBillingView }: { children: React.ReactNo
                     <div className="flex-1">
                         {children}
                     </div>
+
+                    {!hideUI && <AdBanner />}
 
                     {isHome && <Footer />}
                 </main>

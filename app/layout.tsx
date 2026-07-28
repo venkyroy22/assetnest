@@ -106,6 +106,10 @@ export default function RootLayout({
           async
           src="https://pl30573991.effectivecpmnetwork.com/17/20/2b/17202bb25e2a84c0a9bf3eee7da992c9.js"
         />
+        <script
+          async
+          src="https://pl30573990.effectivecpmnetwork.com/95/18/16/9518166894fdde3ffb07543fb513f74b.js"
+        />
       </head>
 
       <body className="antialiased font-sans flex flex-col min-h-screen">
