@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Plus, Trash2, FileText, ImageIcon, Smile, Menu, X, MoreHorizontal, Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, Type, BrainCircuit, Search, Check, Timer, Tag, Download, Keyboard, Sun, CalendarDays, Copy, Hash, Pin, Star, Link2, AlignLeft, Rocket, Lightbulb, BookOpen, Code2, Layers, Users, Clipboard, BarChart2, Globe, Mail, Settings, Zap, Target, Briefcase, FlaskConical, Music, Dumbbell, ShoppingCart, Camera, Heart, MessageSquare, Cpu, Cloud, Shield, Database, Pencil, NotebookText, FolderOpen, ListTodo, Clock, Sparkles } from "lucide-react";
-import { Accordion, AccordionItem } from "@/components/Accordion";
+import Link from "next/link";
+import { Plus, Trash2, FileText, ImageIcon, Smile, Menu, X, MoreHorizontal, Maximize2, Minimize2, PanelLeftClose, PanelLeftOpen, Type, BrainCircuit, Search, Check, Timer, Tag, Download, Keyboard, CalendarDays, Copy, Hash, Pin, Star, Link2, AlignLeft, Rocket, Lightbulb, BookOpen, Code2, Layers, Users, Clipboard, BarChart2, Globe, Mail, Settings, Zap, Target, Briefcase, FlaskConical, Music, Dumbbell, ShoppingCart, Camera, Heart, MessageSquare, Cpu, Cloud, Shield, Database, Pencil, NotebookText, FolderOpen, ListTodo, Clock, Sparkles, ArrowLeft, HelpCircle } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 import { Info } from "lucide-react";
 
@@ -20,12 +20,12 @@ type Note = {
 };
 
 const TAG_COLORS: Record<string, string> = {
-    work: 'bg-white/20 text-[#f0ede8] border-white/30',
-    personal: 'bg-white/20 text-[#f0ede8] border-white/30',
-    ideas: 'bg-white/20 text-[#f0ede8] border-white/30',
-    todo: 'bg-white/10 text-[#f0ede8] border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.05)]',
-    research: 'bg-white/20 text-[#f0ede8] border-white/30',
-    journal: 'bg-white/20 text-[#f0ede8] border-white/30',
+    work: 'bg-orange-100 text-orange-850 border-orange-200',
+    personal: 'bg-blue-100 text-blue-850 border-blue-200',
+    ideas: 'bg-amber-100 text-amber-850 border-amber-200',
+    todo: 'bg-emerald-100 text-emerald-850 border-emerald-205 shadow-[1.5px_1.5px_0_#000]',
+    research: 'bg-purple-100 text-purple-850 border-purple-200',
+    journal: 'bg-rose-100 text-rose-850 border-rose-200',
 };
 
 const TEMPLATES = [
@@ -37,7 +37,6 @@ const TEMPLATES = [
     { id: 'article', name: 'Article Draft', iconName: 'Pencil', content: `<p><em>By [Author] · ${new Date().toLocaleDateString()}</em></p><div class="callout-block">TL;DR: One sentence summary of the article.</div><h2>Introduction</h2><p>Hook the reader here...</p><h2>Main Point 1</h2><p></p><h2>Conclusion</h2><p></p>` },
 ];
 
-// Professional icon registry — maps string names to Lucide components
 const PAGE_ICONS: Record<string, React.ComponentType<{ size?: number; className?: string }>> = {
     FileText, NotebookText, Pencil, BookOpen, Code2, Lightbulb, Rocket, Target,
     CalendarDays, Clock, ListTodo, BrainCircuit, Layers, Users, Clipboard, BarChart2,
@@ -46,7 +45,6 @@ const PAGE_ICONS: Record<string, React.ComponentType<{ size?: number; className?
 };
 const PAGE_ICON_NAMES = Object.keys(PAGE_ICONS);
 
-// Renders a note’s stored icon name as a Lucide component
 function NoteIcon({ name, size = 18, className = "" }: { name: string | null; size?: number; className?: string }) {
     const Icon = name && PAGE_ICONS[name] ? PAGE_ICONS[name] : FileText;
     return <Icon size={size} className={className} />;
@@ -63,8 +61,6 @@ const COVERS = [
     "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&q=80",
 ];
 
-
-
 const COMMANDS = [
     { id: 'h1', name: 'Heading 1', icon: <Type size={16} />, detail: 'Large section title', shortcut: '# ' },
     { id: 'h2', name: 'Heading 2', icon: <Type size={14} />, detail: 'Medium sub-section', shortcut: '## ' },
@@ -80,11 +76,41 @@ const COMMANDS = [
     { id: 'link', name: 'Link', icon: <Link2 size={16} />, detail: 'Insert a hyperlink', shortcut: '/link' },
 ];
 
+const GLOBAL_STYLES = `
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+.ig-root {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #000;
+}
+.ig-display {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  letter-spacing: -0.02em;
+}
+.ig-label {
+  font-family: 'Space Grotesk', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-size: 10px;
+  color: #000;
+}
+.ig-btn {
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.ig-btn:active {
+  transform: translate(1px, 1px) !important;
+  box-shadow: none !important;
+}
+`;
+
 export default function SmartNotesPage() {
     const [notes, setNotes] = useState<Note[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [mobileView, setMobileView] = useState<"sidebar" | "editor">("sidebar"); // mobile nav
+    const [mobileView, setMobileView] = useState<"sidebar" | "editor">("sidebar");
     const [isLoaded, setIsLoaded] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [isFullscreen, setIsFullscreen] = useState(false);
@@ -95,11 +121,9 @@ export default function SmartNotesPage() {
     const [showIconPicker, setShowIconPicker] = useState(false);
     const [showTemplates, setShowTemplates] = useState(false);
     const [showShortcuts, setShowShortcuts] = useState(false);
-    const [showProperties, setShowProperties] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
     const [newTag, setNewTag] = useState("");
 
-    // Command Menu & Selection State
     const [slashMenu, setSlashMenu] = useState<{ x: number, y: number } | null>(null);
     const [bubbleMenu, setBubbleMenu] = useState<{ x: number, y: number, text: string } | null>(null);
     const [favoritesOnly, setFavoritesOnly] = useState(false);
@@ -107,7 +131,6 @@ export default function SmartNotesPage() {
     const contentRef = useRef<HTMLDivElement>(null);
     const titleRef = useRef<HTMLTextAreaElement>(null);
 
-    // Load from localStorage
     useEffect(() => {
         const saved = localStorage.getItem("assetnest_notes");
         if (saved) {
@@ -116,14 +139,10 @@ export default function SmartNotesPage() {
                 setNotes(parsed);
                 if (parsed.length > 0) setActiveId(parsed[0].id);
             } catch (e) { console.error(e); }
-        } else {
-            setNotes([]);
-            setActiveId(null);
         }
         setIsLoaded(true);
     }, []);
 
-    // Save with visual indicator
     useEffect(() => {
         if (isLoaded) {
             setIsSaving(true);
@@ -154,7 +173,7 @@ export default function SmartNotesPage() {
         };
         setNotes(prev => [newNote, ...prev]);
         setActiveId(newNote.id);
-        setMobileView("editor"); // go to editor on mobile after creating
+        setMobileView("editor");
         setSearchQuery("");
         setShowTemplates(false);
         setTimeout(() => { if (contentRef.current) contentRef.current.innerHTML = newNote.content; titleRef.current?.focus(); }, 100);
@@ -220,16 +239,14 @@ export default function SmartNotesPage() {
         const target = e.currentTarget;
         updateActiveNote({ content: target.innerHTML });
         
-        // Handle markdown shortcuts on content change
         const selection = window.getSelection();
         if (!selection || selection.rangeCount === 0) return;
         
         const node = selection.focusNode;
-        if (node?.nodeType === 3) { // Text node
+        if (node?.nodeType === 3) {
             const text = node.textContent || "";
             const cursorPath = text.slice(0, selection.focusOffset);
             
-            // Trigger slash menu
             if (cursorPath.endsWith("/")) {
                 const rect = selection.getRangeAt(0).getBoundingClientRect();
                 setSlashMenu({ x: rect.left, y: rect.top + 20 });
@@ -237,7 +254,6 @@ export default function SmartNotesPage() {
                 setSlashMenu(null);
             }
 
-            // Quick Markdown transformation
             if (cursorPath === "# ") {
                 document.execCommand('formatBlock', false, 'H1');
                 node.textContent = text.slice(2);
@@ -278,7 +294,6 @@ export default function SmartNotesPage() {
         if (!contentRef.current) return;
         contentRef.current.focus();
         
-        // Remove the slash
         const selection = window.getSelection();
         const range = selection?.getRangeAt(0);
         if (range) {
@@ -291,17 +306,17 @@ export default function SmartNotesPage() {
             case 'h2': document.execCommand('formatBlock', false, 'H2'); break;
             case 'bullet': document.execCommand('insertUnorderedList'); break;
             case 'todo': 
-                document.execCommand('insertHTML', false, '<div class="todo-item"><input type="checkbox" /> <span>&nbsp;</span></div>'); 
+                document.execCommand('insertHTML', false, '<div class="todo-item"><input type="checkbox" style="width:18px;height:18px;margin-right:8px" /> <span>&nbsp;</span></div>'); 
                 break;
             case 'quote': document.execCommand('formatBlock', false, 'BLOCKQUOTE'); break;
             case 'callout': 
-                document.execCommand('insertHTML', false, '<div class="callout-block">💡 <span>&nbsp;</span></div>'); 
+                document.execCommand('insertHTML', false, '<div class="callout-block" style="border:2px solid #000;border-left:6px solid #000;padding:12px 16px;background:#f8fafc;border-radius:12px;margin:1.5rem 0;box-shadow:2px 2px 0 #000">💡 <span>&nbsp;</span></div>'); 
                 break;
             case 'h3': document.execCommand('formatBlock', false, 'H3'); break;
             case 'numbered': document.execCommand('insertOrderedList'); break;
-            case 'divider': document.execCommand('insertHTML', false, '<hr class="divider-line" />'); break;
+            case 'divider': document.execCommand('insertHTML', false, '<hr style="border:none;border-top:2px dashed #000;margin:2rem 0" />'); break;
             case 'code': document.execCommand('formatBlock', false, 'PRE'); break;
-            case 'table': document.execCommand('insertHTML', false, '<table class="note-table"><thead><tr><th>Header 1</th><th>Header 2</th></tr></thead><tbody><tr><td>Cell 1</td><td>Cell 2</td></tr></tbody></table>'); break;
+            case 'table': document.execCommand('insertHTML', false, '<table class="note-table" style="width:100%;border-collapse:collapse;margin:1.5rem 0"><thead style="background:#f1f5f9"><tr><th style="border:2px solid #000;padding:8px 12px;text-align:left">Header 1</th><th style="border:2px solid #000;padding:8px 12px;text-align:left">Header 2</th></tr></thead><tbody><tr><td style="border:2px solid #000;padding:8px 12px">Cell 1</td><td style="border:2px solid #000;padding:8px 12px">Cell 2</td></tr></tbody></table>'); break;
             case 'link': { const url = prompt('Enter URL:'); if (url) document.execCommand('createLink', false, url); break; }
         }
         setSlashMenu(null);
@@ -309,7 +324,7 @@ export default function SmartNotesPage() {
 
     const applyStyle = (cmd: string, val: string | undefined = undefined) => {
         document.execCommand(cmd, false, val);
-        handleSelectionChange(); // Refresh menu
+        handleSelectionChange();
     };
 
     const handleTitleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -351,82 +366,78 @@ export default function SmartNotesPage() {
         readTime: Math.max(1, Math.ceil(activeNote.content.replace(/<[^>]*>/g, ' ').length / 1000))
     } : { words: 0, readTime: 0 };
 
-    if (!isLoaded) return <div className="min-h-screen bg-[#09090b] flex items-center justify-center font-sans text-zinc-400">Loading Workspace...</div>;
+    if (!isLoaded) return <div className="min-h-screen bg-[#F4ECD8] flex items-center justify-center font-sans text-black">Loading Workspace...</div>;
 
     return (
-        <div className={`flex h-[calc(100vh-64px)] bg-[#09090b] text-zinc-200 overflow-hidden font-sans transition-all duration-300 ${isFullscreen ? 'fixed inset-0 z-[1000] h-screen bg-[#09090b]' : ''}`}>
-            
-            {/* SIDEBAR — full-screen drawer on mobile, collapsible panel on desktop */}
+        <div className={`flex h-[calc(100vh-64px)] bg-[#F4ECD8] text-black overflow-hidden font-sans transition-all duration-300 ig-root ${isFullscreen ? 'fixed inset-0 z-[1000] h-screen bg-[#F4ECD8]' : ''}`}>
+            <style>{GLOBAL_STYLES}</style>
+
+            {/* SIDEBAR */}
             <div className={[
-                "flex flex-col border-r border-[#1d1d20] bg-[#0c0c0e]/95 backdrop-blur-3xl",
+                "flex flex-col border-r-2 border-black bg-white",
                 "transition-all duration-300 ease-[cubic-bezier(0.4,0,0.2,1)] overflow-hidden",
-                // Mobile: fixed full-screen overlay
                 "fixed inset-y-0 left-0 z-50 w-screen",
-                // Desktop: part of the flex row
                 "sm:relative sm:inset-auto sm:z-auto sm:h-full",
-                // Mobile slide: open = visible, closed = slid off left
                 mobileView === "sidebar" ? "translate-x-0" : "-translate-x-full",
-                // Desktop collapse — STATIC strings so Tailwind JIT includes them
                 isSidebarOpen
                     ? "sm:w-80 sm:translate-x-0 sm:opacity-100 sm:pointer-events-auto"
                     : "sm:w-0 sm:translate-x-0 sm:opacity-0 sm:pointer-events-none",
             ].join(" ")}>
                 <div className="p-4 sm:p-6 flex items-center justify-between shrink-0">
-                    <div className="flex items-center gap-2.5 font-bold text-[#f0ede8] tracking-tight">
-                        <div className="w-6 h-6 rounded bg-gradient-to-br from-zinc-400 to-zinc-700 flex items-center justify-center text-[10px] text-black">AN</div>
-                        <span className="text-sm">Workspace</span>
+                    <div className="flex items-center gap-2.5 font-bold text-black tracking-tight ig-display">
+                        <div className="w-7 h-7 rounded-lg bg-orange-500 border-2 border-black flex items-center justify-center text-[10px] text-white shadow-[1.5px_1.5px_0_#000] font-black">N</div>
+                        <span className="text-sm font-bold">Workspace Pages</span>
                     </div>
-                    {/* Mobile close button */}
                     <button
                         onClick={() => setMobileView("editor")}
-                        className="sm:hidden p-2 rounded-xl text-zinc-500 hover:text-[#f0ede8] hover:bg-white/5 transition-all"
+                        className="sm:hidden p-1.5 rounded-lg border-2 border-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
                     >
-                        <X size={18} />
+                        <X size={14} />
                     </button>
                 </div>
 
                 <div className="px-4 mb-4 shrink-0 space-y-3">
                     <div className="grid grid-cols-3 gap-2">
-                        <button onClick={() => createNote()} className="flex flex-col items-center gap-1.5 px-2 py-3 bg-white hover:bg-zinc-100 text-black text-[10px] font-black rounded-2xl transition-all active:scale-95">
-                            <Plus size={16} strokeWidth={3} /> New
+                        <button onClick={() => createNote()} className="ig-btn flex flex-col items-center gap-1 px-1 py-2 bg-white hover:bg-zinc-50 text-black text-[9px] font-black rounded-xl border-2 border-black shadow-[2px_2px_0_#000] transition-all">
+                            <Plus size={14} strokeWidth={3} /> New Page
                         </button>
-                        <button onClick={createDailyNote} className="flex flex-col items-center gap-1.5 px-2 py-3 bg-[#161618] hover:bg-[#1d1d20] text-zinc-400 hover:text-[#f0ede8] text-[10px] font-black rounded-2xl transition-all border border-white/5">
-                            <CalendarDays size={16} /> Daily
+                        <button onClick={createDailyNote} className="ig-btn flex flex-col items-center gap-1 px-1 py-2 bg-zinc-50 hover:bg-zinc-100 text-black text-[9px] font-black rounded-xl border-2 border-black shadow-[2px_2px_0_#000] transition-all">
+                            <CalendarDays size={14} /> Today
                         </button>
-                        <button onClick={() => setShowTemplates(true)} className="flex flex-col items-center gap-1.5 px-2 py-3 bg-[#161618] hover:bg-[#1d1d20] text-zinc-400 hover:text-[#f0ede8] text-[10px] font-black rounded-2xl transition-all border border-white/5">
-                            <FileText size={16} /> Templates
+                        <button onClick={() => setShowTemplates(true)} className="ig-btn flex flex-col items-center gap-1 px-1 py-2 bg-zinc-50 hover:bg-zinc-100 text-black text-[9px] font-black rounded-xl border-2 border-black shadow-[2px_2px_0_#000] transition-all">
+                            <FileText size={14} /> Templates
                         </button>
                     </div>
                     <div className="relative">
-                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600" />
-                        <input type="text" placeholder="Search..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-[#161618] border border-white/5 rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-white/10 text-zinc-300 placeholder:text-zinc-700 font-medium" />
+                        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" />
+                        <input type="text" placeholder="Search notes..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-white border-2 border-black rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none text-black placeholder:text-zinc-400 font-bold shadow-[1.5px_1.5px_0_#000]" />
                     </div>
                     {allTags.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5">
+                        <div className="flex flex-wrap gap-1.5 pt-1">
                             {[null, ...allTags].map(tag => (
-                                <button key={tag ?? 'all'} onClick={() => setActiveTag(tag)} className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border transition-all ${ activeTag === tag ? (tag && TAG_COLORS[tag] ? TAG_COLORS[tag] : 'bg-white/10 text-[#f0ede8] border-white/20') : 'text-zinc-600 border-white/5 hover:text-zinc-400' }`}>
+                                <button key={tag ?? 'all'} onClick={() => setActiveTag(tag)} className={`px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border-2 border-black transition-all ${ activeTag === tag ? 'bg-black text-white' : 'bg-white text-black hover:bg-zinc-50' }`}>
                                     {tag ? `#${tag}` : 'all'}
                                 </button>
                             ))}
                         </div>
                     )}
-                    <div className="flex bg-[#161618] p-0.5 rounded-xl">
-                        <button onClick={() => setFavoritesOnly(false)} className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${ !favoritesOnly ? 'bg-white/10 text-[#f0ede8]' : 'text-zinc-600' }`}>All</button>
-                        <button onClick={() => setFavoritesOnly(true)} className={`flex-1 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${ favoritesOnly ? 'bg-white/10 text-[#f0ede8]' : 'text-zinc-600' }`}>Starred</button>
+                    <div className="flex bg-zinc-100 p-0.5 rounded-xl border-2 border-black shadow-[1.5px_1.5px_0_#000]">
+                        <button onClick={() => setFavoritesOnly(false)} className={`flex-1 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${ !favoritesOnly ? 'bg-black text-white' : 'text-zinc-650' }`}>All</button>
+                        <button onClick={() => setFavoritesOnly(true)} className={`flex-1 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all ${ favoritesOnly ? 'bg-black text-white' : 'text-zinc-650' }`}>Starred</button>
                     </div>
                 </div>
 
-                <div data-lenis-prevent className="flex-1 overflow-y-auto px-2 space-y-0.5 custom-scrollbar pb-10">
+                <div data-lenis-prevent className="flex-1 overflow-y-auto px-2 space-y-0.5 pb-10">
                     {pinnedNotes.length > 0 && (
                         <>
-                            <div className="px-4 py-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em] flex items-center gap-1.5"><Pin size={9} /> Pinned</div>
+                            <div className="px-4 py-2 text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-1.5"><Pin size={9} /> Pinned</div>
                             {pinnedNotes.map(note => (
                                 <NoteItem key={note.id} note={note} activeId={activeId}
                                     setActiveId={(id) => { setActiveId(id); setMobileView("editor"); }}
                                     deleteNote={deleteNote}
                                     updateNote={(id, updates) => setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updates } : n))} />
                             ))}
-                            <div className="px-4 py-2 text-[9px] font-black text-zinc-600 uppercase tracking-[0.25em] mt-2">Pages</div>
+                            <div className="px-4 py-2 text-[9px] font-black text-zinc-500 uppercase tracking-[0.2em] mt-2">Pages</div>
                         </>
                     )}
                     {unpinnedNotes.map(note => (
@@ -437,115 +448,115 @@ export default function SmartNotesPage() {
                     ))}
                     {filteredNotes.length === 0 && (
                         <div className="px-8 py-10 text-center flex flex-col items-center gap-3">
-                            <div className="w-10 h-10 rounded-full bg-[#1c1c1c] flex items-center justify-center"><Search size={18} className="text-zinc-700" /></div>
-                            <p className="text-xs font-medium text-zinc-600">No pages found</p>
+                            <div className="w-10 h-10 rounded-full bg-zinc-100 border-2 border-black flex items-center justify-center shadow-[1.5px_1.5px_0_#000]"><Search size={16} className="text-zinc-500" /></div>
+                            <p className="text-xs font-bold text-zinc-500">No notes found</p>
                         </div>
                     )}
                 </div>
             </div>
 
             {/* MAIN EDITOR AREA */}
-            <div className="flex-1 flex flex-col min-w-0 bg-[#09090b] relative h-full">
+            <div className="flex-1 flex flex-col min-w-0 bg-[#ffffff] relative h-full">
                 {/* TOOLBAR */}
-                <div className="h-14 flex items-center justify-between px-3 sm:px-6 z-40 border-b border-white/[0.02]">
+                <div className="h-14 flex items-center justify-between px-3 sm:px-6 z-40 border-b-2 border-black bg-white">
                     <div className="flex items-center gap-2 sm:gap-4">
-                        {/* Mobile: back to sidebar button */}
+                        {/* Mobile: Menu button */}
                         <button
                             onClick={() => setMobileView("sidebar")}
-                            className="sm:hidden p-2 hover:bg-white/[0.05] rounded-lg transition-all text-zinc-400"
+                            className="sm:hidden p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black"
                         >
-                            <Menu size={18} />
+                            <Menu size={16} />
                         </button>
-                        {/* Desktop: sidebar toggle */}
+                        {/* Desktop: Sidebar toggle */}
                         <button 
                             onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                            className={`hidden sm:flex p-2 hover:bg-white/[0.05] rounded-lg transition-all ${isSidebarOpen ? 'text-zinc-500' : 'text-[#f0ede8] bg-white/5'}`}
+                            className="hidden sm:flex p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black shadow-[1.5px_1.5px_0_#000]"
                         >
-                            {isSidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
+                            {isSidebarOpen ? <PanelLeftClose size={15} /> : <PanelLeftOpen size={15} />}
                         </button>
                         <button 
                             onClick={() => setShowHelp(true)}
-                            className="hidden sm:flex p-2 hover:bg-white/[0.05] rounded-lg transition-all text-zinc-500"
+                            className="hidden sm:flex p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black shadow-[1.5px_1.5px_0_#000]"
                             title="Help & Details"
                         >
-                            <Info size={18} />
+                            <HelpCircle size={15} />
                         </button>
-                        <div className="hidden sm:block h-4 w-[1px] bg-white/10" />
-                        <div className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase">
-                             <span className="text-zinc-600 hidden sm:inline">Workspace</span>
-                             <span className="text-zinc-800 hidden sm:inline">/</span>
-                             <span className="text-[#f0ede8] truncate max-w-[130px] sm:max-w-[200px]">{activeNote?.title || 'Untitled'}</span>
+                        <div className="hidden sm:block h-5 w-[2px] bg-black" />
+                        <div className="flex items-center gap-2 text-[10px] font-black tracking-widest uppercase ig-display">
+                             <span className="text-zinc-500 hidden sm:inline">Workspace</span>
+                             <span className="text-zinc-400 hidden sm:inline">/</span>
+                             <span className="text-black truncate max-w-[130px] sm:max-w-[200px]">{activeNote?.title || 'Untitled'}</span>
                         </div>
                     </div>
                     
                     <div className="flex items-center gap-1.5 sm:gap-2">
-                        <div className={`hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full transition-all duration-500 bg-white/5 text-white/40 border border-white/5`}>
-                            <div className={`w-1 h-1 rounded-full bg-current ${isSaving ? 'animate-pulse' : ''}`} />
-                            <span className="text-[10px] font-bold uppercase tracking-widest">{isSaving ? 'Syncing' : 'Saved'}</span>
+                        <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-50 border-2 border-black text-black">
+                            <div className={`w-2 h-2 rounded-full bg-emerald-500 ${isSaving ? 'animate-pulse' : ''}`} />
+                            <span className="text-[9px] font-bold uppercase tracking-widest">{isSaving ? 'Syncing' : 'Saved'}</span>
                         </div>
                         {activeNote && (
                             <div className="relative group/export">
-                                <button className="p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/5 rounded-lg transition-all"><Download size={15} /></button>
-                                <div className="absolute right-0 top-full mt-1 w-44 bg-[#111113] border border-white/10 rounded-2xl shadow-2xl py-2 z-50 hidden group-hover/export:block">
-                                    <div className="px-3 py-1 text-[9px] font-black text-zinc-600 uppercase tracking-widest">Export As</div>
-                                    <button onClick={() => exportNote('md')} className="w-full px-3 py-2 flex items-center gap-2 text-sm text-zinc-400 hover:text-[#f0ede8] hover:bg-white/5 transition-all">.md Markdown</button>
-                                    <button onClick={() => exportNote('html')} className="w-full px-3 py-2 flex items-center gap-2 text-sm text-zinc-400 hover:text-[#f0ede8] hover:bg-white/5 transition-all">.html File</button>
-                                    <button onClick={() => exportNote('txt')} className="w-full px-3 py-2 flex items-center gap-2 text-sm text-zinc-400 hover:text-[#f0ede8] hover:bg-white/5 transition-all">.txt Plain Text</button>
-                                    <div className="my-1 border-t border-white/5" />
-                                    <button onClick={() => copyToClipboard('html')} className="w-full px-3 py-2 flex items-center gap-2 text-sm text-zinc-400 hover:text-[#f0ede8] hover:bg-white/5 transition-all"><Copy size={13} /> Copy HTML</button>
-                                    <button onClick={() => copyToClipboard('plain')} className="w-full px-3 py-2 flex items-center gap-2 text-sm text-zinc-400 hover:text-[#f0ede8] hover:bg-white/5 transition-all"><Copy size={13} /> Copy Plain</button>
+                                <button className="p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black shadow-[1.5px_1.5px_0_#000]"><Download size={14} /></button>
+                                <div className="absolute right-0 top-full mt-1.5 w-44 bg-white border-2 border-black rounded-2xl shadow-[4px_4px_0_#000] py-2 z-50 hidden group-hover/export:block">
+                                    <div className="px-3 py-1 text-[9px] font-black text-zinc-500 uppercase tracking-widest border-b border-zinc-100">Export As</div>
+                                    <button onClick={() => exportNote('md')} className="w-full px-3 py-2 flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all">.md Markdown</button>
+                                    <button onClick={() => exportNote('html')} className="w-full px-3 py-2 flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all">.html File</button>
+                                    <button onClick={() => exportNote('txt')} className="w-full px-3 py-2 flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all">.txt Plain Text</button>
+                                    <div className="my-1 border-t border-zinc-200" />
+                                    <button onClick={() => copyToClipboard('html')} className="w-full px-3 py-2 flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all"><Copy size={13} /> Copy HTML</button>
+                                    <button onClick={() => copyToClipboard('plain')} className="w-full px-3 py-2 flex items-center gap-2 text-xs font-bold text-zinc-700 hover:text-black hover:bg-zinc-50 transition-all"><Copy size={13} /> Copy Plain</button>
                                 </div>
                             </div>
                         )}
-                        <button onClick={() => setShowShortcuts(true)} className="hidden sm:flex p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/5 rounded-lg transition-all"><Keyboard size={15} /></button>
-                        <button onClick={() => setIsFullscreen(!isFullscreen)} className="hidden sm:flex p-2 text-zinc-500 hover:text-[#f0ede8] hover:bg-white/5 rounded-lg transition-all">
-                            {isFullscreen ? <Minimize2 size={18} /> : <Maximize2 size={18} />}
+                        <button onClick={() => setShowShortcuts(true)} className="hidden sm:flex p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black shadow-[1.5px_1.5px_0_#000]"><Keyboard size={14} /></button>
+                        <button onClick={() => setIsFullscreen(!isFullscreen)} className="hidden sm:flex p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg transition-all text-black shadow-[1.5px_1.5px_0_#000]">
+                            {isFullscreen ? <Minimize2 size={14} /> : <Maximize2 size={14} />}
                         </button>
                     </div>
                 </div>
 
                 {activeNote ? (
-                    <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/20 via-transparent to-transparent">
+                    <div data-lenis-prevent className="flex-1 overflow-y-auto custom-scrollbar relative bg-white">
                         {/* COVER IMAGE */}
-                        <div className="group relative w-full h-56 md:h-72 bg-[#1e1e1e]/50 shrink-0">
+                        <div className="group relative w-full h-48 md:h-64 bg-zinc-50 shrink-0 border-b-2 border-black">
                             <div className="absolute inset-0 overflow-hidden">
                                 {activeNote.coverImage ? (
-                                    <img src={activeNote.coverImage} alt="Cover" className="w-full h-full object-cover transition-all duration-1000 group-hover:scale-105" />
+                                    <img src={activeNote.coverImage} alt="Cover" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-[#09090b] to-transparent z-10 pointer-events-none opacity-80" />
+                                    <div className="w-full h-full bg-[#fcf9f2]" />
                                 )}
                             </div>
                             
-                            <div className="absolute bottom-6 right-8 z-20 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0 flex gap-2">
+                            <div className="absolute bottom-4 right-6 z-20 opacity-0 group-hover:opacity-100 transition-all flex gap-2">
                                 <button 
                                     onClick={() => setShowCoverPicker(!showCoverPicker)}
-                                    className="px-4 py-2 bg-[#141414]/60 hover:bg-[#141414]/90 backdrop-blur-xl text-[11px] font-black text-[#f0ede8] rounded-xl flex items-center gap-2 border border-white/5 transition-all shadow-2xl"
+                                    className="px-3 py-1.5 bg-white hover:bg-zinc-50 text-[10px] font-black text-black rounded-lg border-2 border-black shadow-[2px_2px_0_#000] flex items-center gap-1.5 transition-all"
                                 >
-                                    <ImageIcon size={14} /> RE-STYLE COVER
+                                    <ImageIcon size={12} /> COVER GALLERY
                                 </button>
                                 {activeNote.coverImage && (
                                     <button 
                                         onClick={() => updateActiveNote({ coverImage: null })}
-                                        className="p-2 bg-[#141414]/60 hover:bg-red-500/80 backdrop-blur-xl text-[#f0ede8] rounded-xl border border-white/5 transition-colors"
+                                        className="p-1.5 bg-rose-100 hover:bg-rose-250 text-rose-600 rounded-lg border-2 border-black shadow-[2px_2px_0_#000] transition-colors"
                                     >
-                                        <X size={14} />
+                                        <X size={12} />
                                     </button>
                                 )}
                             </div>
 
                             {showCoverPicker && (
-                                <div className="absolute top-calc-100 right-8 w-72 p-4 bg-[#0c0c0e]/95 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 animate-in fade-in slide-in-from-top-4 duration-300 mt-2"
+                                <div className="absolute right-6 w-72 p-4 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0_#000] z-50 mt-2"
                                      style={{ top: 'calc(100% - 1.5rem)' }}>
-                                    <div className="flex justify-between items-center mb-4">
-                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Atmospheres</span>
-                                        <button onClick={() => setShowCoverPicker(false)} className="text-zinc-500 hover:text-[#f0ede8]"><X size={14} /></button>
+                                    <div className="flex justify-between items-center mb-3">
+                                        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Select Cover</span>
+                                        <button onClick={() => setShowCoverPicker(false)} className="text-zinc-500 hover:text-black"><X size={14} /></button>
                                     </div>
-                                    <div className="grid grid-cols-2 gap-2.5">
+                                    <div className="grid grid-cols-2 gap-2">
                                         {COVERS.map((url, i) => (
                                             <button 
                                                 key={i} 
                                                 onClick={() => { updateActiveNote({ coverImage: url }); setShowCoverPicker(false); }}
-                                                className="w-full h-20 rounded-xl overflow-hidden hover:ring-2 hover:ring-white transition-all scale-100 hover:scale-[1.02] shadow-lg"
+                                                className="w-full h-16 rounded-xl overflow-hidden border-2 border-transparent hover:border-black transition-all"
                                             >
                                                 <img src={url} className="w-full h-full object-cover" />
                                             </button>
@@ -556,37 +567,37 @@ export default function SmartNotesPage() {
                         </div>
 
                         {/* DOCUMENT CONTENT */}
-                        <div className="max-w-4xl mx-auto px-4 sm:px-8 md:px-16 lg:px-24">
+                        <div className="max-w-4xl mx-auto px-4 sm:px-8 md:px-16 lg:px-20">
                             
                             {/* ICON */}
-                            <div className="relative group -mt-12 sm:-mt-16 md:-mt-20 mb-8 sm:mb-10 z-20">
+                            <div className="relative group -mt-10 sm:-mt-14 md:-mt-16 mb-6 z-20">
                                 <div className="relative inline-block">
                                     <button 
                                         onClick={() => setShowIconPicker(!showIconPicker)}
-                                        className="bg-[#0f0f11] border-[3px] border-[#09090b] text-[#f0ede8] rounded-3xl w-20 h-20 sm:w-28 sm:h-28 md:w-36 md:h-36 flex items-center justify-center shadow-[0_20px_50px_rgba(0,0,0,0.4)] hover:bg-[#161618] hover:border-white/10 transition-all overflow-hidden group/btn"
+                                        className="bg-white border-2 border-black text-black rounded-2xl w-16 h-16 sm:w-24 sm:h-24 md:w-28 md:h-28 flex items-center justify-center shadow-[3px_3px_0_#000] hover:bg-zinc-50 transition-all overflow-hidden"
                                     >
-                                        <span className="transition-transform duration-300 group-hover/btn:scale-110 text-zinc-300">
-                                            <NoteIcon name={activeNote.icon} size={38} />
+                                        <span className="text-black">
+                                            <NoteIcon name={activeNote.icon} size={32} />
                                         </span>
                                     </button>
                                     
                                     {activeNote.icon && (
                                         <button 
                                             onClick={(e) => { e.stopPropagation(); updateActiveNote({ icon: null }); }}
-                                            className="absolute -top-3 -right-3 p-2 bg-[#1c1c1c] border border-white/5 hover:bg-red-500 text-zinc-400 hover:text-[#f0ede8] rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-2xl"
+                                            className="absolute -top-2.5 -right-2.5 p-1.5 bg-rose-50 border-2 border-black hover:bg-rose-100 text-rose-600 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-[1.5px_1.5px_0_#000]"
                                         >
-                                            <X size={14} />
+                                            <X size={11} />
                                         </button>
                                     )}
                                 </div>
 
                                 {showIconPicker && (
-                                    <div className="absolute top-full left-0 mt-4 p-5 bg-[#0c0c0e]/95 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-50 w-72 animate-in fade-in zoom-in-95 duration-200">
-                                        <div className="flex justify-between items-center mb-4">
+                                    <div className="absolute top-full left-0 mt-3 p-4 bg-white border-2 border-black rounded-2xl shadow-[6px_6px_0_#000] z-50 w-72">
+                                        <div className="flex justify-between items-center mb-3">
                                             <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest">Page Icon</span>
-                                            <button onClick={() => setShowIconPicker(false)} className="text-zinc-500 hover:text-[#f0ede8]"><X size={14} /></button>
+                                            <button onClick={() => setShowIconPicker(false)} className="text-zinc-500 hover:text-black"><X size={14} /></button>
                                         </div>
-                                        <div className="grid grid-cols-5 gap-2">
+                                        <div className="grid grid-cols-5 gap-1.5">
                                             {PAGE_ICON_NAMES.map((iconName) => {
                                                 const Icon = PAGE_ICONS[iconName];
                                                 return (
@@ -594,9 +605,9 @@ export default function SmartNotesPage() {
                                                         key={iconName}
                                                         onClick={() => { updateActiveNote({ icon: iconName }); setShowIconPicker(false); }}
                                                         title={iconName}
-                                                        className={`w-10 h-10 flex items-center justify-center hover:bg-white/8 rounded-xl transition-all hover:scale-110 active:scale-90 ${ activeNote.icon === iconName ? 'bg-white/10 text-[#f0ede8] ring-1 ring-white/20' : 'text-zinc-500 hover:text-[#f0ede8]' }`}
+                                                        className={`w-9 h-9 flex items-center justify-center rounded-xl transition-all hover:bg-zinc-150 border-2 ${ activeNote.icon === iconName ? 'bg-zinc-100 border-black' : 'border-transparent text-zinc-400 hover:text-black' }`}
                                                     >
-                                                        <Icon size={18} />
+                                                        <Icon size={16} />
                                                     </button>
                                                 );
                                             })}
@@ -606,50 +617,49 @@ export default function SmartNotesPage() {
                             </div>
 
                             {/* TITLE */}
-                            <div className="mb-12 group">
+                            <div className="mb-8 group">
                                 <textarea
                                     ref={titleRef}
                                     value={activeNote.title}
                                     onChange={handleTitleInput}
-                                    placeholder="Page Title"
-                                    className="w-full bg-transparent text-3xl sm:text-5xl md:text-6xl font-black text-[#f0ede8] placeholder:text-zinc-800 resize-none focus:outline-none overflow-hidden block py-3 leading-[1.1] tracking-tight transition-all"
+                                    placeholder="Untitled Page"
+                                    className="w-full bg-transparent text-3xl sm:text-5xl font-black text-black placeholder:text-zinc-300 resize-none focus:outline-none overflow-hidden block py-2 leading-[1.1] tracking-tight transition-all ig-display"
                                     rows={1}
                                 />
-                                <div className="flex items-center gap-3 sm:gap-6 mt-4 text-[10px] font-black text-zinc-600 uppercase tracking-widest border-t border-white/[0.03] pt-4 flex-wrap">
+                                <div className="flex items-center gap-3 sm:gap-6 mt-2 text-[9px] font-black text-zinc-500 uppercase tracking-widest border-t-2 border-dashed border-zinc-200 pt-3 flex-wrap">
                                     <span className="flex items-center gap-1.5"><BrainCircuit size={12} /> {stats.words} Words</span>
                                     <span className="flex items-center gap-1.5"><Timer size={12} /> {stats.readTime} Min Read</span>
                                     <button 
                                         onClick={() => updateActiveNote({ isFavorite: !activeNote.isFavorite })}
-                                        className={`ml-auto flex items-center gap-1.5 transition-all ${activeNote.isFavorite ? 'text-[#f0ede8]' : 'hover:text-zinc-400'}`}
+                                        className={`ml-auto flex items-center gap-1 px-2 py-0.5 rounded border-2 border-black shadow-[1.5px_1.5px_0_#000] text-black ${activeNote.isFavorite ? 'bg-amber-100 font-extrabold' : 'bg-white hover:bg-zinc-50'}`}
                                     >
-                                        <div className={`w-2 h-2 rounded-full ${activeNote.isFavorite ? 'bg-white shadow-[0_0_10px_rgba(255, 255, 255,0.8)]' : 'bg-transparent border border-zinc-700'}`} />
-                                        {activeNote.isFavorite ? 'FAVORITE' : 'MARK FAVORITE'}
+                                        {activeNote.isFavorite ? '★ STARRED' : '☆ STAR'}
                                     </button>
                                 </div>
                             </div>
 
                             {/* RICH TEXT CONTENT EDITOR */}
                             <div 
-                                className="styled-editor w-full text-[#c7c7cf] text-lg md:text-xl leading-relaxed focus:outline-none min-h-[60vh] pb-64"
+                                className="styled-editor w-full text-zinc-800 text-lg leading-relaxed focus:outline-none min-h-[60vh] pb-64"
                                 contentEditable
                                 onInput={handleContentInput}
                                 onBlur={() => setTimeout(() => setSlashMenu(null), 200)}
                                 suppressContentEditableWarning
                                 ref={contentRef}
-                                data-placeholder="Type '/' for powerful commands..."
+                                data-placeholder="Type '/' for templates, lists, blocks..."
                             />
 
-                            {/* BUBBLE MENU */}
+                            {/* BUBBLE FORMAT MENU */}
                             {bubbleMenu && (
                                 <div 
-                                    className="fixed z-[110] bg-[#111113] border border-white/10 rounded-xl shadow-2xl flex items-center p-1 animate-in fade-in slide-in-from-bottom-2 duration-200"
+                                    className="fixed z-[110] bg-white border-2 border-black rounded-xl shadow-[3px_3px_0_#000] flex items-center p-1"
                                     style={{ left: bubbleMenu.x, top: bubbleMenu.y, transform: 'translateX(-50%)' }}
                                 >
-                                    <button onClick={() => applyStyle('bold')} className="p-2 hover:bg-white/5 text-zinc-400 hover:text-[#f0ede8] rounded-lg transition-colors"><Type size={14} className="font-bold" /></button>
-                                    <button onClick={() => applyStyle('italic')} className="p-2 hover:bg-white/5 text-zinc-400 hover:text-[#f0ede8] rounded-lg transition-colors italic">I</button>
-                                    <button onClick={() => applyStyle('strikeThrough')} className="p-2 hover:bg-white/5 text-zinc-400 hover:text-[#f0ede8] rounded-lg transition-colors line-through">S</button>
-                                    <div className="w-[1px] h-4 bg-white/10 mx-1" />
-                                    <button onClick={() => applyStyle('createLink', prompt('URL:') || undefined)} className="p-2 hover:bg-white/5 text-zinc-400 hover:text-[#f0ede8] rounded-lg transition-colors flex items-center gap-1.5 text-[10px] font-bold">LINK</button>
+                                    <button onClick={() => applyStyle('bold')} className="p-1.5 hover:bg-zinc-50 text-black rounded-lg transition-colors font-black">B</button>
+                                    <button onClick={() => applyStyle('italic')} className="p-1.5 hover:bg-zinc-50 text-black rounded-lg transition-colors italic">I</button>
+                                    <button onClick={() => applyStyle('strikeThrough')} className="p-1.5 hover:bg-zinc-50 text-black rounded-lg transition-colors line-through">S</button>
+                                    <div className="w-[2px] h-4 bg-black mx-1.5" />
+                                    <button onClick={() => applyStyle('createLink', prompt('URL:') || undefined)} className="p-1.5 hover:bg-zinc-50 text-black rounded-lg transition-colors text-[9px] font-black uppercase tracking-wider">LINK</button>
                                 </div>
                             )}
 
@@ -657,32 +667,30 @@ export default function SmartNotesPage() {
 
                         {/* Styles */}
                         <style jsx global>{`
-                            .styled-editor:empty:before { content: attr(data-placeholder); color: #27272a; pointer-events: none; }
-                            .styled-editor h1 { font-size: 2.5em; font-weight: 900; color: white; margin: 1.5em 0 0.5em; letter-spacing: -0.03em; line-height: 1.1; }
-                            .styled-editor h2 { font-size: 1.8em; font-weight: 800; color: white; margin: 1.4em 0 0.5em; letter-spacing: -0.02em; }
-                            .styled-editor h3 { font-size: 1.35em; font-weight: 700; color: #e4e4e7; margin: 1.2em 0 0.4em; }
-                            .styled-editor p { margin-bottom: 1.2em; font-weight: 400; line-height: 1.75; }
-                            .styled-editor a { color: #ffffff; text-decoration: underline; text-underline-offset: 3px; }
+                            .styled-editor:empty:before { content: attr(data-placeholder); color: #cbd5e1; pointer-events: none; }
+                            .styled-editor h1 { font-size: 2.2em; font-weight: 900; color: black; margin: 1.2em 0 0.4em; font-family: 'Space Grotesk', sans-serif; }
+                            .styled-editor h2 { font-size: 1.6em; font-weight: 800; color: black; margin: 1.2em 0 0.4em; font-family: 'Space Grotesk', sans-serif; }
+                            .styled-editor h3 { font-size: 1.3em; font-weight: 700; color: #27272a; margin: 1.2em 0 0.4em; }
+                            .styled-editor p { margin-bottom: 1em; font-weight: 500; line-height: 1.65; color: #18181b; }
+                            .styled-editor a { color: #2563eb; text-decoration: underline; text-underline-offset: 3px; font-weight: 700; }
                             .styled-editor ul { list-style-type: none; margin-bottom: 1.5em; }
-                            .styled-editor ul li { position: relative; padding-left: 1.8em; margin-bottom: 0.6em; }
-                            .styled-editor ul li:before { content: "•"; color: #ffffff; position: absolute; left: 0.2em; font-weight: 900; font-size: 1.2em; }
-                            .styled-editor ol { margin-left: 1.8em; margin-bottom: 1.5em; }
-                            .styled-editor ol li { margin-bottom: 0.6em; padding-left: 0.3em; }
-                            .styled-editor blockquote { border-left: 3px solid #ffffff; padding: 1rem 1.5rem; font-style: italic; color: #a1a1aa; margin: 2.5rem 0; font-size: 1.15em; background: rgba(255, 255, 255,0.03); border-radius: 0.75rem; }
-                            .styled-editor pre { background: #0c0c0e; padding: 1.8rem; border-radius: 1.25rem; margin: 2.5rem 0; border: 1px solid rgba(255,255,255,0.05); font-family: monospace; font-size: 0.9em; overflow-x: auto; }
-                            .styled-editor code { font-family: monospace; background: #161618; padding: 0.2em 0.5em; border-radius: 6px; color: #ffffff; font-size: 0.85em; border: 1px solid rgba(255, 255, 255,0.1); }
-                            .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 4px 0; }
-                            .todo-item input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #ffffff; flex-shrink: 0; }
-                            .callout-block { background: rgba(255, 255, 255,0.04); border: 1px solid rgba(255, 255, 255,0.1); border-left: 4px solid #ffffff; padding: 1.25rem 1.5rem; border-radius: 1rem; margin: 2rem 0; display: flex; align-items: flex-start; gap: 1rem; font-size: 1em; color: #e4e4e7; }
-                            .callout-block:before { content: ""; width: 22px; height: 22px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E"); background-size: contain; background-repeat: no-repeat; flex-shrink: 0; margin-top: 2px; }
-                            .divider-line { border: none; border-top: 1px solid rgba(255,255,255,0.06); margin: 3.5rem 0; }
+                            .styled-editor ul li { position: relative; padding-left: 1.8em; margin-bottom: 0.6em; font-weight: 500; }
+                            .styled-editor ul li:before { content: "•"; color: #000; position: absolute; left: 0.4em; font-weight: 900; font-size: 1.2em; }
+                            .styled-editor ol { margin-left: 1.8em; margin-bottom: 1.5em; list-style-type: decimal; }
+                            .styled-editor ol li { margin-bottom: 0.6em; padding-left: 0.3em; font-weight: 500; }
+                            .styled-editor blockquote { border-left: 5px solid #000000; padding: 1rem 1.5rem; font-style: italic; color: #3f3f46; margin: 2rem 0; font-size: 1.1em; background: #f8fafc; border: 2px solid #000000; border-radius: 12px; box-shadow: 2px 2px 0 #000; }
+                            .styled-editor pre { background: #f8fafc; padding: 1.5rem; border-radius: 16px; margin: 2rem 0; border: 2px solid #000000; font-family: monospace; font-size: 0.9em; overflow-x: auto; color: #000; box-shadow: 2px 2px 0 #000; }
+                            .styled-editor code { font-family: monospace; background: #f1f5f9; padding: 0.2em 0.4em; border-radius: 6px; color: #b91c1c; font-size: 0.85em; border: 1px solid #cbd5e1; }
+                            .todo-item { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; padding: 4px 0; font-weight: 500; }
+                            .todo-item input[type=checkbox] { width: 18px; height: 18px; cursor: pointer; accent-color: #000; flex-shrink: 0; }
+                            .divider-line { border: none; border-top: 2px dashed #000000; margin: 2rem 0; }
                             .note-table { width: 100%; border-collapse: collapse; margin: 2rem 0; }
-                            .note-table th { background: rgba(255,255,255,0.05); color: white; font-weight: 800; font-size: 0.85em; text-transform: uppercase; padding: 12px 16px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.08); }
-                            .note-table td { padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,0.04); color: #c7c7cf; }
-                            .note-table tr:hover td { background: rgba(255,255,255,0.02); }
-                            .custom-scrollbar::-webkit-scrollbar { width: 3px; }
-                            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.05); border-radius: 10px; }
-                            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
+                            .note-table th { background: #f1f5f9; color: black; font-weight: 800; padding: 10px 14px; border: 2px solid #000000; font-family: 'Space Grotesk', sans-serif; text-transform: uppercase; font-size: 0.85em; }
+                            .note-table td { padding: 8px 14px; border: 2px solid #000000; color: #3f3f46; background: #ffffff; font-weight: 500; }
+                            .note-table tr:hover td { background: #f8fafc; }
+                            .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+                            .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 10px; }
+                            .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
                         `}</style>
                     </div>
                 ) : (
@@ -706,24 +714,26 @@ export default function SmartNotesPage() {
 
 type NoteItemProps = { note: Note; activeId: string | null; setActiveId: (id: string) => void; deleteNote: (id: string, e: React.MouseEvent) => void; updateNote: (id: string, updates: Partial<Note>) => void; };
 function NoteItem({ note, activeId, setActiveId, deleteNote, updateNote }: NoteItemProps) {
+    const active = activeId === note.id;
     return (
-        <div onClick={() => setActiveId(note.id)} className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-300 ${ activeId === note.id ? 'bg-white/5 text-[#f0ede8] ring-1 ring-white/8' : 'text-zinc-500 hover:bg-white/[0.03] hover:text-zinc-300' }`}>
+        <div onClick={() => setActiveId(note.id)} className={`group flex items-center justify-between px-3 py-2.5 rounded-xl cursor-pointer border-2 transition-all duration-150 ${ active ? 'bg-[#000000] border-black text-[#ffffff] shadow-none' : 'bg-white border-transparent text-[#000000] hover:bg-zinc-50' }`}>
             <div className="flex items-center gap-3 overflow-hidden">
-                <span className={`shrink-0 transition-all duration-300 p-2 rounded-xl ${ activeId === note.id ? 'bg-white/10 text-[#f0ede8]' : 'bg-white/[0.03] text-zinc-500 group-hover:text-zinc-300' }`}>
-                    <NoteIcon name={note.icon} size={16} /></span>
+                <span className={`shrink-0 p-1.5 rounded-lg border transition-all ${ active ? 'bg-white/10 border-white/20 text-white' : 'bg-zinc-50 border-zinc-200 text-zinc-600' }`}>
+                    <NoteIcon name={note.icon} size={15} />
+                </span>
                 <div className="flex flex-col overflow-hidden">
-                    <span className="text-sm font-bold truncate">{note.title || "Untitled"}</span>
+                    <span className="text-xs font-bold truncate">{note.title || "Untitled"}</span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                        {note.isFavorite && <div className="w-1 h-1 rounded-full bg-white" />}
-                        {note.isPinned && <div className="w-1 h-1 rounded-full bg-white" />}
-                        <span className="text-[9px] font-bold text-zinc-700">{new Date(note.updatedAt).toLocaleDateString([],{month:'short',day:'numeric'})}</span>
+                        {note.isFavorite && <div className={`w-1 h-1 rounded-full ${active ? 'bg-white' : 'bg-black'}`} />}
+                        {note.isPinned && <div className={`w-1.5 h-1.5 ${active ? 'bg-white' : 'bg-black'} rotate-45`} />}
+                        <span className={`text-[9px] font-bold ${active ? 'text-zinc-300' : 'text-zinc-500'}`}>{new Date(note.updatedAt).toLocaleDateString([],{month:'short',day:'numeric'})}</span>
                     </div>
                 </div>
             </div>
             <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-all shrink-0">
-                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isPinned: !note.isPinned }); }} className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-700 hover:text-[#f0ede8] transition-all"><Pin size={11} /></button>
-                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isFavorite: !note.isFavorite }); }} className="p-1.5 rounded-lg hover:bg-white/10 text-zinc-700 hover:text-[#f0ede8] transition-all"><Star size={11} /></button>
-                <button onClick={(e) => deleteNote(note.id, e)} className="p-1.5 rounded-lg hover:bg-red-500/10 text-zinc-700 hover:text-red-400 transition-all"><Trash2 size={11} /></button>
+                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isPinned: !note.isPinned }); }} className={`p-1 rounded-md border ${active ? 'hover:bg-white/10 text-zinc-300 hover:text-white border-transparent' : 'hover:bg-zinc-150 text-zinc-500 hover:text-black border-transparent'}`}><Pin size={11} /></button>
+                <button onClick={(e) => { e.stopPropagation(); updateNote(note.id, { isFavorite: !note.isFavorite }); }} className={`p-1 rounded-md border ${active ? 'hover:bg-white/10 text-zinc-300 hover:text-white border-transparent' : 'hover:bg-zinc-150 text-zinc-500 hover:text-black border-transparent'}`}><Star size={11} /></button>
+                <button onClick={(e) => deleteNote(note.id, e)} className={`p-1 rounded-md border ${active ? 'hover:bg-rose-500/20 text-zinc-300 hover:text-rose-200 border-transparent' : 'hover:bg-rose-50 text-zinc-500 hover:text-rose-600 border-transparent'}`}><Trash2 size={11} /></button>
             </div>
         </div>
     );
@@ -731,25 +741,25 @@ function NoteItem({ note, activeId, setActiveId, deleteNote, updateNote }: NoteI
 
 function TemplatesModal({ onSelect, onClose }: { onSelect: (id: string) => void; onClose: () => void; }) {
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={onClose}>
-            <div className="absolute inset-0 bg-[#141414]/70 backdrop-blur-sm" />
-            <div className="relative bg-[#111113] border border-white/10 rounded-3xl shadow-[0_40px_100px_rgba(0,0,0,0.8)] p-8 w-full max-w-lg z-10" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
+            <div className="absolute inset-0 bg-[#141414]/50 backdrop-blur-sm" />
+            <div className="relative bg-white border-2 border-black rounded-[2.5rem] shadow-[8px_8px_0_#000] p-6 sm:p-8 w-full max-w-lg z-10 text-black" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h2 className="text-xl font-black text-[#f0ede8]">Templates</h2>
-                        <p className="text-sm text-zinc-500 mt-1">Start with a pre-built page structure</p>
+                        <h2 className="text-xl font-black ig-display">Workspace Templates</h2>
+                        <p className="text-xs text-zinc-500 mt-1 font-bold uppercase tracking-wider">Start with a structured outline</p>
                     </div>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-xl text-zinc-500 hover:text-[#f0ede8]"><X size={18} /></button>
+                    <button onClick={onClose} className="p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg text-black shadow-[1.5px_1.5px_0_#000]"><X size={14} /></button>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {TEMPLATES.map(tpl => (
-                        <button key={tpl.id} onClick={() => onSelect(tpl.id)} className="flex items-start gap-3 p-4 bg-white/[0.02] hover:bg-white/[0.06] border border-white/5 hover:border-white/10 rounded-2xl text-left transition-all group">
-                            <span className="p-2 rounded-xl bg-white/5 text-zinc-300 group-hover:text-[#f0ede8] group-hover:bg-white/10 transition-all mt-0.5">
-                                <NoteIcon name={tpl.iconName} size={20} />
+                        <button key={tpl.id} onClick={() => onSelect(tpl.id)} className="ig-btn flex items-start gap-3 p-4 bg-white hover:bg-zinc-50 border-2 border-black rounded-2xl text-left transition-all shadow-[3px_3px_0_#000] group">
+                            <span className="p-2 rounded-xl bg-zinc-50 border border-zinc-200 text-black group-hover:bg-zinc-100 transition-all mt-0.5">
+                                <NoteIcon name={tpl.iconName} size={18} />
                             </span>
                             <div>
-                                <div className="text-sm font-black text-[#f0ede8]">{tpl.name}</div>
-                                <div className="text-[11px] text-zinc-600 mt-0.5">Pre-filled structure</div>
+                                <div className="text-xs font-black text-black">{tpl.name}</div>
+                                <div className="text-[10px] text-zinc-500 mt-0.5 font-bold uppercase">Insert outline</div>
                             </div>
                         </button>
                     ))}
@@ -770,21 +780,20 @@ function ShortcutsModal({ onClose }: { onClose: () => void; }) {
         { key: 'Ctrl+I', desc: 'Italic text' },
         { key: 'Ctrl+Z', desc: 'Undo' },
         { key: 'Ctrl+Y', desc: 'Redo' },
-        { key: 'Select + Bubble menu', desc: 'Format selected text' },
     ];
     return (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center" onClick={onClose}>
-            <div className="absolute inset-0 bg-[#141414]/70 backdrop-blur-sm" />
-            <div className="relative bg-[#111113] border border-white/10 rounded-3xl shadow-2xl p-8 w-full max-w-md z-10" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={onClose}>
+            <div className="absolute inset-0 bg-[#141414]/50 backdrop-blur-sm" />
+            <div className="relative bg-white border-2 border-black rounded-[2.5rem] shadow-[8px_8px_0_#000] p-6 sm:p-8 w-full max-w-md z-10 text-black" onClick={e => e.stopPropagation()}>
                 <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl font-black text-[#f0ede8]">Keyboard Shortcuts</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-white/5 rounded-xl text-zinc-500 hover:text-[#f0ede8]"><X size={18} /></button>
+                    <h2 className="text-xl font-black ig-display">Shortcuts</h2>
+                    <button onClick={onClose} className="p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg text-black shadow-[1.5px_1.5px_0_#000]"><X size={14} /></button>
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-1.5">
                     {shortcuts.map(s => (
-                        <div key={s.key} className="flex items-center justify-between py-2 border-b border-white/[0.03]">
-                            <span className="text-sm text-zinc-400">{s.desc}</span>
-                            <kbd className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-[11px] font-black text-zinc-300 font-mono">{s.key}</kbd>
+                        <div key={s.key} className="flex items-center justify-between py-2 border-b-2 border-dashed border-zinc-100">
+                            <span className="text-xs text-zinc-600 font-bold">{s.desc}</span>
+                            <kbd className="px-2.5 py-1 bg-zinc-50 border-2 border-black rounded-lg text-[10px] font-black text-black font-mono shadow-[1.5px_1.5px_0_#000]">{s.key}</kbd>
                         </div>
                     ))}
                 </div>
@@ -792,11 +801,12 @@ function ShortcutsModal({ onClose }: { onClose: () => void; }) {
         </div>
     );
 }
+
 function HomeDashboard({ 
     notes, 
     setActiveId, 
     setShowTemplates, 
-    createNote,
+    createNote, 
     showHelp,
     setShowHelp
 }: { 
@@ -808,33 +818,34 @@ function HomeDashboard({
     setShowHelp: (v: boolean) => void;
 }) {
     const hour = new Date().getHours();
-    const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+    const greeting = hour < 12 ? 'Good Morning' : hour < 18 ? 'Good Afternoon' : 'Good Evening';
     const recents = [...notes].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 4);
     
     return (
-        <div data-lenis-prevent className="flex-1 overflow-y-auto px-4 sm:px-8 py-10 sm:py-16 custom-scrollbar bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900/40 via-transparent to-transparent">
-            <div className="max-w-5xl mx-auto space-y-10 sm:space-y-16 animate-in fade-in slide-in-from-bottom-4 duration-700">
-                <div className="text-center space-y-3 mt-4 sm:mt-10">
-                    <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight text-[#f0ede8]">{greeting}</h1>
+        <div data-lenis-prevent className="flex-1 overflow-y-auto px-4 sm:px-8 py-10 sm:py-16 custom-scrollbar bg-white">
+            <div className="max-w-4xl mx-auto space-y-12">
+                <div className="text-center">
+                    <h1 className="text-3xl sm:text-5xl font-black text-black tracking-tight leading-none mb-2 ig-display">{greeting}!</h1>
+                    <p className="text-xs sm:text-sm font-bold text-zinc-500 uppercase tracking-widest">Workspace Dashboard</p>
                 </div>
                 
                 {recents.length > 0 && (
                     <div className="space-y-4">
-                        <div className="flex items-center gap-2 text-zinc-400 font-medium mb-4 px-2">
-                            <Clock size={16} /> <span className="text-sm">Recently visited</span>
+                        <div className="flex items-center gap-2 text-zinc-400 font-bold mb-4 px-2 tracking-widest text-[10px] uppercase">
+                            <Clock size={14} className="text-black" /> <span className="text-black">Recently Edited</span>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {recents.map(note => (
-                                <div key={note.id} onClick={() => setActiveId(note.id)} className="group bg-white/[0.02] hover:bg-white/[0.05] border border-white/5 hover:border-white/10 rounded-3xl p-4 cursor-pointer transition-all hover:-translate-y-1">
-                                    <div className="h-28 rounded-2xl bg-[#0c0c0e] border border-white/5 overflow-hidden mb-4 relative flex items-center justify-center">
+                                <div key={note.id} onClick={() => setActiveId(note.id)} className="ig-btn bg-white hover:bg-zinc-50 border-2 border-black rounded-[2rem] p-4 cursor-pointer transition-all shadow-[4px_4px_0_#000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]">
+                                    <div className="h-24 rounded-2xl bg-zinc-50 border-2 border-black overflow-hidden mb-3.5 relative flex items-center justify-center">
                                         {note.coverImage ? (
-                                            <img src={note.coverImage} className="w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity" alt="" />
+                                            <img src={note.coverImage} className="w-full h-full object-cover" alt="" />
                                         ) : (
-                                            <NoteIcon name={note.icon} size={32} className="text-zinc-700 group-hover:text-zinc-500 transition-colors" />
+                                            <NoteIcon name={note.icon} size={28} className="text-zinc-400" />
                                         )}
                                     </div>
-                                    <h3 className="font-bold text-zinc-200 truncate group-hover:text-[#f0ede8] transition-colors">{note.title || "Untitled"}</h3>
-                                    <p className="text-[11px] text-zinc-500 mt-1.5">{new Date(note.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                                    <h3 className="font-black text-xs text-black truncate">{note.title || "Untitled Page"}</h3>
+                                    <p className="text-[9px] text-zinc-500 mt-1 font-bold uppercase">{new Date(note.updatedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}</p>
                                 </div>
                             ))}
                         </div>
@@ -842,24 +853,24 @@ function HomeDashboard({
                 )}
                 
                 <div className="space-y-4 pt-4">
-                    <div className="flex items-center gap-2 text-zinc-400 font-medium mb-4 px-2">
-                        <Sparkles size={16} /> <span className="text-sm">Create & Learn</span>
+                    <div className="flex items-center gap-2 text-zinc-400 font-bold mb-4 px-2 tracking-widest text-[10px] uppercase">
+                        <Sparkles size={14} className="text-black" /> <span className="text-black">Quick Actions</span>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                         <div onClick={() => createNote()} className="bg-gradient-to-br from-white/10 to-transparent border border-white/20 hover:border-white/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
-                             <div className="w-12 h-12 bg-white/20 text-[#f0ede8] rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Plus size={24} /></div>
-                             <h3 className="text-lg font-bold text-[#f0ede8] mb-2">New Blank Page</h3>
-                             <p className="text-sm text-zinc-400">Start fresh with a clean slate for your ideas.</p>
+                         <div onClick={() => createNote()} className="ig-btn bg-white hover:bg-zinc-50 border-2 border-black rounded-[2rem] p-6 cursor-pointer transition-all shadow-[4px_4px_0_#000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]">
+                             <div className="w-10 h-10 bg-orange-100 text-orange-600 rounded-xl border-2 border-black flex items-center justify-center mb-4"><Plus size={20} /></div>
+                             <h3 className="text-base font-bold text-black mb-1.5 ig-display">Blank Workspace</h3>
+                             <p className="text-xs text-zinc-500 font-semibold leading-relaxed">Start fresh with a clean slate for capturing ideas.</p>
                          </div>
-                         <div onClick={() => createNote('daily')} className="bg-gradient-to-br from-white/10 to-transparent border border-white/20 hover:border-white/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
-                             <div className="w-12 h-12 bg-white/20 text-[#f0ede8] rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><CalendarDays size={24} /></div>
-                             <h3 className="text-lg font-bold text-[#f0ede8] mb-2">Today's Note</h3>
-                             <p className="text-sm text-zinc-400">Jump right into capturing today's tasks and thoughts.</p>
+                         <div onClick={() => createNote('daily')} className="ig-btn bg-white hover:bg-zinc-50 border-2 border-black rounded-[2rem] p-6 cursor-pointer transition-all shadow-[4px_4px_0_#000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]">
+                             <div className="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl border-2 border-black flex items-center justify-center mb-4"><CalendarDays size={18} /></div>
+                             <h3 className="text-base font-bold text-black mb-1.5 ig-display">Today's Note</h3>
+                             <p className="text-xs text-zinc-500 font-semibold leading-relaxed">Jump into template lists for daily task logging.</p>
                          </div>
-                         <div onClick={() => setShowTemplates(true)} className="bg-gradient-to-br from-green-500/10 to-transparent border border-green-500/20 hover:border-green-500/40 rounded-[2rem] p-6 cursor-pointer group transition-all">
-                             <div className="w-12 h-12 bg-green-500/20 text-green-400 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform"><Layers size={24} /></div>
-                             <h3 className="text-lg font-bold text-[#f0ede8] mb-2">Explore Templates</h3>
-                             <p className="text-sm text-zinc-400">Use pre-built page structures created for you.</p>
+                         <div onClick={() => setShowTemplates(true)} className="ig-btn bg-white hover:bg-zinc-50 border-2 border-black rounded-[2rem] p-6 cursor-pointer transition-all shadow-[4px_4px_0_#000] hover:translate-y-[-2px] hover:shadow-[6px_6px_0_#000]">
+                             <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-xl border-2 border-black flex items-center justify-center mb-4"><Layers size={18} /></div>
+                             <h3 className="text-base font-bold text-black mb-1.5 ig-display">Use Template</h3>
+                             <p className="text-xs text-zinc-500 font-semibold leading-relaxed">Choose structures pre-designed for articles and plans.</p>
                          </div>
                     </div>
                 </div>
@@ -867,80 +878,43 @@ function HomeDashboard({
                 <HelpModal 
                     isOpen={showHelp} 
                     onClose={() => setShowHelp(false)} 
-                    title="Smart Notes Workspace"
+                    title="Smart Notes Technical Specs"
                 >
-                <div className="space-y-16">
-                    <section className="bg-[#1c1c1c]/30 p-6 sm:p-8 rounded-3xl border border-white/[0.06] space-y-12 text-zinc-400 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">
-                            <Sparkles className="text-zinc-500" size={32} />
-                            Your Private Workspace
-                        </h3>
-                        <p className="text-lg leading-relaxed text-zinc-400 max-w-4xl font-medium">
-                            Smart Notes is a powerful, privacy-first alternative to bloated note-taking apps. Built for speed and focus, our workspace combines the simplicity of markdown with the power of rich media, cover images, and template-based productivity. Whether you are drafting a project plan, tracking daily tasks, or brainstorming the next big thing, Smart Notes provides a fluid, dark-themed environment that lives entirely in your browser. No accounts required, no data tracking, and zero latency—just your thoughts, organized.
-                        </p>
-                    </section>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
-                        <div className="space-y-4 p-8 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2.5rem] hover:border-white/[0.12] transition-colors group">
-                            <div className="w-12 h-12 rounded-2xl bg-[#1c1c1c] flex items-center justify-center text-zinc-400 group-hover:text-[#f0ede8] transition-colors">
-                                <Zap size={22} />
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Slash Commands</h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Type <code className="text-[#f0ede8] bg-white/[0.06] px-1.5 py-0.5 rounded">/</code> to trigger the block menu. Instantly insert headings, to-do lists, tables, code blocks, and callouts without touching your mouse.</p>
-                        </div>
-                        <div className="space-y-4 p-8 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2.5rem] hover:border-white/[0.12] transition-colors group">
-                            <div className="w-12 h-12 rounded-2xl bg-[#1c1c1c] flex items-center justify-center text-zinc-400 group-hover:text-[#f0ede8] transition-colors">
-                                <Shield size={22} />
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Local-First Privacy</h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Your notes never leave your device. We use browser LocalStorage to keep your database private and accessible even while offline.</p>
-                        </div>
-                        <div className="space-y-4 p-8 bg-[#1c1c1c]/50 border border-white/[0.05] rounded-[2.5rem] hover:border-white/[0.12] transition-colors group">
-                            <div className="w-12 h-12 rounded-2xl bg-[#1c1c1c] flex items-center justify-center text-zinc-400 group-hover:text-[#f0ede8] transition-colors">
-                                <Rocket size={22} />
-                            </div>
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Smart Templates</h3>
-                            <p className="text-sm text-zinc-500 leading-relaxed font-semibold">Jumpstart your workflow with Daily Note, Project Plan, or Article Draft templates designed by productivity experts.</p>
-                        </div>
-                    </div>
-
-                    <div className="bg-[#1c1c1c]/30 border border-white/[0.05] rounded-[3.5rem] p-12 md:p-16">
-                        <div className="flex flex-col md:flex-row gap-16">
-                            <div className="flex-1 space-y-8">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Productivity Tips</h3>
-                                <div className="space-y-6">
-                                    <div className="flex gap-4">
-                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
-                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-[#f0ede8]">Pin your active goals.</strong> Use the pin icon to keep high-priority projects at the top of your sidebar for instant access.</p>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
-                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-[#f0ede8]">Style with Covers.</strong> Add high-resolution cover images to create a visual organization system that makes each page distinct.</p>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="w-6 h-6 border border-zinc-700 rounded-full flex items-center justify-center shrink-0 mt-1"><Check size={12} /></div>
-                                        <p className="text-sm font-medium text-zinc-400"><strong className="text-[#f0ede8]">Markdown Mastery.</strong> Use keyboard shortcuts like <code className="text-[#f0ede8] bg-white/[0.06] px-1 py-0.5 rounded text-[10px]">#</code> for headers and <code className="text-[#f0ede8] bg-white/[0.06] px-1 py-0.5 rounded text-[10px]">-</code> for lists for the fastest editing experience.</p>
-                                    </div>
+                    <div className="space-y-8 text-left max-w-2xl mx-auto py-4">
+                        <section className="space-y-3">
+                            <h3 className="text-lg font-bold text-black ig-display">
+                                Zero-Server Notes Environment
+                            </h3>
+                            <p className="text-sm text-zinc-650 leading-relaxed font-medium">
+                                Smart Notes is a professional, browser-side markdown and rich text workspace. All pages, tags, covers, and icons are saved locally in your browser storage container—meaning zero data ever goes to external servers for 100% security.
+                            </p>
+                        </section>
+                        
+                        <section className="space-y-4">
+                            <h3 className="text-lg font-bold text-black ig-display">Key Capabilities</h3>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000]">
+                                    <h4 className="text-sm font-bold text-black mb-1 ig-display">Slash Commands</h4>
+                                    <p className="text-[11px] text-zinc-500 leading-relaxed font-semibold">Type "/" to insert headers, tables, callouts, lists, code containers, and checklists.</p>
+                                </div>
+                                <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[2px_2px_0_#000]">
+                                    <h4 className="text-sm font-bold text-black mb-1 ig-display">Multiple Formats</h4>
+                                    <p className="text-[11px] text-zinc-500 leading-relaxed font-semibold">Export your documents to clean markdown (.md), web-ready HTML, or standard plain text (.txt).</p>
                                 </div>
                             </div>
-                            <div className="flex-1 space-y-8 border-t md:border-t-0 md:border-l border-white/[0.05] pt-16 md:pt-0 md:pl-16">
-                                <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-6">Workspace FAQ</h3>
-                                <Accordion>
-                                    <AccordionItem title="Where is my data stored?">
-                                        Technically, in your browser&apos;s LocalStorage. This means your data is persistent on this specific browser and device but never touches our servers.
-                                    </AccordionItem>
-                                    <AccordionItem title="Can I export my notes?">
-                                        Yes! Use the download icon in the top toolbar to export any page as Markdown (.md), Plain Text (.txt), or HTML.
-                                    </AccordionItem>
-                                    <AccordionItem title="Is there a mobile app?">
-                                        Smart Notes is a Progressive Web App (PWA). You can &quot;Add to Home Screen&quot; on your phone for a full-screen, app-like experience on iOS and Android.
-                                    </AccordionItem>
-                                </Accordion>
+                        </section>
+
+                        <section className="space-y-3">
+                            <h3 className="text-lg font-bold text-black ig-display">Frequently Asked Questions</h3>
+                            <div className="space-y-2">
+                                <div className="p-4 bg-zinc-50 border-2 border-black rounded-xl">
+                                    <h4 className="text-xs font-bold text-black mb-1">Is it offline capable?</h4>
+                                    <p className="text-[11px] text-zinc-500 font-semibold leading-relaxed">Yes. Because all scripts and data run client-side, the workspace remains fully interactive and functional even without an internet connection.</p>
+                                </div>
                             </div>
-                        </div>
+                        </section>
                     </div>
-                </div>
-            </HelpModal>
+                </HelpModal>
             </div>
         </div>
     );
