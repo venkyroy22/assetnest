@@ -31,8 +31,8 @@ const THEMES: Theme[] = [
     {
         name: "neobrutalist",
         bg: "#F4ECD8", surface: "#ffffff", border: "#000000",
-        text: "#000000", muted: "#4b5563", dim: "#f3f4f6",
-        accent: "#f59e0b", accentHex: "#f59e0b", error: "#ef4444",
+        text: "#000000", muted: "#7f735f", dim: "#f3ede2",
+        accent: "#f59e0b", accentHex: "#f59e0b", error: "#dc2626",
     },
     {
         name: "midnight",
@@ -71,6 +71,12 @@ const THEMES: Theme[] = [
         accent: "#ff6b35", accentHex: "#ff6b35", error: "#ff3366",
     },
     {
+        name: "arctic",
+        bg: "#0d1117", surface: "#161b22", border: "#21262d",
+        text: "#c9d1d9", muted: "#484f58", dim: "#1c2128",
+        accent: "#58a6ff", accentHex: "#58a6ff", error: "#f85149",
+    },
+    {
         name: "cream",
         bg: "#f5f0e8", surface: "#ede7d9", border: "#cec6b4",
         text: "#2d2416", muted: "#8a7a62", dim: "#ddd6c8",
@@ -81,6 +87,72 @@ const THEMES: Theme[] = [
         bg: "#080808", surface: "#181818", border: "#303030",
         text: "#e8e8e8", muted: "#555555", dim: "#222222",
         accent: "#ffffff", accentHex: "#ffffff", error: "#e05252",
+    },
+    {
+        name: "candy",
+        bg: "#1a0f24", surface: "#2d1a40", border: "#4a2e66",
+        text: "#f8e8ff", muted: "#9a72b8", dim: "#251535",
+        accent: "#ff6dd3", accentHex: "#ff6dd3", error: "#ff4444",
+    },
+    {
+        name: "tokyo",
+        bg: "#0a0a12", surface: "#13131f", border: "#1f1f33",
+        text: "#f0f0ff", muted: "#5c5c8a", dim: "#16162a",
+        accent: "#ff2d78", accentHex: "#ff2d78", error: "#ff9900",
+    },
+    {
+        name: "matrix",
+        bg: "#000d00", surface: "#001a00", border: "#003300",
+        text: "#ccffcc", muted: "#2e7d32", dim: "#002200",
+        accent: "#00ff41", accentHex: "#00ff41", error: "#ff4444",
+    },
+    {
+        name: "nebula",
+        bg: "#07030f", surface: "#130a24", border: "#220f3d",
+        text: "#e8d5ff", muted: "#6a3fa0", dim: "#180d2e",
+        accent: "#a78bfa", accentHex: "#a78bfa", error: "#f43f5e",
+    },
+    {
+        name: "copper",
+        bg: "#0f0a06", surface: "#1e1509", border: "#33230f",
+        text: "#f7e8d4", muted: "#8a6535", dim: "#261b0d",
+        accent: "#e8935a", accentHex: "#e8935a", error: "#e05050",
+    },
+    {
+        name: "glacier",
+        bg: "#07111a", surface: "#0e1e2c", border: "#163040",
+        text: "#daf6ff", muted: "#4a7d99", dim: "#111e2a",
+        accent: "#4dd9e8", accentHex: "#4dd9e8", error: "#f96060",
+    },
+    {
+        name: "mint",
+        bg: "#06100d", surface: "#0e1f1a", border: "#17332c",
+        text: "#d6f5ee", muted: "#3d8070", dim: "#0e1e1a",
+        accent: "#2effc3", accentHex: "#2effc3", error: "#ff5470",
+    },
+    {
+        name: "blood",
+        bg: "#0f0000", surface: "#200000", border: "#3a0000",
+        text: "#ffd5d5", muted: "#7a3030", dim: "#1a0000",
+        accent: "#ff2222", accentHex: "#ff2222", error: "#ff9000",
+    },
+    {
+        name: "cyber",
+        bg: "#030d0a", surface: "#071a14", border: "#0d2e22",
+        text: "#e2fff5", muted: "#2e7a5c", dim: "#091a12",
+        accent: "#c6ff00", accentHex: "#c6ff00", error: "#ff4060",
+    },
+    {
+        name: "dusk",
+        bg: "#100b18", surface: "#1c1428", border: "#2e2040",
+        text: "#f5deed", muted: "#806070", dim: "#180f22",
+        accent: "#f0a0d0", accentHex: "#f0a0d0", error: "#ff6060",
+    },
+    {
+        name: "solar",
+        bg: "#fdfbf6", surface: "#f0ebe0", border: "#d8cebc",
+        text: "#2c1e0e", muted: "#9a8060", dim: "#e8e0d0",
+        accent: "#d95700", accentHex: "#d95700", error: "#c0202a",
     },
 ];
 
@@ -267,13 +339,16 @@ export default function TypingTesterPage() {
 
     useEffect(() => {
         setVisible(true);
+        if (supabase) {
+            setSupabaseOnline(true);
+        }
         return () => {
             if (timerRef.current) clearInterval(timerRef.current);
             if (elapsedRef.current) clearInterval(elapsedRef.current);
             if (historyTimerRef.current) clearInterval(historyTimerRef.current);
             channelRef.current?.unsubscribe();
         };
-    }, []);
+    }, [supabase]);
 
     const updateCaret = useCallback(() => {
         if (!isFocused || isFinished || countdown !== null) return;
@@ -291,7 +366,6 @@ export default function TypingTesterPage() {
             targetEl = charEls[charEls.length - 1] as HTMLElement;
             if (targetEl) {
                 const rect = targetEl.getBoundingClientRect();
-                const containerRect = container.getBoundingClientRect();
                 setCaretPos({
                     top: targetEl.offsetTop,
                     left: targetEl.offsetLeft + rect.width,
@@ -747,10 +821,10 @@ export default function TypingTesterPage() {
     return (
         <div
             className="min-h-screen transition-colors duration-300"
-            style={{ background: T.bg, color: T.text, fontFamily: "'Roboto Mono', 'Fira Code', monospace" }}
+            style={{ background: T.bg, color: T.muted, fontFamily: "'Roboto Mono', 'Fira Code', monospace" }}
         >
             <style>{`
-                @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Space+Grotesk:wght@700;900&family=DM+Sans:wght@500;750&display=swap');
+                @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Space+Grotesk:wght@700;900&display=swap');
                 @keyframes caretBlink { 0%,100%{opacity:1} 50%{opacity:0} }
                 
                 .ig-btn {
@@ -769,14 +843,16 @@ export default function TypingTesterPage() {
                     <Link
                         href="/tools"
                         className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+                        style={{ fontFamily: "sans-serif" }}
                     >
                         <ArrowLeft size={12} strokeWidth={2.5} /> BACK
                     </Link>
                     <button onClick={resetTest} className="flex items-center gap-2 group ml-2">
                         <div
-                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-white text-xs font-black border-2 border-black shadow-[2px_2px_0_#000] bg-orange-500"
-                        >T</div>
-                        <span className="text-base sm:text-lg font-black tracking-tight" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all border border-black shadow-[1.5px_1.5px_0_#000]"
+                            style={{ background: T.accent }}
+                        >AN</div>
+                        <span className="text-base sm:text-lg font-black tracking-tight transition-colors" style={{ color: T.text, fontFamily: "'Space Grotesk', sans-serif" }}>
                             Typing Tester
                         </span>
                     </button>
@@ -784,7 +860,7 @@ export default function TypingTesterPage() {
 
                 <div className="flex items-center gap-2">
                     {isActive && (
-                        <div className="text-sm font-black tracking-wider uppercase bg-white border-2 border-black px-3 py-1 rounded-xl shadow-[1.5px_1.5px_0_#000]">
+                        <div className="text-sm font-black tracking-wider uppercase bg-white border-2 border-black px-3 py-1 rounded-xl shadow-[1.5px_1.5px_0_#000] text-black">
                             {testMode === "time" ? `${timeLeft}s` : testMode === "words" ? `${currentWordIdx}/${wordConfig}` : `${timeLeft}s • ${currentWordIdx}/${wordConfig}`}
                         </div>
                     )}
@@ -811,8 +887,7 @@ export default function TypingTesterPage() {
                 {!isActive && !isFinished && (
                     <div className="flex justify-center mb-6 sm:mb-10 px-2">
                         <div
-                            className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-1 rounded-2xl p-2.5 text-xs font-bold tracking-wide w-full sm:w-auto shadow-[4px_4px_0_#000] border-2 border-black"
-                            style={{ background: "#ffffff", color: "#000000" }}
+                            className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-1 rounded-2xl p-2.5 text-xs font-bold tracking-wide w-full sm:w-auto shadow-[4px_4px_0_#000] border-2 border-black bg-white text-black"
                         >
                             {/* Group 1: Modes & Modifiers */}
                             <div className="flex flex-wrap items-center justify-center gap-1">
@@ -821,7 +896,7 @@ export default function TypingTesterPage() {
                                         <button
                                             key={m}
                                             onClick={() => setTestMode(m)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-zinc-150"
+                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-zinc-100"
                                             style={{
                                                 fontWeight: testMode === m ? 900 : 500,
                                                 color: testMode === m ? "#000000" : "#6b7280",
@@ -907,7 +982,7 @@ export default function TypingTesterPage() {
                                             }
                                             setSettingsModalOpen(true); 
                                         }}
-                                        className="px-2 py-1 rounded-lg transition-all text-zinc-500 hover:text-black"
+                                        className="px-2 py-1 rounded-lg transition-all text-zinc-550 hover:text-black"
                                         title="Custom Settings"
                                     >
                                         <Settings2 size={12} />
@@ -943,46 +1018,11 @@ export default function TypingTesterPage() {
                     </div>
                 )}
 
-                {/* ── Countdown overlay ──────────────────────────────────────── */}
-                {countdown !== null && (
-                    <div
-                        className="fixed inset-0 z-[100] flex flex-col items-center justify-center"
-                        style={{ background: `${T.bg}ee`, backdropFilter: "blur(6px)" }}
-                    >
-                        <div
-                            key={countdown}
-                            className="font-black leading-none tabular-nums"
-                            style={{
-                                color: countdown === 0 ? T.accent : T.text,
-                                fontSize: "clamp(6rem, 25vw, 14rem)",
-                                textShadow: countdown === 0
-                                    ? `0 0 60px ${T.accentHex}99`
-                                    : `0 0 40px ${T.accentHex}44`,
-                                animation: "countPop 0.35s cubic-bezier(0.22,1,0.36,1)",
-                            }}
-                        >
-                            {countdown === 0 ? "GO!" : countdown}
-                        </div>
-                        <div
-                            className="mt-6 text-sm font-bold tracking-widest"
-                            style={{ color: T.muted }}
-                        >
-                            {countdown === 0 ? "Type now!" : "Get ready…"}
-                        </div>
-                        <style>{`
-                            @keyframes countPop {
-                                from { opacity: 0; transform: scale(0.6); }
-                                to   { opacity: 1; transform: scale(1); }
-                            }
-                        `}</style>
-                    </div>
-                )}
-
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
                 {duelMode && !isActive && !isFinished && countdown === null && (duelStatus !== "connected" || isHost) && (
                     <div
                         className="max-w-xl mx-auto mb-8 rounded-2xl border-2 border-black shadow-[4px_4px_0_#000] overflow-hidden"
-                        style={{ background: "#ffffff" }}
+                        style={{ background: "#ffffff", color: "#000000" }}
                     >
                         {/* Status bar */}
                         {duelStatus !== "idle" && (
@@ -1009,7 +1049,7 @@ export default function TypingTesterPage() {
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-zinc-200">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x-2 divide-black">
 
                             {/* ── Create side ── */}
                             <div className="p-4 sm:p-5 space-y-4">
@@ -1084,7 +1124,7 @@ export default function TypingTesterPage() {
                                         : supabaseOnline ? "Join Game" : "Unavailable"}
                                 </button>
                                 {duelStatus === "error" && (
-                                    <p className="text-[10px] text-rose-650 font-bold">
+                                    <p className="text-[10px] text-rose-600 font-bold">
                                         Could not join. Make sure the code is correct.
                                     </p>
                                 )}
@@ -1094,21 +1134,22 @@ export default function TypingTesterPage() {
                     </div>
                 )}
 
+
                 {/* ── Live stats (while typing) ──────────────────────────────── */}
                 {isActive && (
-                    <div className="flex items-center gap-8 mb-6 bg-white border-2 border-black p-4 rounded-2xl shadow-[3px_3px_0_#000] text-black">
-                        <div className="text-4xl font-black tabular-nums leading-none">
+                    <div className="flex items-center gap-8 mb-6">
+                        <div className="text-5xl font-black tabular-nums leading-none" style={{ color: T.accent }}>
                             {testMode === "words" ? `${elapsed.toFixed(0)}s` : timeLeft}
                         </div>
-                        <div className="flex gap-6 text-xs uppercase tracking-wider font-bold">
+                        <div className="flex gap-6 text-sm">
                             {[
                                 { label: "wpm", val: wpm },
                                 { label: "acc", val: `${accuracy}%` },
                                 ...(duelMode ? [{ label: "opponent", val: `${opponentWpm} wpm` }] : []),
                             ].map(({ label, val }) => (
-                                <div key={label} className="flex flex-col">
-                                    <div className="text-[9px] font-black text-zinc-500 mb-0.5">{label}</div>
-                                    <div className="text-lg font-black text-black">{val}</div>
+                                <div key={label}>
+                                    <div className="text-xs font-semibold tracking-wide mb-0.5 capitalize" style={{ color: T.muted }}>{label}</div>
+                                    <div className="text-xl font-bold" style={{ color: label === "opponent" ? T.error : T.text }}>{val}</div>
                                 </div>
                             ))}
                         </div>
@@ -1117,23 +1158,23 @@ export default function TypingTesterPage() {
 
                 {/* Opponent progress bar */}
                 {duelMode && isActive && (
-                    <div className="h-2 w-full rounded-full mb-4 overflow-hidden border-2 border-black bg-white">
-                        <div className="h-full bg-rose-500 transition-all duration-300" style={{ width: `${opponentProgress}%` }} />
+                    <div className="h-1.5 w-full rounded-full mb-4 overflow-hidden" style={{ background: T.surface }}>
+                        <div className="h-full transition-all duration-300" style={{ width: `${opponentProgress}%`, background: T.error }} />
                     </div>
                 )}
 
                 {/* ── Typing arena ────────────────────────────────────────────── */}
-                <div className="relative cursor-text bg-white border-2 border-black rounded-[2rem] p-6 sm:p-10 shadow-[6px_6px_0_#000] text-black" onClick={() => inputRef.current?.focus()}>
+                <div className="relative cursor-text" onClick={() => inputRef.current?.focus()}>
 
                     {/* Blur overlay */}
                     {!isFocused && !isFinished && countdown === null && (!duelMode || duelStatus !== "connected") && (
                         <div
-                            className="absolute inset-0 z-40 flex items-center justify-center rounded-[1.85rem] pointer-events-none"
-                            style={{ background: `rgba(255,255,255,0.9)`, backdropFilter: "blur(2px)" }}
+                            className="absolute inset-0 z-40 flex items-center justify-center rounded-2xl pointer-events-none"
+                            style={{ background: `${T.bg}cc`, backdropFilter: "blur(2px)" }}
                         >
-                            <div className="flex items-center gap-2 text-black bg-white border-2 border-black px-4 py-2 rounded-xl shadow-[3px_3px_0_#000] font-black uppercase text-xs tracking-wider">
-                                <MousePointer2 size={14} strokeWidth={2.5} />
-                                <span>Click here to start typing</span>
+                            <div className="flex items-center gap-2" style={{ color: T.accent }}>
+                                <MousePointer2 size={16} />
+                                <span className="text-sm font-semibold tracking-wide">Tap to start</span>
                             </div>
                         </div>
                     )}
@@ -1147,7 +1188,7 @@ export default function TypingTesterPage() {
                         <div
                             ref={wordsRef}
                             className="flex flex-wrap gap-x-[0.5em] sm:gap-x-[0.6em] gap-y-[0.6em] sm:gap-y-[0.75em] relative transition-transform duration-150"
-                            style={{ fontSize: "clamp(1.1rem, 3.5vw, 1.5rem)", fontFamily: "'Roboto Mono', monospace", fontWeight: 700 }}
+                            style={{ fontSize: "clamp(1.1rem, 3.8vw, 1.55rem)" }}
                         >
                             {/* Animated caret */}
                             <div
@@ -1156,8 +1197,8 @@ export default function TypingTesterPage() {
                                     top: caretPos.top + 2,
                                     left: caretPos.left,
                                     height: "1.3em",
-                                    background: "#000000",
-                                    boxShadow: `0 0 8px rgba(0,0,0,0.2)`,
+                                    background: T.accent,
+                                    boxShadow: `0 0 12px ${T.accentHex}aa`,
                                     transition: "top 80ms ease, left 80ms ease",
                                     animation: !isActive && isFocused ? "caretBlink 1s ease-in-out infinite" : "none",
                                     opacity: isFocused ? 1 : 0,
@@ -1173,9 +1214,9 @@ export default function TypingTesterPage() {
                                         key={wIdx}
                                         className="word-el relative inline-flex"
                                         style={{
-                                            opacity: isCurrent ? 1 : isPast ? 1 : 0.4,
+                                            opacity: isCurrent ? 1 : isPast ? 1 : 0.5,
                                             textDecorationLine: isCurrent && wordData.hasError ? "underline" : "none",
-                                            textDecorationColor: "#ef4444",
+                                            textDecorationColor: T.error,
                                             textUnderlineOffset: "4px",
                                         }}
                                     >
@@ -1185,15 +1226,13 @@ export default function TypingTesterPage() {
                                                 className="char-el"
                                                 style={{
                                                     color: ch.state === "correct"
-                                                        ? "#059669"
+                                                        ? T.accent          
                                                         : ch.state === "incorrect"
-                                                            ? "#dc2626"
+                                                            ? T.error
                                                             : isCurrent
-                                                                ? "#000000"
-                                                                : "#9ca3af",
-                                                    fontWeight: ch.state === "correct" || ch.state === "incorrect" ? 700 : 500,
-                                                    background: ch.state === "incorrect" ? "#fef2f2" : "transparent",
-                                                    borderRadius: "2px"
+                                                                ? "#888"
+                                                                : T.muted,
+                                                    transition: "color 0.08s ease",
                                                 }}
                                             >
                                                 {ch.char}
@@ -1223,15 +1262,18 @@ export default function TypingTesterPage() {
                 </div>
 
                 {/* Bottom controls */}
-                <div className="flex items-center justify-center gap-6 mt-6 text-xs font-bold tracking-wider uppercase text-zinc-500">
+                <div className="flex items-center justify-center gap-6 mt-6 text-xs font-semibold tracking-wide" style={{ color: T.muted }}>
                     <button
                         onClick={duelMode && duelStatus === "connected" ? restartDuel : resetTest}
-                        className="flex items-center gap-1.5 transition-all text-black bg-white border-2 border-black px-3.5 py-1.5 rounded-xl shadow-[2px_2px_0_#000] ig-btn hover:bg-zinc-50"
+                        className="flex items-center gap-2 transition-colors hover:opacity-100"
+                        style={{ color: T.muted }}
+                        onMouseEnter={e => (e.currentTarget.style.color = T.text)}
+                        onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
                     >
-                        <RotateCcw size={13} strokeWidth={2.5} /> restart
+                        <RotateCcw size={14} /> restart
                     </button>
-                    <span className="flex items-center gap-1.5">
-                        <span className="px-1.5 py-0.5 rounded text-[10px] border-2 border-black bg-white shadow-[1px_1px_0_#000] text-black font-black">tab</span>
+                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
+                        <span className="px-1.5 py-0.5 rounded text-[10px] border border-black bg-white shadow-[1px_1px_0_#000] text-black">tab</span>
                         to restart
                     </span>
                 </div>
@@ -1241,9 +1283,9 @@ export default function TypingTesterPage() {
             {isFinished && (
                 <div
                     className="fixed inset-0 z-50 flex items-start sm:items-center justify-center px-4 sm:px-8 overflow-y-auto py-6 sm:py-0"
-                    style={{ background: "#F4ECD8" }}
+                    style={{ background: T.bg }}
                 >
-                    <div className="w-full max-w-4xl bg-white border-2 border-black p-6 sm:p-10 rounded-[2.5rem] shadow-[8px_8px_0_#000] text-black">
+                    <div className="w-full max-w-5xl bg-white border-2 border-black p-6 sm:p-10 rounded-[2.5rem] shadow-[8px_8px_0_#000] text-black">
 
                         {/* ── Duel Result Banner ── */}
                         {duelMode && opponentFinished && (
@@ -1255,7 +1297,7 @@ export default function TypingTesterPage() {
                             >
                                 <div>
                                     <div
-                                        className="text-2xl font-black mb-0.5"
+                                        className="text-2xl font-black mb-0.5 animate-pulse"
                                         style={{ color: finalStats.finalWpm >= opponentFinishWpm ? "#059669" : "#dc2626" }}
                                     >
                                         {finalStats.finalWpm >= opponentFinishWpm ? "🏆 You Won!" : "😔 You Lost"}
@@ -1585,10 +1627,10 @@ export default function TypingTesterPage() {
                 onClose={() => setShowHelp(false)} 
                 title="Typing Tester Technical Details"
             >
-                <div className="space-y-8 text-left max-w-2xl mx-auto py-4">
+                <div className="space-y-8 text-left max-w-2xl mx-auto py-4 text-black">
                     <section className="space-y-3">
                         <h3 className="text-lg font-bold text-black ig-display">Minimalist Core Mechanics</h3>
-                        <p className="text-sm text-zinc-650 leading-relaxed font-medium">
+                        <p className="text-sm text-zinc-650 leading-relaxed font-medium font-sans">
                             The Typing Speed Tester evaluates pure keyboarding velocity, character coordination, and accuracy metrics. Calculating statistics locally at high frequency ensures zero-lag rendering.
                         </p>
                     </section>
