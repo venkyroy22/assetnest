@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
+import AdBanner from "@/components/AdBanner";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 type ImageFormat = "png" | "jpg" | "webp";
@@ -497,7 +498,12 @@ export default function ImageConverterPage() {
                     </div>
                 )}
 
-                {/* ─── SEO RICH TEXT SECTION ─── */}
+    
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
+
+            {/* ─── SEO RICH TEXT SECTION ─── */}
                 <div className="px-6 py-12 bg-white border-2 border-black rounded-[2rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000]">
                     <div className="relative z-10 space-y-12">
                         {/* Top Badges */}

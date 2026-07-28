@@ -8,6 +8,7 @@ import {
   Copy, Image as ImageIcon, Smile, Star, Trash2 
 } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
+import AdBanner from "@/components/AdBanner";
 
 /* ─────────────────────────────────────────
    DESIGN TOKENS
@@ -1261,6 +1262,11 @@ export default function QRStudio() {
             {copied ? Icons.Check(18) : Icons.Copy(18)}
           </button>
         </div>
+
+
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
 
         {/* ─── SEO RICH TEXT SECTION ─── */}
         <div style={{

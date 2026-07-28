@@ -8,6 +8,7 @@ import {
     Shield, Sparkles, Cpu, Eye, HelpCircle, ChevronDown, ArrowLeft
 } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
+import AdBanner from "@/components/AdBanner";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -354,6 +355,11 @@ export default function ImageCompressorPage() {
                                 </div>
                             </div>
                         </div>
+
+
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
 
                         {/* SEO RICH TEXT SECTION */}
                         <div className="px-6 py-12 bg-white border-2 sm:border-4 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[8px_8px_0_#000]">

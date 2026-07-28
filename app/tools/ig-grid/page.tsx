@@ -11,6 +11,7 @@ import {
 import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
 import JSZip from "jszip";
+import AdBanner from "@/components/AdBanner";
 
 interface GridImage {
     id: string;
@@ -1011,6 +1012,11 @@ export default function IGGridPlannerPage() {
                     </div>
                 </div>
             </div>
+
+
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
 
             {/* ─── SEO RICH TEXT SECTION ─── */}
             <div className="max-w-5xl mx-auto mt-24 p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden text-black shadow-[8px_8px_0_#000] z-10">

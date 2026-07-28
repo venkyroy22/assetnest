@@ -7,6 +7,7 @@ import { Document, Packer, Paragraph, TextRun } from "docx";
 import HelpModal from "@/components/HelpModal";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import AdBanner from "@/components/AdBanner";
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
 
 const jsonLd = {
@@ -435,7 +436,12 @@ export default function PdfTextExtractorPage() {
                     </div>
                 )}
 
-                {/* ─── SEO RICH TEXT SECTION ─── */}
+    
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
+
+            {/* ─── SEO RICH TEXT SECTION ─── */}
                 <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
                     <div className="relative z-10 space-y-12">
                         {/* Top Badges */}

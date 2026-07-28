@@ -11,6 +11,7 @@ import Link from "next/link";
 
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
 import ShareModal from "@/components/ShareModal";
+import AdBanner from "@/components/AdBanner";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -421,7 +422,12 @@ export default function PdfSplitterPage() {
                     </div>
                 )}
 
-                {/* ─── SEO RICH TEXT SECTION ─── */}
+    
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
+
+            {/* ─── SEO RICH TEXT SECTION ─── */}
                 <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
                     <div className="relative z-10 space-y-12">
                         {/* Top Badges */}

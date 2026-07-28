@@ -8,6 +8,7 @@ import {
     Eraser, Info, ArrowLeft, CheckCircle2, Copy, Pipette, Plus, Minus, Maximize2, Check, ShieldCheck, ChevronDown
 } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
+import AdBanner from "@/components/AdBanner";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -279,6 +280,11 @@ export default function BgRemoverPage() {
                         <p className="mt-6 text-center text-xs text-zinc-650 font-bold uppercase tracking-wider">
                             For best results, choose images with a high contrast between the subject and background.
                         </p>
+
+
+                <div className="flex justify-center py-4">
+                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
+                </div>
 
                         {/* SEO RICH TEXT SECTION */}
                         <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
