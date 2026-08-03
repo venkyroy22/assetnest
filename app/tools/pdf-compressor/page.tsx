@@ -7,7 +7,6 @@ import { useUndoRedo } from "@/hooks/useUndoRedo";
 import { PDFDocument } from "pdf-lib";
 import ShareModal from "@/components/ShareModal";
 import Link from "next/link";
-import AdBanner from "@/components/AdBanner";
 
 const jsonLd = {
     "@context": "https://schema.org",
@@ -361,7 +360,6 @@ export default function PdfCompressorPage() {
 
     
                 <div className="flex justify-center py-4">
-                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
                 </div>
 
             {/* ─── SEO RICH TEXT SECTION ─── */}

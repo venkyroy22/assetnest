@@ -36,7 +36,6 @@ const PdfPageThumbnail = dynamic(() => import("./PdfPreviewThumbnail"), { ssr: f
 import ShareModal from "@/components/ShareModal";
 import Tooltip from "@/components/Tooltip";
 import HelpModal from "@/components/HelpModal";
-import AdBanner from "@/components/AdBanner";
 
 const GLOBAL_STYLES = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -559,7 +558,6 @@ export default function PdfMergerPage() {
 
     
                 <div className="flex justify-center py-4">
-                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
                 </div>
 
             {/* ─── SEO RICH TEXT SECTION ─── */}

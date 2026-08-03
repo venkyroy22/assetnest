@@ -8,7 +8,6 @@ import {
 import Link from "next/link";
 import { ALL_TOOLS, Tool, ToolCategory } from "@/lib/tools";
 import { usePins } from "@/components/PinProvider";
-import AdBanner from "@/components/AdBanner";
 
 // ─── Short name helper ────────────────────────────────────────────────────────
 function shortName(name: string): string {
@@ -439,7 +438,6 @@ export default function ToolsPage() {
                     </div>
 
                     <div className="mb-6 flex justify-center">
-                        <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
                     </div>
 
                     {/* No results */}

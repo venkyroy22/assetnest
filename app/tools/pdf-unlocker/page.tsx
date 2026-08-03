@@ -5,7 +5,6 @@ import { Upload, Lock, Unlock, Download, FileText, ArrowRight, ShieldCheck, File
 import { PDFDocument } from "pdf-lib";
 import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
-import AdBanner from "@/components/AdBanner";
 
 // Load qpdf-wasm at runtime from CDN to avoid Turbopack/Next.js bundling issues
 // with Emscripten modules that require('fs') and require('module')
@@ -455,7 +454,6 @@ export default function PdfUnlockerPage() {
                 </div>
 
                 <div className="flex justify-center py-4">
-                    <AdBanner adKey="760a7d084fc3bc7a943aa9e62667abbe" width={468} height={60} />
                 </div>
 
                 {/* ─── SEO RICH TEXT SECTION ─── */}
