@@ -125,15 +125,10 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
     return (
         <Link 
             href={tool.href} 
-            className="block group h-full" 
+            className="block group h-full w-[230px] sm:w-auto shrink-0 snap-start" 
             tabIndex={-1}
             onClick={handleLinkClick}
         >
-
-            {/* ════════════════════════════════
-                DESKTOP — premium visual card
-                (hidden on mobile)
-            ════════════════════════════════ */}
             <div
                 ref={cardRef}
                 onMouseMove={handleMouseMove}
@@ -151,12 +146,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                         ? `0 25px 50px rgba(0,0,0,0.85), 0 0 30px ${colors.glow}` 
                         : "0 10px 35px rgba(0,0,0,0.6)",
                 }}
-                className="hidden sm:flex flex-col relative overflow-hidden rounded-2xl h-full"
+                className="flex flex-col relative overflow-hidden rounded-2xl h-full w-full"
             >
                 {/* Pin Button */}
                 <button
                     onClick={handlePinClick}
-                    className={`absolute top-4 left-4 z-20 p-2 rounded-lg transition-all duration-300 active:scale-95
+                    className={`absolute top-3 left-3 sm:top-4 sm:left-4 z-20 p-2 rounded-lg transition-all duration-300 active:scale-95
                         ${pinned
                             ? "shadow-lg"
                             : "backdrop-blur-md"}`}
@@ -181,7 +176,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                 />
 
                 {/* Top visual preview slot */}
-                <div className="relative w-full h-40 bg-[#161616] flex items-center justify-center overflow-hidden shrink-0">
+                <div className="relative w-full h-32 sm:h-40 bg-[#161616] flex items-center justify-center overflow-hidden shrink-0">
                     {tool.image ? (
                         <img 
                             src={tool.image} 
@@ -203,8 +198,8 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                             
                             {/* Ghost background icon */}
                             <Icon 
-                                size={72} 
-                                className="absolute opacity-10 transition-transform duration-700" 
+                                size={64} 
+                                className="absolute opacity-10 transition-transform duration-700 sm:w-[72px] sm:h-[72px]" 
                                 style={{
                                     color: "#ffffff",
                                     transform: hovered ? "scale(1.15) rotate(5deg)" : "scale(1) rotate(0deg)",
@@ -213,14 +208,14 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
                             
                             {/* Centered highlighted icon box */}
                             <div 
-                                className="relative w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300"
+                                className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all duration-300"
                                 style={{
                                     border: "1px solid rgba(255,255,255,0.1)",
                                     background: "rgba(255,255,255,0.05)",
                                     boxShadow: hovered ? "0 0 20px rgba(255,255,255,0.05)" : "none",
                                 }}
                             >
-                                <Icon size={22} className="text-[#f0ede8]" />
+                                <Icon size={20} className="text-[#f0ede8] sm:w-[22px] sm:h-[22px]" />
                             </div>
                         </div>
                     )}
@@ -228,88 +223,15 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
                 {/* Bottom dark tab footer */}
                 <div 
-                    className="flex items-center justify-between px-5 py-4 transition-colors duration-300 mt-auto shrink-0"
+                    className="flex items-center justify-between px-4 py-3 sm:px-5 sm:py-4 transition-colors duration-300 mt-auto shrink-0"
                     style={{
                         background: hovered ? colors.solid : "#1c1c1c"
                     }}
                 >
-                    <span className="text-sm font-bold text-white tracking-tight">{tool.name}</span>
-                    <ArrowRight size={16} className="text-white transform group-hover:translate-x-1 transition-transform duration-300" />
+                    <span className="text-xs sm:text-sm font-bold text-white tracking-tight truncate pr-1">{tool.name}</span>
+                    <ArrowRight size={14} className="text-white transform group-hover:translate-x-1 transition-transform duration-300 shrink-0 sm:w-[16px] sm:h-[16px]" />
                 </div>
             </div>
-
-            {/* ════════════════════════════════
-                MOBILE — horizontal card style
-                (Same theme as desktop, horizontal row)
-            ════════════════════════════════ */}
-            <div
-                style={{
-                    opacity: visible ? 1 : 0,
-                    transform: visible ? "translateY(0)" : "translateY(16px)",
-                    transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
-                    background: "#1c1c1c",
-                    border: "1px solid rgba(255,255,255,0.07)",
-                }}
-                className={`sm:hidden flex items-center justify-between p-3.5 rounded-2xl relative w-full overflow-hidden transition-all duration-200 ${showMobileMenu ? "scale-98 brightness-90" : "active:scale-[0.98]"}`}
-                onTouchStart={handleTouchStart}
-                onTouchEnd={handleTouchEnd}
-            >
-                <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-2">
-                    {/* Category-themed icon box matching desktop */}
-                    <div 
-                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden"
-                        style={{
-                            background: getCategoryBg(tool.category),
-                            border: "1px solid rgba(255,255,255,0.1)",
-                        }}
-                    >
-                        <Icon size={20} className="text-[#f0ede8]" />
-                        {pinned && (
-                            <div className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#f0ede8] flex items-center justify-center shadow">
-                                <Pin size={6} fill="#141414" className="rotate-45 text-[#141414]" />
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Tool details */}
-                    <div className="flex flex-col min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white tracking-tight truncate">
-                                {tool.name}
-                            </span>
-                        </div>
-                        <span className="text-[11px] font-medium text-zinc-400 line-clamp-1 mt-0.5">
-                            {tool.description}
-                        </span>
-                    </div>
-                </div>
-
-                {/* Arrow & Action */}
-                <div className="flex items-center gap-2 shrink-0">
-                    <ArrowRight size={16} className="text-zinc-400" />
-                </div>
-
-                {/* Pop-up Pin Option on Long Press */}
-                {showMobileMenu && (
-                    <>
-                        <div 
-                            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" 
-                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMobileMenu(false); }}
-                        />
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in fade-in zoom-in duration-200">
-                            <button
-                                onClick={handlePinToggle}
-                                className="flex items-center gap-2 px-4 py-2.5 rounded-full shadow-2xl font-black text-[11px] uppercase tracking-wider whitespace-nowrap active:scale-95 transition-transform border border-white/20"
-                                style={{ background: "#f0ede8", color: "#141414" }}
-                            >
-                                <Pin size={12} fill={pinned ? "black" : "none"} className={pinned ? "rotate-45" : ""} />
-                                {pinned ? "Unpin Tool" : "Pin Tool"}
-                            </button>
-                        </div>
-                    </>
-                )}
-            </div>
-
         </Link>
     );
 }
@@ -492,10 +414,13 @@ export default function ToolsPage() {
                                     </div>
 
                                     {/*
-                                        MOBILE:  1 column horizontal cards
-                                        DESKTOP: 2→3→4 column visual cards
+                                        MOBILE:  Horizontally scrollable row of visual cards
+                                        DESKTOP: Responsive 2→3→4 column grid
                                     */}
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
+                                    <div 
+                                        className="flex overflow-x-auto gap-3.5 pb-4 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 sm:grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:gap-5 snap-x snap-mandatory"
+                                        style={{ scrollbarWidth: "none", msOverflowStyle: "none" } as React.CSSProperties}
+                                    >
                                         {group.tools.map((tool, i) => (
                                             <ToolCard key={tool.id} tool={tool} index={i} />
                                         ))}
