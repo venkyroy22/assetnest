@@ -239,57 +239,75 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
             </div>
 
             {/* ════════════════════════════════
-                MOBILE — app icon style
-                (Long-press to pin)
+                MOBILE — horizontal card style
+                (Same theme as desktop, horizontal row)
             ════════════════════════════════ */}
             <div
                 style={{
                     opacity: visible ? 1 : 0,
-                    transform: visible ? "scale(1)" : "scale(0.85)",
+                    transform: visible ? "translateY(0)" : "translateY(16px)",
                     transition: "opacity 0.4s ease, transform 0.4s cubic-bezier(0.23,1,0.32,1)",
+                    background: "#1c1c1c",
+                    border: "1px solid rgba(255,255,255,0.07)",
                 }}
-                className="sm:hidden flex flex-col items-center gap-2 relative"
+                className={`sm:hidden flex items-center justify-between p-3.5 rounded-2xl relative w-full overflow-hidden transition-all duration-200 ${showMobileMenu ? "scale-98 brightness-90" : "active:scale-[0.98]"}`}
                 onTouchStart={handleTouchStart}
                 onTouchEnd={handleTouchEnd}
             >
-                {/* App Icon */}
-                <div className={`relative w-16 h-16 rounded-[18px] flex items-center justify-center shadow-lg transition-all duration-200 ${showMobileMenu ? "scale-90 brightness-75" : "active:scale-95"}`} style={{ background: "#1c1c1c", border: "1px solid rgba(255,255,255,0.06)" }}>
-                    <Icon size={28} style={{ color: "#707070" }} />
-
-                    {/* Pinned status dot (Top Right) */}
-                    {pinned && (
-                        <div className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full flex items-center justify-center shadow" style={{ background: "#f0ede8" }}>
-                            <Pin size={7} fill="#141414" className="rotate-45" style={{ color: "#141414" }} />
-                        </div>
-                    )}
-
-                    {/* Pop-up Pin Option */}
-                    {showMobileMenu && (
-                        <>
-                            <div 
-                                className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" 
-                                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMobileMenu(false); }}
-                            />
-                            <div className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 animate-in fade-in zoom-in slide-in-from-bottom-2 duration-200">
-                                <button
-                                    onClick={handlePinToggle}
-                                    className="flex items-center gap-2 px-4 py-2 rounded-full shadow-2xl font-black text-[11px] uppercase tracking-wider whitespace-nowrap active:scale-95 transition-transform"
-                                    style={{ background: "#f0ede8", color: "#141414" }}
-                                >
-                                    <Pin size={12} fill={pinned ? "black" : "none"} className={pinned ? "rotate-45" : ""} />
-                                    {pinned ? "Unpin Tool" : "Pin Tool"}
-                                </button>
-                                {/* Triangle arrow */}
-                                <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[6px] mx-auto mt-[-1px]" style={{ borderTopColor: "#f0ede8" }} />
+                <div className="flex items-center gap-3.5 min-w-0 flex-1 pr-2">
+                    {/* Category-themed icon box matching desktop */}
+                    <div 
+                        className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 relative overflow-hidden"
+                        style={{
+                            background: getCategoryBg(tool.category),
+                            border: "1px solid rgba(255,255,255,0.1)",
+                        }}
+                    >
+                        <Icon size={20} className="text-[#f0ede8]" />
+                        {pinned && (
+                            <div className="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#f0ede8] flex items-center justify-center shadow">
+                                <Pin size={6} fill="#141414" className="rotate-45 text-[#141414]" />
                             </div>
-                        </>
-                    )}
+                        )}
+                    </div>
+
+                    {/* Tool details */}
+                    <div className="flex flex-col min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                            <span className="text-sm font-bold text-white tracking-tight truncate">
+                                {tool.name}
+                            </span>
+                        </div>
+                        <span className="text-[11px] font-medium text-zinc-400 line-clamp-1 mt-0.5">
+                            {tool.description}
+                        </span>
+                    </div>
                 </div>
 
-                {/* Short label */}
-                <span className="text-[10px] font-semibold text-center leading-tight line-clamp-2 w-16 px-0.5" style={{ color: "#707070" }}>
-                    {shortName(tool.name)}
-                </span>
+                {/* Arrow & Action */}
+                <div className="flex items-center gap-2 shrink-0">
+                    <ArrowRight size={16} className="text-zinc-400" />
+                </div>
+
+                {/* Pop-up Pin Option on Long Press */}
+                {showMobileMenu && (
+                    <>
+                        <div 
+                            className="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]" 
+                            onClick={(e) => { e.preventDefault(); e.stopPropagation(); setShowMobileMenu(false); }}
+                        />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 animate-in fade-in zoom-in duration-200">
+                            <button
+                                onClick={handlePinToggle}
+                                className="flex items-center gap-2 px-4 py-2.5 rounded-full shadow-2xl font-black text-[11px] uppercase tracking-wider whitespace-nowrap active:scale-95 transition-transform border border-white/20"
+                                style={{ background: "#f0ede8", color: "#141414" }}
+                            >
+                                <Pin size={12} fill={pinned ? "black" : "none"} className={pinned ? "rotate-45" : ""} />
+                                {pinned ? "Unpin Tool" : "Pin Tool"}
+                            </button>
+                        </div>
+                    </>
+                )}
             </div>
 
         </Link>
@@ -474,11 +492,10 @@ export default function ToolsPage() {
                                     </div>
 
                                     {/*
-                                        MOBILE:  4 columns — app icon grid (icon + label)
-                                        DESKTOP: 2→3→4 column full cards
-                                        The sm: breakpoint switches between the two layouts.
+                                        MOBILE:  1 column horizontal cards
+                                        DESKTOP: 2→3→4 column visual cards
                                     */}
-                                    <div className="grid grid-cols-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-2 gap-y-6 sm:gap-5">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5">
                                         {group.tools.map((tool, i) => (
                                             <ToolCard key={tool.id} tool={tool} index={i} />
                                         ))}
