@@ -101,11 +101,6 @@ export default function RootLayout({
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5938543618083973"
           crossOrigin="anonymous"
         />
-        {/* Monetization Network Script (Popunder) */}
-        <script
-          async
-          src="https://pl30573990.effectivecpmnetwork.com/95/18/16/9518166894fdde3ffb07543fb513f74b.js"
-        />
       </head>
 
       <body className="antialiased font-sans flex flex-col min-h-screen">
