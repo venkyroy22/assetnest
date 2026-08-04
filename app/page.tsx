@@ -533,20 +533,6 @@ export default function Home() {
           {/* ── LEFT: Badge → Headline → Subtitle → Dual CTAs ── */}
           <div className="flex flex-col justify-center items-start text-left py-12 md:py-24 lg:py-0 lg:pr-8">
 
-            {/* Badge pill — "Ranked #1" style */}
-            <div
-              className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full mb-7 text-xs font-semibold tracking-wide"
-              style={{
-                background: "rgba(240,237,232,0.05)",
-                border: "1px solid rgba(240,237,232,0.12)",
-                color: "#a0a0a0",
-              }}
-            >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#39ae66] animate-pulse shrink-0" />
-              The #1 Free Browser Tool Platform
-              <ArrowRight size={11} style={{ color: "#666" }} />
-            </div>
-
             {/* Headline — Magnific weight and size */}
             <h1
               className="text-[1.75rem] sm:text-[2.25rem] md:text-[3rem] lg:text-[2.6rem] xl:text-[3.2rem] font-extrabold tracking-tight leading-[1.07] mb-6"
