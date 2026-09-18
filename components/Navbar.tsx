@@ -8,8 +8,6 @@ import { useMemo } from "react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS, ToolCategory } from "@/lib/tools";
-import { ALL_ARTICLE_POSTS } from "@/data/articles";
-import { ALL_GUIDE_POSTS } from "@/data/guidePosts";
 import Tooltip from "./Tooltip";
 import { useSettings } from "./SettingsProvider";
 
@@ -18,18 +16,9 @@ type SearchItem = { title: string; desc: string; href: string; tag: string; keyw
 const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
     title: t.name, desc: t.description, href: t.href, tag: "Tool", keywords: t.tags,
 }));
-const ARTICLE_ENTRIES: SearchItem[] = ALL_ARTICLE_POSTS.map(a => ({
-    title: a.title, desc: a.description, href: `/articles/${a.slug}`, tag: "Article", keywords: a.tags,
-}));
-const GUIDE_ENTRIES: SearchItem[] = ALL_GUIDE_POSTS.map(g => ({
-    title: g.title, desc: g.description, href: `/guides/${g.slug}`, tag: "Guide", keywords: g.tags,
-}));
-
 const SEARCH_INDEX: SearchItem[] = [
-    ...TOOL_ENTRIES, ...ARTICLE_ENTRIES, ...GUIDE_ENTRIES,
+    ...TOOL_ENTRIES,
     { title: "AI Image Prompts", desc: "Curated prompt lists for leading image generation models", href: "/prompts", tag: "Prompts" },
-    { title: "Articles", desc: "Deep dives into business strategy, growth, and entrepreneurship", href: "/articles", tag: "Page" },
-    { title: "Guides", desc: "Creator tips, AI guides, and productivity methods", href: "/guides", tag: "Page" },
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
     { title: "About AssetNest", desc: "Learn about our mission", href: "/about", tag: "Page" },
@@ -38,8 +27,6 @@ const SEARCH_INDEX: SearchItem[] = [
 
 const TAG_COLORS: Record<string, string> = {
     Tool: "text-[#f0ede8]",
-    Article: "text-amber-400",
-    Guide: "text-emerald-400",
     Prompts: "text-[#f0ede8]",
     Page: "text-zinc-400",
 };
@@ -63,8 +50,6 @@ const TOOLS_BY_CATEGORY = TOOL_CATEGORIES.map(cat => ({
 const NAV_LINKS = [
     { name: "Tools", href: "/tools", hasMega: true },
     { name: "Prompts", href: "/prompts", hasMega: false },
-    { name: "Articles", href: "/articles", hasMega: false },
-    { name: "Guides", href: "/guides", hasMega: false },
     { name: "About", href: "/about", hasMega: false },
 ];
 
@@ -228,7 +213,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                         </Link>
                     </div>
 
-                    {/* Desktop Nav Links — left-center */}
+                    {/* Desktop Nav Links - left-center */}
                     <div className="hidden md:flex items-center gap-0.5 shrink-0 ml-2">
                         {!isHome && (
                             <Link
@@ -279,7 +264,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                     {/* Spacer pushes search + auth to the right */}
                     <div className="hidden md:flex flex-1" />
 
-                    {/* Search — desktop */}
+                    {/* Search - desktop */}
                     <div ref={searchRef} className="hidden md:flex items-center w-56 lg:w-72 relative shrink-0">
                         <div
                             className={`flex items-center backdrop-blur-md px-4 py-2 w-full transition-all duration-300 ${showResults ? "rounded-t-2xl rounded-b-none" : "rounded-full"}`}
@@ -441,7 +426,7 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
                             onKeyDown={handleKeyDown}
-                            placeholder="Search tools, articles, guides…"
+                            placeholder="Search tools, prompts, pages…"
                             autoFocus
                             autoComplete="off"
                             autoCorrect="off"
@@ -500,8 +485,6 @@ const Navbar = ({ className = "" }: { className?: string }) => {
                                 ...(isHome ? [] : [{ name: "Home", href: "/", icon: Home }]),
                                 ...(pathname === "/tools" ? [] : [{ name: "Smart Tools", href: "/tools", icon: Wrench }]),
                                 { name: "AI Image Prompts", href: "/prompts", icon: Sparkles },
-                                { name: "Articles", href: "/articles", icon: FileText },
-                                { name: "Guides", href: "/guides", icon: BookOpen },
                                 { name: "About", href: "/about", icon: Info },
                             ].map((item) => {
                                 const Icon = item.icon;

@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Business Card Maker — Design & Export High-Res Cards",
+    title: "Business Card Maker - Design & Export High-Res Cards",
     description: "Create professional business cards online in minutes. Add your details, adjust colors, choose templates, and export print-ready PDFs or PNG images for free.",
     keywords: [
         "business card maker",

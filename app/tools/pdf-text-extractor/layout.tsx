@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "PDF Text Extractor — Free, Private & Secure",
+    title: "PDF Text Extractor - Free, Private & Secure",
     description: "Extract text from your PDF files into Word documents (DOCX) instantly in your browser. 100% private, no uploads, no account needed.",
     keywords: ["pdf text extractor", "pdf to docx", "extract text from pdf", "pdf to word", "free pdf extractor"],
     alternates: {

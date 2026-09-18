@@ -1,8 +1,8 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Background Remover — 100% Free & Private Online AI Tool",
-    description: "Remove the background from any image instantly in your browser. Our AI runs 100% locally on your device — your photos never leave your computer. High-quality transparent PNG output.",
+    title: "Background Remover - 100% Free & Private Online AI Tool",
+    description: "Remove the background from any image instantly in your browser. Our AI runs 100% locally on your device - your photos never leave your computer. High-quality transparent PNG output.",
     keywords: [
         "Image background remover",
         "background remover",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
         canonical: "https://www.assetnest.space/tools/bg-remover",
     },
     openGraph: {
-        title: "Background Remover — 100% Free & Private Online AI Tool",
+        title: "Background Remover - 100% Free & Private Online AI Tool",
         description: "Remove image backgrounds instantly in your browser. 100% private, no uploads, high-quality PNG.",
         url: "https://www.assetnest.space/tools/bg-remover",
         siteName: "AssetNest",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Background Remover — Free & Private AI Tool",
+        title: "Background Remover - Free & Private AI Tool",
         description: "Instantly erase backgrounds straight from your browser. Keep your photos 100% private.",
         images: ["/logo.png"],
     },

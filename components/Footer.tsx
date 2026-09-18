@@ -18,8 +18,6 @@ const footerLinks = {
   ],
   Company: [
     { name: "About Us", href: "/about" },
-    { name: "Guides", href: "/guides" },
-    { name: "Articles", href: "/articles" },
     { name: "Contact", href: "/contact" },
     { name: "Disclaimer", href: "/disclaimer" },
   ],
@@ -60,7 +58,7 @@ const Footer = ({ className = "" }: { className?: string }) => {
             </Link>
 
             <p className="max-w-xs mb-7 text-zinc-400 text-sm leading-relaxed font-medium">
-              Your ultimate nest for precision utilities and professional creative building blocks. From local PDF tools to premium AI image prompts — we accelerate your workflow without compromising privacy.
+              Your ultimate nest for precision utilities and professional creative building blocks. From local PDF tools to premium AI image prompts - we accelerate your workflow without compromising privacy.
             </p>
 
             {/* Trust badges */}

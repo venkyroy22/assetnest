@@ -1,1 +1,0 @@
-const fs = require('fs'); const file = 'c:/Users/venka/Downloads/AN/lib/tools.ts'; let content = fs.readFileSync(file, 'utf8'); content = content.replace(/accent: \#[a-fA-F0-9]{6}/g, 'accent: \#e4e4e7'); fs.writeFileSync(file, content);

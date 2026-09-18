@@ -320,7 +320,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
         if (!ctx) return;
 
         const text = stampText || "ACME CORPORATION";
-        const themeColor = color || "#7c6aff";
+        const themeColor = color || "#4db8d4";
 
         ctx.clearRect(0, 0, 400, 400);
 
@@ -672,68 +672,68 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
             <style>{`
                 .modal-input {
                     width: 100%;
-                    background: #fff;
-                    border: 2px solid #000;
-                    border-radius: 10px;
-                    padding: 10px 14px;
-                    color: #000;
-                    font-size: 14px;
-                    font-weight: 600;
+                    background: #2a2a2a;
+                    border: 1px solid #555555;
+                    border-radius: 4px;
+                    padding: 8px 12px;
+                    color: #cccccc;
+                    font-size: 13px;
+                    font-weight: 500;
                     outline: none;
-                    transition: all 0.2s ease;
-                    box-shadow: 1.5px 1.5px 0 #000;
+                    transition: all 0.15s ease;
+                    box-shadow: none;
                 }
                 .modal-input:focus {
-                    border-color: #000;
-                    box-shadow: 2.5px 2.5px 0 #000;
-                    background: #fff;
+                    border-color: #4db8d4;
+                    background: #2e2e2e;
+                    box-shadow: none;
                 }
                 .modal-input::placeholder {
-                    color: #9ca3af;
+                    color: #666666;
                 }
                 .tab-button {
                     position: relative;
-                    padding: 12px 18px;
-                    font-size: 13.5px;
-                    font-weight: 800;
-                    color: #6b7280;
+                    padding: 10px 16px;
+                    font-size: 12px;
+                    font-weight: 500;
+                    color: #888888;
                     background: transparent;
                     border: none;
                     cursor: pointer;
-                    transition: color 0.2s ease;
+                    transition: color 0.15s ease;
                     display: flex;
                     align-items: center;
-                    gap: 8px;
+                    gap: 6px;
                 }
                 .tab-button:hover {
-                    color: #000;
+                    color: #cccccc;
                 }
                 .tab-button.active {
-                    color: #000;
+                    color: #4db8d4;
                 }
                 .subtab-button {
-                    width: 44px;
-                    height: 44px;
-                    border-radius: 10px;
+                    width: 36px;
+                    height: 36px;
+                    border-radius: 4px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    color: #6b7280;
-                    background: transparent;
-                    border: 2px solid transparent;
+                    color: #888888;
+                    background: #2a2a2a;
+                    border: 1px solid #555555;
                     cursor: pointer;
-                    transition: all 0.2s;
+                    transition: all 0.15s;
                 }
                 .subtab-button:hover {
-                    color: #000;
-                    background: #f9f5eb;
-                    border-color: #000;
+                    color: #cccccc;
+                    background: #3a3a3a;
+                    border-color: #777777;
                 }
                 .subtab-button.active {
-                    color: #000;
-                    background: #fef9c3;
-                    border-color: #000;
-                    box-shadow: 1.5px 1.5px 0 #000;
+                    color: #1a1a1a;
+                    background: #4db8d4;
+                    border-color: #4db8d4;
+                    box-shadow: none;
                 }
                 .cursive-list {
                     max-height: 240px;
@@ -741,7 +741,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     overscroll-behavior: contain;
                     -webkit-overflow-scrolling: touch;
                     scrollbar-width: thin;
-                    scrollbar-color: #000 transparent;
+                    scrollbar-color: #555555 transparent;
                     display: flex;
                     flex-direction: column;
                     padding-right: 6px;
@@ -754,38 +754,39 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     border-radius: 2px;
                 }
                 .cursive-list::-webkit-scrollbar-thumb {
-                    background: #000;
+                    background: #555555;
                     border-radius: 2px;
                 }
                 .cursive-row {
                     display: flex;
                     align-items: center;
                     justify-content: space-between;
-                    padding: 14px 18px;
-                    border-bottom: 2px solid rgba(0,0,0,0.06);
+                    padding: 10px 14px;
+                    border-bottom: 1px solid #333333;
                     cursor: pointer;
-                    transition: all 0.2s;
-                    border-radius: 10px;
+                    transition: all 0.15s;
+                    border-radius: 4px;
+                    background: #2a2a2a;
                 }
                 .cursive-row:hover {
-                    background: #f9f5eb;
+                    background: #333333;
                 }
                 .cursive-row.selected {
-                    background: #fef9c3;
-                    border-color: #000;
+                    background: #383838;
+                    border: 1px solid #4db8d4 !important;
                 }
                 .cancel-btn:hover {
-                    color: #000;
-                    background: #f4f4f5;
-                    border-color: #000;
+                    color: #ffffff;
+                    background: #444444;
+                    border-color: #666666;
                 }
                 .apply-btn:hover:not(:disabled) {
-                    background: #facc15 !important;
-                    transform: translateY(-1px);
-                    box-shadow: 3px 3px 0 #000 !important;
+                    background: #3ba2bd !important;
+                    transform: none;
+                    box-shadow: none !important;
                 }
                 .apply-btn:active:not(:disabled) {
-                    transform: translate(2px, 2px);
+                    transform: none;
                     box-shadow: none !important;
                 }
                 .apply-btn:disabled {
@@ -805,33 +806,33 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     left: 0;
                     right: 0;
                     height: 2px;
-                    background: #000;
-                    box-shadow: 0 0 4px rgba(0,0,0,0.3);
+                    background: #4db8d4;
+                    box-shadow: 0 0 6px rgba(77,184,212,0.6);
                     animation: laser 3s infinite linear;
                     z-index: 5;
                 }
                 .stamp-style-card {
-                    border: 2px solid #000;
-                    background: #fff;
-                    border-radius: 10px;
-                    padding: 12px;
+                    border: 1px solid #555555;
+                    background: #2a2a2a;
+                    border-radius: 4px;
+                    padding: 10px;
                     text-align: center;
                     cursor: pointer;
-                    transition: all 0.2s;
-                    color: #6b7280;
-                    font-size: 12px;
-                    font-weight: 700;
-                    box-shadow: 1.5px 1.5px 0 #000;
+                    transition: all 0.15s;
+                    color: #888888;
+                    font-size: 11px;
+                    font-weight: 500;
+                    box-shadow: none;
                 }
                 .stamp-style-card:hover {
-                    background: #f9f5eb;
-                    color: #000;
+                    background: #333333;
+                    color: #cccccc;
                 }
                 .stamp-style-card.selected {
-                    border-color: #000;
-                    background: #fef9c3;
-                    color: #000;
-                    box-shadow: 2px 2px 0 #000;
+                    border-color: #4db8d4;
+                    background: #383838;
+                    color: #4db8d4;
+                    box-shadow: none;
                 }
                 @media (max-width: 768px) {
                     .modal-box {
@@ -878,11 +879,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     }
                 }
                 .mobile-qr-pill:hover {
-                    background: #facc15 !important;
-                    transform: scale(1.05);
+                    background: #3ba2bd !important;
+                    transform: none;
                 }
                 .mobile-qr-pill:active {
-                    transform: scale(0.95);
+                    transform: scale(0.97);
                 }
                 @import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Dancing+Script:wght@600&family=Great+Vibes&family=Homemade+Apple&family=Pacifico&family=Satisfy&family=Montserrat:wght@500;700;800&display=swap');
             `}</style>
@@ -894,12 +895,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                 maxWidth: "920px",
                 height: "620px",
                 maxHeight: "90vh",
-                background: "#F4ECD8",
-                border: "2px solid #000",
-                borderRadius: "20px",
-                padding: "32px",
+                background: "#333333",
+                border: "1px solid #555555",
+                borderRadius: "8px",
+                padding: "24px 28px",
                 boxSizing: "border-box",
-                boxShadow: "8px 8px 0 #000",
+                boxShadow: "0 24px 64px rgba(0, 0, 0, 0.7)",
                 display: "flex",
                 flexDirection: "column",
                 zIndex: 100000,
@@ -914,12 +915,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     marginBottom: "20px",
                 }}>
                     <h2 style={{
-                        fontSize: "20px",
-                        fontWeight: 900,
-                        color: "#000",
-                        letterSpacing: "-0.02em",
+                        fontSize: "15px",
+                        fontWeight: 600,
+                        color: "#cccccc",
+                        letterSpacing: "normal",
                         margin: 0,
-                        fontFamily: "'Space Grotesk', system-ui, sans-serif",
+                        fontFamily: "system-ui, -apple-system, sans-serif",
                     }}>Set your signature details</h2>
 
                     <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
@@ -927,17 +928,16 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                             onClick={onCancel}
                             style={{
                                 cursor: "pointer",
-                                border: "2px solid #000",
-                                background: "#fff",
-                                width: 36,
-                                height: 36,
-                                borderRadius: 10,
-                                color: "#000",
+                                border: "1px solid #555555",
+                                background: "#2a2a2a",
+                                width: 28,
+                                height: 28,
+                                borderRadius: 4,
+                                color: "#aaa",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
                                 transition: "all 0.15s",
-                                boxShadow: "1.5px 1.5px 0 #000",
                             }}
                         >
                             <X size={18} strokeWidth={2.5} />
@@ -954,9 +954,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     <div style={{ flex: 1.7, display: "flex", flexDirection: "column", gap: "6px" }}>
                         <label style={{
                             fontSize: "10px",
-                            fontWeight: 800,
-                            color: "#000",
-                            letterSpacing: "0.15em",
+                            fontWeight: 600,
+                            color: "#999999",
+                            letterSpacing: "0.08em",
                             textTransform: "uppercase",
                         }}>Full Name</label>
                         <input
@@ -970,9 +970,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
                         <label style={{
                             fontSize: "10px",
-                            fontWeight: 800,
-                            color: "#8b8a97",
-                            letterSpacing: "0.15em",
+                            fontWeight: 600,
+                            color: "#999999",
+                            letterSpacing: "0.08em",
                             textTransform: "uppercase",
                         }}>Initials</label>
                         <input
@@ -989,8 +989,8 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                 <nav ref={tabNavRef} style={{
                     position: "relative",
                     display: "flex",
-                    borderBottom: "2px solid rgba(0,0,0,0.1)",
-                    marginBottom: "20px",
+                    borderBottom: "1px solid #444444",
+                    marginBottom: "16px",
                     paddingBottom: "1px",
                 }}>
                     <button
@@ -1023,8 +1023,8 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         style={{
                             position: "absolute",
                             bottom: 0,
-                            height: "3px",
-                            background: "#000",
+                            height: "2px",
+                            background: "#4db8d4",
                             borderRadius: "2px 2px 0 0",
                             transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
                             left: underlineStyle.left,
@@ -1046,7 +1046,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                         display: "flex",
                         flexDirection: "column",
                         gap: "10px",
-                        borderRight: "2px solid rgba(0,0,0,0.1)",
+                        borderRight: "1px solid #444444",
                         paddingRight: "16px",
                     }}>
                         <button
@@ -1089,7 +1089,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                         {/* Configuration */}
                                         <div style={{ flex: 1.2, display: "flex", flexDirection: "column", gap: "16px" }}>
                                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                                <label style={{ fontSize: "10px", fontWeight: 800, color: "#8b8a97", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Text</label>
+                                                <label style={{ fontSize: "10px", fontWeight: 800, color: "#999999", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Text</label>
                                                 <input
                                                     type="text"
                                                     className="modal-input"
@@ -1100,7 +1100,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             </div>
 
                                             <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                                                <label style={{ fontSize: "10px", fontWeight: 800, color: "#8b8a97", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Layout</label>
+                                                <label style={{ fontSize: "10px", fontWeight: 800, color: "#999999", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Layout</label>
                                                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
                                                     <div 
                                                         className={`stamp-style-card ${stampStyle === "circular" ? "selected" : ""}`}
@@ -1125,7 +1125,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
 
                                             {/* Circular Swatches Bar inside Stamp */}
                                             <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" }}>
-                                                <label style={{ fontSize: "9px", fontWeight: 800, color: "#8b8a97", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Ink Color</label>
+                                                <label style={{ fontSize: "9px", fontWeight: 800, color: "#999999", letterSpacing: "0.1em", textTransform: "uppercase" }}>Stamp Ink Color</label>
                                                 <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
                                                     {PRESET_COLORS.map(c => (
                                                         <button
@@ -1136,11 +1136,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                                 height: "24px",
                                                                 borderRadius: "50%",
                                                                 background: c.value,
-                                                                border: color === c.value ? "2px solid #7c6aff" : "2px solid transparent",
+                                                                border: color === c.value ? "2px solid #4db8d4" : "2px solid transparent",
                                                                 cursor: "pointer",
                                                                 transition: "all 0.2s",
                                                                 transform: color === c.value ? "scale(1.15)" : "scale(1)",
-                                                                boxShadow: color === c.value ? "0 0 10px rgba(124,106,255,0.4)" : "none",
+                                                                boxShadow: "none",
                                                             }}
                                                         />
                                                     ))}
@@ -1216,7 +1216,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                                 width: "18px",
                                                                 height: "18px",
                                                                 borderRadius: "50%",
-                                                                border: `2px solid ${selected ? "#7c6aff" : "rgba(255,255,255,0.15)"}`,
+                                                                border: `2px solid ${selected ? "#4db8d4" : "#555555"}`,
                                                                 display: "flex",
                                                                 alignItems: "center",
                                                                 justifyContent: "center",
@@ -1228,7 +1228,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                                         width: "8px",
                                                                         height: "8px",
                                                                         borderRadius: "50%",
-                                                                        background: "#7c6aff",
+                                                                        background: "#4db8d4",
                                                                     }} />
                                                                 )}
                                                             </div>
@@ -1251,9 +1251,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                         <span style={{
                                                             fontSize: "10px",
                                                             fontWeight: 700,
-                                                            color: selected ? "#7c6aff" : "#8b8a97",
+                                                            color: selected ? "#4db8d4" : "#888888",
                                                             letterSpacing: "0.05em",
-                                                            background: selected ? "rgba(124,106,255,0.08)" : "rgba(255,255,255,0.02)",
+                                                            background: selected ? "rgba(77,184,212,0.1)" : "#222222",
                                                             padding: "4px 8px",
                                                             borderRadius: "4px",
                                                         }}>{font.name}</span>
@@ -1271,7 +1271,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             borderTop: "1px solid rgba(255,255,255,0.05)",
                                             paddingTop: "16px",
                                         }}>
-                                            <span style={{ fontSize: "11px", fontWeight: 700, color: "#8b8a97", marginRight: "6px" }}>Ink Color:</span>
+                                            <span style={{ fontSize: "11px", fontWeight: 700, color: "#999999", marginRight: "6px" }}>Ink Color:</span>
                                             {PRESET_COLORS.map(c => (
                                                 <button
                                                     key={c.value}
@@ -1281,11 +1281,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                         height: "24px",
                                                         borderRadius: "50%",
                                                         background: c.value,
-                                                        border: color === c.value ? "2px solid #7c6aff" : "2px solid transparent",
+                                                        border: color === c.value ? "2px solid #4db8d4" : "2px solid transparent",
                                                         cursor: "pointer",
                                                         transition: "all 0.2s",
                                                         transform: color === c.value ? "scale(1.15)" : "scale(1)",
-                                                        boxShadow: color === c.value ? "0 0 10px rgba(124,106,255,0.4)" : "none",
+                                                        boxShadow: "none",
                                                     }}
                                                 />
                                             ))}
@@ -1306,7 +1306,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                         inset: 0,
                                                         borderRadius: "50%",
                                                         background: "linear-gradient(45deg, red, orange, yellow, green, blue, indigo, violet)",
-                                                        border: isCustomColor ? "2px solid #7c6aff" : "2px solid transparent",
+                                                        border: isCustomColor ? "2px solid #4db8d4" : "2px solid transparent",
                                                         display: "flex",
                                                         alignItems: "center",
                                                         justifyContent: "center",
@@ -1350,9 +1350,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                         style={{
                                             position: "relative",
                                             flex: 1,
-                                            background: "#fafafa",
-                                            border: "1px dashed rgba(255,255,255,0.1)",
-                                            borderRadius: "12px",
+                                            background: "#ffffff",
+                                            border: "1px solid #555555",
+                                            borderRadius: "4px",
                                             overflow: "hidden",
                                             cursor: "crosshair",
                                             touchAction: "none",
@@ -1364,7 +1364,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             bottom: "28%",
                                             left: "24px",
                                             right: "24px",
-                                            borderBottom: "1px dashed #d1d5db",
+                                            borderBottom: "1px dashed #cccccc",
                                             pointerEvents: "none",
                                         }} />
                                         <canvas
@@ -1390,15 +1390,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                     alignItems: "center",
                                                     gap: "6px",
                                                     padding: "6px 12px",
-                                                    borderRadius: "20px",
-                                                    background: "rgba(124, 106, 255, 0.9)",
-                                                    backdropFilter: "blur(4px)",
-                                                    border: "1px solid rgba(255, 255, 255, 0.15)",
-                                                    color: "#ffffff",
+                                                    background: "#4db8d4",
+                                                    color: "#1a1a1a",
+                                                    border: "1px solid #4db8d4",
+                                                    borderRadius: "3px",
                                                     fontSize: "11px",
-                                                    fontWeight: 700,
+                                                    fontWeight: 600,
                                                     cursor: "pointer",
-                                                    boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                                                     transition: "all 0.2s",
                                                 }}
                                             >
@@ -1417,7 +1415,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 userSelect: "none",
                                             }}>
                                                 <p style={{
-                                                    color: "#9ca3af",
+                                                    color: "#777777",
                                                     fontSize: "11px",
                                                     fontWeight: 800,
                                                     textTransform: "uppercase",
@@ -1448,13 +1446,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                             onClick={() => { setPenStyle(s.id); setMode("pen"); }}
                                                             style={{
                                                                 padding: "4px 8px",
-                                                                borderRadius: "4px",
+                                                                borderRadius: "3px",
                                                                 fontSize: "10px",
                                                                 fontWeight: 700,
                                                                 textTransform: "uppercase",
-                                                                background: active ? "rgba(124,106,255,0.12)" : "rgba(255,255,255,0.02)",
-                                                                border: `1px solid ${active ? "#7c6aff" : "rgba(255,255,255,0.06)"}`,
-                                                                color: active ? "#7c6aff" : "#8b8a97",
+                                                                background: active ? "#3a3a3a" : "#2a2a2a",
+                                                                border: `1px solid ${active ? "#4db8d4" : "#555555"}`,
+                                                                color: active ? "#4db8d4" : "#999999",
                                                                 cursor: "pointer",
                                                             }}
                                                         >
@@ -1472,7 +1470,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                         textTransform: "uppercase",
                                                         background: mode === "eraser" ? "rgba(239,68,68,0.12)" : "rgba(255,255,255,0.02)",
                                                         border: `1px solid ${mode === "eraser" ? "#ef4444" : "rgba(255,255,255,0.06)"}`,
-                                                        color: mode === "eraser" ? "#ef4444" : "#8b8a97",
+                                                        color: mode === "eraser" ? "#ef4444" : "#999999",
                                                         cursor: "pointer",
                                                         marginLeft: "6px",
                                                     }}
@@ -1494,7 +1492,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                             height: "16px",
                                                             borderRadius: "50%",
                                                             background: c.value,
-                                                            border: color === c.value && mode === "pen" ? "1.5px solid #7c6aff" : "none",
+                                                            border: color === c.value && mode === "pen" ? "2px solid #4db8d4" : "1px solid #555555",
                                                             cursor: "pointer",
                                                             transform: color === c.value && mode === "pen" ? "scale(1.1)" : "scale(1)",
                                                         }}
@@ -1514,12 +1512,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                             onClick={() => { setLineWidth(w); setMode("pen"); }}
                                                             style={{
                                                                 padding: "3px 6px",
-                                                                borderRadius: "4px",
+                                                                borderRadius: "3px",
                                                                 fontSize: "9px",
                                                                 fontWeight: 800,
-                                                                background: active ? "rgba(124,106,255,0.12)" : "rgba(255,255,255,0.02)",
-                                                                border: `1px solid ${active ? "#7c6aff" : "rgba(255,255,255,0.06)"}`,
-                                                                color: active ? "#7c6aff" : "#8b8a97",
+                                                                background: active ? "#3a3a3a" : "#2a2a2a",
+                                                                border: `1px solid ${active ? "#4db8d4" : "#555555"}`,
+                                                                color: active ? "#4db8d4" : "#999999",
                                                                 cursor: "pointer",
                                                                 transition: "all 0.15s",
                                                             }}
@@ -1538,11 +1536,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 onClick={undo}
                                                 disabled={historyIdx < 0}
                                                 style={{
-                                                    background: "rgba(255,255,255,0.02)",
-                                                    border: "1px solid rgba(255,255,255,0.06)",
-                                                    padding: "6px 8px",
-                                                    borderRadius: "4px",
-                                                    color: "#8b8a97",
+                                                    background: "#2a2a2a",
+                                                    border: "1px solid #555555",
+                                                    padding: "5px 8px",
+                                                    borderRadius: "3px",
+                                                    color: "#999999",
                                                     cursor: "pointer",
                                                     display: "flex",
                                                     alignItems: "center",
@@ -1556,11 +1554,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 onClick={redo}
                                                 disabled={historyIdx >= history.length - 1}
                                                 style={{
-                                                    background: "rgba(255,255,255,0.02)",
-                                                    border: "1px solid rgba(255,255,255,0.06)",
-                                                    padding: "6px 8px",
-                                                    borderRadius: "4px",
-                                                    color: "#8b8a97",
+                                                    background: "#2a2a2a",
+                                                    border: "1px solid #555555",
+                                                    padding: "5px 8px",
+                                                    borderRadius: "3px",
+                                                    color: "#999999",
                                                     cursor: "pointer",
                                                     display: "flex",
                                                     alignItems: "center",
@@ -1574,11 +1572,11 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 onClick={clear}
                                                 disabled={isEmpty}
                                                 style={{
-                                                    background: "rgba(255,255,255,0.02)",
-                                                    border: "1px solid rgba(255,255,255,0.06)",
-                                                    padding: "6px 8px",
-                                                    borderRadius: "4px",
-                                                    color: "#ef4444",
+                                                    background: "#2a2a2a",
+                                                    border: "1px solid #555555",
+                                                    padding: "5px 8px",
+                                                    borderRadius: "3px",
+                                                    color: "#cc4444",
                                                     cursor: "pointer",
                                                     display: "flex",
                                                     alignItems: "center",
@@ -1597,9 +1595,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                     className="qr-dock"
                                     style={{
                                         width: "180px",
-                                        background: "rgba(255,255,255,0.015)",
-                                        border: "1px solid rgba(255,255,255,0.05)",
-                                        borderRadius: "12px",
+                                        background: "#2a2a2a",
+                                        border: "1px solid #555555",
+                                        borderRadius: "4px",
                                         padding: "16px",
                                         display: "flex",
                                         flexDirection: "column",
@@ -1609,9 +1607,9 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                         boxSizing: "border-box",
                                     }}
                                 >
-                                    <Smartphone size={20} style={{ color: "#7c6aff", marginBottom: "8px" }} />
-                                    <h4 style={{ fontSize: "12px", fontWeight: 700, color: "#f0eff5", margin: "0 0 4px 0" }}>Draw on mobile</h4>
-                                    <p style={{ fontSize: "9.5px", color: "#8b8a97", margin: "0 0 16px 0", lineHeight: 1.4 }}>
+                                    <Smartphone size={18} style={{ color: "#4db8d4", marginBottom: "6px" }} />
+                                    <h4 style={{ fontSize: "12px", fontWeight: 700, color: "#cccccc", margin: "0 0 4px 0" }}>Draw on mobile</h4>
+                                    <p style={{ fontSize: "9.5px", color: "#999999", margin: "0 0 14px 0", lineHeight: 1.4 }}>
                                         {qrCodeDataUrl ? "Scan this QR code to draw directly on your smartphone." : "Generating secure signature link..."}
                                     </p>
                                     
@@ -1658,7 +1656,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 width: "24px",
                                                 height: "24px",
                                                 border: "2px solid rgba(124, 106, 255, 0.1)",
-                                                borderTopColor: "#7c6aff",
+                                                borderTopColor: "#4db8d4",
                                                 borderRadius: "50%",
                                                 animation: "spin 1.5s linear infinite",
                                             }} />
@@ -1672,7 +1670,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             style={{
                                                 background: "none",
                                                 border: "none",
-                                                color: "#7c6aff",
+                                                color: "#4db8d4",
                                                 fontSize: "9px",
                                                 fontWeight: 800,
                                                 letterSpacing: "0.04em",
@@ -1745,13 +1743,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
-                                            color: "#8b8a97",
+                                            color: "#999999",
                                         }}>
                                             <UploadIcon size={22} />
                                         </div>
                                         <div style={{ textAlign: "center" }}>
-                                            <span style={{ fontSize: "13px", fontWeight: 700, color: "#f0eff5", display: "block", marginBottom: "4px" }}>Select Signature Image</span>
-                                            <span style={{ fontSize: "10.5px", color: "#8b8a97", display: "block", lineHeight: 1.4 }}>Supports PNG, JPG, or SVG up to 5MB. For best results, use a clean image with high contrast.</span>
+                                            <span style={{ fontSize: "13px", fontWeight: 700, color: "#cccccc", display: "block", marginBottom: "4px" }}>Select Signature Image</span>
+                                            <span style={{ fontSize: "10.5px", color: "#999999", display: "block", lineHeight: 1.4 }}>Supports PNG, JPG, or SVG up to 5MB. For best results, use a clean image with high contrast.</span>
                                         </div>
                                     </div>
                                 ) : (
@@ -1806,7 +1804,7 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                                 <Trash2 size={15} />
                                             </button>
                                         </div>
-                                        <span style={{ fontSize: "10px", color: "#8b8a97", textAlign: "center", lineHeight: 1.4 }}>
+                                        <span style={{ fontSize: "10px", color: "#999999", textAlign: "center", lineHeight: 1.4 }}>
                                             Tip: Transparent background PNG with dark ink yields optimal vector overlays.
                                         </span>
                                     </div>
@@ -1821,12 +1819,12 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    borderTop: "1px solid rgba(255,255,255,0.06)",
-                    paddingTop: "20px",
+                    borderTop: "1px solid #444444",
+                    paddingTop: "16px",
                     marginTop: "auto",
                 }}>
-                    <span className="modal-footer-text" style={{ fontSize: "11.5px", color: "#8b8a97", display: "flex", alignItems: "center", gap: "6px" }}>
-                        <ShieldCheck size={14} style={{ color: "#7c6aff" }} />
+                    <span className="modal-footer-text" style={{ fontSize: "11.5px", color: "#999999", display: "flex", alignItems: "center", gap: "6px" }}>
+                        <ShieldCheck size={14} style={{ color: "#4db8d4" }} />
                         {activeTab === "signature" && "Legally binding electronic signature"}
                         {activeTab === "initials" && "Personalized initials verification block"}
                         {activeTab === "stamp" && "Corporate stamp validation template"}
@@ -1837,13 +1835,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                             onClick={onCancel}
                             className="cancel-btn"
                             style={{
-                                padding: "10px 18px",
-                                borderRadius: "6px",
+                                padding: "7px 16px",
+                                borderRadius: "3px",
                                 background: "transparent",
-                                color: "#8b8a97",
-                                border: "1px solid rgba(255,255,255,0.08)",
-                                fontSize: "13px",
-                                fontWeight: 600,
+                                color: "#cccccc",
+                                border: "1px solid #555555",
+                                fontSize: "11px",
+                                fontWeight: 500,
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                             }}
@@ -1861,13 +1859,13 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                 (activeSubTab === "text" && activeTab === "stamp" && !stampText)
                             }
                             style={{
-                                padding: "10px 24px",
-                                borderRadius: "6px",
-                                background: "#7c6aff",
-                                color: "#ffffff",
-                                border: "none",
-                                fontSize: "13px",
-                                fontWeight: 700,
+                                padding: "7px 20px",
+                                borderRadius: "3px",
+                                background: "#4db8d4",
+                                color: "#1a1a1a",
+                                border: "1px solid #4db8d4",
+                                fontSize: "11px",
+                                fontWeight: 600,
                                 cursor: "pointer",
                                 transition: "all 0.2s",
                                 display: "flex",
@@ -1956,10 +1954,10 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                 style={{
                                     flex: 1,
                                     padding: "10px 16px",
-                                    background: "rgba(255, 255, 255, 0.05)",
-                                    border: "1px solid rgba(255, 255, 255, 0.1)",
-                                    borderRadius: "99px",
-                                    color: "#f0eff5",
+                                    background: "#3a3a3a",
+                                    border: "1px solid #555555",
+                                    borderRadius: "3px",
+                                    color: "#cccccc",
                                     fontSize: "12px",
                                     fontWeight: 700,
                                     cursor: "pointer",
@@ -1976,25 +1974,25 @@ export default function SignaturePad({ onSave, onCancel, defaultTab }: Signature
                                 style={{
                                     flex: 1,
                                     padding: "10px 16px",
-                                    background: "#7c6aff",
-                                    border: "none",
-                                    borderRadius: "99px",
-                                    color: "#ffffff",
-                                    fontSize: "12px",
-                                    fontWeight: 800,
+                                    background: "#4db8d4",
+                                    border: "1px solid #4db8d4",
+                                    borderRadius: "3px",
+                                    color: "#1a1a1a",
+                                    fontSize: "11px",
+                                    fontWeight: 600,
                                     textTransform: "uppercase",
                                     letterSpacing: "0.06em",
                                     cursor: "pointer",
                                     boxShadow: "0 4px 16px rgba(124, 106, 255, 0.4)",
                                     transition: "all 0.2s",
                                 }}
-                                onMouseEnter={e => { e.currentTarget.style.background = "#5b4bd4"; }}
-                                onMouseLeave={e => { e.currentTarget.style.background = "#7c6aff"; }}
+                                onMouseEnter={e => { e.currentTarget.style.background = "#3ba2bd"; }}
+                                onMouseLeave={e => { e.currentTarget.style.background = "#4db8d4"; }}
                             >
                                 Close Preview
                             </button>
                         </div>
-                        <span style={{ fontSize: "11px", color: "#8b8a97", letterSpacing: "0.02em" }}>
+                        <span style={{ fontSize: "11px", color: "#999999", letterSpacing: "0.02em" }}>
                             Click outside to close
                         </span>
                     </div>

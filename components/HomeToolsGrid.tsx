@@ -89,7 +89,7 @@ function HomeToolCard({ tool, index }: { tool: Tool; index: number }) {
 
 // ── Grid ──────────────────────────────────────────────────────────────────────
 export default function HomeToolsGrid() {
-    // Show first 9 tools — a nice 3-column display
+    // Show first 9 tools - a nice 3-column display
     const showcasedTools = ALL_TOOLS.slice(0, 9);
 
     return (

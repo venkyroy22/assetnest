@@ -301,7 +301,7 @@ export default function ToolsPage() {
                 }}
             />
 
-            {/* Wrench — desktop only, hard clipped */}
+            {/* Wrench - desktop only, hard clipped */}
             <div className="hidden lg:block absolute top-0 right-0 overflow-hidden pointer-events-none z-0" style={{ width: "420px", height: "420px" }}>
                 <Wrench size={500} strokeWidth={0.5} className="rotate-12 translate-x-28 -translate-y-14" style={{ color: "rgba(240,237,232,0.04)" }} />
             </div>
@@ -350,7 +350,7 @@ export default function ToolsPage() {
                         </div>
                     </div>
 
-                    {/* Category pills — horizontal scroll on mobile */}
+                    {/* Category pills - horizontal scroll on mobile */}
                     <div className="-mx-4 sm:mx-0 mb-10 sm:mb-12">
                         <div
                             className="flex gap-2 overflow-x-auto px-4 sm:px-0 pb-1 sm:flex-wrap sm:overflow-x-visible"

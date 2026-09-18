@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "E-Signature Creator — Draw & Download Transparent Signatures",
+    title: "E-Signature Creator - Draw & Download Transparent Signatures",
     description: "Draw your signature smoothly online using your mouse or touch screen. Download instantly as a transparent PNG or SVG for your documents. 100% free and private.",
     keywords: [
         "e-signature creator",
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
         "svg signature maker"
     ],
     openGraph: {
-        title: "E-Signature Creator — Free Digital Signatures",
+        title: "E-Signature Creator - Free Digital Signatures",
         description: "Draw your signature securely in your browser and download as a transparent image.",
         url: "https://www.assetnest.space/tools/e-signature",
         siteName: "AssetNest",

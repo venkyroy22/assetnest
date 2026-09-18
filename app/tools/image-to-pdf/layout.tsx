@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Image to PDF Converter — JPG, PNG, WebP to PDF Free | AssetNest",
+    title: "Image to PDF Converter - JPG, PNG, WebP to PDF Free | AssetNest",
     description: "Convert JPG, PNG, and WebP images into a PDF instantly. Upload multiple images, drag to reorder pages, set page size and quality. Free, private, no file uploads needed.",
     keywords: [
         "image to pdf", "jpg to pdf", "png to pdf", "convert image to pdf online",
@@ -15,8 +15,8 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: "https://www.assetnest.space/tools/image-to-pdf" },
     openGraph: {
-        title: "Image to PDF Converter — JPG, PNG, WebP to PDF Free",
-        description: "Turn your images into a PDF in seconds. Upload multiple photos, reorder them, set page size — all free and 100% private in your browser.",
+        title: "Image to PDF Converter - JPG, PNG, WebP to PDF Free",
+        description: "Turn your images into a PDF in seconds. Upload multiple photos, reorder them, set page size - all free and 100% private in your browser.",
         url: "https://www.assetnest.space/tools/image-to-pdf",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest Image to PDF Converter" }],
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "Image to PDF — JPG, PNG, WebP Converter | AssetNest",
+        title: "Image to PDF - JPG, PNG, WebP Converter | AssetNest",
         description: "Convert any image to PDF instantly. Multiple images, drag to reorder, 100% private.",
         images: ["/logo.png"],
     },

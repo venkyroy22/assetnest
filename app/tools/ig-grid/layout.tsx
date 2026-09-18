@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Free Instagram Grid Planner — Visualize Your Feed Layout",
+    title: "Free Instagram Grid Planner - Visualize Your Feed Layout",
     description: "Plan your Instagram grid layout visually. Upload photos, drag and drop to rearrange, and preview how your profile will look before posting. Free, no account needed.",
     keywords: [
         "instagram layout planner",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         title: "Free Instagram Grid Planner | AssetNest",
-        description: "Plan your Instagram feed layout visually — drag, drop, and preview before posting. Free, no login required.",
+        description: "Plan your Instagram feed layout visually - drag, drop, and preview before posting. Free, no login required.",
         url: "https://www.assetnest.space/tools/ig-grid",
     },
     alternates: {

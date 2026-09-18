@@ -3,11 +3,12 @@
 import "./polyfill";
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
-    Upload, Download, RefreshCw, PenTool, Info, X, Check, Save,
+    Upload, UploadCloud, Download, RefreshCw, PenTool, Info, X, Check, Save,
     MousePointer2, Layers, FileText, Share2, PencilLine, Sparkles,
     Trash2, ShieldCheck, User, Type, Calendar, CheckSquare,
     Undo2, Redo2, Stamp, Palette, Bold, Italic, Underline,
-    Zap, Lock, Globe, ChevronDown, ChevronUp, ArrowLeft
+    Zap, Lock, Globe, ChevronDown, ChevronUp, ArrowLeft,
+    HelpCircle, MonitorSmartphone, Scissors
 } from "lucide-react";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import dynamic from "next/dynamic";
@@ -15,10 +16,61 @@ const SignaturePad = dynamic(() => import("@/components/SignaturePad"), { ssr: f
 const ShareModal = dynamic(() => import("@/components/ShareModal"), { ssr: false });
 import type { Signature, LibraryItem } from "@/app/tools/pdf-signer/types";
 import Link from "next/link";
-import { MonitorSmartphone } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 
-/* ─── Page Thumbnail Renderer ─── */
+/* ─────────────────────────────────────────
+   DESIGN TOKENS (Matching QR & Image Tools)
+   ───────────────────────────────────────── */
+const T = {
+    bg:          "#333333",
+    surface:     "#3a3a3a",
+    surfaceHi:   "#444444",
+    surfaceHov:  "#505050",
+    border:      "#555555",
+    borderDim:   "#2a2a2a",
+    accent:      "#4db8d4",
+    accentDark:  "#2a7a8f",
+    accentDim:   "rgba(77,184,212,0.15)",
+    textPri:     "#cccccc",
+    textSec:     "#999999",
+    muted:       "#777777",
+    danger:      "#cc4444",
+    success:     "#7dcea0",
+    font:        "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
+
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: "3px 8px", borderRadius: 2,
+      background: T.surface, border: `1px solid ${T.border}`,
+      fontSize: 10, fontWeight: 400, color: "#aaa",
+    }}>{icon}{label}</span>
+  );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div onClick={() => setOpen(!open)} style={{
+      background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+      padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <h4 style={{ fontSize: 11, fontWeight: 400, color: T.textPri, margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+          <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+        </h4>
+        <span style={{ color: T.textSec, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+      </div>
+      <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+      </div>
+    </div>
+  );
+}
+
+/* --- Page Thumbnail Renderer --- */
 const PdfThumbnail = ({ pdf, index, isActive, onClick }: { pdf: any; index: number; isActive: boolean; onClick: () => void }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     useEffect(() => {
@@ -30,13 +82,13 @@ const PdfThumbnail = ({ pdf, index, isActive, onClick }: { pdf: any; index: numb
                 const page = await pdf.getPage(index + 1);
                 if (!active || !canvasRef.current) return;
                 const naturalVp = page.getViewport({ scale: 1.0 });
-                const fitScale = 64 / naturalVp.width;
+                const fitScale = 56 / naturalVp.width;
                 const vp = page.getViewport({ scale: fitScale * 1.5 });
                 const canvas = canvasRef.current;
                 canvas.width = vp.width;
                 canvas.height = vp.height;
-                canvas.style.width = "64px";
-                canvas.style.height = `${64 * (naturalVp.height / naturalVp.width)}px`;
+                canvas.style.width = "56px";
+                canvas.style.height = `${56 * (naturalVp.height / naturalVp.width)}px`;
                 const ctx = canvas.getContext("2d", { alpha: false });
                 if (ctx && active) {
                     renderTask = page.render({ canvasContext: ctx, viewport: vp });
@@ -64,34 +116,33 @@ const PdfThumbnail = ({ pdf, index, isActive, onClick }: { pdf: any; index: numb
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                gap: 8,
-                padding: "8px",
+                gap: 4,
+                padding: "6px",
                 width: "100%",
-                borderRadius: 8,
-                background: isActive ? "rgba(124,106,255,0.06)" : "transparent",
-                border: `1.5px solid ${isActive ? "#7c6aff" : "transparent"}`,
+                borderRadius: 4,
+                background: isActive ? "rgba(77,184,212,0.12)" : "transparent",
+                border: `1px solid ${isActive ? T.accent : "transparent"}`,
                 boxSizing: "border-box",
-                transition: "all 0.2s ease-in-out",
+                transition: "all 0.15s ease-in-out",
             }}
         >
             <div
                 style={{
-                    width: 64,
-                    minHeight: 80,
+                    width: 56,
+                    minHeight: 72,
                     background: "#fff",
-                    borderRadius: 4,
-                    boxShadow: isActive ? "0 4px 12px rgba(124,106,255,0.2)" : "0 2px 8px rgba(0,0,0,0.15)",
+                    borderRadius: 2,
+                    border: `1px solid ${T.border}`,
                     overflow: "hidden",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     boxSizing: "border-box",
-                    borderLeft: isActive ? "3px solid #7c6aff" : "none",
                 }}
             >
                 <canvas ref={canvasRef} style={{ display: "block" }} />
             </div>
-            <span style={{ fontSize: 10, fontWeight: 700, color: isActive ? "#7c6aff" : "#8b8a97" }}>
+            <span style={{ fontSize: 10, fontWeight: 500, color: isActive ? T.accent : T.textSec }}>
                 {index + 1}
             </span>
         </div>
@@ -105,19 +156,19 @@ const PdfViewer = dynamic<any>(
         loading: () => (
             <div style={{
                 height: 500, display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center", gap: 16,
-                background: T.surface, borderRadius: 24,
+                alignItems: "center", justifyContent: "center", gap: 14,
+                background: "#2a2a2a", borderRadius: 8,
                 border: `1px solid ${T.border}`,
             }}>
                 <div style={{
-                    width: 36, height: 36,
-                    border: `3px solid ${T.borderHover}`,
+                    width: 32, height: 32,
+                    border: `2px solid ${T.border}`,
                     borderTopColor: T.accent,
                     borderRadius: "50%",
                     animation: "spin 0.8s linear infinite",
                 }} />
-                <span style={{ fontSize: 11, fontWeight: 700, color: T.textSec, letterSpacing: "0.15em", textTransform: "uppercase" }}>
-                    Loading PDF Engine…
+                <span style={{ fontSize: 11, fontWeight: 500, color: T.textSec }}>
+                    Loading PDF Engine...
                 </span>
                 <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
             </div>
@@ -125,27 +176,9 @@ const PdfViewer = dynamic<any>(
     }
 );
 
-/* ─── Design System ─── */
-const T = {
-    bg:          "#F4ECD8",
-    surface:     "#ffffff",
-    surfaceHi:   "#f4ecd8",
-    surfaceHov:  "#f9f5eb",
-    border:      "#000000",
-    borderHover: "#000000",
-    accent:      "#7c6aff",       // violet — trust, legal, authority
-    accentDim:   "#5b4bd4",
-    accentGlow:  "rgba(124,106,255,0.15)",
-    success:     "#a7f3d0",
-    danger:      "#fca5a5",
-    textPri:     "#000000",
-    textSec:     "#1f2937",
-    muted:       "#4b5563",
-};
-
 const TOOLS = [
-    { id: "signature", icon: User,        label: "Signature",  desc: "Hand-drawn",  shortcut: "1", color: "#7c6aff" },
-    { id: "initials",  icon: PencilLine,  label: "Initials",   desc: "Monogram",    shortcut: "2", color: "#06b6d4" },
+    { id: "signature", icon: User,        label: "Signature",  desc: "Hand-drawn",  shortcut: "1", color: "#4db8d4" },
+    { id: "initials",  icon: PencilLine,  label: "Initials",   desc: "Monogram",    shortcut: "2", color: "#38bdf8" },
     { id: "text",      icon: Type,        label: "Text",       desc: "Typeable",    shortcut: "3", color: "#f59e0b" },
     { id: "date",      icon: Calendar,    label: "Date",       desc: "Auto-fill",   shortcut: "4", color: "#10b981" },
     { id: "checkmark", icon: CheckSquare, label: "Checkmark",  desc: "Tick box",    shortcut: "5", color: "#ef4444" },
@@ -155,7 +188,7 @@ const TOOLS = [
 type ToolId = typeof TOOLS[number]["id"];
 
 const PRESET_COLORS = [
-    { name: "Ink",    value: "#0a0a0a" },
+    { name: "Ink",    value: "#000000" },
     { name: "Blue",   value: "#1a3fbf" },
     { name: "Red",    value: "#dc2626" },
     { name: "Green",  value: "#059669" },
@@ -169,36 +202,14 @@ const hexToRgb = (hex: string) => {
     return rgb((n >> 16) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255);
 };
 
-/* ─── Micro-components ─── */
-const Kbd = ({ k }: { k: string }) => (
-    <span style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        width: 18, height: 18, borderRadius: 4,
-        background: T.surfaceHov, border: `1px solid ${T.border}`,
-        fontSize: 9, fontWeight: 800, color: T.muted,
-        letterSpacing: 0, lineHeight: 1,
-    }}>{k}</span>
-);
-
 const SectionLabel = ({ children }: { children: React.ReactNode }) => (
     <div style={{
-        fontSize: 9, fontWeight: 800, color: T.muted,
-        letterSpacing: "0.2em", textTransform: "uppercase",
-        marginBottom: 10, display: "flex", alignItems: "center", gap: 6,
+        fontSize: 10, fontWeight: 400, color: T.textSec,
+        letterSpacing: "normal", marginBottom: 6,
+        display: "flex", alignItems: "center", gap: 6,
+        fontFamily: T.font
     }}>
         {children}
-    </div>
-);
-
-const Badge = ({ icon, label, color = T.accent }: { icon: React.ReactNode; label: string; color?: string }) => (
-    <div style={{
-        display: "inline-flex", alignItems: "center", gap: 5,
-        padding: "4px 10px", borderRadius: 99,
-        background: `${color}14`, border: `1px solid ${color}28`,
-        fontSize: 10, fontWeight: 700, color,
-        letterSpacing: "0.04em",
-    }}>
-        {icon}<span>{label}</span>
     </div>
 );
 
@@ -212,74 +223,6 @@ const jsonLd = {
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
-
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
-
-function LocalAccordion({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-4 w-full">{children}</div>;
-}
-
-interface LocalAccordionItemProps {
-    title: string;
-    children: React.ReactNode;
-}
-
-function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
-            >
-                <span className="font-bold text-sm sm:text-base text-black pr-4">
-                    {title}
-                </span>
-                <ChevronDown
-                    size={18}
-                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                />
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
-                }`}
-            >
-                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
-}
 
 export default function PdfSignerPage() {
     const [file,        setFile]        = useState<File | null>(null);
@@ -301,7 +244,7 @@ export default function PdfSignerPage() {
     const [dismissHint, setDismissHint] = useState(false);
     const [mounted,     setMounted]     = useState(false);
 
-    const [selectedColor,  setSelectedColor]  = useState("#1a3fbf");
+    const [selectedColor,  setSelectedColor]  = useState("#000000");
     const [selectedStamp,  setSelectedStamp]  = useState("APPROVED");
     const [selectedFont,   setSelectedFont]   = useState("Helvetica");
     const [isBold,         setIsBold]         = useState(false);
@@ -320,17 +263,6 @@ export default function PdfSignerPage() {
     const fileInputRef  = useRef<HTMLInputElement>(null);
 
     useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
-
-    useEffect(() => {
-        if (file) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [file]);
 
     useEffect(() => {
         if (!file) return;
@@ -441,9 +373,7 @@ export default function PdfSignerPage() {
             if (n >= 1 && n <= 6 && !e.ctrlKey && !e.metaKey) setActiveTool(TOOLS[n - 1].id as ToolId);
         };
         window.addEventListener("keydown", handler);
-        (window as any).undo = undo;
-        (window as any).redo = redo;
-        return () => { window.removeEventListener("keydown", handler); delete (window as any).undo; delete (window as any).redo; };
+        return () => window.removeEventListener("keydown", handler);
     }, [undo, redo]);
 
     const handleFile = async (f: File) => {
@@ -656,7 +586,6 @@ export default function PdfSignerPage() {
         } finally { setIsExporting(false); }
     };
 
-
     const fadeIn = (delay = 0) => ({
         opacity: mounted ? 1 : 0,
         transform: mounted ? "translateY(0)" : "translateY(12px)",
@@ -664,21 +593,11 @@ export default function PdfSignerPage() {
     });
 
     return (
-        <div className={`w-full min-h-screen bg-[#F4ECD8] text-black font-sans relative overflow-hidden ig-root flex flex-col ${file ? "h-[calc(100vh-var(--header-height))] min-h-[calc(100vh-var(--header-height))] overflow-hidden pb-0" : "pb-24"}`}>
+        <div className={`w-full min-h-screen bg-[#333333] text-[#cccccc] font-sans relative overflow-x-hidden ig-root flex flex-col ${file ? "h-screen overflow-hidden pb-0" : "pb-24"}`}>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-            <style>{GLOBAL_STYLES}</style>
             <style>{`
-                :root {
-                    --header-height: 80px;
-                }
-                @media (max-width: 768px) {
-                    :root {
-                        --header-height: 64px;
-                    }
-                }
                 @keyframes spin { to { transform: rotate(360deg); } }
                 @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
-                @keyframes bounce-slow { 0%,100%{transform:translateY(0) translateX(-50%)} 50%{transform:translateY(-6px) translateX(-50%)} }
                 @keyframes dragBox {
                     0% { width: 0; height: 0; opacity: 0; }
                     15% { width: 0; height: 0; opacity: 1; }
@@ -704,168 +623,148 @@ export default function PdfSignerPage() {
                 * { box-sizing: border-box; }
                 ::-webkit-scrollbar { width: 4px; height: 4px; }
                 ::-webkit-scrollbar-track { background: transparent; }
-                ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 2px; }
-                @media (max-width: 640px) {
-                    .feature-grid { grid-template-columns: 1fr !important; }
-                    .timeline-grid { grid-template-columns: 1fr !important; }
-                    .contrast-table { font-size: 10px !important; }
-                    .contrast-table th, .contrast-table td { padding: 10px 8px !important; }
-                }
+                ::-webkit-scrollbar-thumb { background: #555555; border-radius: 2px; }
             `}</style>
 
-            {/* Background grid */}
-            <div className="fixed inset-0 pointer-events-none z-0 bg-[radial-gradient(circle,rgba(0,0,0,0.04)_1px,transparent_1px)] bg-[size:28px_28px]" />
-
-            {/* LANDING PAGE / UPLOAD STATE */}
+            {/* ─── 1. LANDING PAGE STATE (when !file) ─── */}
             {!file && (
                 <div className="relative z-10 max-w-5xl mx-auto w-full px-4 sm:px-6">
+                    {/* Header */}
                     <header className="max-w-5xl mx-auto pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
                         <Link
                             href="/tools"
-                            className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+                            className="flex items-center gap-1 px-2.5 py-1 bg-[#3a3a3a] border border-[#555555] rounded text-[#aaa] font-normal text-[11px] hover:bg-[#444444] transition-colors"
                         >
-                            <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                            <ArrowLeft size={11} strokeWidth={2} /> Back
                         </Link>
-                        <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                            <div className="w-8 h-8 rounded-lg bg-red-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
-                                <PenTool size={14} />
+                        <div className="flex items-center gap-2 relative z-10">
+                            <div className="w-6 h-6 rounded flex items-center justify-center text-[#aaa] text-xs border border-[#555555] bg-[#3a3a3a]">
+                                <PenTool size={12} />
                             </div>
-                            <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
+                            <span className="text-[12px] sm:text-[14px] font-medium tracking-normal text-[#ccc]">
                                 PDF Signer
                             </span>
+                            <button 
+                                onClick={() => setShowHelp(true)}
+                                className="p-1 bg-[#3a3a3a] border border-[#555555] rounded text-[#888] hover:bg-[#444444] transition-colors ml-1"
+                                title="Help Guide"
+                            >
+                                <HelpCircle size={11} />
+                            </button>
                         </div>
-                        <button 
-                            onClick={() => setShowHelp(true)}
-                            className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                            title="Help Guide"
-                        >
-                            <Info size={12} strokeWidth={2.5} /> INFO
-                        </button>
                     </header>
 
-                    <div className="text-center mt-6 mb-12 relative z-10">
-                        <div className="flex justify-center gap-2 mb-6 flex-wrap">
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
-                                <Lock size={10} /> 100% Private
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-100 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
-                                <Zap size={10} /> Browser-Side Only
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-100 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider">
-                                <Globe size={10} /> No Watermarks
-                            </span>
-                        </div>
-                        <h1 className="text-4xl sm:text-6xl font-black text-black tracking-tight leading-none mb-4 ig-display">
-                            Free PDF <span className="bg-yellow-300 px-2 py-0.5 border-2 border-black inline-block transform -rotate-1 shadow-[2px_2px_0_#000]">Signer Online</span>
-                        </h1>
-                        <p className="text-sm sm:text-base text-zinc-800 max-w-xl mx-auto leading-relaxed font-bold">
-                            Fill and sign PDF online free. Create your digital signature on PDF documents instantly and securely. Processed entirely inside your browser — <strong>no sign-up</strong>, <strong>no server uploads</strong>, and <strong>no watermarks</strong>.
-                        </p>
-                    </div>
 
-                    {/* Upload zone */}
+                    {/* Upload Drop Zone */}
                     <div style={fadeIn(0.1)}>
+                        <input 
+                            ref={fileInputRef} 
+                            type="file" 
+                            accept="application/pdf" 
+                            onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} 
+                            style={{ display: "none" }} 
+                        />
                         <div
                             onDragOver={e => { e.preventDefault(); setIsDragging(true); }}
                             onDragLeave={() => setIsDragging(false)}
                             onDrop={onDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className={`max-w-[680px] mx-auto p-10 bg-white border-2 border-black rounded-[2rem] shadow-[4px_4px_0_#000] text-center cursor-pointer hover:bg-zinc-50 transition-all ${isDragging ? "bg-emerald-50 border-emerald-500 shadow-none scale-[0.99]" : ""}`}
+                            style={{
+                                minHeight: 280, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                                border: `1px dashed ${isDragging ? T.accent : T.border}`,
+                                borderRadius: 4, background: isDragging ? T.surfaceHi : T.surface,
+                                cursor: "pointer", transition: "all 0.2s", padding: 32, marginBottom: 40,
+                            }}
                         >
-                            <input ref={fileInputRef} type="file" accept="application/pdf" onChange={e => { const f = e.target.files?.[0]; if (f) handleFile(f); }} style={{ display: "none" }} />
-                            <div className="w-16 h-16 bg-red-500 border-2 border-black rounded-2xl flex items-center justify-center text-white mx-auto mb-6 shadow-[2px_2px_0_#000]">
-                                <Upload size={24} strokeWidth={2.5} />
+                            <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#444444", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, marginBottom: 12 }}>
+                                <UploadCloud size={22} />
                             </div>
-                            <h2 className="text-2xl font-black text-black tracking-tight mb-2 ig-display">
+                            <div style={{ fontSize: 14, fontWeight: 500, color: T.textPri, marginBottom: 4 }}>
                                 Drop your PDF here
-                            </h2>
-                            <p className="text-xs text-zinc-650 font-bold mb-6">or click to browse your files</p>
-                            <div className="flex justify-center gap-2 flex-wrap">
-                                {[
-                                    { icon: <ShieldCheck size={11} />, label: "100% Private", c: "bg-emerald-100" },
-                                    { icon: <Zap size={11} />, label: "No Server Upload", c: "bg-yellow-100" },
-                                    { icon: <Check size={11} />, label: "Free Forever", c: "bg-blue-100" },
-                                ].map(item => (
-                                    <div key={item.label} className={`flex items-center gap-1.5 px-3 py-1 border-2 border-black rounded-full text-[10px] font-black text-black shadow-[1.5px_1.5px_0_#000] uppercase tracking-wider ${item.c}`}>
-                                        {item.icon}{item.label}
-                                    </div>
-                                ))}
+                            </div>
+                            <p style={{ fontSize: 11, color: T.textSec, marginBottom: 16 }}>
+                                or click to browse your files · 100% Client-side Processing
+                            </p>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+                                <Chip icon={<ShieldCheck size={10} />} label="100% Private" />
+                                <Chip icon={<Zap size={10} />} label="No Server Upload" />
+                                <Chip icon={<Check size={10} />} label="Free Forever" />
                             </div>
                         </div>
 
-                        {/* Feature grid */}
-                        <div className="max-w-[780px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-6 border-t-2 border-black/10 pt-12 mt-12">
+                        {/* Feature Cards Grid */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 48 }}>
                             {[
-                                { icon: ShieldCheck, title: "Security & Privacy First", desc: "Your documents remain strictly confidential. With zero data tracking and no storage, we ensure your sensitive information stays private and secure." },
-                                { icon: Zap, title: "Local Process, No File Upload", desc: "Sign PDF directly in your browser. Since files are processed locally, your documents never leave your device, offering maximum security without server uploads." },
-                                { icon: Globe, title: "100% Free & No Registration", desc: "Truly free with no sign-up or credit card required. No usage limits, watermark stamps, or surprise fees. Just select, sign, and download your file." },
-                                { icon: MousePointer2, title: "Legally Binding eSignatures", desc: "Create simple electronic signatures and place initials that support legally compliant workflows under UETA and the federal ESIGN Act." },
-                                { icon: Palette, title: "Define Your Signature Style", desc: "Draw or type signature overlays with customizable colors (Royal Blue) and elegant fonts to make every signed document fit your brand style." },
-                                { icon: MonitorSmartphone, title: "Sign Anywhere, on Any Device", desc: "Access our secure online tool on Mac, Windows, iOS, or Android. Sign your PDF documents anytime, anywhere, with just a web browser." },
+                                { icon: ShieldCheck, title: "Security & Privacy First", desc: "Your documents remain strictly confidential. With zero data tracking and no server storage, we ensure your sensitive files stay private." },
+                                { icon: Zap, title: "Local Process, No File Upload", desc: "Sign PDF documents directly in your browser. All conversions occur locally in RAM, offering maximum security." },
+                                { icon: Globe, title: "100% Free & No Registration", desc: "Truly free with no sign-up or credit card required. No usage limits, watermark stamps, or surprise subscription tiers." },
+                                { icon: MousePointer2, title: "Legally Binding eSignatures", desc: "Create simple electronic signatures and place initials that support legally compliant workflows under UETA and the ESIGN Act." },
+                                { icon: Palette, title: "Define Your Signature Style", desc: "Draw or type signature overlays with customizable ink colors, custom stamps, and elegant typography to match your brand." },
+                                { icon: MonitorSmartphone, title: "Sign Anywhere, on Any Device", desc: "Access our secure online tool on Mac, Windows, iOS, or Android. Sign your contracts anytime with zero software installation." },
                             ].map(f => (
-                                <div key={f.title} className="flex gap-4 p-5 bg-white border-2 border-black rounded-3xl text-left shadow-[3px_3px_0_#000]">
-                                    <div className="w-10 h-10 rounded-xl bg-[#F4ECD8] border-2 border-black flex items-center justify-center text-red-500 flex-shrink-0 shadow-[1.5px_1.5px_0_#000]">
-                                        <f.icon size={16} strokeWidth={2.5} />
+                                <div key={f.title} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                        <div style={{ color: T.accent }}>
+                                            <f.icon size={15} />
+                                        </div>
+                                        <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.textPri }}>{f.title}</h3>
                                     </div>
-                                    <div>
-                                        <div className="text-xs font-black text-black mb-1.5 ig-display">{f.title}</div>
-                                        <div className="text-[11px] text-zinc-650 font-bold leading-relaxed">{f.desc}</div>
-                                    </div>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
                                 </div>
                             ))}
                         </div>
 
-                        {/* How to Timeline Section */}
-                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 text-left">
-                            <h2 className="text-xl sm:text-2xl font-black text-black text-center mb-10 ig-display">
+                        {/* How-to Steps Timeline */}
+                        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 48 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
                                 How to eSign PDF Online for Free
-                            </h2>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            </h3>
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
                                 {[
-                                    { step: "1", title: "Upload PDF File", desc: "Click 'Select PDF File' or drag and drop your document into our secure browser-side signer upload zone." },
-                                    { step: "2", title: "Sign & Annotate", desc: "Draw your signature, place initials, add text, select dates, or place checkbox checkmarks on the canvas." },
+                                    { step: "1", title: "Upload PDF File", desc: "Click 'Drop your PDF here' or drag and drop your document into our secure browser-side signer upload zone." },
+                                    { step: "2", title: "Sign & Annotate", desc: "Draw your signature, place initials, add text, select dates, or place status stamps anywhere on the document canvas." },
                                     { step: "3", title: "Download File", desc: "Click 'Finalise & Sign' to compile and download your signed digital PDF document in seconds." }
-                                ].map((item) => (
-                                    <div key={item.step} className="bg-white border-2 border-black p-6 rounded-3xl relative shadow-[3.5px_3.5px_0_#000] pt-8">
-                                        <div className="absolute -top-3.5 left-4 w-7 h-7 rounded-full bg-yellow-300 border-2 border-black flex items-center justify-center text-xs font-black shadow-[1.5px_1.5px_0_#000] text-black">
-                                            {item.step}
+                                ].map(s => (
+                                    <div key={s.step} style={{ padding: 14, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 3, position: "relative", paddingTop: 20 }}>
+                                        <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                            {s.step}
                                         </div>
-                                        <h4 className="text-xs font-black text-black mb-2 ig-display">{item.title}</h4>
-                                        <p className="text-[11px] text-zinc-650 font-bold leading-relaxed m-0">{item.desc}</p>
+                                        <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 6px" }}>{s.title}</h4>
+                                        <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Contrast Table Section */}
-                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 text-left">
-                            <h2 className="text-xl sm:text-2xl font-black text-black text-center mb-2 ig-display">
+                        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 48 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 4 }}>
                                 Electronic vs. Digital Signatures: Which Do You Need?
-                            </h2>
-                            <p className="text-xs text-zinc-600 text-center mb-8 max-w-lg mx-auto leading-relaxed font-bold">
+                            </h3>
+                            <p style={{ fontSize: 11, color: T.textSec, textAlign: "center", marginBottom: 20 }}>
                                 Discover the differences between visual electronic overlays and certificate-backed cryptographic digital signatures.
                             </p>
-                            <div className="bg-white border-2 border-black rounded-3xl overflow-hidden shadow-[4px_4px_0_#000]">
-                                <table className="w-full border-collapse text-left text-xs">
+                            <div style={{ background: "#323232", border: `1px solid ${T.border}`, borderRadius: 4, overflow: "hidden" }}>
+                                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 11, textAlign: "left" }}>
                                     <thead>
-                                        <tr className="bg-zinc-50 border-b-2 border-black">
-                                            <th className="p-4 font-black text-black text-[11px] uppercase tracking-wider ig-label">Capability</th>
-                                            <th className="p-4 font-black text-red-500 text-[11px] uppercase tracking-wider ig-label">PDF Electronic Signature (This Tool)</th>
-                                            <th className="p-4 font-black text-zinc-600 text-[11px] uppercase tracking-wider ig-label">PDF Digital Signature</th>
+                                        <tr style={{ borderBottom: `1px solid ${T.border}`, background: "#2e2e2e" }}>
+                                            <th style={{ padding: 10, fontWeight: 500, color: T.textPri }}>Capability</th>
+                                            <th style={{ padding: 10, fontWeight: 500, color: T.accent }}>PDF Electronic Signature (This Tool)</th>
+                                            <th style={{ padding: 10, fontWeight: 500, color: T.textSec }}>PDF Digital Signature</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {[
-                                            { cap: "Best Use Case", es: "Personal & standard commercial documents", ds: "High-stakes legal & verified agreements" },
+                                            { cap: "Best Use Case", es: "Personal & standard commercial contracts", ds: "High-stakes government & notary agreements" },
                                             { cap: "Signature Type", es: "Visual hand-drawn signature overlays", ds: "CA-Certified cryptographic digital ID" },
                                             { cap: "Security Focus", es: "100% on-device private browser processing", ds: "Tamper-proof encrypted certificate locks" },
-                                            { cap: "Process Location", es: "Instant inside your browser (local only)", ds: "Requires third-party servers / key managers" },
-                                            { cap: "Ease of Use", es: "Extremely fast, free, and no sign-up", ds: "Requires registration and setup keys" },
+                                            { cap: "Process Location", es: "Instant inside your browser (local memory)", ds: "Requires third-party servers / cloud keys" },
+                                            { cap: "Ease of Use", es: "Extremely fast, free, and no sign-up", ds: "Requires registration and USB tokens" },
                                         ].map((row, idx) => (
-                                            <tr key={idx} className="border-b-2 border-black/10 last:border-b-0">
-                                                <td className="p-4 font-bold text-black border-r border-black/10 bg-zinc-50/50">{row.cap}</td>
-                                                <td className="p-4 text-zinc-700 font-bold border-r border-black/10">{row.es}</td>
-                                                <td className="p-4 text-zinc-700 font-bold">{row.ds}</td>
+                                            <tr key={idx} style={{ borderBottom: idx < 4 ? `1px solid ${T.borderDim}` : "none" }}>
+                                                <td style={{ padding: 10, fontWeight: 500, color: T.textPri }}>{row.cap}</td>
+                                                <td style={{ padding: 10, color: T.accent }}>{row.es}</td>
+                                                <td style={{ padding: 10, color: T.textSec }}>{row.ds}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -873,41 +772,35 @@ export default function PdfSignerPage() {
                             </div>
                         </div>
 
-                        {/* SEO FAQ Accordion */}
-                        <div className="max-w-[780px] mx-auto border-t-2 border-black/10 pt-12 mt-16 mb-8 text-left">
-                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-10 ig-display">
-                                Frequently Asked Questions — PDF Signature Online
+                        {/* FAQ Accordion */}
+                        <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
+                                Frequently Asked Questions - PDF Signature Online
                             </h3>
-                            <LocalAccordion>
-                                {[
-                                    {
-                                        q: "Is it really a free PDF signature tool with no sign up?",
-                                        a: "Yes! You can fill and sign PDF online free without creating any account or signing up. There are no limits, no watermarks, and no hidden subscriptions. It is a completely free online PDF signer."
-                                    },
-                                    {
-                                        q: "How does the digital signature on PDF work privately?",
-                                        a: "Unlike other online PDF signing tools, our tool runs entirely in your browser using local client-side libraries. Your PDF documents and drawn signatures are never uploaded to any server. Your private data remains 100% on your device."
-                                    },
-                                    {
-                                        q: "How do I add a signature to a PDF and download it?",
-                                        a: "Simply drop your document into the upload zone, select the Signature tool, drag a box exactly where you want it, draw your signature, and apply it. Once done, click 'Finalise & Sign' to compile and download your signed digital PDF instantly."
-                                    },
-                                    {
-                                        q: "Can I use this as an alternative to other PDF signature tools?",
-                                        a: "Absolutely. If you want a fast, free, private, and secure alternative to bulky platforms like ilovepdf signature, this lightweight, client-side signature tool is the perfect option."
-                                    }
-                                ].map((faq, idx) => (
-                                    <LocalAccordionItem key={idx} title={faq.q}>
-                                        {faq.a}
-                                    </LocalAccordionItem>
-                                ))}
-                            </LocalAccordion>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8, maxWidth: 800, margin: "0 auto" }}>
+                                <FAQItem 
+                                    question="Is it really a free PDF signature tool with no sign up?" 
+                                    answer="Yes! You can fill and sign PDF online free without creating any account or signing up. There are no limits, no watermarks, and no hidden subscriptions." 
+                                />
+                                <FAQItem 
+                                    question="How does the digital signature on PDF work privately?" 
+                                    answer="Unlike cloud PDF signing tools, our engine runs entirely in your browser using WebAssembly and client-side canvas. Your PDF documents and drawn signatures are never uploaded to any server." 
+                                />
+                                <FAQItem 
+                                    question="How do I add a signature to a PDF and download it?" 
+                                    answer="Simply drop your document into the upload zone, click 'Signature', draw your signature, and place it anywhere on the document. Click 'Finalise & Sign' to compile and download your signed PDF." 
+                                />
+                                <FAQItem 
+                                    question="Can I apply signatures or initials across all pages?" 
+                                    answer="Yes! Each placed annotation has an 'All Pages' toggle in the right sidebar or annotations log, allowing you to instantly duplicate initials across multi-page contracts." 
+                                />
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* THREE-COLUMN EDITOR STUDIO */}
+            {/* ─── 2. THREE-COLUMN EDITOR STUDIO (when file is loaded) ─── */}
             {file && (
                 <div style={{ 
                     display: "flex", 
@@ -919,20 +812,20 @@ export default function PdfSignerPage() {
                     position: "relative",
                     background: T.bg
                 }}>
-                    {/* 1. TOP TOOLBAR */}
-                    <header className="h-16 border-b-2 border-black bg-white px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-10 relative">
-                        {/* Filename dropdown */}
+                    {/* Top Toolbar */}
+                    <header className="h-14 border-b border-[#555555] bg-[#3a3a3a] px-4 sm:px-6 flex items-center justify-between flex-shrink-0 z-10 relative">
+                        {/* Filename dropdown / tool info */}
                         <div 
-                            className="flex items-center gap-2 px-3 py-1.5 bg-zinc-50 border-2 border-black rounded-xl cursor-pointer hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
+                            className="flex items-center gap-2 px-2.5 py-1 bg-[#444444] border border-[#555555] rounded cursor-pointer hover:bg-[#505050] transition-all"
                             onClick={() => setShowHelp(true)}
                         >
-                            <div className="w-6 h-6 rounded-lg bg-red-500 border border-black flex items-center justify-center text-white">
-                                <FileText size={12} />
+                            <div className="w-5 h-5 rounded bg-[#4db8d4]/20 border border-[#555555] flex items-center justify-center text-[#4db8d4]">
+                                <FileText size={11} />
                             </div>
                             {!isMobile && (
                                 <div className="flex items-center gap-1.5">
-                                    <span className="text-xs font-bold text-black max-w-[180px] truncate">{file.name}</span>
-                                    <ChevronDown size={14} className="text-zinc-650" />
+                                    <span className="text-xs font-medium text-[#cccccc] max-w-[200px] truncate">{file.name}</span>
+                                    <ChevronDown size={12} className="text-[#888888]" />
                                 </div>
                             )}
                         </div>
@@ -946,11 +839,11 @@ export default function PdfSignerPage() {
                                     document.getElementById(`pdf-page-${prev}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
                                 disabled={activePage === 0}
-                                className="ig-btn w-8 h-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
+                                className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
                             >
-                                <ChevronUp size={14} strokeWidth={2.5} />
+                                <ChevronUp size={13} strokeWidth={2.5} />
                             </button>
-                            <span className="text-xs font-black text-black w-16 text-center tabular-nums ig-display">
+                            <span className="text-xs font-medium text-[#cccccc] w-16 text-center tabular-nums">
                                 {activePage + 1} / {pageCount}
                             </span>
                             <button
@@ -960,47 +853,47 @@ export default function PdfSignerPage() {
                                     document.getElementById(`pdf-page-${next}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
                                 }}
                                 disabled={activePage === pageCount - 1}
-                                className="ig-btn w-8 h-8 rounded-full border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
+                                className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
                             >
-                                <ChevronDown size={14} strokeWidth={2.5} />
+                                <ChevronDown size={13} strokeWidth={2.5} />
                             </button>
                         </div>
 
                         {/* Action buttons (Undo/Redo/Reset) */}
-                        <div className="flex items-center gap-2.5">
-                            <div className="flex gap-1.5 pr-2.5 border-r-2 border-black/10">
+                        <div className="flex items-center gap-2">
+                            <div className="flex gap-1 pr-2 border-r border-[#555555]">
                                 <button
                                     onClick={undo}
                                     disabled={!canUndo}
-                                    title="Undo (⌘Z)"
-                                    className="ig-btn w-8 h-8 rounded-lg border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
+                                    title="Undo (Ctrl+Z)"
+                                    className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
                                 >
-                                    <Undo2 size={13} strokeWidth={2.5} />
+                                    <Undo2 size={12} strokeWidth={2.5} />
                                 </button>
                                 <button
                                     onClick={redo}
                                     disabled={!canRedo}
-                                    title="Redo (⌘Y)"
-                                    className="ig-btn w-8 h-8 rounded-lg border-2 border-black bg-white flex items-center justify-center text-black hover:bg-zinc-100 disabled:opacity-30 shadow-[1.5px_1.5px_0_#000] transition-all"
+                                    title="Redo (Ctrl+Y)"
+                                    className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
                                 >
-                                    <Redo2 size={13} strokeWidth={2.5} />
+                                    <Redo2 size={12} strokeWidth={2.5} />
                                 </button>
                             </div>
                             <button
                                 onClick={reset}
-                                className="ig-btn h-8 px-3 rounded-lg border-2 border-black bg-red-100 hover:bg-red-200 text-black text-xs font-black flex items-center gap-1.5 shadow-[1.5px_1.5px_0_#000] transition-all"
+                                className="h-7 px-2.5 rounded border border-[#555555] bg-[#3a3a3a] hover:bg-[#cc4444]/20 text-[#cccccc] text-xs font-normal flex items-center gap-1.5 transition-all cursor-pointer"
                             >
-                                <RefreshCw size={11} strokeWidth={2.5} />{!isMobile && " Reset"}
+                                <RefreshCw size={11} strokeWidth={2.5} />{!isMobile && " Change PDF"}
                             </button>
                         </div>
                     </header>
 
-                    {/* 2. BODY CONTENT (3 COLUMNS) */}
+                    {/* 3-COLUMN BODY CONTENT */}
                     <div className="flex flex-1 overflow-hidden w-full min-h-0">
-                        {/* COLUMN 1: LEFT SIDEBAR (~100px) */}
+                        {/* COLUMN 1: LEFT SIDEBAR (~96px) Page Thumbnails */}
                         <aside 
                             data-lenis-prevent="true"
-                            className="w-24 border-r-2 border-black bg-white overflow-y-auto overscroll-contain flex flex-col items-center py-4 gap-3 shrink-0 hidden md:flex"
+                            className="w-24 border-r border-[#555555] bg-[#3a3a3a] overflow-y-auto overscroll-contain flex flex-col items-center py-4 gap-3 shrink-0 hidden md:flex"
                         >
                             {Array.from({ length: pageCount }, (_, i) => (
                                 <PdfThumbnail
@@ -1019,19 +912,17 @@ export default function PdfSignerPage() {
                         {/* COLUMN 2: CENTER CANVAS (flex-grow) */}
                         <main 
                             data-lenis-prevent="true"
-                            className="flex-1 bg-[#F4ECD8] p-3 sm:p-6 pb-24 flex flex-col gap-4 overflow-y-auto overscroll-contain relative min-w-0"
+                            className="flex-1 bg-[#2a2a2a] p-3 sm:p-6 pb-24 flex flex-col gap-4 overflow-y-auto overscroll-contain relative min-w-0"
                         >
-
-
                             {/* Success Card */}
                             {outputUrl && (
-                                <div className="bg-white border-2 border-black p-8 sm:p-12 rounded-[2rem] shadow-[5px_5px_0_#000] flex flex-col items-center gap-6 text-center max-w-xl mx-auto my-10 relative overflow-hidden">
-                                    <div className="w-16 h-16 bg-emerald-100 border-2 border-black rounded-2xl flex items-center justify-center text-black shadow-[2.5px_2.5px_0_#000] mb-2">
-                                        <Check size={28} strokeWidth={3.5} />
+                                <div className="bg-[#3a3a3a] border border-[#555555] p-8 sm:p-12 rounded-2xl flex flex-col items-center gap-6 text-center max-w-xl mx-auto my-10 relative overflow-hidden">
+                                    <div className="w-14 h-14 bg-[#4db8d4]/20 border border-[#555555] rounded-xl flex items-center justify-center text-[#4db8d4] mb-1">
+                                        <Check size={28} strokeWidth={3} />
                                     </div>
                                     <div>
-                                        <h3 className="text-2xl sm:text-3xl font-black text-black tracking-tight ig-display">Document Signed</h3>
-                                        <p className="text-xs text-zinc-650 font-bold mt-1">Your finalized PDF is ready for download.</p>
+                                        <h3 className="text-xl sm:text-2xl font-semibold text-[#cccccc] tracking-tight">Document Signed</h3>
+                                        <p className="text-xs text-[#888888] font-normal mt-1">Your finalized PDF is compiled and ready for download.</p>
                                     </div>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full max-w-sm mt-4">
                                         <a
@@ -1045,19 +936,19 @@ export default function PdfSignerPage() {
                                                     }
                                                 }));
                                             }}
-                                            className="ig-btn h-11 rounded-xl bg-emerald-305 border-2 border-black text-black text-xs font-black flex items-center justify-center gap-2 shadow-[2.5px_2.5px_0_#000] hover:bg-emerald-300 hover:scale-105 active:scale-95 transition-all text-center uppercase tracking-wider bg-[#a7f3d0]"
+                                            className="h-10 rounded bg-[#4db8d4] border border-[#555555] text-[#1a1a1a] text-xs font-medium flex items-center justify-center gap-2 hover:bg-[#38bdf8] transition-all text-center"
                                         >
-                                            <Download size={16} /> Download PDF
+                                            <Download size={15} /> Download PDF
                                         </a>
                                         <button
                                             onClick={() => setIsSharing(true)}
-                                            className="ig-btn h-11 rounded-xl bg-white border-2 border-black text-black text-xs font-black flex items-center justify-center gap-2 shadow-[2.5px_2.5px_0_#000] hover:bg-zinc-100 hover:scale-105 active:scale-95 transition-all text-center uppercase tracking-wider"
+                                            className="h-10 rounded bg-[#444444] border border-[#555555] text-[#cccccc] text-xs font-medium flex items-center justify-center gap-2 hover:bg-[#505050] transition-all text-center"
                                         >
-                                            <Share2 size={16} /> Share File
+                                            <Share2 size={15} /> Share File
                                         </button>
                                         <button
                                             onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                            className="col-span-1 sm:col-span-2 ig-btn h-10 rounded-xl bg-white border-2 border-black text-black text-xs font-black flex items-center justify-center gap-1.5 shadow-[2px_2px_0_#000] hover:bg-zinc-50 transition-all uppercase tracking-wider mt-2"
+                                            className="col-span-1 sm:col-span-2 h-9 rounded bg-[#3a3a3a] border border-[#555555] text-[#888888] hover:text-[#cccccc] text-xs font-normal flex items-center justify-center gap-1.5 hover:bg-[#444444] transition-all mt-1 cursor-pointer"
                                         >
                                             ← Back to Editor
                                         </button>
@@ -1065,9 +956,10 @@ export default function PdfSignerPage() {
                                 </div>
                             )}
 
-                            {/* Document Viewer Canvas */}
+                            {/* Document Viewer Canvas with How-To-Sign Animation Guide */}
                             {!outputUrl && (
-                                <div className="flex-1 bg-white border-2 border-black rounded-3xl p-2 relative shadow-[4px_4px_0_#000]">
+                                <div className="flex-1 bg-[#333333] border border-[#555555] rounded-xl p-2 relative min-h-[500px]">
+                                    {/* ── THE ANIMATED GUIDE OVERLAY ── */}
                                     {signatures.length === 0 && !dismissHint && (
                                         <div 
                                             style={{ 
@@ -1077,20 +969,25 @@ export default function PdfSignerPage() {
                                                 display: "flex", 
                                                 alignItems: "center", 
                                                 justifyContent: "center", 
-                                                background: "rgba(8, 8, 9, 0.45)", 
-                                                backdropFilter: "blur(2px)",
-                                                borderRadius: 20,
-                                                pointerEvents: "none", // click-through so user can drag natively on the canvas behind it
+                                                background: "rgba(0, 0, 0, 0.65)", 
+                                                backdropFilter: "blur(3px)",
+                                                borderRadius: 12,
+                                                pointerEvents: "none",
                                             }}
                                         >
-                                            <div style={{ position: "relative", width: 320, height: 260, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", pointerEvents: "auto", background: T.surface, border: `1px solid ${T.border}`, padding: 24, borderRadius: 20, boxShadow: "0 12px 32px rgba(0,0,0,0.4)" }}>
+                                            <div style={{ 
+                                                position: "relative", width: 320, height: 260, 
+                                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", 
+                                                pointerEvents: "auto", background: T.surface, border: `1px solid ${T.border}`, 
+                                                padding: 24, borderRadius: 8, boxShadow: "0 12px 32px rgba(0,0,0,0.6)" 
+                                            }}>
                                                 {/* Close button top right */}
-                                                <button onClick={() => setDismissHint(true)} style={{ position: "absolute", top: 12, right: 12, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSec }} title="Dismiss Guide">
+                                                <button onClick={() => setDismissHint(true)} style={{ position: "absolute", top: 10, right: 10, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: T.textSec }} title="Dismiss Guide">
                                                     <X size={14} strokeWidth={2.5} />
                                                 </button>
 
                                                 {/* Drag demonstration box */}
-                                                <div style={{ position: "relative", width: 220, height: 110, border: "1px dashed rgba(255,255,255,0.08)", borderRadius: 10, background: "rgba(255,255,255,0.01)", display: "flex", alignItems: "flex-start", justifyContent: "flex-start", overflow: "hidden" }}>
+                                                <div style={{ position: "relative", width: 220, height: 110, border: "1px dashed rgba(255,255,255,0.15)", borderRadius: 6, background: "rgba(0,0,0,0.25)", display: "flex", alignItems: "flex-start", justifyContent: "flex-start", overflow: "hidden" }}>
                                                     
                                                     {/* Animated expanding box */}
                                                     <div style={{ 
@@ -1098,14 +995,14 @@ export default function PdfSignerPage() {
                                                         top: 16, 
                                                         left: 20, 
                                                         border: `2px dashed ${T.accent}`, 
-                                                        background: `${T.accent}12`, 
-                                                        borderRadius: 6,
+                                                        background: `${T.accent}20`, 
+                                                        borderRadius: 4,
                                                         animation: "dragBox 3.5s infinite ease-in-out",
                                                         boxSizing: "border-box",
                                                     }}>
                                                         {/* Simulated Signature placeholder inside box */}
                                                         <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                                                            <span style={{ fontSize: 9, fontWeight: 900, color: T.accent, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.8 }}>Signature Block</span>
+                                                            <span style={{ fontSize: 9, fontWeight: 700, color: T.accent, textTransform: "uppercase", letterSpacing: "0.08em", opacity: 0.9 }}>Signature Block</span>
                                                         </div>
                                                     </div>
 
@@ -1132,7 +1029,7 @@ export default function PdfSignerPage() {
                                                         marginLeft: -6,
                                                         marginTop: -6,
                                                         color: "#fff",
-                                                        filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.5))",
+                                                        filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.6))",
                                                         animation: "dragPointer 3.5s infinite ease-in-out",
                                                         zIndex: 10,
                                                         display: "flex",
@@ -1140,17 +1037,15 @@ export default function PdfSignerPage() {
                                                         gap: 6,
                                                     }}>
                                                         <MousePointer2 size={16} fill="#fff" />
-                                                        {/* Simulated tooltip moving with cursor */}
                                                         <div style={{
-                                                            padding: "3px 6px",
+                                                            padding: "2px 6px",
                                                             background: "#fff",
                                                             color: "#000",
-                                                            fontSize: 7,
-                                                            fontWeight: 900,
-                                                            borderRadius: 4,
+                                                            fontSize: 8,
+                                                            fontWeight: 700,
+                                                            borderRadius: 3,
                                                             whiteSpace: "nowrap",
                                                             textTransform: "uppercase",
-                                                            letterSpacing: "0.04em",
                                                         }}>
                                                             Drag to place
                                                         </div>
@@ -1159,25 +1054,21 @@ export default function PdfSignerPage() {
 
                                                 {/* Text guidelines below animation */}
                                                 <div style={{ textAlign: "center", marginTop: 14, zIndex: 10 }}>
-                                                    <h4 style={{ fontSize: 13, fontWeight: 800, color: T.textPri, margin: "0 0 4px" }}>Click & Drag on Document</h4>
-                                                    <p style={{ fontSize: 11, color: T.textSec, margin: "0 0 14px", lineHeight: 1.4, padding: "0 8px" }}>Simply press down, drag to your desired size, and release to place your signature box anywhere!</p>
+                                                    <h4 style={{ fontSize: 12, fontWeight: 600, color: T.textPri, margin: "0 0 4px" }}>Click & Drag on Document</h4>
+                                                    <p style={{ fontSize: 11, color: T.textSec, margin: "0 0 12px", lineHeight: 1.4, padding: "0 8px" }}>Simply press down, drag to your desired size, and release to place your signature anywhere!</p>
                                                     <button 
                                                         onClick={() => setDismissHint(true)} 
                                                         style={{ 
-                                                            padding: "6px 16px", 
-                                                            borderRadius: 8, 
-                                                            background: "rgba(255,255,255,0.04)", 
-                                                            border: `1px solid ${T.border}`, 
-                                                            color: T.textPri, 
+                                                            padding: "5px 16px", 
+                                                            borderRadius: 3, 
+                                                            background: T.accent, 
+                                                            border: "none", 
+                                                            color: "#1a1a1a", 
                                                             fontSize: 10, 
-                                                            fontWeight: 800, 
-                                                            textTransform: "uppercase", 
-                                                            letterSpacing: "0.06em",
+                                                            fontWeight: 600, 
                                                             cursor: "pointer",
-                                                            transition: "all 0.2s"
+                                                            transition: "all 0.15s"
                                                         }}
-                                                        onMouseEnter={e => { e.currentTarget.style.background = T.accent; e.currentTarget.style.borderColor = T.accent; }}
-                                                        onMouseLeave={e => { e.currentTarget.style.background = "rgba(255,255,255,0.04)"; e.currentTarget.style.borderColor = T.border; }}
                                                     >
                                                         I Got It
                                                     </button>
@@ -1207,17 +1098,17 @@ export default function PdfSignerPage() {
 
                             {/* Annotations Log Footer inside Canvas area */}
                             {!outputUrl && signatures.length > 0 && (
-                                <div style={{ padding: 16, background: "rgba(255,255,255,0.015)", border: `1px solid ${T.border}`, borderRadius: 16, display: "flex", alignItems: "center", gap: 16, overflowX: "auto" }}>
-                                    <div style={{ fontSize: 9, fontWeight: 800, color: T.muted, letterSpacing: "0.2em", textTransform: "uppercase", display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
-                                        <Layers size={10} /> Log ({signatures.length})
+                                <div style={{ padding: 12, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, display: "flex", alignItems: "center", gap: 14, overflowX: "auto" }}>
+                                    <div style={{ fontSize: 10, fontWeight: 500, color: T.textSec, display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                                        <Layers size={12} /> Log ({signatures.length})
                                     </div>
                                     <div style={{ display: "flex", gap: 6, flex: 1 }}>
                                         {signatures.map(sig => (
                                             <div
                                                 key={sig.id}
-                                                style={{ display: "flex", alignItems: "center", gap: 10, height: 36, padding: "0 8px 0 6px", background: "rgba(255,255,255,0.02)", border: `1px solid ${T.border}`, borderRadius: 10, flexShrink: 0 }}
+                                                style={{ display: "flex", alignItems: "center", gap: 8, height: 32, padding: "0 8px", background: "#444444", border: `1px solid ${T.border}`, borderRadius: 3, flexShrink: 0 }}
                                             >
-                                                <div style={{ width: 28, height: 22, background: "#fff", borderRadius: 6, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: 2 }}>
+                                                <div style={{ width: 24, height: 20, background: "#fff", borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", overflow: "hidden", padding: 1 }}>
                                                     {sig.type === "signature" || sig.type === "initials" ? (
                                                         <img src={sig.dataUrl} alt="sig" style={{ width: "100%", height: "100%", objectFit: "contain" }} />
                                                     ) : sig.type === "text" ? (
@@ -1230,14 +1121,13 @@ export default function PdfSignerPage() {
                                                         <CheckSquare size={11} style={{ color: "#000" }} />
                                                     )}
                                                 </div>
-                                                <span style={{ fontSize: 9, fontWeight: 800, color: T.textSec }}>
-                                                    {sig.allPages ? "All" : `P${sig.pageIndex + 1}`}
+                                                <span style={{ fontSize: 10, fontWeight: 500, color: T.textPri }}>
+                                                    {sig.allPages ? "All Pages" : `Page ${sig.pageIndex + 1}`}
                                                 </span>
                                                 <button
                                                     onClick={() => removeSignature(sig.id)}
-                                                    style={{ width: 20, height: 20, borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "none", color: T.muted, cursor: "pointer" }}
-                                                    onMouseEnter={e => { e.currentTarget.style.color = T.danger; e.currentTarget.style.background = "rgba(239,68,68,0.1)"; }}
-                                                    onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.background = "none"; }}
+                                                    style={{ width: 18, height: 18, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", border: "none", background: "none", color: T.textSec, cursor: "pointer" }}
+                                                    title="Remove element"
                                                 >
                                                     <X size={10} />
                                                 </button>
@@ -1249,22 +1139,19 @@ export default function PdfSignerPage() {
                         </main>
 
                         {/* COLUMN 3: RIGHT SIGNING OPTIONS PANEL (~320px) */}
-                        <aside className="w-80 border-l-2 border-black bg-white flex flex-col h-full min-h-0 shrink-0 relative hidden md:flex">
-                            {/* Scrollable contents */}
+                        <aside className="w-80 border-l border-[#555555] bg-[#3a3a3a] flex flex-col h-full min-h-0 shrink-0 relative hidden md:flex">
                             <div 
                                 data-lenis-prevent="true"
-                                className="flex-1 overflow-y-auto overscroll-contain p-5 flex flex-col gap-6 pb-24"
+                                className="flex-1 overflow-y-auto overscroll-contain p-4 flex flex-col gap-5 pb-24"
                             >
                                 <div>
-                                    <h2 className="text-sm font-black text-black ig-display uppercase tracking-wider">Signing options</h2>
-                                    <p className="text-[10px] text-zinc-650 font-bold mt-0.5">Configure your signature types and place elements.</p>
+                                    <h2 className="text-xs font-semibold text-[#cccccc] uppercase tracking-wider">Signing options</h2>
+                                    <p className="text-[10px] text-[#888888] font-normal mt-0.5">Select signature types or tools to place on canvas.</p>
                                 </div>
 
-
-
                                 {/* Required fields */}
-                                <div className="flex flex-col gap-2.5">
-                                    <SectionLabel><User size={9} />Required fields</SectionLabel>
+                                <div className="flex flex-col gap-2">
+                                    <SectionLabel><User size={12} />Required fields</SectionLabel>
                                     <div className="flex flex-col gap-2">
                                         {/* 1. Signature */}
                                         {(() => {
@@ -1276,16 +1163,16 @@ export default function PdfSignerPage() {
                                                         setActiveBox(null);
                                                         setIsPadOpen(true);
                                                     }}
-                                                    className={`p-3 border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-between ${activeTool === "signature" ? "bg-emerald-50" : "bg-zinc-50"}`}
+                                                    className={`p-2.5 border border-[#555555] rounded cursor-pointer transition-all flex items-center justify-between ${activeTool === "signature" ? "bg-[#444444] border-[#4db8d4]" : "bg-[#333333] hover:bg-[#444444]"}`}
                                                 >
                                                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                                                        <div className="w-7 h-7 rounded-lg bg-emerald-100 border border-black flex items-center justify-center text-black shadow-[1px_1px_0_#000]">
+                                                        <div className="w-7 h-7 rounded bg-[#4db8d4]/20 border border-[#555555] flex items-center justify-center text-[#4db8d4]">
                                                             <User size={13} />
                                                         </div>
                                                         <div className="min-w-0 flex-1">
-                                                            <div className="text-[11px] font-black text-black">Signature</div>
-                                                            <div className="text-[9px] text-zinc-655 font-bold mt-0.5 leading-none">
-                                                                {signatureItem ? "Signature placed" : "Click to place signature"}
+                                                            <div className="text-xs font-medium text-[#cccccc]">Signature</div>
+                                                            <div className="text-[10px] text-[#888888] mt-0.5 leading-none">
+                                                                {signatureItem ? "Signature placed" : "Click to draw or type"}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1303,16 +1190,16 @@ export default function PdfSignerPage() {
                                                         setActiveBox(null);
                                                         setIsPadOpen(true);
                                                     }}
-                                                    className={`p-3 border-2 border-black rounded-xl cursor-pointer shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-between ${activeTool === "initials" ? "bg-[#e0f7fa]" : "bg-zinc-50"}`}
+                                                    className={`p-2.5 border border-[#555555] rounded cursor-pointer transition-all flex items-center justify-between ${activeTool === "initials" ? "bg-[#444444] border-[#4db8d4]" : "bg-[#333333] hover:bg-[#444444]"}`}
                                                 >
                                                     <div className="flex items-center gap-2.5 flex-1 min-w-0">
-                                                        <div className="w-7 h-7 rounded-lg bg-[#b2ebf2] border border-black flex items-center justify-center text-cyan-700 shadow-[1px_1px_0_#000]">
+                                                        <div className="w-7 h-7 rounded bg-[#38bdf8]/20 border border-[#555555] flex items-center justify-center text-[#38bdf8]">
                                                             <PencilLine size={13} />
                                                         </div>
                                                         <div className="min-w-0 flex-1">
-                                                            <div className="text-[11px] font-black text-black">Initials</div>
-                                                            <div className="text-[9px] text-zinc-655 font-bold mt-0.5 leading-none">
-                                                                {initialsItem ? "Initials placed" : "Click to place initials"}
+                                                            <div className="text-xs font-medium text-[#cccccc]">Initials</div>
+                                                            <div className="text-[10px] text-[#888888] mt-0.5 leading-none">
+                                                                {initialsItem ? "Initials placed" : "Click to draw or type"}
                                                             </div>
                                                         </div>
                                                     </div>
@@ -1323,27 +1210,27 @@ export default function PdfSignerPage() {
                                 </div>
 
                                 {/* Optional fields */}
-                                <div className="flex flex-col gap-2.5">
-                                    <SectionLabel><Layers size={9} />Optional fields</SectionLabel>
-                                    <div className="flex flex-col gap-2">
+                                <div className="flex flex-col gap-2">
+                                    <SectionLabel><Layers size={12} />Optional fields</SectionLabel>
+                                    <div className="grid grid-cols-2 gap-2">
                                         {[
-                                            { id: "text", icon: Type, label: "Text Field", desc: "Typeable standard textbox", color: "text-[#f59e0b] bg-[#fef3c7]" },
-                                            { id: "date", icon: Calendar, label: "Date Placer", desc: "Auto-populates current date", color: "text-[#10b981] bg-[#d1fae5]" },
-                                            { id: "checkmark", icon: CheckSquare, label: "Checkbox", desc: "Interactive verification box", color: "text-[#ef4444] bg-[#fee2e2]" },
-                                            { id: "stamp", icon: Stamp, label: "Company Stamp", desc: "Custom seal status mark", color: "text-[#f97316] bg-[#ffedd5]" }
+                                            { id: "text", icon: Type, label: "Text", desc: "Typeable standard textbox", color: "text-[#f59e0b] bg-[#f59e0b]/15" },
+                                            { id: "date", icon: Calendar, label: "Date", desc: "Auto-populates current date", color: "text-[#10b981] bg-[#10b981]/15" },
+                                            { id: "checkmark", icon: CheckSquare, label: "Check", desc: "Verification mark", color: "text-[#ef4444] bg-[#ef4444]/15" },
+                                            { id: "stamp", icon: Stamp, label: "Stamp", desc: "Official status mark", color: "text-[#f97316] bg-[#f97316]/15" }
                                         ].map(item => (
                                             <div
                                                 key={item.id}
                                                 onClick={() => {
                                                     setActiveTool(item.id as ToolId);
                                                 }}
-                                                className={`p-2.5 border-2 border-black rounded-xl cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center gap-2.5 ${activeTool === item.id ? "bg-yellow-50" : "bg-zinc-50"}`}
+                                                className={`p-2 border border-[#555555] rounded cursor-pointer transition-all flex items-center gap-2 ${activeTool === item.id ? "bg-[#444444] border-[#4db8d4]" : "bg-[#333333] hover:bg-[#444444]"}`}
                                             >
-                                                <div className={`w-6 h-6 rounded-lg border border-black flex items-center justify-center shadow-[0.5px_0.5px_0_#000] ${item.color}`}>
+                                                <div className={`w-6 h-6 rounded border border-[#555555] flex items-center justify-center ${item.color}`}>
                                                     <item.icon size={12} />
                                                 </div>
                                                 <div className="flex-1 min-w-0">
-                                                    <div className="text-[10px] font-black text-black">{item.label}</div>
+                                                    <div className="text-xs font-medium text-[#cccccc]">{item.label}</div>
                                                 </div>
                                             </div>
                                         ))}
@@ -1356,26 +1243,26 @@ export default function PdfSignerPage() {
                                     const showProps = activeSig && ["text", "date", "stamp", "checkmark"].includes(activeSig.type);
                                     if (!showProps) return null;
                                     return (
-                                        <div className="p-4 bg-yellow-50/50 border-2 border-black rounded-2xl flex flex-col gap-3.5 shadow-[2px_2px_0_#000] animate-in fade-in zoom-in-95 duration-150">
-                                            <div className="text-[10px] font-black text-black uppercase tracking-wider ig-label">Field Properties</div>
+                                        <div className="p-3.5 bg-[#333333] border border-[#555555] rounded flex flex-col gap-3">
+                                            <div className="text-[10px] font-medium text-[#cccccc] uppercase tracking-wider">Field Properties</div>
 
                                             {(activeSig.type === "text" || activeSig.type === "date") && (
-                                                <div className="flex flex-col gap-2.5">
-                                                    <select value={selectedFont} onChange={e => handleFontChange(e.target.value)} className="w-full px-2.5 py-1.5 bg-white border-2 border-black rounded-lg text-xs font-bold text-black outline-none cursor-pointer">
+                                                <div className="flex flex-col gap-2">
+                                                    <select value={selectedFont} onChange={e => handleFontChange(e.target.value)} className="w-full px-2 py-1 bg-[#2a2a2a] border border-[#555555] rounded text-xs font-normal text-[#cccccc] outline-none cursor-pointer">
                                                         <option value="Helvetica">Helvetica</option>
                                                         <option value="Times-Roman">Times New Roman</option>
                                                         <option value="Courier">Courier</option>
                                                     </select>
                                                     <div className="flex gap-1.5">
                                                         {[
-                                                            { label: <Bold size={12} strokeWidth={3} />, active: isBold, onClick: handleBoldClick },
-                                                            { label: <Italic size={12} strokeWidth={3} />, active: isItalic, onClick: handleItalicClick },
-                                                            { label: <Underline size={12} strokeWidth={3} />, active: isUnderline, onClick: handleUnderlineClick },
+                                                            { label: <Bold size={12} strokeWidth={2.5} />, active: isBold, onClick: handleBoldClick },
+                                                            { label: <Italic size={12} strokeWidth={2.5} />, active: isItalic, onClick: handleItalicClick },
+                                                            { label: <Underline size={12} strokeWidth={2.5} />, active: isUnderline, onClick: handleUnderlineClick },
                                                         ].map((btn, i) => (
                                                             <button 
                                                                 key={i} 
                                                                 onClick={btn.onClick} 
-                                                                className={`flex-grow h-8 rounded-lg border-2 border-black flex items-center justify-center transition-all ${btn.active ? "bg-yellow-300 text-black shadow-[1.5px_1.5px_0_#000] font-black" : "bg-white text-zinc-650 font-bold hover:bg-zinc-55 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"}`}
+                                                                className={`flex-grow h-7 rounded border border-[#555555] flex items-center justify-center transition-all cursor-pointer ${btn.active ? "bg-[#4db8d4] text-[#1a1a1a] font-bold" : "bg-[#444444] text-[#888888] hover:bg-[#505050]"}`}
                                                             >
                                                                 {btn.label}
                                                             </button>
@@ -1385,13 +1272,13 @@ export default function PdfSignerPage() {
                                             )}
 
                                             {activeSig.type === "stamp" && (
-                                                <div className="flex flex-col gap-2.5">
-                                                    <div className="flex flex-wrap gap-1.5">
+                                                <div className="flex flex-col gap-2">
+                                                    <div className="flex flex-wrap gap-1">
                                                         {PRESET_STAMPS.map(s => (
                                                             <button 
                                                                 key={s} 
                                                                 onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} 
-                                                                className={`px-2 py-1 rounded-md border-2 border-black text-[9px] font-black uppercase tracking-wider transition-all ${selectedStamp === s ? "bg-yellow-300 text-black shadow-[1.5px_1.5px_0_#000]" : "bg-white text-zinc-650 hover:bg-zinc-55 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"}`}
+                                                                className={`px-2 py-1 rounded border border-[#555555] text-[9px] font-medium uppercase tracking-wider transition-all cursor-pointer ${selectedStamp === s ? "bg-[#4db8d4] text-[#1a1a1a]" : "bg-[#444444] text-[#888888] hover:bg-[#505050]"}`}
                                                             >
                                                                 {s}
                                                             </button>
@@ -1409,8 +1296,8 @@ export default function PdfSignerPage() {
                                                             pushSignatures(signatures.map(s => s.id === activeSigId ? { ...s, content: val } : s));
                                                         }}
                                                         onPointerDown={e => e.stopPropagation()}
-                                                        placeholder="Custom stamp text…"
-                                                        className="w-full px-2.5 py-1.5 bg-white border-2 border-black rounded-lg text-xs font-bold text-black outline-none placeholder-zinc-400 uppercase tracking-wider"
+                                                        placeholder="Custom stamp text..."
+                                                        className="w-full px-2 py-1 bg-[#2a2a2a] border border-[#555555] rounded text-xs font-normal text-[#cccccc] outline-none placeholder-zinc-500 uppercase"
                                                     />
                                                 </div>
                                             )}
@@ -1422,12 +1309,11 @@ export default function PdfSignerPage() {
                                                         key={c.value} 
                                                         onClick={() => handleColorClick(c.value)} 
                                                         title={c.name} 
-                                                        className="w-5.5 h-5.5 rounded-full cursor-pointer transition-all border border-black/20"
+                                                        className="w-5 h-5 rounded-full cursor-pointer transition-all border border-[#555555]"
                                                         style={{ 
                                                             background: c.value, 
-                                                            border: selectedColor === c.value ? "2px solid black" : "1px solid rgba(0,0,0,0.2)", 
-                                                            transform: selectedColor === c.value ? "scale(1.25)" : "scale(1)", 
-                                                            boxShadow: selectedColor === c.value ? "0 0 0 1.5px #fff, 0 0 0 3px #000" : "none" 
+                                                            border: selectedColor === c.value ? "2px solid #4db8d4" : "1px solid #555555", 
+                                                            transform: selectedColor === c.value ? "scale(1.2)" : "scale(1)", 
                                                         }} 
                                                     />
                                                 ))}
@@ -1438,8 +1324,8 @@ export default function PdfSignerPage() {
 
                                 {/* Saved signatures library list */}
                                 {savedSignatures.length > 0 && (
-                                    <div className="p-4 bg-zinc-50 border-2 border-black rounded-2xl shadow-[3px_3px_0_#000]">
-                                        <SectionLabel><Save size={9} />My Signatures</SectionLabel>
+                                    <div className="p-3 bg-[#333333] border border-[#555555] rounded">
+                                        <SectionLabel><Save size={11} />My Signatures</SectionLabel>
                                         <div className="flex flex-col gap-2">
                                             {savedSignatures.slice(0, 3).map(sig => {
                                                 const isSelected = selectedLibraryItem?.id === sig.id;
@@ -1447,43 +1333,43 @@ export default function PdfSignerPage() {
                                                     <div 
                                                         key={sig.id} 
                                                         onClick={() => placeFromLibrary(sig)} 
-                                                        className={`relative h-12 bg-white rounded-lg p-1.5 cursor-pointer border-2 border-black transition-all ${isSelected ? "border-yellow-500 scale-[1.02] shadow-[2px_2px_0_#000]" : "shadow-[1.5px_1.5px_0_#000]"}`}
+                                                        className={`relative h-11 bg-[#2a2a2a] rounded p-1 cursor-pointer border border-[#555555] transition-all ${isSelected ? "border-[#4db8d4] bg-[#444444]" : ""}`}
                                                     >
                                                         <img src={sig.dataUrl} alt="saved sig" className="w-full h-full object-contain" />
-                                                        <button onClick={e => deleteFromLibrary(sig.id, e)} className="absolute top-1 right-1 w-4 h-4 bg-red-500 hover:bg-red-600 border border-black rounded-md flex items-center justify-center text-white cursor-pointer transition-colors shadow-[0.5px_0.5px_0_#000]">
+                                                        <button onClick={e => deleteFromLibrary(sig.id, e)} className="absolute top-1 right-1 w-4 h-4 bg-[#cc4444]/30 hover:bg-[#cc4444] border-none rounded flex items-center justify-center text-[#ff8888] hover:text-white cursor-pointer transition-colors">
                                                             <Trash2 size={8} strokeWidth={2.5} />
                                                         </button>
                                                     </div>
                                                 );
                                             })}
                                         </div>
-                                        <div className={`text-[9px] text-center mt-2.5 font-bold ${selectedLibraryItem ? "text-yellow-600" : "text-zinc-650 italic"}`}>
-                                            {selectedLibraryItem ? "Signature loaded! Drag on PDF to place." : "Select signature then drag on PDF to place"}
+                                        <div className={`text-[10px] text-center mt-2 ${selectedLibraryItem ? "text-[#4db8d4]" : "text-[#888888]"}`}>
+                                            {selectedLibraryItem ? "Loaded! Click on PDF to place." : "Click signature to select and place on document"}
                                         </div>
                                     </div>
                                 )}
                             </div>
 
                             {/* Sticky sign action footer in Right Column */}
-                            <footer className="absolute bottom-0 left-0 right-0 p-5 bg-white border-t-2 border-black z-10">
+                            <footer className="absolute bottom-0 left-0 right-0 p-4 bg-[#3a3a3a] border-t border-[#555555] z-10">
                                 <button
                                     onClick={exportSignedPdf}
                                     disabled={signatures.length === 0 || isExporting}
-                                    className={`w-full h-12 rounded-xl border-2 border-black text-xs font-black flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
+                                    className={`w-full h-10 rounded text-xs font-semibold flex items-center justify-center gap-2 transition-all uppercase tracking-wider cursor-pointer ${
                                         signatures.length === 0 || isExporting
-                                            ? "bg-zinc-100 border-black/40 text-zinc-400 cursor-not-allowed opacity-60"
-                                            : "bg-yellow-300 text-black shadow-[2.5px_2.5px_0_#000] hover:bg-yellow-400 hover:scale-[1.02] active:translate-x-[1.5px] active:translate-y-[1.5px] active:shadow-none"
+                                            ? "bg-[#444444] border border-[#555555] text-[#777777] cursor-not-allowed opacity-60"
+                                            : "bg-[#4db8d4] text-[#1a1a1a] hover:bg-[#38bdf8] border-none"
                                     }`}
                                 >
                                     {isExporting ? (
                                         <>
-                                            <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                                            Exporting…
+                                            <div className="w-3.5 h-3.5 border-2 border-[#1a1a1a]/30 border-t-[#1a1a1a] rounded-full animate-spin" />
+                                            Finalising...
                                         </>
                                     ) : (
                                         <>
                                             <Check size={14} strokeWidth={3} />
-                                            Finalise & Sign
+                                            Finalise & Sign PDF
                                         </>
                                     )}
                                 </button>
@@ -1491,192 +1377,51 @@ export default function PdfSignerPage() {
                         </aside>
                     </div>
 
-                    {/* ── MOBILE BOTTOM TOOLBAR ── */}
+                    {/* MOBILE BOTTOM TOOLBAR */}
                     {isMobile && (
-                        <div className="fixed bottom-0 left-0 right-0 z-[200] bg-white border-t-2 border-black pb-[env(safe-area-inset-bottom,0px)] shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
-                            {(() => {
-                                const activeSig = signatures.find(s => s.id === activeSigId);
-                                const showProps = activeSig && ["text", "date", "stamp", "checkmark"].includes(activeSig.type);
-
-                                if (showProps && activeSig) {
-                                    /* ── Properties panel for the selected annotation ── */
-                                    return (
-                                        <div className="p-3.5 flex flex-col gap-2.5">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-[10px] font-black text-black uppercase tracking-wider ig-label">Field Properties</span>
-                                                <div className="flex gap-2">
-                                                    <button
-                                                        onClick={() => { removeSignature(activeSig.id); setActiveSigId(null); }}
-                                                        className="w-8 h-8 rounded-lg bg-red-105 border-2 border-black text-black flex items-center justify-center cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all bg-[#fee2e2]"
-                                                    >
-                                                        <Trash2 size={13} strokeWidth={2.5} />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => toggleAllPages(activeSig.id)}
-                                                        className={`h-8 px-3 rounded-lg border-2 border-black text-[9px] font-black uppercase tracking-wider cursor-pointer shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all ${activeSig.allPages ? "bg-yellow-300 text-black" : "bg-white text-black"}`}
-                                                    >
-                                                        All Pages
-                                                    </button>
-                                                    <button
-                                                        onClick={() => setActiveSigId(null)}
-                                                        className="h-8 px-3.5 rounded-lg border-2 border-black bg-yellow-300 hover:bg-yellow-400 text-black cursor-pointer text-[10px] font-black uppercase tracking-wider shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
-                                                    >
-                                                        Done
-                                                    </button>
-                                                </div>
-                                            </div>
-
-                                            {/* Color swatches + formatting row */}
-                                            <div className="flex items-center gap-2.5">
-                                                <span className="text-[9px] font-black text-zinc-650 uppercase tracking-wider">Color</span>
-                                                <div className="flex gap-2">
-                                                    {PRESET_COLORS.map(c => (
-                                                        <button 
-                                                            key={c.value} 
-                                                            onClick={() => handleColorClick(c.value)} 
-                                                            title={c.name} 
-                                                            className="w-6 h-6 rounded-full cursor-pointer transition-all border border-black/20"
-                                                            style={{ 
-                                                                background: c.value, 
-                                                                border: selectedColor === c.value ? "2px solid black" : "1px solid rgba(0,0,0,0.2)",
-                                                                transform: selectedColor === c.value ? "scale(1.15)" : "scale(1)"
-                                                            }} 
-                                                        />
-                                                    ))}
-                                                </div>
-                                                {(activeSig.type === "text" || activeSig.type === "date") && (
-                                                    <div className="flex gap-1 ml-auto">
-                                                        {[
-                                                            { label: <Bold size={12} strokeWidth={3} />, active: isBold, onClick: handleBoldClick },
-                                                            { label: <Italic size={12} strokeWidth={3} />, active: isItalic, onClick: handleItalicClick },
-                                                            { label: <Underline size={12} strokeWidth={3} />, active: isUnderline, onClick: handleUnderlineClick },
-                                                        ].map((btn, i) => (
-                                                            <button 
-                                                                key={i} 
-                                                                onClick={btn.onClick} 
-                                                                className={`w-8 h-8 rounded-lg border-2 border-black flex items-center justify-center cursor-pointer transition-all ${btn.active ? "bg-yellow-300 text-black shadow-[1px_1px_0_#000]" : "bg-white text-zinc-650 hover:bg-zinc-50 shadow-[1px_1px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"}`}
-                                                            >
-                                                                {btn.label}
-                                                            </button>
-                                                        ))}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {activeSig.type === "stamp" && (
-                                                <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-thin">
-                                                    {PRESET_STAMPS.map(s => (
-                                                        <button 
-                                                            key={s} 
-                                                            onClick={() => { setSelectedStamp(s); applyToActiveSig({ content: s }); }} 
-                                                            className={`px-2 py-1 rounded-md border-2 border-black text-[9px] font-black uppercase tracking-wider cursor-pointer whitespace-nowrap shrink-0 transition-all ${selectedStamp === s ? "bg-yellow-300 text-black shadow-[1px_1px_0_#000]" : "bg-white text-zinc-650 shadow-[1px_1px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none"}`}
-                                                        >
-                                                            {s}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    );
-                                }
-
-                                /* ── Default: Finalise button + tool strip ── */
-                                return (
-                                    <div className="p-3 flex flex-col gap-2.5">
-                                        {/* Finalise button */}
-                                        <button
-                                            onClick={exportSignedPdf}
-                                            disabled={signatures.length === 0 || isExporting}
-                                            className={`w-full h-11 rounded-xl border-2 border-black text-xs font-black flex items-center justify-center gap-2 transition-all uppercase tracking-wider ${
-                                                signatures.length === 0 || isExporting
-                                                    ? "bg-zinc-100 border-black/40 text-zinc-400 cursor-not-allowed opacity-60"
-                                                    : "bg-yellow-300 text-black shadow-[2px_2px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                                            }`}
-                                        >
-                                            {isExporting ? (
-                                                <>
-                                                    <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-                                                    Exporting…
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Check size={14} strokeWidth={3} />
-                                                    Finalise &amp; Sign
-                                                </>
-                                            )}
-                                        </button>
-
-                                        {/* Tool strip */}
-                                        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-                                            {TOOLS.map(tool => {
-                                                const Icon = tool.icon;
-                                                const isActive = activeTool === tool.id;
-                                                return (
-                                                    <button
-                                                        key={tool.id}
-                                                        onClick={() => {
-                                                            if (tool.id === "signature" || tool.id === "initials") {
-                                                                setActiveTool(tool.id as ToolId);
-                                                                setActiveBox(null);
-                                                                setIsPadOpen(true);
-                                                            } else {
-                                                                setActiveTool(tool.id as ToolId);
-                                                            }
-                                                        }}
-                                                        className={`shrink-0 flex flex-col items-center justify-center gap-1 py-1.5 px-2.5 rounded-xl border-2 border-black transition-all min-w-[60px] cursor-pointer ${
-                                                            isActive 
-                                                                ? "bg-yellow-105 text-black shadow-[1.5px_1.5px_0_#000] bg-yellow-100" 
-                                                                : "bg-white text-zinc-650 hover:bg-zinc-50 shadow-[1.5px_1.5px_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
-                                                        }`}
-                                                    >
-                                                        <Icon size={14} />
-                                                        <span className="text-[8px] font-black uppercase tracking-wider whitespace-nowrap">{tool.label}</span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
-
-                                        {/* Saved signatures strip (if any) */}
-                                        {savedSignatures.length > 0 && (
-                                            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-thin">
-                                                {savedSignatures.slice(0, 5).map(sig => {
-                                                    const isSel = selectedLibraryItem?.id === sig.id;
-                                                    return (
-                                                        <div
-                                                            key={sig.id}
-                                                            onClick={() => placeFromLibrary(sig)}
-                                                            className={`shrink-0 w-12 h-8 bg-white rounded-lg border-2 border-black overflow-hidden cursor-pointer flex items-center justify-center p-1 transition-all ${
-                                                                isSel ? "border-yellow-500 scale-[1.02] shadow-[1.5px_1.5px_0_#000]" : "shadow-[1px_1px_0_#000]"
-                                                            }`}
-                                                        >
-                                                            <img src={sig.dataUrl} alt="saved" className="w-full h-full object-contain" />
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        )}
-                                    </div>
-                                );
-                            })()}
+                        <div className="fixed bottom-0 left-0 right-0 z-[200] bg-[#3a3a3a] border-t border-[#555555] p-2.5">
+                            <button
+                                onClick={exportSignedPdf}
+                                disabled={signatures.length === 0 || isExporting}
+                                className={`w-full h-10 rounded text-xs font-semibold flex items-center justify-center gap-2 transition-all ${
+                                    signatures.length === 0 || isExporting
+                                        ? "bg-[#444444] text-[#777777] cursor-not-allowed"
+                                        : "bg-[#4db8d4] text-[#1a1a1a]"
+                                }`}
+                            >
+                                {isExporting ? "Finalising..." : <><Check size={14} strokeWidth={3} /> Finalise & Sign PDF</>}
+                            </button>
                         </div>
                     )}
                 </div>
             )}
 
-            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Signer Info">
-                <div className="space-y-12 text-zinc-700 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                            Smart PDF Signature Infrastructure
+            {/* Help Modal */}
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Signer Technical Specs">
+                <div className="space-y-8 text-left max-w-2xl mx-auto py-4">
+                    <section className="space-y-3">
+                        <h3 className="text-base font-bold text-[#cccccc]">
+                            Local PDF Signature Infrastructure
                         </h3>
-                        <p className="text-base leading-relaxed text-zinc-700 font-medium">
-                            Elevate your document workflow with AssetNest <strong>Professional PDF Signer</strong>. In an era of digital-first business, the ability to execute agreements instantly and securely is critical. Our Smart Signer engine allows you to place high-fidelity digital signatures across multi-page documents with pixel-perfect precision. By utilizing advanced client-side processing, we eliminate the need for third-party servers, ensuring your sensitive legal, financial, and corporate documents never leave the safety of your local environment.
+                        <p className="text-xs text-[#999999] leading-relaxed font-normal">
+                            AssetNest Professional PDF Signer utilizes client-side WebAssembly primitives and canvas buffers. All cryptographic parsing and image embeds occur strictly in browser memory, guaranteeing that sensitive legal and commercial documents never touch any server.
                         </p>
+                    </section>
+
+                    <section className="space-y-3">
+                        <h3 className="text-base font-bold text-[#cccccc]">
+                            Guidelines for Best Results
+                        </h3>
+                        <ul className="space-y-2 text-xs text-[#999999] leading-relaxed font-normal">
+                            <li>• <strong>Drawing vs Typing:</strong> Draw freehand with mouse or stylus, or type your name to generate a smooth cursive signature script.</li>
+                            <li>• <strong>Multi-Page Support:</strong> Toggle 'All Pages' on any placed element to stamp across every sheet automatically.</li>
+                            <li>• <strong>Legal Compliance:</strong> Adheres to US ESIGN and European eIDAS requirements for electronic agreements.</li>
+                        </ul>
                     </section>
                 </div>
             </HelpModal>
 
-            {/* ══ SIGNATURE PAD MODAL ══ */}
+            {/* Signature Pad Modal */}
             {isPadOpen && (
                 <SignaturePad
                     defaultTab={activeTool === "initials" ? "initials" : "signature"}
@@ -1685,7 +1430,7 @@ export default function PdfSignerPage() {
                 />
             )}
 
-            {/* ══ SHARE MODAL ══ */}
+            {/* Share Modal */}
             <ShareModal
                 isOpen={isSharing}
                 onClose={() => setIsSharing(false)}

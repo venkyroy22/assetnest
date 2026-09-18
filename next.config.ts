@@ -14,7 +14,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdf-lib'],
+  serverExternalPackages: ['canvas', 'pdfjs-dist', 'pdf-lib', 'mupdf'],
+  turbopack: {},
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        module: false,
+        fs: false,
+        path: false,
+        url: false,
+      };
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

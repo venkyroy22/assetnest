@@ -32,7 +32,7 @@ export default function AboutPage() {
                             <section>
                                 <h2 className="text-xl sm:text-2xl font-bold tracking-wide text-[#f0ede8] mb-4">What We Do</h2>
                                 <p className="mb-4">
-                                    We build precision tools for modern creators. From our advanced PDF suite and image optimization utilities to our premium AI prompting gallery, every feature on AssetNest is engineered for speed and privacy. We focus on "Local Processing"—meaning your sensitive files never leave your computer.
+                                    We build precision tools for modern creators. From our advanced PDF suite and image optimization utilities to our premium AI prompting gallery, every feature on AssetNest is engineered for speed and privacy. We focus on "Local Processing"-meaning your sensitive files never leave your computer.
                                 </p>
                                 <p>
                                     Whether you're compressing images for a website, merging PDFs for a client, or looking for cinematic AI inspiration, AssetNest is built to be your reliable, lightweight creative companion.

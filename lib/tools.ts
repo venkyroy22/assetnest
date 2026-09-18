@@ -16,6 +16,7 @@ export interface Tool {
 }
 
 export const ALL_TOOLS: Tool[] = [
+
     {
         id: "pdf-signer",
         name: "Smart PDF Signer",
@@ -108,7 +109,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "billing",
         name: "Smart Billing Tool",
-        description: "Paperless billing for small merchants. Scan barcodes, add items, generate a customer QR receipt — no printing needed.",
+        description: "Paperless billing for small merchants. Scan barcodes, add items, generate a customer QR receipt - no printing needed.",
         href: "/tools/billing",
         badge: "Free",
         icon: Receipt,
@@ -180,7 +181,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "pdf-merger",
         name: "PDF Merger",
-        description: "Merge and combine multiple PDF files into one document instantly. Upload PDFs, rearrange pages, and export — 100% private, runs in your browser.",
+        description: "Merge and combine multiple PDF files into one document instantly. Upload PDFs, rearrange pages, and export - 100% private, runs in your browser.",
         href: "/tools/pdf-merger",
         badge: "Free",
         icon: Combine,
@@ -196,7 +197,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "pdf-compressor",
         name: "PDF Compressor",
-        description: "Compress and reduce PDF file size instantly in your browser. Make your PDF smaller for email, sharing, or uploading — no uploads, 100% private.",
+        description: "Compress and reduce PDF file size instantly in your browser. Make your PDF smaller for email, sharing, or uploading - no uploads, 100% private.",
         href: "/tools/pdf-compressor",
         badge: "Free",
         icon: Minimize2,
@@ -213,7 +214,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "pdf-splitter",
         name: "PDF Splitter",
-        description: "Split a PDF into individual pages or extract specific page ranges. Visually select the pages you need and download them as a new PDF — free and private.",
+        description: "Split a PDF into individual pages or extract specific page ranges. Visually select the pages you need and download them as a new PDF - free and private.",
         href: "/tools/pdf-splitter",
         badge: "Free",
         icon: Split,
@@ -230,7 +231,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "pdf-cropper",
         name: "PDF Cropper",
-        description: "Visually crop and trim the margins or any region of your PDF pages. Set precise crop areas, apply to all pages, and export — 100% private, in-browser.",
+        description: "Visually crop and trim the margins or any region of your PDF pages. Set precise crop areas, apply to all pages, and export - 100% private, in-browser.",
         href: "/tools/pdf-cropper",
         badge: "Free",
         icon: Crop,
@@ -287,7 +288,7 @@ export const ALL_TOOLS: Tool[] = [
     {
         id: "image-to-pdf",
         name: "Image to PDF",
-        description: "Convert JPG, PNG, and WebP images into a single PDF instantly. Drag to reorder, set page size, margin and quality — 100% private, in your browser.",
+        description: "Convert JPG, PNG, and WebP images into a single PDF instantly. Drag to reorder, set page size, margin and quality - 100% private, in your browser.",
         href: "/tools/image-to-pdf",
         badge: "Free",
         icon: ImagePlus,

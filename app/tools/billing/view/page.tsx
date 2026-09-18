@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
@@ -142,27 +142,6 @@ async function translateBatch(texts: string[], targetLang: string): Promise<stri
     return results;
 }
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=DM+Sans:wght@500;700&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(1px, 1px) !important;
-  box-shadow: none !important;
-}
-`;
 
 // ─────────────────────────────────────────────────────────────────────────────
 function BillViewer() {
@@ -198,7 +177,6 @@ function BillViewer() {
     // ── Error ─────────────────────────────────────────────────────────────────
     if (error) return (
         <div className="min-h-screen bg-[#F4ECD8] flex items-center justify-center p-6 text-black ig-root">
-            <style>{GLOBAL_STYLES}</style>
             <div className="text-center bg-white border-2 border-black p-8 rounded-[2rem] shadow-[4px_4px_0_#000] max-w-sm">
                 <div className="text-5xl mb-4">🧾</div>
                 <h3 className="font-black text-lg mb-1.5 uppercase ig-display">{t.noData}</h3>
@@ -226,7 +204,6 @@ function BillViewer() {
     // ── Render ────────────────────────────────────────────────────────────────
     return (
         <div className="ig-root">
-            <style>{GLOBAL_STYLES}</style>
             {/* Print styles */}
             <style dangerouslySetInnerHTML={{ __html: `
                 * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -397,7 +374,7 @@ function BillViewer() {
                     </button>
 
                     <p className="no-print text-center text-[9px] text-zinc-500 font-semibold uppercase tracking-wider mt-5 leading-relaxed">
-                        This receipt was generated digitally — no paper needed.<br />
+                        This receipt was generated digitally - no paper needed.<br />
                         Browser-processed client receipt.
                     </p>
                 </div>
@@ -455,7 +432,7 @@ function BillViewer() {
                                         <td style={{ padding: "9px 8px", textAlign: "center" }}>{item.q}</td>
                                         <td style={{ padding: "9px 8px", textAlign: "right" }}>{fmtINR(item.r)}</td>
                                         <td style={{ padding: "9px 8px", textAlign: "right" }}>{fmtINR(base)}</td>
-                                        <td style={{ padding: "9px 8px", textAlign: "center" }}>{item.t > 0 ? `${item.t}%` : "—"}</td>
+                                        <td style={{ padding: "9px 8px", textAlign: "center" }}>{item.t > 0 ? `${item.t}%` : "-"}</td>
                                         <td style={{ padding: "9px 12px", textAlign: "right", fontWeight: 700 }}>{fmtINR(total)}</td>
                                     </tr>
                                 );

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Free Invoice & Billing Generator — Create Invoices Online",
+    title: "Free Invoice & Billing Generator - Create Invoices Online",
     description: "Generate professional invoices and billing documents in seconds. Free, no account needed. Download as PDF. Perfect for freelancers and small businesses.",
     keywords: [
         "gst invoice generator",

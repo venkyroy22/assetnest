@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "PDF Compressor — Reduce PDF Size Free Online | AssetNest",
+    title: "PDF Compressor - Reduce PDF Size Free Online | AssetNest",
     description: "Compress and reduce PDF file size instantly in your browser. Make PDFs smaller for email, WhatsApp, or uploading. No file uploads, 100% private and free.",
     keywords: [
         "compress pdf online", "reduce pdf size", "pdf compressor free",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: "https://www.assetnest.space/tools/pdf-compressor" },
     openGraph: {
-        title: "PDF Compressor — Reduce PDF Size Free Online",
+        title: "PDF Compressor - Reduce PDF Size Free Online",
         description: "Compress your PDF and make it smaller instantly in the browser. No uploads, 100% private, completely free.",
         url: "https://www.assetnest.space/tools/pdf-compressor",
         siteName: "AssetNest",
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "PDF Compressor — Make PDFs Smaller Free | AssetNest",
+        title: "PDF Compressor - Make PDFs Smaller Free | AssetNest",
         description: "Reduce PDF file size instantly. No uploads, no limits, 100% private.",
         images: ["/logo.png"],
     },

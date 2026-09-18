@@ -2,36 +2,93 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { Play, Pause, RotateCcw, SkipForward, SkipBack, Trophy, Flame, Star, Zap, Coffee, Brain, Settings, X, Check, Music, Volume2, VolumeX, CloudRain, Trees, Wind, Moon, Search, Link as LinkIcon, ArrowLeft, ExternalLink, RefreshCw, Trash2, Droplets, Gamepad2, HelpCircle } from "lucide-react";
-import { Accordion, AccordionItem } from "@/components/Accordion";
+import {
+    Coffee, Play, Pause, RotateCcw, SkipForward, Star, Flame, Zap,
+    Trophy, Settings2, X, Check, Gamepad2, HelpCircle, CloudRain,
+    Music, Trees, ArrowLeft, ShieldCheck, Sparkles, Package, Volume2,
+    VolumeX, Bell, Timer
+} from "lucide-react";
 import HelpModal from "@/components/HelpModal";
-import { Info } from "lucide-react";
 import { useMusic } from "@/components/MusicProvider";
 import { MiniGames } from "./games";
+
+/* ─────────────────────────────────────────
+   DESIGN TOKENS (Standard Dark System)
+   ───────────────────────────────────────── */
+const T = {
+    bg:          "#333333",
+    surface:     "#3a3a3a",
+    surfaceHi:   "#444444",
+    surfaceHov:  "#505050",
+    border:      "#555555",
+    borderDim:   "#2a2a2a",
+    accent:      "#4db8d4",
+    accentDark:  "#2a7a8f",
+    accentDim:   "rgba(77,184,212,0.15)",
+    textPri:     "#cccccc",
+    textSec:     "#999999",
+    muted:       "#777777",
+    danger:      "#cc4444",
+    success:     "#7dcea0",
+    font:        "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
+
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+    return (
+        <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: 2,
+            background: T.surface, border: `1px solid ${T.border}`,
+            fontSize: 10, fontWeight: 400, color: "#aaa",
+        }}>
+            {icon}{label}
+        </span>
+    );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div onClick={() => setOpen(!open)} style={{
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+            padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+        }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 400, color: T.textPri, margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+                    <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+                </h4>
+                <span style={{ color: T.textSec, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+            </div>
+            <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+                <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+            </div>
+        </div>
+    );
+}
 
 type Mode = "focus" | "short" | "long";
 interface Achievement { id: string; title: string; desc: string; icon: React.ReactNode; sessions: number; }
 
 const ACHIEVEMENTS: Achievement[] = [
-    { id: "first", title: "First Focus!", desc: "Completed your first Pomodoro", icon: <Star size={16} />, sessions: 1 },
-    { id: "streak3", title: "On Fire! 🔥", desc: "3 sessions — you're rolling!", icon: <Flame size={16} />, sessions: 3 },
-    { id: "streak5", title: "Flow State", desc: "5 sessions — deep focus achieved", icon: <Zap size={16} />, sessions: 5 },
-    { id: "streak10", title: "Legendary", desc: "10 sessions — productivity god", icon: <Trophy size={16} />, sessions: 10 },
+    { id: "first", title: "First Focus!", desc: "Completed 1st Pomodoro", icon: <Star size={14} />, sessions: 1 },
+    { id: "streak3", title: "On Fire! 🔥", desc: "3 sessions completed", icon: <Flame size={14} />, sessions: 3 },
+    { id: "streak5", title: "Flow State", desc: "5 sessions deep focus", icon: <Zap size={14} />, sessions: 5 },
+    { id: "streak10", title: "Legendary", desc: "10 productivity blocks", icon: <Trophy size={14} />, sessions: 10 },
 ];
 
 const AMBIENCE_TRACKS = [
-    { id: "lofi", name: "Lofi Beats", icon: <Music size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-    { id: "rain", name: "Rainy Night", icon: <CloudRain size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-    { id: "coffee", name: "Coffee Shop", icon: <Coffee size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-    { id: "forest", name: "Deep Forest", icon: <Trees size={14} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+    { id: "lofi", name: "Lofi Beats", icon: <Music size={13} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { id: "rain", name: "Rainy Night", icon: <CloudRain size={13} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { id: "coffee", name: "Coffee Shop", icon: <Coffee size={13} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+    { id: "forest", name: "Deep Forest", icon: <Trees size={13} />, url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
 ];
 
-const RADIUS = 130;
-const CX = 160;
-const CY = 160;
+const RADIUS = 125;
+const CX = 150;
+const CY = 150;
 const CIRC = 2 * Math.PI * RADIUS;
 
-const FOCUS_Q_COLORS = ["#ea580c", "#16a34a", "#ca8a04", "#dc2626"];
+const FOCUS_Q_COLORS = ["#4db8d4", "#7dcea0", "#d4a843", "#e06c75"];
 
 function lerpColor(a: string, b: string, t: number): string {
     const ah = parseInt(a.slice(1), 16);
@@ -96,10 +153,10 @@ function Ring({
     glowRef: React.RefObject<SVGCircleElement | null>;
 }) {
     return (
-        <svg width="320" height="320" className="absolute inset-0 -rotate-90">
-            <circle cx={CX} cy={CY} r={RADIUS} fill="none" stroke="#e4e4e7" strokeWidth="8" />
+        <svg width="300" height="300" className="absolute inset-0 -rotate-90">
+            <circle cx={CX} cy={CY} r={RADIUS} fill="none" stroke="#2a2a2a" strokeWidth="8" />
             <circle ref={glowRef} cx={CX} cy={CY} r={RADIUS}
-                fill="none" stroke={color} strokeWidth="8" opacity="0.1"
+                fill="none" stroke={color} strokeWidth="12" opacity="0.15"
                 strokeLinecap="round" strokeDasharray={CIRC} strokeDashoffset={CIRC} />
             <circle ref={ringRef} cx={CX} cy={CY} r={RADIUS}
                 fill="none" stroke={color} strokeWidth="8"
@@ -112,13 +169,13 @@ function Ring({
 
 function RainEffect({ active }: { active: boolean | string | null }) {
     const [drops] = useState(() =>
-        Array.from({ length: 40 }, (_, i) => ({
+        Array.from({ length: 36 }, (_, i) => ({
             left: Math.random() * 100,
             top: -20 - (Math.random() * 80),
             size: 1 + Math.random() * 1.5,
             dur: 15 + Math.random() * 15,
             delay: -Math.random() * 30,
-            opacity: 0.08 + Math.random() * 0.15,
+            opacity: 0.08 + Math.random() * 0.12,
             blur: 0.5 + Math.random() * 1,
         }))
     );
@@ -126,15 +183,17 @@ function RainEffect({ active }: { active: boolean | string | null }) {
     if (!active) return null;
 
     return (
-        <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 0 }}>
             {drops.map((d, i) => (
                 <div
                     key={i}
-                    className="absolute rounded-full bg-black"
                     style={{
+                        position: "absolute",
                         left: `${d.left}%`,
                         width: `${d.size}px`,
                         height: `${d.size * 14}px`,
+                        borderRadius: "9999px",
+                        background: "rgba(77, 184, 212, 0.4)",
                         opacity: d.opacity,
                         filter: `blur(${d.blur}px)`,
                         animation: `rain-slide ${d.dur}s linear infinite`,
@@ -142,7 +201,7 @@ function RainEffect({ active }: { active: boolean | string | null }) {
                     }}
                 />
             ))}
-            <style jsx global>{`
+            <style>{`
                 @keyframes rain-slide {
                     0% { transform: translateY(-10vh) scaleY(1); opacity: 0; }
                     5% { opacity: 0.3; }
@@ -156,20 +215,21 @@ function RainEffect({ active }: { active: boolean | string | null }) {
 
 function Particles({ active }: { active: boolean }) {
     const [particles] = useState(() =>
-        Array.from({ length: 15 }, (_, i) => ({
+        Array.from({ length: 16 }, (_, i) => ({
             left: Math.random() * 100,
             top: Math.random() * 100,
-            color: ["#f59e0b", "#ef4444", "#3b82f6", "#10b981", "#8b5cf6"][i % 5],
+            color: ["#4db8d4", "#7dcea0", "#d4a843", "#e06c75", "#bb86fc"][i % 5],
             delay: Math.random() * 0.3,
-            dur: 0.5 + Math.random() * 0.5,
+            dur: 0.6 + Math.random() * 0.4,
         }))
     );
     if (!active) return null;
     return (
-        <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-full">
+        <div style={{ position: "absolute", inset: 0, pointerEvents: "none", overflow: "hidden", borderRadius: "50%" }}>
             {particles.map((p, i) => (
-                <div key={i} className="absolute w-2 h-2 rounded-full animate-ping"
+                <div key={i} className="animate-ping"
                     style={{
+                        position: "absolute", width: 6, height: 6, borderRadius: "50%",
                         left: `${p.left}%`, top: `${p.top}%`, backgroundColor: p.color,
                         animationDelay: `${p.delay}s`, animationDuration: `${p.dur}s`
                     }} />
@@ -189,7 +249,7 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
                 const ctx = new AudioContext();
                 const osc = ctx.createOscillator();
                 const gain = ctx.createGain();
-                osc.type = 'sine';
+                osc.type = "sine";
                 osc.connect(gain); gain.connect(ctx.destination);
                 const now = ctx.currentTime;
                 osc.frequency.setValueAtTime(500, now);
@@ -208,7 +268,7 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
             const ctx = new AudioContext();
             const osc = ctx.createOscillator();
             const gain = ctx.createGain();
-            osc.type = 'sine'; osc.connect(gain); gain.connect(ctx.destination);
+            osc.type = "sine"; osc.connect(gain); gain.connect(ctx.destination);
             const now = ctx.currentTime;
             osc.frequency.setValueAtTime(900, now);
             osc.frequency.exponentialRampToValueAtTime(600, now + 0.25);
@@ -216,102 +276,55 @@ function WaterReminderAnimation({ visible, onClose }: { visible: boolean; onClos
             gain.gain.linearRampToValueAtTime(0.001, now + 0.3);
             osc.start(now); osc.stop(now + 0.35);
         } catch {}
-        setTimeout(onClose, 1000);
+        setTimeout(onClose, 900);
     };
 
     if (!visible) return null;
 
     return (
-        <div className="fixed inset-0 z-[500] flex items-center justify-center p-4 bg-[#F4ECD8]">
-            <div className="relative w-full max-w-xl bg-white border-2 border-black rounded-[2.5rem] p-8 sm:p-12 shadow-[8px_8px_0_#000] text-center overflow-hidden">
-                <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-30">
-                    {[...Array(6)].map((_, i) => (
-                        <div key={i} className="absolute bg-blue-300 rounded-full animate-float" 
-                             style={{ 
-                                 width: Math.random() * 40 + 20 + 'px', 
-                                 height: Math.random() * 40 + 20 + 'px',
-                                 left: Math.random() * 100 + '%',
-                                 bottom: '-10%',
-                                 animationDelay: Math.random() * 3 + 's',
-                                 animationDuration: Math.random() * 5 + 4 + 's'
-                             }} 
-                        />
-                    ))}
-                </div>
-
-                <div className="flex flex-col items-center justify-center relative z-10">
-                    <div className="w-28 h-40 bg-zinc-50 border-2 border-black rounded-[2rem] relative shadow-[4px_4px_0_#000] overflow-hidden flex items-end">
-                        <div className={`w-full bg-blue-400 relative transition-all duration-1000 origin-bottom`}
-                             style={{ 
-                                 height: isHydrating ? '0%' : '75%',
-                                 animation: isHydrating ? 'water-empty 1s ease-out forwards' : 'water-fill 1.5s cubic-bezier(0.1, 0.8, 0.3, 1) forwards'
-                             }}>
-                            <div className="absolute top-0 w-[200%] h-6 bg-white/40 rounded-[100%] animate-wave-front opacity-90 -translate-x-1/4 -translate-y-1/2" />
-                            <div className="absolute top-0 w-[200%] h-8 bg-white/50 rounded-[100%] animate-wave-back -translate-x-1/2 -translate-y-1/2" />
-                            
-                            {[...Array(6)].map((_, i) => (
-                                <div key={`b-${i}`} className="absolute bg-white/50 rounded-full animate-bubble" 
-                                     style={{ 
-                                         width: Math.random() * 4 + 2 + 'px', 
-                                         height: Math.random() * 4 + 2 + 'px',
-                                         left: Math.random() * 80 + 10 + '%',
-                                         bottom: '-10px',
-                                         animationDelay: Math.random() * 1.5 + 's',
-                                         animationDuration: Math.random() * 2 + 's'
-                                     }} 
-                                />
-                            ))}
+        <div style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 16
+        }}>
+            <div style={{
+                position: "relative", width: "100%", maxWidth: 420, background: T.surface,
+                border: `1px solid ${T.border}`, borderRadius: 4, padding: 24, textAlign: "center",
+                overflow: "hidden"
+            }}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 16 }}>
+                    <div style={{
+                        width: 70, height: 100, background: "#2a2a2a", border: `1px solid ${T.border}`,
+                        borderRadius: 8, overflow: "hidden", display: "flex", alignItems: "flex-end", position: "relative"
+                    }}>
+                        <div style={{
+                            width: "100%", background: T.accent, position: "relative",
+                            transition: "all 0.8s ease",
+                            height: isHydrating ? "0%" : "75%"
+                        }}>
+                            <div style={{ position: "absolute", top: 0, width: "100%", height: 6, background: "rgba(255,255,255,0.4)" }} />
                         </div>
                     </div>
                 </div>
 
-                <div className={`mt-8 text-center space-y-4 relative z-10 transition-all duration-550 ${isHydrating ? 'opacity-0 translate-y-4' : ''}`}>
-                    <h2 className="text-3xl font-black tracking-tight text-black ig-display">
-                        Hydration Break
-                    </h2>
-                    <p className="text-zinc-500 font-semibold tracking-wide text-xs sm:text-sm">
-                        Take a quick sip of water and reset your focus.
-                    </p>
-                    
-                    <button 
-                        onClick={handleHydrated}
-                        disabled={isHydrating}
-                        className="ig-btn mt-6 px-8 py-3.5 bg-[#fde047] text-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-yellow-400 transition-all shadow-[3px_3px_0_#000] border-2 border-black flex items-center justify-center gap-2 mx-auto disabled:opacity-50 min-w-[180px]"
-                    >
-                        <Check size={14} strokeWidth={3} />
-                        <span>I'M HYDRATED</span>
-                    </button>
-                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600, color: T.textPri, margin: "0 0 6px" }}>
+                    Hydration Break
+                </h3>
+                <p style={{ fontSize: 11, color: T.textSec, margin: "0 0 20px" }}>
+                    Take a quick sip of water to reset your focus and maintain cognitive sharpness.
+                </p>
 
-                <style jsx>{`
-                    @keyframes water-fill {
-                        0% { transform: scaleY(0); }
-                        100% { transform: scaleY(1); }
-                    }
-                    @keyframes water-empty {
-                        0% { transform: scaleY(1); }
-                        100% { transform: scaleY(0); }
-                    }
-                    @keyframes wave-front {
-                        0%, 100% { transform: translateX(-25%) translateY(-50%) scaleX(1); }
-                        50% { transform: translateX(-25%) translateY(-40%) scaleX(0.95); }
-                    }
-                    @keyframes wave-back {
-                        0%, 100% { transform: translateX(-40%) translateY(-50%) scaleX(1); }
-                        50% { transform: translateX(-35%) translateY(-60%) scaleX(0.9); }
-                    }
-                    @keyframes bubble {
-                        0% { transform: translateY(0) scale(0.5); opacity: 0; }
-                        50% { opacity: 1; }
-                        100% { transform: translateY(-100px) scale(1.4); opacity: 0; }
-                    }
-                    @keyframes float {
-                        0% { transform: translateY(0) scale(0.8); opacity: 0; }
-                        10% { opacity: 0.5; }
-                        90% { opacity: 0.4; }
-                        100% { transform: translateY(-100vh) scale(1.2); opacity: 0; }
-                    }
-                `}</style>
+                <button
+                    onClick={handleHydrated}
+                    disabled={isHydrating}
+                    style={{
+                        height: 36, padding: "0 24px", background: T.accent, border: `1px solid ${T.accent}`,
+                        borderRadius: 3, color: "#1a1a1a", fontWeight: 600, fontSize: 11, cursor: "pointer",
+                        display: "inline-flex", alignItems: "center", gap: 6, transition: "all 0.15s"
+                    }}
+                >
+                    <Check size={14} /> I'm Hydrated
+                </button>
             </div>
         </div>
     );
@@ -333,50 +346,83 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
         setF(focusMins); setS(shortMins); setL(longMins); 
         setWr(waterReminder); setWi(waterInterval);
     }, [focusMins, shortMins, longMins, waterReminder, waterInterval]);
+
     if (!visible) return null;
 
     const NumInput = ({ label, value, onChange, min, max }: {
         label: string; value: number; onChange: (v: number) => void; min: number; max: number;
     }) => (
-        <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black uppercase tracking-wider text-zinc-500">{label}</label>
-            <div className="flex items-center gap-2">
-                <button onClick={() => onChange(Math.max(min, value - 1))}
-                    className="w-8 h-8 border-2 border-black text-black bg-white rounded-lg hover:bg-zinc-50 font-black text-lg flex items-center justify-center shadow-[1.5px_1.5px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none">−</button>
-                <input type="number" min={min} max={max} value={value}
+        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <label style={{ fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em" }}>{label}</label>
+            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                <button
+                    onClick={() => onChange(Math.max(min, value - 1))}
+                    style={{
+                        width: 28, height: 28, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                        borderRadius: 2, color: T.textPri, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
+                    }}
+                >−</button>
+                <input
+                    type="number" min={min} max={max} value={value}
                     onChange={e => onChange(Math.max(min, Math.min(max, Number(e.target.value))))}
-                    className="w-16 text-center bg-white border-2 border-black rounded-lg text-black font-black text-sm py-1 focus:outline-none" />
-                <button onClick={() => onChange(Math.min(max, value + 1))}
-                    className="w-8 h-8 border-2 border-black text-black bg-white rounded-lg hover:bg-zinc-50 font-black text-lg flex items-center justify-center shadow-[1.5px_1.5px_0_#000] active:translate-x-[0.5px] active:translate-y-[0.5px] active:shadow-none">+</button>
-                <span className="text-[10px] text-zinc-400 font-bold uppercase ml-1">mins</span>
+                    style={{
+                        width: 56, textAlign: "center", background: "#2a2a2a", border: `1px solid ${T.border}`,
+                        borderRadius: 2, color: T.textPri, fontSize: 12, padding: "4px 0", outline: "none"
+                    }}
+                />
+                <button
+                    onClick={() => onChange(Math.min(max, value + 1))}
+                    style={{
+                        width: 28, height: 28, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                        borderRadius: 2, color: T.textPri, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
+                    }}
+                >+</button>
+                <span style={{ fontSize: 10, color: T.muted, marginLeft: 2 }}>mins</span>
             </div>
         </div>
     );
 
     return (
-        <div className="fixed inset-0 z-[400] flex items-center justify-center p-4" onClick={onClose}>
-            <div className="absolute inset-0 bg-[#000]/40 backdrop-blur-sm" />
-            <div className="relative bg-white border-2 border-black p-6 sm:p-8 w-full max-w-sm shadow-[8px_8px_0_#000] rounded-[2.5rem] text-black" onClick={e => e.stopPropagation()}>
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-base font-black uppercase tracking-tight ig-display">Timer Settings</h2>
-                    <button onClick={onClose} className="p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg text-black shadow-[1.5px_1.5px_0_#000]"><X size={14} /></button>
+        <div style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 16
+        }} onClick={onClose}>
+            <div style={{
+                position: "relative", width: "100%", maxWidth: 360, background: T.surface,
+                border: `1px solid ${T.border}`, borderRadius: 4, padding: 20
+            }} onClick={e => e.stopPropagation()}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600, color: T.textPri, textTransform: "uppercase", letterSpacing: "0.05em" }}>Timer Settings</span>
+                    <button onClick={onClose} style={{ background: "none", border: "none", color: T.textSec, cursor: "pointer", display: "flex" }}>
+                        <X size={14} />
+                    </button>
                 </div>
-                <div className="space-y-5">
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     <NumInput label="Focus Duration" value={f} onChange={setF} min={1} max={120} />
                     <NumInput label="Short Break" value={s} onChange={setS} min={1} max={60} />
                     <NumInput label="Long Break" value={l} onChange={setL} min={1} max={60} />
                     
-                    <div className="pt-4 border-t-2 border-dashed border-zinc-200 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex flex-col gap-0.5">
-                                <span className="text-xs font-bold text-black">Hydration Reminders</span>
-                                <span className="text-[10px] text-zinc-500 font-medium">Drink water alerts during sessions</span>
+                    <div style={{ paddingTop: 12, borderTop: `1px solid ${T.borderDim}`, display: "flex", flexDirection: "column", gap: 10 }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                            <div style={{ display: "flex", flexDirection: "column" }}>
+                                <span style={{ fontSize: 11, fontWeight: 500, color: T.textPri }}>Hydration Reminders</span>
+                                <span style={{ fontSize: 10, color: T.muted }}>Drink water alerts during sessions</span>
                             </div>
-                            <button 
+                            <button
                                 onClick={() => setWr(!wr)}
-                                className={`w-10 h-5 rounded-full transition-colors relative border-2 border-black ${wr ? 'bg-orange-500' : 'bg-zinc-200'}`}
+                                style={{
+                                    width: 36, height: 20, borderRadius: 10,
+                                    background: wr ? T.accent : "#2a2a2a", border: `1px solid ${T.border}`,
+                                    position: "relative", cursor: "pointer", transition: "all 0.2s"
+                                }}
                             >
-                                <div className={`absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all shadow-sm border border-black ${wr ? 'left-5' : 'left-0.5'}`} />
+                                <div style={{
+                                    width: 14, height: 14, borderRadius: "50%",
+                                    background: wr ? "#1a1a1a" : "#888",
+                                    position: "absolute", top: 2, left: wr ? 18 : 2, transition: "all 0.2s"
+                                }} />
                             </button>
                         </div>
                         {wr && (
@@ -384,9 +430,17 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
                         )}
                     </div>
                 </div>
-                <button onClick={() => { onSave(f, s, l, wr, wi); onClose(); }}
-                    className="ig-btn mt-6 w-full py-3.5 bg-[#fde047] text-black border-2 border-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-yellow-400 transition-all flex items-center justify-center gap-1.5 shadow-[3px_3px_0_#000]">
-                    <Check size={14} /> Save Settings
+
+                <button
+                    onClick={() => { onSave(f, s, l, wr, wi); onClose(); }}
+                    style={{
+                        marginTop: 18, width: "100%", height: 34, background: T.accent,
+                        border: `1px solid ${T.accent}`, borderRadius: 3, color: "#1a1a1a",
+                        fontWeight: 600, fontSize: 11, cursor: "pointer",
+                        display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                    }}
+                >
+                    <Check size={13} /> Save Settings
                 </button>
             </div>
         </div>
@@ -396,50 +450,61 @@ function SettingsPanel({ visible, onClose, focusMins, shortMins, longMins, water
 function BreakDialog({ isOpen, onClose, onOpenGames }: { isOpen: boolean; onClose: () => void; onOpenGames: () => void }) {
     if (!isOpen) return null;
     return (
-        <div className="fixed inset-0 z-[550] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-[#000]/40 backdrop-blur-sm" onClick={onClose} />
-            <div className="relative w-full max-w-sm bg-white border-2 border-black rounded-[2.5rem] p-8 sm:p-10 shadow-[8px_8px_0_#000] text-center text-black">
-                 <div className="relative z-10">
-                    <div className="w-16 h-16 bg-zinc-50 border-2 border-black rounded-2xl flex items-center justify-center text-black mx-auto mb-6 shadow-[3px_3px_0_#000]">
-                        <Gamepad2 size={32} />
-                    </div>
-                    <h2 className="text-2xl font-black text-black mb-2 uppercase tracking-tight ig-display">Take a Break!</h2>
-                    <p className="text-xs text-zinc-500 font-semibold leading-relaxed mb-8 px-2">
-                        Excellent work. Your mind needs a rest. Would you like to recharge with a mini-game?
-                    </p>
-                    <div className="flex flex-col gap-3">
-                        <button 
-                            onClick={() => { onOpenGames(); onClose(); }}
-                            className="ig-btn w-full py-3.5 bg-[#fde047] text-black border-2 border-black text-xs font-black uppercase tracking-widest rounded-xl hover:bg-yellow-400 transition-all shadow-[3px_3px_0_#000]"
-                        >
-                            Play Mini Games
-                        </button>
-                        <button 
-                            onClick={onClose}
-                            className="w-full py-2 text-zinc-400 hover:text-black text-[10px] font-black uppercase tracking-wider transition-all"
-                        >
-                            No thanks
-                        </button>
-                    </div>
-                 </div>
+        <div style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(0,0,0,0.8)", display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 16
+        }}>
+            <div style={{
+                position: "relative", width: "100%", maxWidth: 360, background: T.surface,
+                border: `1px solid ${T.border}`, borderRadius: 4, padding: 22, textAlign: "center"
+            }}>
+                <div style={{
+                    width: 44, height: 44, borderRadius: "50%", background: T.surfaceHi,
+                    border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center",
+                    color: T.accent, margin: "0 auto 12px"
+                }}>
+                    <Gamepad2 size={22} />
+                </div>
+                <h3 style={{ fontSize: 14, fontWeight: 600, color: T.textPri, margin: "0 0 6px" }}>Take a Break!</h3>
+                <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: "0 0 18px" }}>
+                    Excellent work completing your focus sprint. Recharge your attention capacity with an offline mini-game.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    <button
+                        onClick={() => { onOpenGames(); onClose(); }}
+                        style={{
+                            height: 36, background: T.accent, border: `1px solid ${T.accent}`,
+                            borderRadius: 3, color: "#1a1a1a", fontWeight: 600, fontSize: 11, cursor: "pointer"
+                        }}
+                    >
+                        Play Mini Games
+                    </button>
+                    <button
+                        onClick={onClose}
+                        style={{
+                            height: 30, background: "transparent", border: "none",
+                            color: T.textSec, fontSize: 10, cursor: "pointer"
+                        }}
+                    >
+                        Skip for now
+                    </button>
+                </div>
             </div>
         </div>
     );
 }
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@700;900&family=DM+Sans:wght@500;700&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-`;
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "Pomodoro Focus Timer",
+    description: "Scientific time-boxing pomodoro focus timer with audio ambience and break mini-games. 100% free and private.",
+    url: "https://www.assetnest.space/tools/pomodoro",
+    applicationCategory: "WebApplication",
+    operatingSystem: "All",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
 
 export default function PomodoroPage() {
     const [focusMins, setFocusMins] = useState(25);
@@ -449,11 +514,8 @@ export default function PomodoroPage() {
     const [waterInterval, setWaterInterval] = useState(30);
     const durations = { focus: focusMins * 60, short: shortMins * 60, long: longMins * 60 };
 
-    const COLORS: Record<Mode, string> = { focus: "#ea580c", short: "#16a34a", long: "#2563eb" };
-
-    const LABELS: Record<Mode, string> = { focus: "Focus Session", short: "Short Break", long: "Long Break" };
-
-    const CYCLE_COLORS = ["#ea580c", "#16a34a", "#ca8a04", "#dc2626"] as const;
+    const COLORS: Record<Mode, string> = { focus: "#4db8d4", short: "#7dcea0", long: "#bb86fc" };
+    const CYCLE_COLORS = ["#4db8d4", "#7dcea0", "#d4a843", "#e06c75"] as const;
     const QUARTER_LABELS = ["Q1", "Q2", "Q3", "Q4"] as const;
 
     const [mode, setMode] = useState<Mode>("focus");
@@ -479,8 +541,7 @@ export default function PomodoroPage() {
 
     const {
         youtubeUrl, setYoutubeUrl, playYoutube,
-        isYTPlaying, toggleYT, skipYoutubeTrack, prevYoutubeTrack,
-        ytVolume, adjustYTVolume, resetPlayer
+        isYTPlaying, toggleYT
     } = useMusic();
 
     const musicAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -698,257 +759,549 @@ export default function PomodoroPage() {
     };
 
     return (
-        <div className="relative min-h-screen py-10 px-4 md:px-10 bg-[#F4ECD8] overflow-hidden text-black font-sans ig-root">
-            <style>{GLOBAL_STYLES}</style>
-            
+        <div style={{ minHeight: "100vh", background: T.bg, color: T.textPri, fontFamily: T.font, paddingBottom: 80, position: "relative" }}>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
             {isMusicPlaying && <RainEffect active={true} />}
 
-            {/* Header */}
-            <header className="max-w-[1600px] w-full mx-auto px-2 flex items-center justify-between relative z-10">
-                <Link
-                    href="/tools"
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                >
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+            <style>{`
+                * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: #2a2a2a; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #555555; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666666; }
+            `}</style>
+
+            {/* ── HEADER ── */}
+            <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", position: "relative", zIndex: 10 }}>
+                <Link href="/tools" style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+                    color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+                }}>
+                    <ArrowLeft size={11} strokeWidth={2} /> Back
                 </Link>
-                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black border-2 border-black shadow-[2.5px_2.5px_0_#000] bg-orange-500">
-                        <Coffee size={14} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                        <Timer size={12} />
                     </div>
-                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
-                        Pomodoro Focus
-                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: T.textPri }}>Pomodoro Focus</span>
                     <button 
-                        onClick={() => setShowHelp(true)}
-                        className="p-1 bg-white border-2 border-black rounded-full text-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
-                        title="Help"
+                        onClick={() => setShowHelp(true)} 
+                        style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.muted, cursor: "pointer", display: "flex" }}
+                        title="Help Guide"
                     >
-                        <HelpCircle size={12} />
+                        <HelpCircle size={11} />
                     </button>
                 </div>
             </header>
 
-            <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr_280px] gap-8 mt-12 items-start relative z-10 pb-20">
-                
-                {/* ── LEFT PANEL: Tracker Details ── */}
-                <div className="flex flex-col gap-6 lg:pt-14 w-full">
-                    {/* Cycle Indicators */}
-                    <div className="p-5 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0_#000]">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Focus Loop</span>
-                            <div className="flex items-center gap-1">
-                                <Coffee size={11} className="text-zinc-600" />
-                                <span className="text-[9px] font-black text-zinc-500 uppercase">{4 - pomodoroInCycle} to Break</span>
-                            </div>
-                        </div>
-                        <div className="flex gap-2">
-                            {[0, 1, 2, 3].map(i => (
-                                <div key={i} className="flex-1 flex flex-col gap-1">
-                                    <div className={`h-4 border-2 border-black rounded-md transition-all duration-300 ${i === pomodoroInCycle && mode === "focus" ? "animate-pulse" : ""}`}
-                                        style={{ backgroundColor: i < pomodoroInCycle ? CYCLE_COLORS[i] : (i === pomodoroInCycle && mode === "focus" ? CYCLE_COLORS[i] : "#f3f4f6") }} />
-                                    <span className="text-[8px] font-black text-center" style={{ color: i <= pomodoroInCycle ? "#000000" : "#9ca3af" }}>{QUARTER_LABELS[i]}</span>
+            <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px", position: "relative", zIndex: 10 }}>
+
+                {/* Main 3-Column Workspace */}
+                <div style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                    gap: 16,
+                    alignItems: "start",
+                    marginBottom: 36
+                }}>
+                    {/* ── LEFT PANEL: Cycle & Streaks ── */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                        {/* Focus Loop Card */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 16
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                                <span style={{ fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em", fontWeight: 500 }}>Focus Loop</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 10, color: T.accent }}>
+                                    <Coffee size={11} />
+                                    <span>{4 - pomodoroInCycle} to Long Break</span>
                                 </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Streak Tracker */}
-                    <div className="p-5 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0_#000]">
-                        <div className="flex items-center justify-between mb-4">
-                            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Completed Focus</span>
-                            <div className="flex items-center gap-1">
-                                <Flame size={13} className={sessions >= 3 ? "text-orange-500 animate-pulse" : "text-zinc-400"} />
-                                <span className="text-xs font-black text-black">{sessions} Blocks</span>
+                            </div>
+                            <div style={{ display: "flex", gap: 6 }}>
+                                {[0, 1, 2, 3].map(i => (
+                                    <div key={i} style={{ flex: 1, display: "flex", flexDirection: "column", gap: 4 }}>
+                                        <div style={{
+                                            height: 8, borderRadius: 2, border: `1px solid ${T.borderDim}`,
+                                            background: i < pomodoroInCycle ? CYCLE_COLORS[i] : (i === pomodoroInCycle && mode === "focus" ? CYCLE_COLORS[i] : "#2a2a2a"),
+                                            transition: "all 0.3s"
+                                        }} />
+                                        <span style={{ fontSize: 9, textAlign: "center", color: i <= pomodoroInCycle ? T.textPri : T.muted }}>
+                                            {QUARTER_LABELS[i]}
+                                        </span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <div className="flex flex-wrap gap-1.5">
-                            {Array.from({ length: Math.max(8, sessions + 2) }).map((_, i) => (
-                                <div key={i} className={`h-3.5 w-3.5 rounded border ${i < sessions ? "bg-black border-black" : "bg-zinc-50 border-zinc-200"}`} />
-                            ))}
+
+                        {/* Streak Tracker Card */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 16
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                                <span style={{ fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em", fontWeight: 500 }}>Completed Blocks</span>
+                                <div style={{ display: "flex", alignItems: "center", gap: 5, fontSize: 11, fontWeight: 600, color: sessions >= 3 ? "#e06c75" : T.textPri }}>
+                                    <Flame size={13} className={sessions >= 3 ? "animate-pulse" : ""} />
+                                    <span>{sessions} Sessions</span>
+                                </div>
+                            </div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                {Array.from({ length: Math.max(10, sessions + 2) }).map((_, i) => (
+                                    <div key={i} style={{
+                                        width: 14, height: 14, borderRadius: 2,
+                                        background: i < sessions ? T.accent : "#2a2a2a",
+                                        border: `1px solid ${i < sessions ? T.accentDark : T.borderDim}`,
+                                        transition: "all 0.2s"
+                                    }} />
+                                ))}
+                            </div>
                         </div>
-                    </div>
-                </div>
 
-                {/* ── CENTER PANEL: Main Ring + Control Interface ── */}
-                <div className="flex flex-col items-center w-full bg-white border-2 border-black rounded-[3rem] p-6 sm:p-8 shadow-[6px_6px_0_#000]">
-                    
-                    {/* Mode Selector */}
-                    <div className="flex bg-zinc-100 border-2 border-black p-0.5 rounded-full shadow-[2px_2px_0_#000] mb-8">
-                        {(["focus", "short", "long"] as Mode[]).map(m => (
-                            <button 
-                                key={m} 
-                                onClick={() => switchMode(m)} 
-                                className={`px-4.5 py-1.5 text-xs font-black uppercase tracking-wider rounded-full transition-all ${mode === m ? "bg-black text-white" : "text-zinc-500 hover:text-black"}`}
-                            >
-                                {m === "focus" ? "Focus" : m === "short" ? "Short Break" : "Long Break"}
-                            </button>
-                        ))}
-                    </div>
-
-                    {/* Timer SVG Ring */}
-                    <div className="relative w-[320px] h-[320px] flex items-center justify-center mb-8 bg-zinc-50 rounded-full border-2 border-black shadow-inner">
-                        <Ring color={color} ringRef={ringRef} dotRef={dotRef} glowRef={glowRef} />
-                        <Particles active={burst} />
-                        <div className="relative z-10 flex flex-col items-center gap-1 select-none">
-                            <div className="text-6xl font-black tracking-tight tabular-nums ig-display">{mins}:{secs}</div>
-                            <span className="text-xs font-black uppercase tracking-widest mt-1" style={{ color }}>{running ? "Active focus" : "Paused"}</span>
-                        </div>
-                    </div>
-
-                    {/* Timer Actions */}
-                    <div className="flex items-center gap-4">
-                        <button onClick={reset} title="Reset Timer" className="ig-btn p-3 bg-white border-2 border-black rounded-2xl text-black hover:bg-zinc-50 shadow-[2px_2px_0_#000]"><RotateCcw size={16} /></button>
-                        <button onClick={() => setRunning(r => !r)} className="ig-btn w-20 h-20 flex items-center justify-center border-2 border-black rounded-[2rem] bg-[#fde047] hover:bg-yellow-400 shadow-[4px_4px_0_#000]">
-                            {running ? <Pause size={24} strokeWidth={3} className="text-black" /> : <Play size={24} strokeWidth={3} className="text-black translate-x-0.5" />}
-                        </button>
-                        <button onClick={skip} title="Skip Session" className="ig-btn p-3 bg-white border-2 border-black rounded-2xl text-black hover:bg-zinc-50 shadow-[2px_2px_0_#000]"><SkipForward size={16} /></button>
-                    </div>
-
-                    {/* Media player deck */}
-                    <div className="w-full border-t-2 border-dashed border-zinc-200 mt-8 pt-8">
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-                            
-                            <div className="flex items-center gap-2">
-                                <button onClick={() => setSettingsOpen(true)} className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50">
-                                    <Settings size={14} /> CONFIG
+                        {/* Ambience & YouTube Audio Bar */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 16, display: "flex", flexDirection: "column", gap: 10
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                <span style={{ fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em", fontWeight: 500 }}>Audio Ambience</span>
+                                <button
+                                    onClick={() => setSettingsOpen(true)}
+                                    style={{
+                                        background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                        borderRadius: 2, padding: "2px 6px", fontSize: 10, color: T.textPri,
+                                        cursor: "pointer", display: "flex", alignItems: "center", gap: 4
+                                    }}
+                                >
+                                    <Settings2 size={11} /> Config
                                 </button>
-                                
-                                <div className="flex bg-zinc-150 p-0.5 border border-black rounded-lg">
-                                    {AMBIENCE_TRACKS.map(t => (
-                                        <button 
-                                            key={t.id} 
-                                            onClick={() => {
-                                                if (activeTrack === t.id) {
-                                                    setIsMusicPlaying(false);
-                                                    setActiveTrack(null);
-                                                } else {
-                                                    setActiveTrack(t.id);
-                                                    setIsMusicPlaying(true);
-                                                }
-                                            }}
-                                            className={`p-1 text-[10px] font-bold uppercase rounded ${activeTrack === t.id ? 'bg-black text-white' : 'text-zinc-500'}`}
-                                            title={t.name}
-                                        >
-                                            {t.icon}
-                                        </button>
-                                    ))}
-                                </div>
                             </div>
 
-                            {/* YouTube deck player */}
-                            <div className="flex items-center gap-1 border border-black rounded-xl p-1 bg-zinc-50 w-full sm:w-auto">
-                                <input 
-                                    type="text" 
-                                    value={youtubeUrl} 
-                                    onChange={(e) => setYoutubeUrl(e.target.value)} 
-                                    placeholder="Paste YouTube Stream Link..."
-                                    className="bg-transparent border-none text-[10px] font-bold tracking-wider text-black focus:outline-none w-36 px-2 placeholder:text-zinc-400" 
+                            <div style={{ display: "flex", gap: 4 }}>
+                                {AMBIENCE_TRACKS.map(t => (
+                                    <button
+                                        key={t.id}
+                                        onClick={() => {
+                                            if (activeTrack === t.id) {
+                                                setIsMusicPlaying(false);
+                                                setActiveTrack(null);
+                                            } else {
+                                                setActiveTrack(t.id);
+                                                setIsMusicPlaying(true);
+                                            }
+                                        }}
+                                        style={{
+                                            flex: 1, height: 28, background: activeTrack === t.id ? T.accent : T.surfaceHi,
+                                            border: `1px solid ${activeTrack === t.id ? T.accent : T.border}`,
+                                            borderRadius: 2, color: activeTrack === t.id ? "#1a1a1a" : T.textSec,
+                                            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center"
+                                        }}
+                                        title={t.name}
+                                    >
+                                        {t.icon}
+                                    </button>
+                                ))}
+                            </div>
+
+                            {/* YouTube stream input */}
+                            <div style={{ display: "flex", gap: 4, alignItems: "center", marginTop: 2 }}>
+                                <input
+                                    type="text"
+                                    value={youtubeUrl}
+                                    onChange={(e) => setYoutubeUrl(e.target.value)}
+                                    placeholder="Paste YouTube stream URL..."
+                                    style={{
+                                        flex: 1, height: 26, background: "#2a2a2a", border: `1px solid ${T.borderDim}`,
+                                        borderRadius: 2, padding: "0 8px", fontSize: 10, color: T.textPri, outline: "none"
+                                    }}
                                 />
-                                <button 
-                                    onClick={() => playYoutube()} 
-                                    className="ig-btn p-1.5 bg-[#ef4444] text-white rounded-lg border border-black shadow-[1.5px_1.5px_0_#000] hover:bg-red-600" 
-                                    title="Stream Audio"
+                                <button
+                                    onClick={() => playYoutube()}
+                                    style={{
+                                        height: 26, padding: "0 8px", background: "#b91c1c",
+                                        border: "none", borderRadius: 2, color: "#fff", cursor: "pointer",
+                                        display: "flex", alignItems: "center", justifyContent: "center"
+                                    }}
+                                    title="Play Stream"
                                 >
                                     <Play size={10} fill="currentColor" />
                                 </button>
                                 {isYTPlaying && (
-                                    <button 
-                                        onClick={() => toggleYT()} 
-                                        className="ig-btn p-1.5 bg-white text-black rounded-lg border border-black shadow-[1.5px_1.5px_0_#000]"
+                                    <button
+                                        onClick={() => toggleYT()}
+                                        style={{
+                                            height: 26, padding: "0 8px", background: T.surfaceHi,
+                                            border: `1px solid ${T.border}`, borderRadius: 2, color: T.textPri, cursor: "pointer",
+                                            display: "flex", alignItems: "center", justifyContent: "center"
+                                        }}
                                         title="Pause Stream"
                                     >
                                         <Pause size={10} />
                                     </button>
                                 )}
                             </div>
+                        </div>
+                    </div>
 
+                    {/* ── CENTER PANEL: Main Interactive Ring ── */}
+                    <div style={{
+                        background: T.surface, border: `1px solid ${T.border}`,
+                        borderRadius: 4, padding: "24px 20px",
+                        display: "flex", flexDirection: "column", alignItems: "center",
+                        minHeight: 460
+                    }}>
+                        {/* Mode Switcher Pill */}
+                        <div style={{
+                            display: "inline-flex", background: "#2a2a2a", border: `1px solid ${T.borderDim}`,
+                            borderRadius: 20, padding: 3, gap: 3, marginBottom: 24
+                        }}>
+                            {(["focus", "short", "long"] as Mode[]).map(m => (
+                                <button
+                                    key={m}
+                                    onClick={() => switchMode(m)}
+                                    style={{
+                                        padding: "4px 14px", borderRadius: 16, border: "none",
+                                        background: mode === m ? T.surfaceHi : "transparent",
+                                        color: mode === m ? T.textPri : T.textSec,
+                                        fontSize: 11, fontWeight: 500, cursor: "pointer",
+                                        transition: "all 0.15s"
+                                    }}
+                                >
+                                    {m === "focus" ? "Focus" : m === "short" ? "Short Break" : "Long Break"}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* Circular SVG Ring */}
+                        <div style={{
+                            position: "relative", width: 300, height: 300,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            background: "#282828", borderRadius: "50%",
+                            border: `1px solid ${T.borderDim}`, marginBottom: 24
+                        }}>
+                            <Ring color={color} ringRef={ringRef} dotRef={dotRef} glowRef={glowRef} />
+                            <Particles active={burst} />
+                            <div style={{
+                                position: "relative", zIndex: 10, display: "flex",
+                                flexDirection: "column", alignItems: "center", userSelect: "none"
+                            }}>
+                                <div style={{ fontSize: 52, fontWeight: 700, fontVariantNumeric: "tabular-nums", color: T.textPri, letterSpacing: "-0.03em" }}>
+                                    {mins}:{secs}
+                                </div>
+                                <span style={{ fontSize: 11, fontWeight: 500, textTransform: "uppercase", letterSpacing: "0.08em", color, marginTop: 2 }}>
+                                    {running ? (mode === "focus" ? "Active Focus" : "Break Session") : "Paused"}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Primary Control Buttons */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                            <button
+                                onClick={reset}
+                                title="Reset Timer"
+                                style={{
+                                    width: 36, height: 36, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                    borderRadius: 3, color: T.textSec, cursor: "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s"
+                                }}
+                            >
+                                <RotateCcw size={15} />
+                            </button>
+
+                            <button
+                                onClick={() => setRunning(r => !r)}
+                                style={{
+                                    width: 56, height: 56, background: T.accent, border: `1px solid ${T.accent}`,
+                                    borderRadius: "50%", color: "#1a1a1a", cursor: "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    transition: "all 0.15s", boxShadow: `0 0 12px ${T.accentDim}`
+                                }}
+                                title={running ? "Pause" : "Start"}
+                            >
+                                {running ? <Pause size={20} strokeWidth={2.5} /> : <Play size={20} strokeWidth={2.5} style={{ marginLeft: 2 }} />}
+                            </button>
+
+                            <button
+                                onClick={skip}
+                                title="Skip to Next"
+                                style={{
+                                    width: 36, height: 36, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                    borderRadius: 3, color: T.textSec, cursor: "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.15s"
+                                }}
+                            >
+                                <SkipForward size={15} />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* ── RIGHT PANEL: Mini Games & Badges ── */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                        {/* Break Recharge Mini-Games Card */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 16,
+                            opacity: mode !== "focus" ? 1 : 0.6,
+                            transition: "opacity 0.2s"
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8, color: T.accent }}>
+                                <Gamepad2 size={16} />
+                                <span style={{ fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em", fontWeight: 500 }}>Break Recharge</span>
+                            </div>
+                            <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: "0 0 12px" }}>
+                                Relax your attention capacity with an offline mini-game during your break.
+                            </p>
+                            <button
+                                onClick={() => setGamesOpen(true)}
+                                disabled={mode === "focus"}
+                                style={{
+                                    width: "100%", height: 32, background: mode !== "focus" ? T.accent : T.surfaceHi,
+                                    border: `1px solid ${mode !== "focus" ? T.accent : T.border}`,
+                                    borderRadius: 2, color: mode !== "focus" ? "#1a1a1a" : T.muted,
+                                    fontWeight: 600, fontSize: 11, cursor: mode !== "focus" ? "pointer" : "not-allowed",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6
+                                }}
+                            >
+                                Launch Break Games
+                            </button>
+                        </div>
+
+                        {/* Unlocked Badges */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 16
+                        }}>
+                            <span style={{ display: "block", fontSize: 10, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em", fontWeight: 500, marginBottom: 10 }}>
+                                Productivity Badges
+                            </span>
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                                {ACHIEVEMENTS.map(a => {
+                                    const done = unlocked.includes(a.id);
+                                    return (
+                                        <div
+                                            key={a.id}
+                                            style={{
+                                                padding: 10, borderRadius: 3,
+                                                background: done ? "#2e2e2e" : "#2a2a2a",
+                                                border: `1px solid ${done ? T.border : T.borderDim}`,
+                                                opacity: done ? 1 : 0.45,
+                                                display: "flex", flexDirection: "column", gap: 4
+                                            }}
+                                        >
+                                            <div style={{ color: done ? "#d4a843" : T.muted }}>
+                                                {a.icon}
+                                            </div>
+                                            <div>
+                                                <div style={{ fontSize: 10, fontWeight: 600, color: T.textPri, lineHeight: 1.2 }}>
+                                                    {a.title}
+                                                </div>
+                                                <div style={{ fontSize: 8, color: T.muted, textTransform: "uppercase", marginTop: 2 }}>
+                                                    {a.desc}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* ── RIGHT PANEL: Achievements + Break Games ── */}
-                <div className="lg:pt-14 space-y-6 w-full">
-                    {/* Game Break Card */}
-                    <div className={`p-5 bg-white border-2 border-black rounded-3xl shadow-[4px_4px_0_#000] flex flex-col gap-3 transition-all ${mode !== 'focus' ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                        <div className="flex items-center gap-2">
-                            <Gamepad2 size={16} className="text-black" />
-                            <span className="text-[10px] font-black uppercase tracking-wider text-zinc-500">Break Recharge</span>
-                        </div>
-                        <p className="text-[11px] text-zinc-500 font-semibold leading-relaxed">Relax your attention capacity with a quick offline mini-game during your break.</p>
-                        <button 
-                            onClick={() => setGamesOpen(true)}
-                            disabled={mode === 'focus'}
-                            className="ig-btn w-full py-2.5 bg-white hover:bg-zinc-50 text-black border-2 border-black text-[10px] font-black uppercase tracking-widest rounded-xl shadow-[2px_2px_0_#000] disabled:opacity-40"
-                        >
-                            Launch Break Game
-                        </button>
+                {/* ─── SEO RICH CONTENT SECTION ─── */}
+                <div style={{ marginTop: 40, borderTop: `1px solid ${T.borderDim}`, paddingTop: 36 }}>
+                    {/* Top Badges */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                        <Chip icon={<ShieldCheck size={10} />} label="100% In-Browser Privacy" />
+                        <Chip icon={<Sparkles size={10} />} label="Free & Unlimited" />
+                        <Chip icon={<Package size={10} />} label="Zero Server Uploads" />
                     </div>
 
-                    {/* Achievements List */}
-                    <div className="space-y-3">
-                        <p className="text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-2 pl-2">Unlocked Badges</p>
-                        <div className="grid grid-cols-2 gap-3">
-                            {ACHIEVEMENTS.map(a => {
-                                const done = unlocked.includes(a.id);
-                                return (
-                                    <div key={a.id} className={`p-3 border-2 rounded-2xl flex flex-col gap-1.5 transition-all duration-350 shadow-[2px_2px_0_#000] ${done ? "border-black bg-white" : "border-zinc-200 bg-zinc-50 opacity-40 grayscale shadow-none"}`}>
-                                        <div className={done ? "text-orange-500" : "text-zinc-300"}>{a.icon}</div>
-                                        <div>
-                                            <p className="text-[9px] font-black text-black leading-tight">{a.title}</p>
-                                            <p className="text-[8px] text-zinc-400 font-bold uppercase tracking-wider mt-0.5">{a.desc}</p>
-                                        </div>
+                    {/* Section Header */}
+                    <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 36px" }}>
+                        <h2 style={{ fontSize: 16, fontWeight: 500, color: T.textPri, marginBottom: 8 }}>
+                            Free Online Pomodoro Focus Timer - Maximize Productivity
+                        </h2>
+                        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.6 }}>
+                            Structure your workday into focused 25-minute sprints separated by structured 5-minute break intervals. Designed with audio ambience loops, hydration reminders, and local progress tracking stored entirely within your browser memory.
+                        </p>
+                    </div>
+
+                    {/* Features Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 44 }}>
+                        {[
+                            {
+                                icon: Timer,
+                                title: "Scientific Time-Boxing",
+                                desc: "Split cognitive sessions into 25-minute sprints and 5-minute breaks to eliminate mental fatigue and burnout."
+                            },
+                            {
+                                icon: Zap,
+                                title: "Integrated Audio Ambience",
+                                desc: "Listen to built-in lofi beats, rain sounds, coffee shop murmurs, or stream your favorite YouTube study radio."
+                            },
+                            {
+                                icon: ShieldCheck,
+                                title: "100% Client-Side Privacy",
+                                desc: "Session records, streak counters, and custom timer durations are stored solely in local browser memory."
+                            },
+                            {
+                                icon: Bell,
+                                title: "Smart Hydration Alerts",
+                                desc: "Configure periodic water reminders to preserve hydration, alertness, and physical posture during work."
+                            },
+                            {
+                                icon: Gamepad2,
+                                title: "Offline Break Mini-Games",
+                                desc: "Recharge your mind during short breaks with lightweight offline games directly in your browser."
+                            },
+                            {
+                                icon: Trophy,
+                                title: "Gamified Streak Badges",
+                                desc: "Unlock productivity achievements as you complete sequential focus blocks throughout your day."
+                            }
+                        ].map(f => (
+                            <div key={f.title} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                    <div style={{ color: T.accent }}>
+                                        <f.icon size={15} />
                                     </div>
-                                );
-                            })}
+                                    <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.textPri }}>{f.title}</h3>
+                                </div>
+                                <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Step Timeline */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 44 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
+                            How to Use the Pomodoro Technique Effectively
+                        </h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+                            {[
+                                { step: "1", title: "Select a Focus Task", desc: "Choose one single task to work on and start the 25-minute focus countdown timer." },
+                                { step: "2", title: "Work Without Distraction", desc: "Immerse in your work until the gentle completion chime rings; avoid multitasking." },
+                                { step: "3", title: "Take a 5-Minute Break", desc: "Step away from the screen, drink water, or recharge with a quick mini-game before next cycle." }
+                            ].map(s => (
+                                <div key={s.step} style={{ padding: 14, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 3, position: "relative", paddingTop: 20 }}>
+                                    <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        {s.step}
+                                    </div>
+                                    <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 6px" }}>{s.title}</h4>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* FAQ Accordion Section */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 20 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 16 }}>
+                            Frequently Asked Questions
+                        </h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="What is the science behind the Pomodoro Technique?"
+                                answer="Developed by Francesco Cirillo in the late 1980s, the technique uses a timer to break work into intervals, traditionally 25 minutes in length, separated by short breaks. Frequent breaks bolster mental agility and prevent cognitive fatigue."
+                            />
+                            <FAQItem 
+                                question="Is my session data saved if I close the tab?"
+                                answer="Yes! All completed session counts, unlocked streak badges, and custom time durations are automatically synchronized to your browser's local storage and restored whenever you return."
+                            />
+                            <FAQItem 
+                                question="Can I customize focus and break lengths?"
+                                answer="Yes. Click the 'Config' button to set custom lengths for Focus, Short Break, and Long Break durations, as well as customize hydration intervals."
+                            />
+                            <FAQItem 
+                                question="How does the ambient audio player work?"
+                                answer="You can choose from four offline ambient tracks (Lofi, Rain, Coffee Shop, Forest) or paste any YouTube live music stream link directly into the deck player."
+                            />
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* HelpModal */}
-            <HelpModal 
-                isOpen={showHelp} 
-                onClose={() => setShowHelp(false)} 
-                title="Aesthetic Pomodoro Guide"
-            >
-                <div className="space-y-8 text-left max-w-2xl mx-auto py-4 text-black">
-                    <section className="space-y-3">
-                        <h3 className="text-lg font-bold text-black ig-display">Scientific Time Boxing</h3>
-                        <p className="text-sm text-zinc-650 leading-relaxed font-medium">
-                            The Pomodoro Technique is designed to maximize mental focus by splitting cognitive blocks into 25-minute sprints accompanied by forced 5-minute break resets. This reduces fatigue and preserves long-term stamina.
-                        </p>
-                    </section>
-
-                    <section className="space-y-3">
-                        <h3 className="text-lg font-bold text-black ig-display">Frequently Asked Questions</h3>
-                        <Accordion>
-                            <AccordionItem title="Where is my productivity state saved?">
-                                All session counts, achievements, and custom timer durations are stored safely within client-side browser cookies/LocalStorage. No servers are involved.
-                            </AccordionItem>
-                            <AccordionItem title="How does the ambient soundtrack work?">
-                                You can play soft background loops natively, or paste any YouTube live lofi stream directly into the link widget to control background tracks.
-                            </AccordionItem>
-                            <AccordionItem title="Why should I enable Water Reminders?">
-                                Hydration directly influences concentration levels. Enforcing structured hydration intervals forces physical posture resets and keeps you alert.
-                            </AccordionItem>
-                        </Accordion>
-                    </section>
-                </div>
-            </HelpModal>
-
-            {/* Achievement toast */}
-            <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-[300] transition-all duration-300 ${toast ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6 pointer-events-none"}`}>
+            {/* Achievement Toast */}
+            <div style={{
+                position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)", zIndex: 9999,
+                opacity: toast ? 1 : 0, pointerEvents: toast ? "auto" : "none", transition: "all 0.3s ease"
+            }}>
                 {toast && (
-                    <div className="flex items-center gap-3.5 px-5 py-3.5 bg-white border-2 border-black rounded-2xl shadow-[4px_4px_0_#000] min-w-[280px]">
-                        <div className="text-orange-500 shrink-0">{toast.icon}</div>
+                    <div style={{
+                        display: "flex", alignItems: "center", gap: 12, padding: "10px 18px",
+                        background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4,
+                        boxShadow: "0 8px 24px rgba(0,0,0,0.5)"
+                    }}>
+                        <div style={{ color: "#d4a843" }}>{toast.icon}</div>
                         <div>
-                            <p className="text-[9px] font-black uppercase text-zinc-500 tracking-wider">Achievement Earned!</p>
-                            <p className="text-sm font-black text-black">{toast.title}</p>
+                            <div style={{ fontSize: 9, textTransform: "uppercase", color: T.textSec, letterSpacing: "0.05em" }}>Achievement Earned!</div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: T.textPri }}>{toast.title}</div>
                         </div>
-                        <Trophy size={18} className="text-orange-500 shrink-0 ml-auto animate-bounce" />
+                        <Trophy size={16} color="#d4a843" style={{ marginLeft: 8 }} />
                     </div>
                 )}
             </div>
+
+            {/* Help / Documentation Modal */}
+            <HelpModal 
+                isOpen={showHelp} 
+                onClose={() => setShowHelp(false)} 
+                title="Pomodoro Focus Documentation"
+            >
+                <div style={{ display: "flex", flexDirection: "column", gap: 20, color: T.textPri, fontSize: 12, lineHeight: 1.6 }}>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, color: T.accent, margin: "0 0 8px" }}>
+                            Scientific Time-Boxing Architecture
+                        </h3>
+                        <p style={{ margin: 0, color: T.textSec, fontSize: 11 }}>
+                            The Pomodoro Technique maximizes mental focus by splitting cognitive blocks into 25-minute sprints accompanied by forced 5-minute break resets. This reduces fatigue, preserves long-term stamina, and prevents attention fragmentation.
+                        </p>
+                    </section>
+
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <Timer size={14} style={{ color: T.accent }} /> Work-Rest Cycles
+                            </h4>
+                            <ul style={{ margin: 0, paddingLeft: 16, color: T.textSec, fontSize: 11, display: "flex", flexDirection: "column", gap: 6 }}>
+                                <li><strong>Focus Sprint:</strong> 25 minutes of mono-tasking concentration.</li>
+                                <li><strong>Short Break:</strong> 5 minutes of eye rest and physical stretching.</li>
+                                <li><strong>Long Break:</strong> 15-30 minutes after every 4 completed sprints.</li>
+                            </ul>
+                        </section>
+
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <ShieldCheck size={14} style={{ color: T.accent }} /> Privacy Compliance
+                            </h4>
+                            <p style={{ margin: "0 0 10px", color: T.textSec, fontSize: 11 }}>
+                                All timer states, streaks, and settings are saved locally in your browser's localStorage. Zero tracking or remote server calls.
+                            </p>
+                            <div style={{ padding: "6px 10px", background: "#2a2a2a", border: `1px solid ${T.borderDim}`, borderRadius: 3, fontSize: 10, color: "#aaa" }}>
+                                Spec: LocalStorage Persistence • AudioContext Chimes • Zero Network Overhead
+                            </div>
+                        </section>
+                    </div>
+
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 10px" }}>
+                            Key Capabilities
+                        </h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="Can I customize durations?" 
+                                answer="Yes. Click the 'Config' button in the audio bar to adjust durations for all three modes." 
+                            />
+                            <FAQItem 
+                                question="Does the timer work in background tabs?" 
+                                answer="Yes. The timer calculates elapsed timestamps using Date.now() when the tab resumes to ensure accurate timekeeping." 
+                            />
+                        </div>
+                    </section>
+                </div>
+            </HelpModal>
 
             <SettingsPanel 
                 visible={settingsOpen} 

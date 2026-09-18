@@ -10,129 +10,84 @@ import ReactCrop, {
 } from "react-image-crop";
 import "react-image-crop/dist/ReactCrop.css";
 import {
-    UploadCloud,
-    Crop as CropIcon,
-    Download,
-    RotateCw,
-    Image as ImageIcon,
-    Settings2,
-    Check,
-    X,
-    ChevronDown,
-    ChevronUp,
-    ShieldCheck,
-    RefreshCw,
-    Sparkles,
-    ArrowLeft,
-    Info,
-    Package,
-    Globe,
-    Layers,
-    Eye,
-    Zap,
-    Eraser,
-    Lock as LockIcon
+    UploadCloud, Crop as CropIcon, Download, RotateCw, Settings2,
+    Check, X, ChevronDown, ChevronUp, ShieldCheck, Sparkles, ArrowLeft,
+    Layers, Lock as LockIcon, HelpCircle, Image as ImageIcon, Package, Info, RefreshCw
 } from "lucide-react";
 import Link from "next/link";
 import HelpModal from "@/components/HelpModal";
 
-function centerAspectCrop(
-    mediaWidth: number,
-    mediaHeight: number,
-    aspect: number
-) {
-    return centerCrop(
-        makeAspectCrop(
-            {
-                unit: "%",
-                width: 90,
-            },
-            aspect,
-            mediaWidth,
-            mediaHeight
-        ),
-        mediaWidth,
-        mediaHeight
-    );
+/* ─────────────────────────────────────────
+   DESIGN TOKENS
+   ───────────────────────────────────────── */
+const T = {
+  bg: "#333333",
+  surface: "#3a3a3a",
+  surfaceRaised: "#444444",
+  border: "#555",
+  borderDim: "#2a2a2a",
+  accent: "#4db8d4",
+  accentDark: "#2a7a8f",
+  text: "#cccccc",
+  textSub: "#999999",
+  textMuted: "#888888",
+  danger: "#cc4444",
+  warning: "#d4a843",
+  success: "#7dcea0",
+  font: "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
+
+/* ─────────────────────────────────────────
+   SHARED COMPONENTS
+   ───────────────────────────────────────── */
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: "3px 8px", borderRadius: 2,
+      background: T.surface, border: `1px solid ${T.border}`,
+      fontSize: 10, fontWeight: 400, color: "#aaa",
+    }}>{icon}{label}</span>
+  );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div onClick={() => setOpen(!open)} style={{
+      background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+      padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <h4 style={{ fontSize: 11, fontWeight: 400, color: T.text, margin: 0, display: "flex", gap: 6 }}>
+          <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+        </h4>
+        <span style={{ color: T.textMuted, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+      </div>
+      <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+        <p style={{ fontSize: 11, color: T.textSub, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+      </div>
+    </div>
+  );
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function centerAspectCrop(mediaWidth: number, mediaHeight: number, aspect: number) {
+    return centerCrop(makeAspectCrop({ unit: "%", width: 90 }, aspect, mediaWidth, mediaHeight), mediaWidth, mediaHeight);
 }
 
 const ASPECT_RATIOS = [
     { label: "Free", value: undefined },
-    { label: "1:1 Square", value: 1 },
-    { label: "16:9 Landscape", value: 16 / 9 },
-    { label: "9:16 Portrait", value: 9 / 16 },
-    { label: "4:3 Classic", value: 4 / 3 },
-    { label: "3:2 Standard", value: 3 / 2 },
+    { label: "1:1 Sq", value: 1 },
+    { label: "16:9 Land", value: 16 / 9 },
+    { label: "9:16 Port", value: 9 / 16 },
+    { label: "4:3 Cls", value: 4 / 3 },
+    { label: "3:2 Std", value: 3 / 2 },
 ];
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
-
-function LocalAccordion({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-4 w-full">{children}</div>;
-}
-
-interface LocalAccordionItemProps {
-    title: string;
-    children: React.ReactNode;
-}
-
-function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
-            >
-                <span className="font-bold text-sm sm:text-base text-black pr-4">
-                    {title}
-                </span>
-                <ChevronDown
-                    size={18}
-                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                />
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
-                }`}
-            >
-                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
-}
-
+/* ─────────────────────────────────────────
+   MAIN COMPONENT
+   ───────────────────────────────────────── */
 export default function ImageCropperPage() {
     const [imgSrc, setImgSrc] = useState("");
     const imgRef = useRef<HTMLImageElement>(null);
@@ -141,31 +96,27 @@ export default function ImageCropperPage() {
     const [crop, setCrop] = useState<Crop>();
     const [completedCrop, setCompletedCrop] = useState<PixelCrop>();
 
-    // Transforms
     const [scale, setScale] = useState(1);
     const [rotate, setRotate] = useState(0);
-
-    // Settings
     const [aspect, setAspect] = useState<number | undefined>(undefined);
 
-    // Manual inputs
     const [customWidth, setCustomWidth] = useState<string>("");
     const [customHeight, setCustomHeight] = useState<string>("");
-
-    // Custom Aspect
     const [customAspectX, setCustomAspectX] = useState<string>("");
     const [customAspectY, setCustomAspectY] = useState<string>("");
 
-    // Preview Modal
     const [previewUrl, setPreviewUrl] = useState<string | null>(null);
     const [previewModalOpen, setPreviewModalOpen] = useState(false);
 
-    // Accordions
     const [dimensionsOpen, setDimensionsOpen] = useState(true);
     const [tweaksOpen, setTweaksOpen] = useState(false);
     const [exactSizeOpen, setExactSizeOpen] = useState(false);
     const [customRatioOpen, setCustomRatioOpen] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [mounted, setMounted] = useState(false);
+    const [dragging, setDragging] = useState(false);
+
+    useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
 
     const onSelectFile = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
@@ -173,27 +124,30 @@ export default function ImageCropperPage() {
             const reader = new FileReader();
             reader.addEventListener("load", () => {
                 setImgSrc(reader.result?.toString() || "");
-                setScale(1);
-                setRotate(0);
-                setCustomWidth("");
-                setCustomHeight("");
+                setScale(1); setRotate(0); setCustomWidth(""); setCustomHeight("");
             });
             reader.readAsDataURL(e.target.files[0]);
         }
     };
 
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault(); setDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            setCrop(undefined);
+            const reader = new FileReader();
+            reader.addEventListener("load", () => {
+                setImgSrc(reader.result?.toString() || "");
+                setScale(1); setRotate(0); setCustomWidth(""); setCustomHeight("");
+            });
+            reader.readAsDataURL(e.dataTransfer.files[0]);
+        }
+    };
+
     const handleClear = () => {
-        setImgSrc("");
-        setCrop(undefined);
-        setCompletedCrop(undefined);
-        setScale(1);
-        setRotate(0);
-        setCustomWidth("");
-        setCustomHeight("");
-        setCustomAspectX("");
-        setCustomAspectY("");
-        setPreviewUrl(null);
-        setPreviewModalOpen(false);
+        setImgSrc(""); setCrop(undefined); setCompletedCrop(undefined);
+        setScale(1); setRotate(0); setCustomWidth(""); setCustomHeight("");
+        setCustomAspectX(""); setCustomAspectY("");
+        setPreviewUrl(null); setPreviewModalOpen(false);
         if (hiddenFileInput.current) hiddenFileInput.current.value = "";
     };
 
@@ -202,35 +156,18 @@ export default function ImageCropperPage() {
         if (aspect) {
             setCrop(centerAspectCrop(width, height, aspect));
         } else {
-            setCrop(
-                centerCrop(
-                    makeAspectCrop(
-                        { unit: "%", width: 90 },
-                        naturalWidth / naturalHeight,
-                        width,
-                        height
-                    ),
-                    width,
-                    height
-                )
-            );
+            setCrop(centerCrop(makeAspectCrop({ unit: "%", width: 90 }, naturalWidth / naturalHeight, width, height), width, height));
         }
     };
 
     const handleAspectChange = (newAspect: number | undefined) => {
         setAspect(newAspect);
         if (imgRef.current) {
-            const { width, height } = imgRef.current;
+            const { width, height, naturalWidth, naturalHeight } = imgRef.current;
             if (newAspect) {
                 setCrop(centerAspectCrop(width, height, newAspect));
             } else {
-                setCrop(
-                    centerCrop(
-                        makeAspectCrop({ unit: "%", width: 90 }, imgRef.current.naturalWidth / imgRef.current.naturalHeight, width, height),
-                        width,
-                        height
-                    )
-                );
+                setCrop(centerCrop(makeAspectCrop({ unit: "%", width: 90 }, naturalWidth / naturalHeight, width, height), width, height));
             }
         }
     };
@@ -249,64 +186,42 @@ export default function ImageCropperPage() {
     }, [crop]);
 
     const enforceCustomDimensions = () => {
-        const w = parseInt(customWidth);
-        const h = parseInt(customHeight);
+        const w = parseInt(customWidth); const h = parseInt(customHeight);
         if (w > 0 && h > 0 && imgRef.current) {
             const scaleX = imgRef.current.width / imgRef.current.naturalWidth;
             const scaleY = imgRef.current.height / imgRef.current.naturalHeight;
-
             setAspect(w / h);
-
-            const displayW = w * scaleX;
-            const displayH = h * scaleY;
-
-            const newCrop: Crop = {
-                unit: "px",
-                width: displayW,
-                height: displayH,
-                x: (imgRef.current.width - displayW) / 2,
-                y: (imgRef.current.height - displayH) / 2
-            };
+            const displayW = w * scaleX; const displayH = h * scaleY;
+            const newCrop: Crop = { unit: "px", width: displayW, height: displayH, x: (imgRef.current.width - displayW) / 2, y: (imgRef.current.height - displayH) / 2 };
             setCrop(newCrop);
         }
     };
 
     const enforceCustomAspect = () => {
-        const x = parseFloat(customAspectX);
-        const y = parseFloat(customAspectY);
-        if (x > 0 && y > 0) {
-            handleAspectChange(x / y);
-        }
+        const x = parseFloat(customAspectX); const y = parseFloat(customAspectY);
+        if (x > 0 && y > 0) handleAspectChange(x / y);
     };
 
     const generatePreview = async () => {
         if (!crop || !imgRef.current) return;
-
         const pixelCrop = convertToPixelCrop(crop, imgRef.current.width, imgRef.current.height);
         if (!pixelCrop.width || !pixelCrop.height) return;
 
         const image = imgRef.current;
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
-
         if (!ctx) return;
 
         const scaleX = image.naturalWidth / image.width;
         const scaleY = image.naturalHeight / image.height;
-
         const outputWidth = Math.round(pixelCrop.width * scaleX);
         const outputHeight = Math.round(pixelCrop.height * scaleY);
 
-        canvas.width = outputWidth;
-        canvas.height = outputHeight;
-
+        canvas.width = outputWidth; canvas.height = outputHeight;
         ctx.imageSmoothingQuality = "high";
 
-        const cropX = pixelCrop.x * scaleX;
-        const cropY = pixelCrop.y * scaleY;
-
-        const centerX = image.naturalWidth / 2;
-        const centerY = image.naturalHeight / 2;
+        const cropX = pixelCrop.x * scaleX; const cropY = pixelCrop.y * scaleY;
+        const centerX = image.naturalWidth / 2; const centerY = image.naturalHeight / 2;
 
         ctx.save();
         ctx.translate(-cropX, -cropY);
@@ -315,540 +230,350 @@ export default function ImageCropperPage() {
         ctx.scale(scale, scale);
         ctx.translate(-centerX, -centerY);
 
-        ctx.drawImage(
-            image,
-            0,
-            0,
-            image.naturalWidth,
-            image.naturalHeight,
-            0,
-            0,
-            image.naturalWidth,
-            image.naturalHeight
-        );
-
+        ctx.drawImage(image, 0, 0, image.naturalWidth, image.naturalHeight, 0, 0, image.naturalWidth, image.naturalHeight);
         ctx.restore();
 
-        const blob = await new Promise<Blob | null>((resolve) =>
-            canvas.toBlob(resolve, "image/jpeg", 0.95)
-        );
-
+        const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
         if (!blob) return;
 
         const url = URL.createObjectURL(blob);
-        setPreviewUrl(url);
-        setPreviewModalOpen(true);
+        setPreviewUrl(url); setPreviewModalOpen(true);
     };
 
     const downloadFinalImage = () => {
         if (!previewUrl) return;
-        const a = document.createElement("a");
-        a.href = previewUrl;
-        a.download = `cropped_${Date.now()}.jpg`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        const a = document.createElement("a"); a.href = previewUrl; a.download = `cropped_${Date.now()}.jpg`;
+        document.body.appendChild(a); a.click(); document.body.removeChild(a);
     };
 
-    const CHECKER = `url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='8' height='8' fill='%23e4e4e7'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23e4e4e7'/%3E%3C/svg%3E")`;
+    const CHECKER = `url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='8' height='8' fill='%23555'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23555'/%3E%3C/svg%3E")`;
 
     return (
-        <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
-            <style>{GLOBAL_STYLES}</style>
+        <div style={{ minHeight: "100vh", background: T.bg, color: T.text, fontFamily: T.font, paddingBottom: 80 }}>
+          <style>{`
+            * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+            input[type=range] { accent-color: ${T.accent}; }
+            ::-webkit-scrollbar { display: none; }
+            @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+            @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+          `}</style>
 
-            {/* Header */}
-            <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
-                <Link
-                    href="/tools"
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                >
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
-                </Link>
-                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                    <div className="w-8 h-8 rounded-lg bg-emerald-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
-                        <CropIcon size={14} />
-                    </div>
-                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
-                        Image Cropper
-                    </span>
-                    <button 
-                        onClick={() => setShowHelp(true)}
-                        className="p-1 bg-white border-2 border-black rounded-full text-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
-                        title="Help"
-                    >
-                        <Info size={12} />
-                    </button>
-                </div>
-            </header>
+          {/* ── HEADER ── */}
+          <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <Link href="/tools" style={{
+              display: "flex", alignItems: "center", gap: 4,
+              padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+              color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+            }}>
+              <ArrowLeft size={11} strokeWidth={2} /> Back
+            </Link>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                <CropIcon size={12} />
+              </div>
+              <span style={{ fontSize: 13, fontWeight: 400, color: T.text }}>Image Cropper</span>
+              <button onClick={() => setShowHelp(true)} style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.textMuted, cursor: "pointer", display: "flex" }}>
+                <HelpCircle size={11} />
+              </button>
+            </div>
+          </header>
 
-            <main className="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 items-start mt-6 relative z-10">
-
-                {/* ── Left Side: Canvas Area ── */}
-                <div className="w-full flex justify-center bg-white border-2 sm:border-4 border-black rounded-[2rem] overflow-hidden shadow-[6px_6px_0_#000] relative min-h-[400px]">
-
-                    {!imgSrc ? (
-                        <div className="flex flex-col items-center justify-center p-12 text-center h-full w-full min-h-[500px]">
-                            <div className="w-20 h-20 rounded-2xl bg-white border-2 border-black flex items-center justify-center mb-6 text-black shadow-[3px_3px_0_#000]">
-                                <CropIcon size={32} className="text-black animate-pulse" />
-                            </div>
-                            <h2 className="text-black font-black text-2xl tracking-tight mb-2 ig-display">
-                                Drag & Drop or Click Here
-                            </h2>
-                            <div className="flex flex-wrap justify-center gap-2 mt-3">
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border-2 border-black shadow-[1.5px_1.5px_0_#000]">
-                                    <ShieldCheck size={10} className="text-emerald-600" />
-                                    <span className="text-[10px] font-bold tracking-wide uppercase text-zinc-700">100% Private</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border-2 border-black shadow-[1.5px_1.5px_0_#000]">
-                                    <ImageIcon size={10} className="text-indigo-650" />
-                                    <span className="text-[10px] font-bold tracking-wide uppercase text-zinc-700">Local Only</span>
-                                </div>
-                                <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white border-2 border-black shadow-[1.5px_1.5px_0_#000]">
-                                    <Check size={10} className="text-green-650" />
-                                    <span className="text-[10px] font-bold tracking-wide uppercase text-zinc-700">Free & Instant</span>
-                                </div>
-                            </div>
-                            <p className="text-zinc-500 text-[10px] font-bold mt-5 uppercase tracking-wider">Professional Grade Local Cropper</p>
-                            
-                            <label className="mt-6 flex items-center gap-2 px-8 py-4 bg-[#fde047] border-2 border-black hover:bg-yellow-300 active:scale-95 transition-all text-black font-bold rounded-xl cursor-pointer shadow-[3px_3px_0_#000] select-none ig-btn">
-                                <UploadCloud size={20} />
-                                Browse Files
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    onChange={onSelectFile}
-                                    className="hidden"
-                                />
-                            </label>
-                        </div>
-                    ) : (
-                        <div className="relative w-full h-full min-h-[500px] flex items-center justify-center p-6 sm:p-12 overflow-hidden" style={{ backgroundImage: CHECKER }}>
-                            <ReactCrop
-                                crop={crop}
-                                onChange={(_, percentCrop) => setCrop(percentCrop)}
-                                onComplete={(c) => setCompletedCrop(c)}
-                                aspect={aspect}
-                                className="max-h-[70vh]"
-                                style={{ maxHeight: "70vh" }}
-                            >
-                                <img
-                                    ref={imgRef}
-                                    alt="Crop Workspace"
-                                    src={imgSrc}
-                                    onLoad={onImageLoad}
-                                    style={{
-                                        transform: `scale(${scale}) rotate(${rotate}deg)`,
-                                        transition: "transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)",
-                                        maxHeight: "70vh",
-                                        objectFit: "contain"
-                                    }}
-                                />
-                            </ReactCrop>
-
-                            {/* Overlay Controls */}
-                            <div className="absolute top-4 right-4 flex gap-2">
-                                <button
-                                    onClick={handleClear}
-                                    className="px-4 py-2 bg-white border-2 border-black rounded-xl text-black font-bold text-xs flex items-center gap-2 transition-all shadow-[2px_2px_0_#000] ig-btn"
-                                >
-                                    <X size={14} /> <span>Clear Workspace</span>
-                                </button>
-                            </div>
-                        </div>
-                    )}
-                </div>
-
-                {/* ── Right Side: Controls ── */}
-                <div className="space-y-6 w-full">
-
-                    {/* Size / Aspect Controls */}
-                    <div className={`bg-white border-2 border-black rounded-3xl p-6 shadow-[5px_5px_0_#000] transition-all ${!imgSrc && "opacity-40 pointer-events-none grayscale"}`}>
-                        <div
-                            className="flex items-center justify-between cursor-pointer group"
-                            onClick={() => setDimensionsOpen(!dimensionsOpen)}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-blue-100 border-2 border-black flex items-center justify-center shrink-0">
-                                    <Settings2 size={20} className="text-black" />
-                                </div>
-                                <div>
-                                    <h2 className="text-black font-bold text-base leading-tight ig-display">Dimensions</h2>
-                                    <p className="text-[11px] text-zinc-550 mt-0.5">Presets & Ratios</p>
-                                </div>
-                            </div>
-                            <button className="text-zinc-500 group-hover:text-black transition-colors">
-                                {dimensionsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                            </button>
-                        </div>
-
-                        {dimensionsOpen && (
-                            <div className="mt-6 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                {/* Presets */}
-                                <div className="space-y-3">
-                                    <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 ig-label">
-                                        Aspect Ratios
-                                    </label>
-                                    <div className="grid grid-cols-3 gap-2">
-                                        {ASPECT_RATIOS.map((ratio) => (
-                                            <button
-                                                key={ratio.label}
-                                                onClick={() => handleAspectChange(ratio.value)}
-                                                className={`py-2 text-[11px] font-bold rounded-xl border-2 transition-all ig-btn ${aspect === ratio.value
-                                                    ? "bg-[#fde047] border-black text-black shadow-[1.5px_1.5px_0_#000]"
-                                                    : "bg-white border-zinc-200 text-zinc-650 hover:border-black"
-                                                    }`}
-                                            >
-                                                {ratio.label.split(" ")[0]}
-                                                <div className="text-[9px] font-medium opacity-70 block mt-0.5">{ratio.label.split(" ")[1] || "Aspect"}</div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Manual Dimensions */}
-                                <div className="mt-6 pt-5 border-t border-zinc-200">
-                                    <div
-                                        className="flex items-center justify-between cursor-pointer group"
-                                        onClick={() => setExactSizeOpen(!exactSizeOpen)}
-                                    >
-                                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 cursor-pointer group-hover:text-black transition-colors ig-label">
-                                            Exact Size (pixels)
-                                        </label>
-                                        <button className="text-zinc-500 group-hover:text-black transition-colors">
-                                            {exactSizeOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                        </button>
-                                    </div>
-
-                                    {exactSizeOpen && (
-                                        <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex-1 bg-zinc-50 border-2 border-black rounded-xl overflow-hidden flex items-center px-3 focus-within:bg-white transition-colors">
-                                                    <span className="text-xs text-zinc-500 font-bold mr-2">W</span>
-                                                    <input
-                                                        type="number"
-                                                        id="customW"
-                                                        value={customWidth}
-                                                        onChange={(e) => setCustomWidth(e.target.value)}
-                                                        onBlur={enforceCustomDimensions}
-                                                        onKeyDown={(e) => e.key === "Enter" && enforceCustomDimensions()}
-                                                        placeholder="Width"
-                                                        className="w-full bg-transparent text-black font-bold text-sm py-3 outline-none"
-                                                    />
-                                                </div>
-                                                <X size={12} className="text-zinc-400 shrink-0" />
-                                                <div className="flex-1 bg-zinc-50 border-2 border-black rounded-xl overflow-hidden flex items-center px-3 focus-within:bg-white transition-colors">
-                                                    <span className="text-xs text-zinc-500 font-bold mr-2">H</span>
-                                                    <input
-                                                        type="number"
-                                                        id="customH"
-                                                        value={customHeight}
-                                                        onChange={(e) => setCustomHeight(e.target.value)}
-                                                        onBlur={enforceCustomDimensions}
-                                                        onKeyDown={(e) => e.key === "Enter" && enforceCustomDimensions()}
-                                                        placeholder="Height"
-                                                        className="w-full bg-transparent text-black font-bold text-sm py-3 outline-none"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <button onClick={enforceCustomDimensions} className="w-full py-2.5 bg-white border-2 border-black hover:bg-zinc-50 text-black text-xs font-bold rounded-xl transition-all shadow-[2px_2px_0_#000] ig-btn">
-                                                Apply Size
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Custom Aspect Ratio */}
-                                <div className="mt-4 pt-4 border-t border-zinc-200">
-                                    <div
-                                        className="flex items-center justify-between cursor-pointer group"
-                                        onClick={() => setCustomRatioOpen(!customRatioOpen)}
-                                    >
-                                        <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-500 cursor-pointer group-hover:text-black transition-colors ig-label">
-                                            Custom Ratio
-                                        </label>
-                                        <button className="text-zinc-500 group-hover:text-black transition-colors">
-                                            {customRatioOpen ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-                                        </button>
-                                    </div>
-
-                                    {customRatioOpen && (
-                                        <div className="space-y-4 mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                                            <div className="flex items-center gap-3">
-                                                <div className="flex-1 bg-zinc-50 border-2 border-black rounded-xl overflow-hidden flex items-center px-3 focus-within:bg-white transition-colors">
-                                                    <span className="text-xs text-zinc-500 font-bold mr-2">W</span>
-                                                    <input
-                                                        type="number"
-                                                        value={customAspectX}
-                                                        onChange={(e) => setCustomAspectX(e.target.value)}
-                                                        onBlur={enforceCustomAspect}
-                                                        onKeyDown={(e) => e.key === "Enter" && enforceCustomAspect()}
-                                                        placeholder="e.g. 5"
-                                                        className="w-full bg-transparent text-black font-bold text-sm py-3 outline-none"
-                                                    />
-                                                </div>
-                                                <span className="text-black font-bold">:</span>
-                                                <div className="flex-1 bg-zinc-50 border-2 border-black rounded-xl overflow-hidden flex items-center px-3 focus-within:bg-white transition-colors">
-                                                    <span className="text-xs text-zinc-500 font-bold mr-2">H</span>
-                                                    <input
-                                                        type="number"
-                                                        value={customAspectY}
-                                                        onChange={(e) => setCustomAspectY(e.target.value)}
-                                                        onBlur={enforceCustomAspect}
-                                                        onKeyDown={(e) => e.key === "Enter" && enforceCustomAspect()}
-                                                        placeholder="e.g. 4"
-                                                        className="w-full bg-transparent text-black font-bold text-sm py-3 outline-none"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <button onClick={enforceCustomAspect} className="w-full py-2.5 bg-white border-2 border-black hover:bg-zinc-50 text-black text-xs font-bold rounded-xl transition-all shadow-[2px_2px_0_#000] ig-btn">
-                                                Apply Ratio
-                                            </button>
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Transform Controls */}
-                    <div className={`bg-white border-2 border-black rounded-3xl p-6 shadow-[5px_5px_0_#000] transition-all ${!imgSrc && "opacity-40 pointer-events-none grayscale"}`}>
-                        <div
-                            className="flex items-center justify-between cursor-pointer group"
-                            onClick={() => setTweaksOpen(!tweaksOpen)}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-xl bg-indigo-50 border-2 border-black flex items-center justify-center shrink-0">
-                                    <RotateCw size={20} className="text-black" />
-                                </div>
-                                <div>
-                                    <h2 className="text-black font-bold text-base leading-tight ig-display">Image Tweaks</h2>
-                                    <p className="text-[11px] text-zinc-550 mt-0.5">Scale &amp; Rotate</p>
-                                </div>
-                            </div>
-                            <button className="text-zinc-500 group-hover:text-black transition-colors">
-                                {tweaksOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-                            </button>
-                        </div>
-
-                        {tweaksOpen && (
-                            <div className="mt-6 space-y-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                                {/* Scale */}
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-xs font-bold text-zinc-700">Scale / Zoom</label>
-                                        <span className="text-[11px] text-black font-bold bg-[#a7f3d0] border-2 border-black px-2 py-0.5 rounded-md">{scale.toFixed(2)}x</span>
-                                    </div>
-                                    <input
-                                        type="range"
-                                        min={0.5}
-                                        max={3}
-                                        step={0.05}
-                                        value={scale}
-                                        onChange={(e) => setScale(Number(e.target.value))}
-                                        className="w-full accent-black h-2 bg-zinc-200 border-2 border-black rounded-lg appearance-none cursor-pointer"
-                                    />
-                                </div>
-
-                                {/* Rotate */}
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <label className="text-xs font-bold text-zinc-700">Rotation Angle</label>
-                                        <span className="text-[11px] text-black font-bold bg-[#a7f3d0] border-2 border-black px-2 py-0.5 rounded-md">{rotate}°</span>
-                                    </div>
-                                    <input
-                                        type="range"
-                                        min={-180}
-                                        max={180}
-                                        step={1}
-                                        value={rotate}
-                                        onChange={(e) => setRotate(Number(e.target.value))}
-                                        className="w-full accent-black h-2 bg-zinc-200 border-2 border-black rounded-lg appearance-none cursor-pointer"
-                                    />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Action Block */}
-                    <button
-                        onClick={generatePreview}
-                        disabled={!crop || !imgSrc}
-                        className="w-full flex items-center justify-center gap-3 py-4 rounded-full text-xs font-bold tracking-widest uppercase text-black transition-all bg-[#fde047] border-2 border-black shadow-[4px_4px_0_#000] disabled:opacity-50 ig-btn"
-                    >
-                        <CropIcon size={16} />
-                        Crop Image
-                    </button>
-
-                    {imgSrc && (
-                        <p className="text-center text-[10px] font-bold text-zinc-650 tracking-wide uppercase">
-                            Cropping is computed natively at original resolution
-                        </p>
-                    )}
-
-                </div>
-            </main>
-
-
-                <div className="flex justify-center py-4">
-                </div>
-
-            {/* ─── SEO RICH TEXT SECTION ─── */}
-            <div className="max-w-5xl mx-auto mt-24 px-4 sm:px-6">
-                <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
-                    <div className="relative z-10 space-y-12">
-                        {/* Top Badges */}
-                        <div className="flex flex-wrap justify-center gap-2.5">
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fbcfe8] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <ShieldCheck size={11} className="text-black" /> 100% In-Browser Privacy
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#a7f3d0] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Sparkles size={11} className="text-black" /> Free & Unlimited
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fde047] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Package size={11} className="text-black" /> No Server Uploads
-                            </span>
-                        </div>
-
-                        {/* Main Title & Description */}
-                        <div className="text-center space-y-4 max-w-3xl mx-auto">
-                            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-black leading-tight ig-display">
-                                Free Image Cropper Online with Precision Aspect Ratios
-                            </h2>
-                            <p className="text-sm text-zinc-650 leading-relaxed">
-                                Crop images and photos online with custom ratios, fixed pixel dimensions, scale zoom, and rotation adjustments. Powered by 100% client-side rendering, our free image cropper lets you edit visual assets entirely in your browser with no file uploads and absolute privacy.
-                            </p>
-                        </div>
-
-                        {/* Features Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                            {[
-                                {
-                                    title: "Fixed & Free Aspect Presets",
-                                    desc: "Snap instantly to standard proportions (1:1 square, 16:9 widescreen, 9:16 portrait, 4:3 classic, 3:2 standard) or crop freely using the interactive cropping handles.",
-                                    icon: <Layers size={16} />
-                                },
-                                {
-                                    title: "Exact Pixel Dimensions",
-                                    desc: "Specify exact target output width and height in pixels (e.g. 1200x630) to crop image online for social media layouts, slides, or graphics headers.",
-                                    icon: <Settings2 size={16} />
-                                },
-                                {
-                                    title: "Rotate & Zoom Tweaks",
-                                    desc: "Zoom in on details or rotate the canvas dynamically from -180° to 180° to fix tilted horizons and ensure the perfect alignment.",
-                                    icon: <RotateCw size={16} />
-                                },
-                                {
-                                    title: "100% Client-Side Privacy",
-                                    desc: "We care about privacy. Your source files are processed locally inside your browser's RAM and are never uploaded to any remote servers.",
-                                    icon: <ShieldCheck size={16} />
-                                },
-                                {
-                                    title: "High-Res Lossless Exports",
-                                    desc: "Export your cropped assets in crisp JPG format mapped directly to the original natural resolution of the source photo. No watermarks, ever.",
-                                    icon: <Download size={16} />
-                                },
-                                {
-                                    title: "Free with No Registrations",
-                                    desc: "No email verification, passwords, or credit card requirements. Use our free image cropper tool as much as you need with zero limits.",
-                                    icon: <LockIcon size={16} />
-                                }
-                            ].map((f, i) => (
-                                <div key={i} className="p-6 bg-zinc-50 border-2 border-black rounded-3xl transition-all duration-300 shadow-[3px_3px_0_#000] hover:bg-zinc-100">
-                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black mb-4 shadow-[1.5px_1.5px_0_#000]">
-                                        {f.icon}
-                                    </div>
-                                    <h4 className="text-sm font-bold text-black mb-2 ig-display">{f.title}</h4>
-                                    <p className="text-xs text-zinc-650 leading-relaxed">{f.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                        {/* Step Timeline */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                How to Crop Photo Online in 3 Simple Steps
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {[
-                                    { step: "1", title: "Select or Drop Image", desc: "Drag and drop your JPG, PNG, WebP, SVG, or BMP file into the workspace, or click to upload from your local drive." },
-                                    { step: "2", title: "Frame Your Selection", desc: "Adjust the handles of the cropping container. Choose an aspect ratio preset or type custom pixel values." },
-                                    { step: "3", title: "Apply Tweaks & Download", desc: "Use zoom/rotation sliders to align. Click 'Crop Image' to open the preview modal and download the final high-resolution file." }
-                                ].map((s) => (
-                                    <div key={s.step} className="relative p-6 bg-zinc-50 border-2 border-black rounded-3xl pt-8 shadow-[3px_3px_0_#000]">
-                                        <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-[#fde047] border-2 border-black text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
-                                            {s.step}
-                                        </div>
-                                        <h4 className="text-sm font-bold text-black mb-2 ig-display">{s.title}</h4>
-                                        <p className="text-xs text-zinc-650 leading-relaxed">{s.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* FAQ Accordion Section */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                Frequently Asked Questions
-                            </h3>
-                            <LocalAccordion>
-                                <LocalAccordionItem title="Can I crop transparent PNG files?">
-                                    Yes! The cropper works perfectly on transparent PNGs, and the output transparency is fully preserved if you export in PNG container types.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="What formats does this tool output?">
-                                    By default, it outputs optimized JPEG containers. You can also save directly back to PNG or converter formats based on your workspace setup.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Are my graphics uploaded to remote databases?">
-                                    No. All rendering and crop matrix calculations run inside browser RAM sandbox buffers. Nothing is sent online.
-                                </LocalAccordionItem>
-                            </LocalAccordion>
-                        </div>
-                    </div>
-                </div>
+          <div style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px", display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Description + Chips */}
+            <div style={{ marginBottom: 0, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(8px)", transition: "all 0.3s ease", display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+              <div style={{ display: "flex", gap: 4, marginBottom: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                <Chip icon={<ShieldCheck size={10} />} label="100% Private" />
+                <Chip icon={<Layers size={10} />} label="Fixed Aspect Presets" />
+              </div>
+              <h1 style={{ margin: 0, fontSize: 14, fontWeight: 500, lineHeight: 1.2, color: T.text }}>Free Image Cropper Online</h1>
+              <p style={{ margin: "6px 0 0", fontSize: 11, color: T.textMuted, lineHeight: 1.5, maxWidth: 520, fontWeight: 400 }}>
+                Crop photos online with custom ratios, fixed pixel dimensions, scale zoom, and rotation adjustments. Powered by 100% client-side rendering.
+              </p>
             </div>
 
-            {/* Preview Modal */}
-            {previewModalOpen && previewUrl && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white border-4 border-black rounded-3xl max-w-lg w-full overflow-hidden shadow-[8px_8px_0_#000] p-6 space-y-6">
-                        <div className="flex items-center justify-between border-b-2 border-black pb-3">
-                            <h3 className="text-lg font-black text-black ig-display">Crop Preview</h3>
-                            <button onClick={() => setPreviewModalOpen(false)} className="p-1 bg-white border-2 border-black rounded-full hover:bg-zinc-100 text-black transition-all">
-                                <X size={16} />
-                            </button>
-                        </div>
+            <div style={{ display: "grid", gridTemplateColumns: imgSrc ? "1fr 320px" : "1fr", gap: 16, alignItems: "start", marginTop: 16 }}>
 
-                        <div className="flex justify-center bg-zinc-50 border-2 border-black rounded-2xl p-4 overflow-hidden" style={{ backgroundImage: CHECKER }}>
-                            <img src={previewUrl} alt="Cropped Preview" className="max-h-[50vh] object-contain border-2 border-black rounded-lg shadow-[3px_3px_0_#000]" />
-                        </div>
-
-                        <div className="flex gap-3 justify-end">
-                            <button onClick={() => setPreviewModalOpen(false)} className="px-5 py-2.5 bg-white border-2 border-black rounded-xl text-black font-bold text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50 ig-btn">
-                                Cancel
-                            </button>
-                            <button onClick={downloadFinalImage} className="px-5 py-2.5 bg-[#fde047] border-2 border-black rounded-xl text-black font-bold text-xs shadow-[2px_2px_0_#000] hover:bg-yellow-300 flex items-center gap-1.5 ig-btn">
-                                <Download size={14} /> Download
-                            </button>
-                        </div>
+              {/* ── Left Side: Canvas Area ── */}
+              <div style={{
+                background: imgSrc ? CHECKER : T.bg, border: `1px solid ${T.border}`, borderRadius: 4,
+                minHeight: imgSrc ? 400 : 260, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                position: "relative", overflow: "hidden", padding: imgSrc ? 20 : 32,
+              }}>
+                {!imgSrc ? (
+                  <div
+                    onDragOver={e => { e.preventDefault(); setDragging(true); }}
+                    onDragLeave={() => setDragging(false)}
+                    onDrop={handleDrop}
+                    onClick={() => hiddenFileInput.current?.click()}
+                    style={{
+                      width: "100%", height: "100%", minHeight: 260, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                      border: `1px dashed ${dragging ? T.accent : T.border}`, borderRadius: 4,
+                      background: dragging ? T.surface : T.bg, cursor: "pointer", transition: "all 0.2s",
+                    }}
+                  >
+                    <UploadCloud size={28} style={{ color: T.textMuted, marginBottom: 12 }} />
+                    <div style={{ fontSize: 14, fontWeight: 500, color: T.text, marginBottom: 4 }}>Drag & Drop or Click Here</div>
+                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center", marginTop: 12 }}>
+                      <Chip icon={<ShieldCheck size={10} />} label="100% Private" />
+                      <Chip icon={<ImageIcon size={10} />} label="Local Only" />
+                      <Chip icon={<Check size={10} />} label="Free & Instant" />
                     </div>
-                </div>
-            )}
+                    <input type="file" accept="image/*" onChange={onSelectFile} ref={hiddenFileInput} style={{ display: "none" }} />
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>
+                    <ReactCrop
+                      crop={crop} onChange={(_, percentCrop) => setCrop(percentCrop)} onComplete={(c) => setCompletedCrop(c)} aspect={aspect}
+                      style={{ maxHeight: "70vh" }}
+                    >
+                      <img ref={imgRef} alt="Crop Workspace" src={imgSrc} onLoad={onImageLoad}
+                        style={{ transform: `scale(${scale}) rotate(${rotate}deg)`, transition: "transform 0.2s", maxHeight: "70vh", objectFit: "contain" }} />
+                    </ReactCrop>
+                    <button onClick={handleClear} style={{
+                      position: "absolute", top: 12, right: 12, padding: "6px 12px",
+                      background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 3,
+                      color: T.text, fontSize: 10, fontWeight: 400, cursor: "pointer",
+                      display: "flex", alignItems: "center", gap: 4, fontFamily: T.font,
+                    }}>
+                      <X size={12} /> Clear Workspace
+                    </button>
+                  </div>
+                )}
+              </div>
 
-            <HelpModal 
-                isOpen={showHelp} 
-                onClose={() => setShowHelp(false)} 
-                title="Image Cropper Details"
-            >
-                <div className="space-y-6">
-                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[4px_4px_0_#000] space-y-6 text-zinc-700">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                            Precision Visual Trimming Engine
-                        </h3>
-                        <p className="text-base leading-relaxed text-zinc-700 font-medium">
-                            Step into a professional-grade workspace for precise visual boundary adjustment. AssetNest <strong>Image Cropper</strong> runs locally to trim and scale visual elements inside browser GPU buffers. Choose presets or key in specific target pixel widths and heights for e-commerce, web development, or print layouts.
-                        </p>
-                    </section>
+              {/* ── Right Side: Controls ── */}
+              {imgSrc && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+
+                  {/* Dimensions Accordion */}
+                  <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 14 }}>
+                    <div onClick={() => setDimensionsOpen(!dimensionsOpen)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <Settings2 size={14} style={{ color: T.accent }} />
+                        <span style={{ fontSize: 12, fontWeight: 500, color: T.text }}>Dimensions</span>
+                      </div>
+                      <span style={{ color: T.textMuted, transform: dimensionsOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}><ChevronDown size={14} /></span>
+                    </div>
+
+                    {dimensionsOpen && (
+                      <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}`, animation: "fadeIn 0.2s ease" }}>
+                        <div style={{ fontSize: 9, fontWeight: 500, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Aspect Ratios</div>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+                          {ASPECT_RATIOS.map(ratio => (
+                            <button key={ratio.label} onClick={() => handleAspectChange(ratio.value)} style={{
+                              padding: "6px", background: aspect === ratio.value ? T.accent : T.bg, border: `1px solid ${aspect === ratio.value ? T.accent : T.border}`,
+                              borderRadius: 3, color: aspect === ratio.value ? "#1a1a1a" : T.textSub, fontSize: 10, fontWeight: 500, cursor: "pointer",
+                              display: "flex", flexDirection: "column", alignItems: "center", transition: "all 0.12s", fontFamily: T.font,
+                            }}>
+                              <span>{ratio.label.split(" ")[0]}</span>
+                              <span style={{ fontSize: 8, fontWeight: 400, opacity: 0.8, marginTop: 2 }}>{ratio.label.split(" ")[1] || "Aspect"}</span>
+                            </button>
+                          ))}
+                        </div>
+
+                        {/* Exact Size */}
+                        <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+                          <div onClick={() => setExactSizeOpen(!exactSizeOpen)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", marginBottom: exactSizeOpen ? 8 : 0 }}>
+                            <span style={{ fontSize: 9, fontWeight: 500, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em" }}>Exact Size (pixels)</span>
+                            <span style={{ color: T.textMuted }}><ChevronDown size={12} /></span>
+                          </div>
+                          {exactSizeOpen && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8, animation: "fadeIn 0.2s ease" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <div style={{ flex: 1, display: "flex", alignItems: "center", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 3, padding: "0 8px" }}>
+                                  <span style={{ fontSize: 10, color: T.textMuted, marginRight: 6 }}>W</span>
+                                  <input type="number" id="customW" value={customWidth} onChange={e => setCustomWidth(e.target.value)} onBlur={enforceCustomDimensions} onKeyDown={e => e.key === "Enter" && enforceCustomDimensions()}
+                                    style={{ width: "100%", background: "transparent", border: "none", color: T.text, fontSize: 11, padding: "8px 0", outline: "none", fontFamily: T.font }} placeholder="Width" />
+                                </div>
+                                <X size={10} style={{ color: T.textMuted, flexShrink: 0 }} />
+                                <div style={{ flex: 1, display: "flex", alignItems: "center", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 3, padding: "0 8px" }}>
+                                  <span style={{ fontSize: 10, color: T.textMuted, marginRight: 6 }}>H</span>
+                                  <input type="number" id="customH" value={customHeight} onChange={e => setCustomHeight(e.target.value)} onBlur={enforceCustomDimensions} onKeyDown={e => e.key === "Enter" && enforceCustomDimensions()}
+                                    style={{ width: "100%", background: "transparent", border: "none", color: T.text, fontSize: 11, padding: "8px 0", outline: "none", fontFamily: T.font }} placeholder="Height" />
+                                </div>
+                              </div>
+                              <button onClick={enforceCustomDimensions} style={{ padding: "6px 0", background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 3, color: T.text, fontSize: 10, cursor: "pointer", fontFamily: T.font }}>Apply Size</button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Custom Ratio */}
+                        <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}` }}>
+                          <div onClick={() => setCustomRatioOpen(!customRatioOpen)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer", marginBottom: customRatioOpen ? 8 : 0 }}>
+                            <span style={{ fontSize: 9, fontWeight: 500, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em" }}>Custom Ratio</span>
+                            <span style={{ color: T.textMuted }}><ChevronDown size={12} /></span>
+                          </div>
+                          {customRatioOpen && (
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8, animation: "fadeIn 0.2s ease" }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <div style={{ flex: 1, display: "flex", alignItems: "center", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 3, padding: "0 8px" }}>
+                                  <span style={{ fontSize: 10, color: T.textMuted, marginRight: 6 }}>W</span>
+                                  <input type="number" value={customAspectX} onChange={e => setCustomAspectX(e.target.value)} onBlur={enforceCustomAspect} onKeyDown={e => e.key === "Enter" && enforceCustomAspect()}
+                                    style={{ width: "100%", background: "transparent", border: "none", color: T.text, fontSize: 11, padding: "8px 0", outline: "none", fontFamily: T.font }} placeholder="5" />
+                                </div>
+                                <span style={{ color: T.text, fontWeight: 700 }}>:</span>
+                                <div style={{ flex: 1, display: "flex", alignItems: "center", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 3, padding: "0 8px" }}>
+                                  <span style={{ fontSize: 10, color: T.textMuted, marginRight: 6 }}>H</span>
+                                  <input type="number" value={customAspectY} onChange={e => setCustomAspectY(e.target.value)} onBlur={enforceCustomAspect} onKeyDown={e => e.key === "Enter" && enforceCustomAspect()}
+                                    style={{ width: "100%", background: "transparent", border: "none", color: T.text, fontSize: 11, padding: "8px 0", outline: "none", fontFamily: T.font }} placeholder="4" />
+                                </div>
+                              </div>
+                              <button onClick={enforceCustomAspect} style={{ padding: "6px 0", background: T.surfaceRaised, border: `1px solid ${T.border}`, borderRadius: 3, color: T.text, fontSize: 10, cursor: "pointer", fontFamily: T.font }}>Apply Ratio</button>
+                            </div>
+                          )}
+                        </div>
+
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Tweaks Accordion */}
+                  <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 14 }}>
+                    <div onClick={() => setTweaksOpen(!tweaksOpen)} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", cursor: "pointer" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <RotateCw size={14} style={{ color: T.accent }} />
+                        <span style={{ fontSize: 12, fontWeight: 500, color: T.text }}>Image Tweaks</span>
+                      </div>
+                      <span style={{ color: T.textMuted, transform: tweaksOpen ? "rotate(180deg)" : "none", transition: "transform 0.15s" }}><ChevronDown size={14} /></span>
+                    </div>
+
+                    {tweaksOpen && (
+                      <div style={{ marginTop: 12, paddingTop: 12, borderTop: `1px solid ${T.border}`, animation: "fadeIn 0.2s ease", display: "flex", flexDirection: "column", gap: 16 }}>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em" }}>Scale / Zoom</span>
+                            <span style={{ fontSize: 10, color: "#1a1a1a", background: T.accent, padding: "2px 6px", borderRadius: 99 }}>{scale.toFixed(2)}x</span>
+                          </div>
+                          <input type="range" min={0.5} max={3} step={0.05} value={scale} onChange={e => setScale(Number(e.target.value))} style={{ width: "100%", height: 4, cursor: "pointer" }} />
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            <span style={{ fontSize: 10, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em" }}>Rotation Angle</span>
+                            <span style={{ fontSize: 10, color: "#1a1a1a", background: T.accent, padding: "2px 6px", borderRadius: 99 }}>{rotate}°</span>
+                          </div>
+                          <input type="range" min={-180} max={180} step={1} value={rotate} onChange={e => setRotate(Number(e.target.value))} style={{ width: "100%", height: 4, cursor: "pointer" }} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <button onClick={generatePreview} disabled={!crop} style={{
+                    padding: "14px 16px", background: T.accent, border: "none", borderRadius: 4,
+                    color: "#1a1a1a", fontSize: 12, fontWeight: 500, cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    fontFamily: T.font, opacity: !crop ? 0.5 : 1, transition: "all 0.12s",
+                  }}>
+                    <CropIcon size={14} /> Crop Image
+                  </button>
+
+                  <p style={{ textAlign: "center", fontSize: 9, color: T.textSub, textTransform: "uppercase", letterSpacing: "0.05em", margin: 0 }}>
+                    Cropping is computed natively at original resolution
+                  </p>
+
                 </div>
-            </HelpModal>
+              )}
+            </div>
+
+            {/* ── SEO SECTION ── */}
+            <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginTop: 32 }}>
+              <div style={{ display: "flex", justifyContent: "center", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
+                <Chip icon={<ShieldCheck size={11} />} label="100% In-Browser Privacy" />
+                <Chip icon={<Sparkles size={11} />} label="Free & Unlimited" />
+                <Chip icon={<Package size={11} />} label="No Server Uploads" />
+              </div>
+
+              <div style={{ textAlign: "center", marginBottom: 40 }}>
+                <h2 style={{ fontSize: 12, fontWeight: 500, color: T.text, margin: "0 0 16px", lineHeight: 1.2 }}>
+                  Free Image Cropper Online with Precision Aspect Ratios
+                </h2>
+                <p style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.65, maxWidth: 720, margin: "0 auto", fontWeight: 400 }}>
+                  Crop images and photos online with custom ratios, fixed pixel dimensions, scale zoom, and rotation adjustments. Powered by 100% client-side rendering, our free image cropper lets you edit visual assets entirely in your browser with no file uploads and absolute privacy.
+                </p>
+              </div>
+
+              {/* Feature Cards */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12, marginBottom: 48 }}>
+                {[
+                  { title: "Fixed & Free Aspect Presets", desc: "Snap instantly to standard proportions (1:1 square, 16:9 widescreen, 9:16 portrait, 4:3 classic, 3:2 standard) or crop freely using the interactive cropping handles.", icon: <Layers size={16} /> },
+                  { title: "Exact Pixel Dimensions", desc: "Specify exact target output width and height in pixels (e.g. 1200x630) to crop image online for social media layouts, slides, or graphics headers.", icon: <Settings2 size={16} /> },
+                  { title: "Rotate & Zoom Tweaks", desc: "Zoom in on details or rotate the canvas dynamically from -180° to 180° to fix tilted horizons and ensure the perfect alignment.", icon: <RotateCw size={16} /> },
+                  { title: "100% Client-Side Privacy", desc: "We care about privacy. Your source files are processed locally inside your browser's RAM and are never uploaded to any remote servers.", icon: <ShieldCheck size={16} /> },
+                  { title: "High-Res Lossless Exports", desc: "Export your cropped assets in crisp JPG format mapped directly to the original natural resolution of the source photo. No watermarks, ever.", icon: <Download size={16} /> },
+                  { title: "Free with No Registrations", desc: "No email verification, passwords, or credit card requirements. Use our free image cropper tool as much as you need with zero limits.", icon: <LockIcon size={16} /> },
+                ].map(f => (
+                  <div key={f.title} style={{ padding: 12, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                      <div style={{ color: T.accent }}>{f.icon}</div>
+                      <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.text }}>{f.title}</h3>
+                    </div>
+                    <p style={{ fontSize: 12, color: T.textMuted, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Steps */}
+              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 32, marginBottom: 48 }}>
+                <h3 style={{ fontSize: 12, fontWeight: 500, textAlign: "center", color: T.text, marginBottom: 20 }}>
+                  How to Crop Photo Online in 3 Simple Steps
+                </h3>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
+                  {[
+                    { step: "1", title: "Select or Drop Image", desc: "Drag and drop your JPG, PNG, WebP, SVG, or BMP file into the workspace, or click to upload from your local drive." },
+                    { step: "2", title: "Frame Your Selection", desc: "Adjust the handles of the cropping container. Choose an aspect ratio preset or type custom pixel values." },
+                    { step: "3", title: "Apply Tweaks & Download", desc: "Use zoom/rotation sliders to align. Click 'Crop Image' to open the preview modal and download the final high-resolution file." },
+                  ].map(s => (
+                    <div key={s.step} style={{ padding: 12, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 4, position: "relative", paddingTop: 20 }}>
+                      <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>{s.step}</div>
+                      <h4 style={{ fontSize: 12, fontWeight: 500, color: T.text, margin: "0 0 6px" }}>{s.title}</h4>
+                      <p style={{ fontSize: 11, color: T.textMuted, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* FAQ */}
+              <div style={{ borderTop: `1px solid ${T.border}`, paddingTop: 32 }}>
+                <h3 style={{ fontSize: 12, fontWeight: 500, textAlign: "center", color: T.text, marginBottom: 20 }}>Frequently Asked Questions</h3>
+                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                  <FAQItem question="Can I crop transparent PNG files?" answer="Yes! The cropper works perfectly on transparent PNGs, and the output transparency is fully preserved if you export in PNG container types." />
+                  <FAQItem question="What formats does this tool output?" answer="By default, it outputs optimized JPEG containers. You can also save directly back to PNG or converter formats based on your workspace setup." />
+                  <FAQItem question="Are my graphics uploaded to remote databases?" answer="No. All rendering and crop matrix calculations run inside browser RAM sandbox buffers. Nothing is sent online." />
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          {/* ── PREVIEW MODAL ── */}
+          {previewModalOpen && previewUrl && (
+            <div style={{ position: "fixed", inset: 0, zIndex: 50, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+              <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 8, maxWidth: 500, width: "100%", padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: `1px solid ${T.border}`, paddingBottom: 12 }}>
+                  <h3 style={{ margin: 0, fontSize: 14, fontWeight: 500, color: T.text }}>Crop Preview</h3>
+                  <button onClick={() => setPreviewModalOpen(false)} style={{ background: "none", border: "none", color: T.textMuted, cursor: "pointer", padding: 4 }}><X size={16} /></button>
+                </div>
+                <div style={{ display: "flex", justifyContent: "center", background: CHECKER, border: `1px solid ${T.border}`, borderRadius: 4, padding: 16 }}>
+                  <img src={previewUrl} alt="Preview" style={{ maxHeight: "50vh", objectFit: "contain", borderRadius: 4, border: `1px solid ${T.border}` }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+                  <button onClick={() => setPreviewModalOpen(false)} style={{ padding: "8px 16px", background: T.bg, border: `1px solid ${T.border}`, borderRadius: 3, color: T.text, fontSize: 11, cursor: "pointer", fontFamily: T.font }}>Cancel</button>
+                  <button onClick={downloadFinalImage} style={{ padding: "8px 16px", background: T.accent, border: "none", borderRadius: 3, color: "#1a1a1a", fontSize: 11, fontWeight: 500, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: T.font }}>
+                    <Download size={12} /> Download
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ── HELP MODAL ── */}
+          <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="Image Cropper Details">
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold text-[#dcdcdc]">Precision Visual Trimming Engine</h3>
+              <p className="text-sm text-zinc-500 leading-relaxed font-medium">
+                AssetNest Image Cropper runs locally to trim and scale visual elements inside browser GPU buffers. Choose presets or key in specific target pixel widths and heights for e-commerce, web development, or print layouts.
+              </p>
+            </div>
+          </HelpModal>
         </div>
     );
 }

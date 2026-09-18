@@ -1,6 +1,5 @@
 import { MetadataRoute } from 'next'
 import { ALL_TOOLS } from '@/lib/tools'
-import { ALL_GUIDE_POSTS } from '@/data/guidePosts'
 
 export default function sitemap(): MetadataRoute.Sitemap {
     const baseUrl = 'https://www.assetnest.space'
@@ -27,12 +26,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
             priority: 0.8,
         },
         {
-            url: `${baseUrl}/guides`,
-            lastModified: new Date(),
-            changeFrequency: 'weekly' as const,
-            priority: 0.8,
-        },
-        {
             url: `${baseUrl}/about`,
             lastModified: now,
             changeFrequency: 'yearly' as const,
@@ -46,14 +39,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         lastModified: now,
         changeFrequency: 'monthly' as const,
         priority: 0.8,
-    }))
-
-    // 2.5 Dynamic blog pages
-    const guideSitemapPages = ALL_GUIDE_POSTS.map((post) => ({
-        url: `${baseUrl}/guides/${post.slug}`,
-        lastModified: new Date(post.publishedAt),
-        changeFrequency: 'monthly' as const,
-        priority: 0.7,
     }))
 
     // 3. Legal pages
@@ -78,6 +63,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         },
     ]
 
-    return [...staticPages, ...toolPages, ...guideSitemapPages, ...legalPages]
+    return [...staticPages, ...toolPages, ...legalPages]
 }
 

@@ -20,7 +20,7 @@ const siteUrl = "https://www.assetnest.space";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "AssetNest — Free Tools & AI Image Prompts for Creators",
+    default: "AssetNest - Free Tools & AI Image Prompts for Creators",
     template: "%s | AssetNest"
   },
   description: "AssetNest is a professional resource hub for creators. Access powerful, 100% private tools like PDF Merger, Image Compressor, QR Generator, and Premium AI Image Prompts.",
@@ -49,21 +49,21 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: siteUrl,
     siteName: "AssetNest",
-    title: "AssetNest — Free Tools & AI Image Prompts for Creators",
-    description: "Access powerful free utilities like PDF Merger, Image Compressor and QR code generator — all in one place.",
+    title: "AssetNest - Free Tools & AI Image Prompts for Creators",
+    description: "Access powerful free utilities like PDF Merger, Image Compressor and QR code generator - all in one place.",
     images: [
       {
         url: `${siteUrl}/logo.png`,
         width: 512,
         height: 512,
-        alt: "AssetNest Logo — Free Tools & AI Prompts",
+        alt: "AssetNest Logo - Free Tools & AI Prompts",
         type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary",
-    title: "AssetNest — Free Tools & AI Image Prompts for Creators",
+    title: "AssetNest - Free Tools & AI Image Prompts for Creators",
     description: "Access free utilities and creative resources.",
     images: [`${siteUrl}/logo.png`],
     creator: "@assetnest",
@@ -103,7 +103,7 @@ export default function RootLayout({
         />
       </head>
 
-      <body className="antialiased font-sans flex flex-col min-h-screen">
+      <body className="antialiased font-sans flex flex-col min-h-screen" suppressHydrationWarning>
         <CryptoPolyfill />
         <SmoothScroll>
           <AppLayout>

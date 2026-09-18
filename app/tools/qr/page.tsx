@@ -13,24 +13,24 @@ import HelpModal from "@/components/HelpModal";
    DESIGN TOKENS
    ───────────────────────────────────────── */
 const T = {
-  bg: "#F4ECD8",
-  surface: "#ffffff",
-  surfaceRaised: "#f8fafc",
-  surfaceHigh: "#f1f5f9",
-  border: "#000000",
-  borderMid: "#000000",
-  borderHigh: "#000000",
-  accent: "#F97316",
-  accentDim: "rgba(249,115,22,0.1)",
-  accentGlow: "rgba(249,115,22,0.2)",
-  text: "#000000",
-  textSub: "#18181b",
-  textMuted: "#52525b",
-  danger: "#ef4444",
-  dangerDim: "rgba(239,68,68,0.1)",
-  warning: "#fbbf24",
-  radius: { sm: 8, md: 12, lg: 16, xl: 20, xxl: 28 },
-  font: "'DM Sans', 'Space Grotesk', system-ui, sans-serif",
+  bg: "#333333",
+  surface: "#3a3a3a",
+  surfaceRaised: "#444444",
+  surfaceHigh: "#4a4a4a",
+  border: "#2a2a2a",
+  borderMid: "#2a2a2a",
+  borderHigh: "#505050",
+  accent: "#4db8d4",
+  accentDim: "rgba(77,184,212,0.15)",
+  accentGlow: "rgba(77,184,212,0.25)",
+  text: "#cccccc",
+  textSub: "#999999",
+  textMuted: "#777777",
+  danger: "#cc4444",
+  dangerDim: "rgba(204,68,68,0.15)",
+  warning: "#d4a843",
+  radius: { sm: 2, md: 3, lg: 4, xl: 4, xxl: 4 },
+  font: "system-ui, -apple-system, 'Segoe UI', sans-serif",
 };
 
 const FG_PRESETS = ["#000000", "#1e293b", "#1e3a8a", "#581c87", "#881337", "#064e3b", "#7c2d12", "#134e4a"];
@@ -48,35 +48,6 @@ const QUICK_PRESETS = [
 type PatternType = "square" | "dots" | "rounded" | "star" | "emoji" | "logo";
 type CornerType  = "square" | "dots" | "rounded" | "heart";
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700;800;900&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
 
 /* ─────────────────────────────────────────
    CANVAS QR RENDERER
@@ -320,29 +291,29 @@ interface ColorPickerProps {
 function ColorPicker({ label, value, presets, onChange }: ColorPickerProps) {
   return (
     <div>
-      <div style={{ fontSize: 10, fontWeight: 800, color: "#52525b", letterSpacing: "0.09em", textTransform: "uppercase", marginBottom: 10, fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div style={{ fontSize: 11, fontWeight: 400, color: "#999", letterSpacing: "normal", marginBottom: 6, fontFamily: T.font }}>
         {label}
       </div>
-      <div style={{ display: "flex", gap: 7, marginBottom: 12, flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 5, marginBottom: 8, flexWrap: "wrap" }}>
         {presets.map(c => (
           <button key={c} onClick={() => onChange(c)} style={{
-            width: 26, height: 26, borderRadius: "50%", background: c,
-            border: `2px solid ${value === c ? "#000" : "transparent"}`,
-            outline: value === c ? "2px solid rgba(0,0,0,0.15)" : "none",
-            outlineOffset: 2,
+            width: 22, height: 22, borderRadius: "50%", background: c,
+            border: `2px solid ${value === c ? "#ccc" : "transparent"}`,
+            outline: value === c ? "1px solid rgba(255,255,255,0.2)" : "none",
+            outlineOffset: 1,
             cursor: "pointer", transition: "all 0.15s",
-            transform: value === c ? "scale(1.15)" : "scale(1)",
+            transform: value === c ? "scale(1.1)" : "scale(1)",
             flexShrink: 0,
           }} />
         ))}
       </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{ position: "relative", width: 38, height: 38, borderRadius: 10, overflow: "hidden", border: "2px solid #000000", flexShrink: 0, boxShadow: "2px 2px 0 #000" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+        <div style={{ position: "relative", width: 28, height: 28, borderRadius: 2, overflow: "hidden", border: "1px solid #555", flexShrink: 0 }}>
           <input type="color" value={value} onChange={e => onChange(e.target.value)}
-            style={{ position: "absolute", inset: -8, width: 54, height: 54, cursor: "pointer", border: "none" }} />
+            style={{ position: "absolute", inset: -8, width: 44, height: 44, cursor: "pointer", border: "none" }} />
         </div>
         <input type="text" value={value.toUpperCase()} onChange={e => onChange(e.target.value)}
-          style={{ flex: 1, padding: "8px 12px", background: "#ffffff", border: "2px solid #000000", borderRadius: 10, fontSize: 13, fontFamily: "monospace", color: "#000000", outline: "none", fontWeight: 600, boxShadow: "2px 2px 0 #000" }} />
+          style={{ flex: 1, padding: "3px 6px", background: "#2a2a2a", border: "1px solid #555", borderRadius: 2, fontSize: 11, fontFamily: "monospace", color: "#ccc", outline: "none", fontWeight: 400 }} />
       </div>
     </div>
   );
@@ -360,26 +331,24 @@ interface OptionPillsProps {
 
 function OptionPills({ options, value, onChange, small = false }: OptionPillsProps) {
   return (
-    <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+    <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
       {options.map(o => {
         const active = value === o.id;
         return (
           <button key={o.id} onClick={() => onChange(o.id)} style={{
             display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-            gap: 7, padding: small ? "10px 12px" : "14px 10px",
-            minWidth: small ? 72 : 64, flex: small ? "1 1 72px" : "1 1 64px",
-            borderRadius: 14,
-            border: "2px solid #000000",
-            background: active ? "#000000" : "#ffffff",
-            color: active ? "#ffffff" : "#000000",
-            fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
-            cursor: "pointer", transition: "all 0.15s",
-            textTransform: "uppercase",
-            boxShadow: active ? "none" : "2px 2px 0 #000",
-            transform: active ? "translate(2px, 2px)" : "none",
+            gap: 4, padding: "6px 8px",
+            minWidth: small ? 64 : 56, flex: small ? "1 1 64px" : "1 1 56px",
+            borderRadius: 3,
+            border: active ? "1px solid #666" : "1px solid #444",
+            background: active ? "#505050" : "#3a3a3a",
+            color: active ? "#ffffff" : "#999",
+            fontSize: 10, fontWeight: 400, letterSpacing: "normal",
+            cursor: "pointer", transition: "all 0.12s",
+            textTransform: "none",
           }}>
-            <div style={{ opacity: active ? 1 : 0.7 }}>{o.icon}</div>
-            <span style={{ color: active ? "#ffffff" : "#000000" }}>{o.label}</span>
+            <div style={{ opacity: active ? 1 : 0.5 }}>{o.icon}</div>
+            <span>{o.label}</span>
           </button>
         );
       })}
@@ -401,32 +370,30 @@ interface UploadSlotProps {
 
 function UploadSlot({ label, value, onUpload, onClear, accept = "image/*", inputRef }: UploadSlotProps) {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
       <input type="file" accept={accept} ref={inputRef} style={{ display: "none" }}
         onChange={() => {
           const file = inputRef.current?.files?.[0]; if (!file) return;
           const reader = new FileReader(); reader.onload = e => onUpload(e.target?.result as string); reader.readAsDataURL(file);
         }} />
       <button onClick={() => inputRef.current?.click()} style={{
-        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        padding: "14px 20px",
-        background: value ? "rgba(22,163,74,0.1)" : "#ffffff",
-        border: `2px dashed ${value ? "#16a34a" : "#000000"}`,
-        borderRadius: 14, color: value ? "#16a34a" : "#000000",
-        fontSize: 13, fontWeight: 700, cursor: "pointer", transition: "all 0.2s",
-        boxShadow: "2px 2px 0 #000",
+        flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        padding: "6px 10px",
+        background: value ? "rgba(77,184,120,0.15)" : "#3a3a3a",
+        border: `1px dashed ${value ? "#4db878" : "#666"}`,
+        borderRadius: 3, color: value ? "#7dcea0" : "#999",
+        fontSize: 11, fontWeight: 400, cursor: "pointer", transition: "all 0.15s",
       }}>
-        {Icons.Upload(15)}
+        {Icons.Upload(13)}
         <span>{value ? "✓ Uploaded" : label}</span>
       </button>
       {value && (
         <button onClick={() => { onClear(); if (inputRef.current) inputRef.current.value = ""; }} style={{
-          padding: "14px", background: "#fecdd3", border: "2px solid #000",
-          borderRadius: 14, color: "#e11d48", cursor: "pointer", flexShrink: 0,
+          padding: "6px", background: "rgba(204,68,68,0.15)", border: "1px solid #555",
+          borderRadius: 3, color: "#cc6666", cursor: "pointer", flexShrink: 0,
           display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "2px 2px 0 #000",
         }}>
-          {Icons.Trash(15)}
+          {Icons.Trash(13)}
         </button>
       )}
     </div>
@@ -445,32 +412,31 @@ interface ToggleSwitchProps {
 
 function ToggleSwitch({ label, checked, onChange, description }: ToggleSwitchProps) {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
-      <div style={{ display: "flex", flexDirection: "column", gap: 2, textAlign: "left" }}>
-        <span style={{ fontSize: 13, fontWeight: 700, color: "#000000" }}>{label}</span>
-        {description && <span style={{ fontSize: 11, color: "#52525b" }}>{description}</span>}
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 1, textAlign: "left" }}>
+        <span style={{ fontSize: 11, fontWeight: 400, color: "#ccc" }}>{label}</span>
+        {description && <span style={{ fontSize: 10, color: "#777" }}>{description}</span>}
       </div>
       <button 
         onClick={() => onChange(!checked)}
         style={{
-          width: 48, height: 26, borderRadius: 13,
-          background: checked ? "#16a34a" : "#ffffff",
-          border: "2px solid #000000",
+          width: 36, height: 18, borderRadius: 9,
+          background: checked ? "#4db8d4" : "#2a2a2a",
+          border: "1px solid #555",
           cursor: "pointer", position: "relative",
           transition: "all 0.2s ease",
           flexShrink: 0, padding: 0,
           outline: "none",
-          boxShadow: "2px 2px 0 #000",
         }}
       >
         <div 
           style={{
-            width: 16, height: 16, borderRadius: "50%",
-            background: "#000000",
+            width: 12, height: 12, borderRadius: "50%",
+            background: checked ? "#fff" : "#888",
             position: "absolute", 
             top: "50%",
             transform: "translateY(-50%)",
-            left: checked ? 24 : 4,
+            left: checked ? 20 : 3,
             transition: "all 0.2s ease",
           }}
         />
@@ -524,7 +490,7 @@ interface SectionLabelProps {
 
 function SectionLabel({ children }: SectionLabelProps) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 800, color: "#52525b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10, fontFamily: "'Space Grotesk', sans-serif" }}>
+    <div style={{ fontSize: 11, fontWeight: 400, color: "#999", letterSpacing: "normal", marginBottom: 6, fontFamily: T.font }}>
       {children}
     </div>
   );
@@ -537,9 +503,9 @@ interface StatPillProps {
 
 function StatPill({ label, value }: StatPillProps) {
   return (
-    <div style={{ padding: "4px 8px", background: "#f8fafc", border: "2px solid #000", borderRadius: 8, textAlign: "center" }}>
-      <div style={{ fontSize: 11, fontWeight: 800, color: "#000" }}>{value}</div>
-      <div style={{ fontSize: 9, color: "#52525b", letterSpacing: "0.04em", fontWeight: 700 }}>{label}</div>
+    <div style={{ padding: "3px 6px", background: "#3a3a3a", border: "1px solid #555", borderRadius: 2, textAlign: "center" }}>
+      <div style={{ fontSize: 11, fontWeight: 400, color: "#ccc" }}>{value}</div>
+      <div style={{ fontSize: 9, color: "#888", letterSpacing: "normal", fontWeight: 400 }}>{label}</div>
     </div>
   );
 }
@@ -553,12 +519,11 @@ interface ChipProps {
 function Chip({ icon, label, small = false }: ChipProps) {
   return (
     <span style={{
-      display: "inline-flex", alignItems: "center", gap: 5,
-      padding: small ? "4px 9px" : "4px 10px",
-      borderRadius: 99, background: "#fef08a",
-      border: "2px solid #000000",
-      fontSize: small ? 10 : 11, fontWeight: 800, color: "#000", letterSpacing: "0.04em",
-      boxShadow: "2px 2px 0 #000",
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: small ? "2px 6px" : "3px 8px",
+      borderRadius: 2, background: "#3a3a3a",
+      border: "1px solid #555",
+      fontSize: small ? 10 : 10, fontWeight: 400, color: "#aaa", letterSpacing: "normal",
     }}>
       {icon}{label}
     </span>
@@ -568,15 +533,14 @@ function Chip({ icon, label, small = false }: ChipProps) {
 function ScanTip() {
   return (
     <div style={{
-      padding: "14px 16px", background: "rgba(251,191,36,0.05)",
-      border: "2px solid #000000", borderRadius: 16,
-      display: "flex", gap: 10, alignItems: "flex-start",
-      boxShadow: "2px 2px 0 #000",
+      padding: "6px 8px", background: "#3a3a3a",
+      border: "1px solid #555", borderRadius: 2,
+      display: "flex", gap: 8, alignItems: "flex-start",
     }}>
-      <span style={{ fontSize: 16, flexShrink: 0 }}>⚡</span>
+      <span style={{ fontSize: 11, flexShrink: 0, color: "#d4a843" }}>⚡</span>
       <div style={{ textAlign: "left" }}>
-        <div style={{ fontSize: 12, fontWeight: 800, color: "#b45309", marginBottom: 3, fontFamily: "'Space Grotesk', sans-serif" }}>Scannability tip</div>
-        <div style={{ fontSize: 12, color: "#52525b", lineHeight: 1.65, fontWeight: 500 }}>
+        <div style={{ fontSize: 11, fontWeight: 400, color: "#d4a843", marginBottom: 2, fontFamily: T.font }}>Scannability tip</div>
+        <div style={{ fontSize: 10, color: "#888", lineHeight: 1.5, fontWeight: 400 }}>
           Star and emoji patterns may struggle on older scanners. Use high contrast colors and ensure corner markers are clear.
         </div>
       </div>
@@ -596,41 +560,39 @@ function FAQItem({ question, answer }: FAQItemProps) {
     <div 
       onClick={() => setIsOpen(!isOpen)}
       style={{
-        background: "#ffffff",
-        border: "2px solid #000000",
-        borderRadius: 16,
-        padding: "16px 20px",
+        background: "#3a3a3a",
+        border: "1px solid #555",
+        borderRadius: 3,
+        padding: "8px 10px",
         cursor: "pointer",
-        transition: "all 0.2s ease",
+        transition: "all 0.15s ease",
         display: "flex",
         flexDirection: "column",
-        boxShadow: isOpen ? "none" : "3px 3px 0 #000",
-        transform: isOpen ? "translate(2px, 2px)" : "none",
         textAlign: "left",
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
         <h4 style={{ 
-          fontSize: 14, 
-          fontWeight: 800, 
-          color: "#000000", 
+          fontSize: 11, 
+          fontWeight: 400, 
+          color: "#ccc", 
           margin: 0, 
           display: "flex", 
-          gap: 10,
+          gap: 6,
           textAlign: "left",
           alignItems: "flex-start",
         }}>
-          <span style={{ color: "#F97316" }}>Q:</span> 
+          <span style={{ color: "#4db8d4" }}>Q:</span> 
           <span>{question}</span>
         </h4>
         <div style={{ 
-          color: "#000000",
+          color: "#888",
           transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
-          transition: "transform 0.2s ease",
+          transition: "transform 0.15s ease",
           flexShrink: 0,
           display: "flex",
-          fontWeight: "bold",
-          fontSize: 10,
+          fontWeight: 400,
+          fontSize: 9,
         }}>
           ▼
         </div>
@@ -639,18 +601,18 @@ function FAQItem({ question, answer }: FAQItemProps) {
         maxHeight: isOpen ? 500 : 0,
         opacity: isOpen ? 1 : 0,
         overflow: "hidden",
-        transition: "all 0.3s ease",
+        transition: "all 0.2s ease",
         pointerEvents: isOpen ? "auto" : "none",
-        marginTop: isOpen ? 12 : 0,
+        marginTop: isOpen ? 8 : 0,
       }}>
         <p style={{ 
-          fontSize: 13, 
-          color: "#3f3f46", 
-          lineHeight: 1.6, 
+          fontSize: 11, 
+          color: "#999", 
+          lineHeight: 1.5, 
           margin: 0, 
-          paddingLeft: 22,
+          paddingLeft: 18,
           textAlign: "left",
-          fontWeight: 500,
+          fontWeight: 400,
         }}>
           {answer}
         </p>
@@ -669,17 +631,16 @@ interface URLInputProps {
 function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
   return (
     <div style={{
-      background: "#ffffff",
-      border: "2px solid #000000",
-      borderRadius: 16, padding: "14px 16px",
-      boxShadow: "3px 3px 0 #000",
+      background: "#3a3a3a",
+      border: "1px solid #555",
+      borderRadius: 3, padding: "6px 10px",
     }}>
-      <label style={{ display: "block", fontSize: 10, fontWeight: 800, color: "#52525b", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8, textAlign: "left", fontFamily: "'Space Grotesk', sans-serif" }}>
+      <label style={{ display: "block", fontSize: 10, fontWeight: 400, color: "#888", letterSpacing: "normal", marginBottom: 4, textAlign: "left", fontFamily: T.font }}>
         Destination URL
       </label>
-      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <span style={{ color: "#000000", flexShrink: 0, display: "flex" }}>
-          <svg width={15} height={15} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="round" strokeLinejoin="round">
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <span style={{ color: "#888", flexShrink: 0, display: "flex" }}>
+          <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
           </svg>
         </span>
@@ -690,22 +651,21 @@ function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
           placeholder="https://your-link.com"
           style={{
             flex: 1, background: "none", border: "none", outline: "none",
-            fontSize: 14, color: "#000000", fontFamily: "'DM Sans', sans-serif",
-            fontWeight: 600, minWidth: 0,
+            fontSize: 11, color: "#ccc", fontFamily: T.font,
+            fontWeight: 400, minWidth: 0,
           }}
         />
         {url && (
-          <button onClick={onCopy} className="ig-btn" style={{
-            padding: "6px 12px", background: copied ? "#dcfce7" : "#ffffff",
-            border: "2px solid #000000",
-            borderRadius: 10, color: copied ? "#15803d" : "#000000",
-            cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 11,
-            fontWeight: 700, transition: "all 0.15s", fontFamily: "'Space Grotesk', sans-serif", whiteSpace: "nowrap",
-            boxShadow: "2px 2px 0 #000",
+          <button onClick={onCopy} style={{
+            padding: "3px 8px", background: copied ? "rgba(77,184,120,0.2)" : "#444",
+            border: "1px solid #555",
+            borderRadius: 2, color: copied ? "#7dcea0" : "#ccc",
+            cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 10,
+            fontWeight: 400, transition: "all 0.12s", fontFamily: T.font, whiteSpace: "nowrap",
           }}>
             {copied
-              ? <><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M20 6 9 17l-5-5"/></svg> Copied</>
-              : <><svg width={12} height={12} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z"/></svg> Copy</>
+              ? <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M20 6 9 17l-5-5"/></svg> Copied</>
+              : <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z"/></svg> Copy</>
             }
           </button>
         )}
@@ -725,9 +685,8 @@ interface PreviewCardProps {
 function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transparentBg }: PreviewCardProps) {
   return (
     <div style={{
-      background: "#ffffff", border: "2px solid #000000",
-      borderRadius: 28, padding: 24,
-      boxShadow: "6px 6px 0 #000",
+      background: "#3a3a3a", border: "1px solid #555",
+      borderRadius: 3, padding: 10,
     }}>
       {/* Canvas */}
       <div 
@@ -735,44 +694,43 @@ function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transpare
         onClick={onExpand} 
         style={{
           background: transparentBg ? undefined : "#fff", 
-          borderRadius: 20, padding: 16, cursor: "pointer",
+          borderRadius: 2, padding: 6, cursor: "pointer",
           aspectRatio: "1/1", display: "flex", alignItems: "center", justifyContent: "center",
-          overflow: "hidden", transition: "transform 0.2s",
+          overflow: "hidden", transition: "transform 0.15s",
           position: "relative",
-          border: "2px solid #000000",
+          border: "1px solid #555",
         }}
-        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.01)"}
+        onMouseEnter={e => e.currentTarget.style.transform = "scale(1.005)"}
         onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
       >
-        <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 8 }} />
-        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: "#fff", fontSize: 13, fontWeight: 700, opacity: 0, transition: "opacity 0.2s", borderRadius: 20 }}
+        <canvas ref={canvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 2 }} />
+        <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6, color: "#fff", fontSize: 11, fontWeight: 400, opacity: 0, transition: "opacity 0.15s", borderRadius: 2 }}
           onMouseEnter={e => { e.stopPropagation(); e.currentTarget.style.opacity = "1"; }}
           onMouseLeave={e => { e.currentTarget.style.opacity = "0"; }}>
-          <svg width={22} height={22} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5} style={{ display: "block" }}><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+          <svg width={18} height={18} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ display: "block" }}><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
           Full size
         </div>
       </div>
 
       {/* Stats */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8, margin: "16px 0" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4, margin: "8px 0" }}>
         {[["Level H", "Error Corr."], ["2048px", "Resolution"], ["PNG", "Format"]].map(([v, l]) => (
-          <div key={l} style={{ textAlign: "center", padding: "10px 6px", background: "#f8fafc", borderRadius: 10, border: "2px solid #000000" }}>
-            <div style={{ fontSize: 12, fontWeight: 800, color: "#000000" }}>{v}</div>
-            <div style={{ fontSize: 9, color: "#52525b", marginTop: 2, letterSpacing: "0.04em", textTransform: "uppercase", fontWeight: 700 }}>{l}</div>
+          <div key={l} style={{ textAlign: "center", padding: "4px 4px", background: "#444", borderRadius: 2, border: "1px solid #555" }}>
+            <div style={{ fontSize: 11, fontWeight: 400, color: "#ccc" }}>{v}</div>
+            <div style={{ fontSize: 9, color: "#888", marginTop: 1, fontWeight: 400 }}>{l}</div>
           </div>
         ))}
       </div>
 
       {/* Download */}
-      <button className="ig-btn" onClick={onDownload} style={{
-        width: "100%", padding: "15px 20px", background: "#fde047",
-        border: "2px solid #000000", borderRadius: 16, color: "#000000",
-        fontSize: 14, fontWeight: 900, cursor: "pointer",
-        display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-        fontFamily: "'Space Grotesk', sans-serif",
-        boxShadow: "3px 3px 0 #000",
+      <button onClick={onDownload} style={{
+        width: "100%", padding: "7px 10px", background: "#4db8d4",
+        border: "none", borderRadius: 3, color: "#1a1a1a",
+        fontSize: 11, fontWeight: 500, cursor: "pointer",
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+        fontFamily: T.font,
       }}>
-        {Icons.Download(18)} Export 2048×2048
+        {Icons.Download(14)} Export 2048×2048
       </button>
     </div>
   );
@@ -837,7 +795,7 @@ export default function QRStudio() {
   /* ── Tab panel contents ── */
   const tabPanels: { [key: string]: React.ReactNode } = {
     pattern: (
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <div>
           <SectionLabel>Dot Style</SectionLabel>
           <OptionPills value={patternType} onChange={setPatternType} options={[
@@ -851,11 +809,11 @@ export default function QRStudio() {
         </div>
 
         {patternType === "emoji" && (
-          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "#f8fafc", borderRadius: 14, border: "2px solid #000000" }}>
-            <span style={{ fontSize: 12, fontWeight: 700, color: "#52525b", flex: 1, fontFamily: "'Space Grotesk', sans-serif" }}>Emoji character</span>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 10px", background: "#323232", borderRadius: 4, border: "1px solid #555" }}>
+            <span style={{ fontSize: 12, fontWeight: 500, color: "#888", flex: 1, fontFamily: 'system-ui, -apple-system, sans-serif' }}>Emoji character</span>
             <input type="text" value={emojiChar}
               onChange={e => { const c = Array.from(e.target.value); setEmojiChar(c.length ? c[c.length - 1] : ""); }}
-              style={{ width: 64, textAlign: "center", fontSize: 20, padding: "8px 10px", background: "#ffffff", border: "2px solid #000000", borderRadius: 10, color: "#000000", outline: "none", fontWeight: "bold" }}
+              style={{ width: 64, textAlign: "center", fontSize: 12, padding: "8px 10px", background: "#3a3a3a", border: "1px solid #555", borderRadius: 4, color: "#ccc", outline: "none", fontWeight: 500 }}
             />
           </div>
         )}
@@ -874,17 +832,17 @@ export default function QRStudio() {
             {QUICK_PRESETS.map(p => (
               <button key={p.label} onClick={() => applyPreset(p)} style={{
                 display: "flex", alignItems: "center", gap: 8, flexShrink: 0,
-                padding: "10px 14px", background: "#ffffff",
-                border: "2px solid #000000", borderRadius: 12,
-                cursor: "pointer", fontFamily: T.font, transition: "all 0.15s",
-                boxShadow: "2px 2px 0 #000",
+                padding: "6px 8px", background: "#3a3a3a",
+                border: "1px solid #555", borderRadius: 4,
+                cursor: "pointer", fontFamily: 'system-ui, -apple-system, sans-serif', transition: "all 0.15s",
+                boxShadow: "none",
               }}
               >
                 <div style={{ display: "flex", gap: 4 }}>
                   <div style={{ width: 12, height: 12, borderRadius: "50%", background: p.fg }} />
                   <div style={{ width: 12, height: 12, borderRadius: "50%", background: p.bg, border: "1px solid rgba(0,0,0,0.15)" }} />
                 </div>
-                <span style={{ fontSize: 12, fontWeight: 700, color: "#000000", whiteSpace: "nowrap" }}>{p.label}</span>
+                <span style={{ fontSize: 12, fontWeight: 500, color: "#ccc", whiteSpace: "nowrap" }}>{p.label}</span>
               </button>
             ))}
           </div>
@@ -895,7 +853,7 @@ export default function QRStudio() {
     ),
 
     colors: (
-      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <ToggleSwitch 
           label="Transparent Background" 
           checked={transparentBg} 
@@ -903,11 +861,11 @@ export default function QRStudio() {
           description="Remove background for overlaying on design assets"
         />
         
-        <div style={{ height: 2, background: "#000000", borderStyle: "dashed" }} />
+        <div style={{ height: 2, background: "#383838", borderStyle: "dashed" }} />
 
         <ColorPicker label="Foreground Color" value={fgColor} presets={FG_PRESETS} onChange={setFgColor} />
         
-        <div style={{ height: 2, background: "#000000", borderStyle: "dashed" }} />
+        <div style={{ height: 2, background: "#383838", borderStyle: "dashed" }} />
 
         <div style={{ 
           opacity: transparentBg ? 0.35 : 1, 
@@ -916,13 +874,13 @@ export default function QRStudio() {
         }}>
           <ColorPicker label="Background Color" value={bgColor} presets={BG_PRESETS} onChange={setBgColor} />
           {transparentBg && (
-            <div style={{ fontSize: 11, color: "#ea580c", marginTop: 8, fontWeight: 700, textAlign: "left", fontFamily: "'Space Grotesk', sans-serif" }}>
+            <div style={{ fontSize: 11, color: "#ea580c", marginTop: 8, fontWeight: 500, textAlign: "left", fontFamily: 'system-ui, -apple-system, sans-serif' }}>
               ⚠ Background color is hidden (transparent is enabled)
             </div>
           )}
         </div>
 
-        <div style={{ height: 2, background: "#000000", borderStyle: "dashed" }} />
+        <div style={{ height: 2, background: "#383838", borderStyle: "dashed" }} />
 
         <ToggleSwitch 
           label="Custom Marker Color" 
@@ -937,46 +895,46 @@ export default function QRStudio() {
           </div>
         )}
 
-        <div style={{ height: 2, background: "#000000", borderStyle: "dashed" }} />
+        <div style={{ height: 2, background: "#383838", borderStyle: "dashed" }} />
 
-        <div style={{ padding: "14px 16px", background: "rgba(251,191,36,0.05)", border: "2px solid #000000", borderRadius: 16, boxShadow: "2px 2px 0 #000" }}>
-          <div style={{ fontSize: 12, fontWeight: 850, color: "#b45309", marginBottom: 4, fontFamily: "'Space Grotesk', sans-serif" }}>Contrast matters</div>
-          <div style={{ fontSize: 12, color: "#52525b", lineHeight: 1.6, fontWeight: 500 }}>For reliable scanning, ensure strong contrast between foreground and background. Aim for at least 4:1 contrast ratio.</div>
+        <div style={{ padding: "8px 10px", background: "#3a3a3a", border: "1px solid #555", borderRadius: 4, boxShadow: "none" }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: "#d4a843", marginBottom: 4, fontFamily: 'system-ui, -apple-system, sans-serif' }}>Contrast matters</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6, fontWeight: 500 }}>For reliable scanning, ensure strong contrast between foreground and background. Aim for at least 4:1 contrast ratio.</div>
         </div>
       </div>
     ),
 
     corners: (
-      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <SectionLabel>Finder Marker Style</SectionLabel>
         <OptionPills small value={cornerType} onChange={setCornerType} options={[
           { id: "square",  label: "Classic", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor" }} /> },
           { id: "rounded", label: "Rounded", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: 4 }} /> },
           { id: "dots",    label: "Circles", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: "50%" }} /> },
-          { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 14 }}>♥</span> },
+          { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 12 }}>♥</span> },
         ]} />
-        <div style={{ padding: "14px 16px", background: "#f8fafc", border: "2px solid #000000", borderRadius: 16, boxShadow: "2px 2px 0 #000" }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: "#000000", marginBottom: 4, fontFamily: "'Space Grotesk', sans-serif" }}>What are finder markers?</div>
-          <div style={{ fontSize: 12, color: "#52525b", lineHeight: 1.6, fontWeight: 500 }}>The three corner squares help scanners detect and orient the QR code. These are always drawn last to ensure maximum scan reliability.</div>
+        <div style={{ padding: "8px 10px", background: "#323232", border: "1px solid #555", borderRadius: 4, boxShadow: "none" }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: "#ccc", marginBottom: 4, fontFamily: 'system-ui, -apple-system, sans-serif' }}>What are finder markers?</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.6, fontWeight: 500 }}>The three corner squares help scanners detect and orient the QR code. These are always drawn last to ensure maximum scan reliability.</div>
         </div>
       </div>
     ),
 
     branding: (
-      <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         <div>
           <SectionLabel>Center Logo</SectionLabel>
           <UploadSlot label="Upload brand logo" value={centerLogo} inputRef={centerLogoRef}
             onUpload={setCenterLogo} onClear={() => setCenterLogo(null)} />
           {centerLogo && (
-            <div style={{ marginTop: 10, padding: "10px 14px", background: "#dcfce7", borderRadius: 12, border: "2px solid #000000", fontSize: 12, color: "#15803d", fontWeight: 700, fontFamily: "'Space Grotesk', sans-serif", boxShadow: "2px 2px 0 #000" }}>
-              ✓ Error correction set to Level H — best scan rate with logos
+            <div style={{ marginTop: 10, padding: "6px 8px", background: "rgba(77,184,120,0.15)", borderRadius: 4, border: "1px solid #555", fontSize: 12, color: "#7dcea0", fontWeight: 500, fontFamily: 'system-ui, -apple-system, sans-serif', boxShadow: "none" }}>
+              ✓ Error correction set to Level H - best scan rate with logos
             </div>
           )}
         </div>
-        <div style={{ padding: "14px 16px", background: "#f8fafc", border: "2px solid #000000", borderRadius: 16, boxShadow: "2px 2px 0 #000" }}>
-          <div style={{ fontSize: 12, fontWeight: 800, color: "#000000", marginBottom: 4, fontFamily: "'Space Grotesk', sans-serif" }}>Logo guidelines</div>
-          <div style={{ fontSize: 12, color: "#52525b", lineHeight: 1.8, fontWeight: 500 }}>
+        <div style={{ padding: "8px 10px", background: "#323232", border: "1px solid #555", borderRadius: 4, boxShadow: "none" }}>
+          <div style={{ fontSize: 12, fontWeight: 500, color: "#ccc", marginBottom: 4, fontFamily: 'system-ui, -apple-system, sans-serif' }}>Logo guidelines</div>
+          <div style={{ fontSize: 12, color: "#888", lineHeight: 1.8, fontWeight: 500 }}>
             • PNG or SVG with transparent background works best<br/>
             • Keep logo under 30% of QR width for reliability<br/>
             • High contrast logos scan more dependably
@@ -995,11 +953,10 @@ export default function QRStudio() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
-      <style>{GLOBAL_STYLES}</style>
+    <div className="min-h-screen bg-[#333] text-[#ccc] font-sans pb-24 relative overflow-hidden ig-root">
       <style>{`
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        input[type=range] { accent-color: #000000; }
+        input[type=range] { accent-color: #4db8d4; }
         ::-webkit-scrollbar { display: none; }
 
         .qr-tab-btn:active { transform: scale(0.9) !important; }
@@ -1042,23 +999,23 @@ export default function QRStudio() {
       <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
         <Link
           href="/tools"
-          className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
+          className="flex items-center gap-1 px-2 py-1 bg-[#3a3a3a] border border-[#555] rounded-sm text-[#aaa] font-normal text-[10px] sm:text-[11px] hover:bg-[#444] transition-colors"
         >
-          <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+          <ArrowLeft size={11} strokeWidth={2} /> Back
         </Link>
-        <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black border-2 border-black shadow-[2.5px_2.5px_0_#000] bg-orange-500">
-            <QrCode size={14} />
+        <div className="flex items-center gap-2 sm:gap-2 relative z-10">
+          <div className="w-6 h-6 rounded-sm flex items-center justify-center text-[#aaa] text-xs border border-[#555] bg-[#3a3a3a]">
+            <QrCode size={12} />
           </div>
-          <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
+          <span className="text-[11px] sm:text-[13px] font-normal tracking-normal text-[#ccc]">
             QR Code Generator
           </span>
           <button 
             onClick={() => setShowHelp(true)}
-            className="p-1 bg-white border-2 border-black rounded-full text-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
+            className="p-0.5 bg-[#3a3a3a] border border-[#555] rounded-sm text-[#888] hover:bg-[#444] transition-colors"
             title="Help"
           >
-            <HelpCircle size={12} />
+            <HelpCircle size={11} />
           </button>
         </div>
       </header>
@@ -1068,18 +1025,18 @@ export default function QRStudio() {
         {/* ─── DESKTOP LAYOUT ─── */}
         <div className="qr-desktop-grid" style={{ display: "none" }}>
           {/* Left: controls */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {/* Desktop header description */}
-            <div style={{ marginBottom: 8, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(12px)", transition: "all 0.5s ease" }}>
-              <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-                <Chip icon={<Shield size={11} />} label="100% Private" />
-                <Chip icon={<Zap size={11} />} label="Client-side" />
+            <div style={{ marginBottom: 8, opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(8px)", transition: "all 0.3s ease" }}>
+              <div style={{ display: "flex", gap: 4, marginBottom: 8, flexWrap: "wrap" }}>
+                <Chip icon={<Shield size={10} />} label="100% Private" />
+                <Chip icon={<Zap size={10} />} label="Client-side" />
               </div>
-              <h1 className="ig-display" style={{ margin: 0, fontSize: "clamp(2rem, 3.5vw, 3rem)", fontWeight: 900, lineHeight: 1.15, color: "#000", letterSpacing: "-0.03em" }}>
+              <h1 style={{ margin: 0, fontSize: 14, fontWeight: 500, lineHeight: 1.2, color: "#ccc", letterSpacing: "normal" }}>
                 QR Code Generator
               </h1>
-              <p style={{ margin: "10px 0 0", fontSize: 14.5, color: "#52525b", lineHeight: 1.6, maxWidth: 520, fontWeight: 500 }}>
-                Craft pixel-perfect QR codes with custom patterns, brand overlays, and precision color control — processed locally, never uploaded.
+              <p style={{ margin: "6px 0 0", fontSize: 11, color: "#888", lineHeight: 1.5, maxWidth: 520, fontWeight: 400 }}>
+                Craft pixel-perfect QR codes with custom patterns, brand overlays, and precision color control - processed locally, never uploaded.
               </p>
             </div>
 
@@ -1087,24 +1044,24 @@ export default function QRStudio() {
             <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />
 
             {/* Tab bar (desktop) */}
-            <div style={{ display: "flex", gap: 4, background: "#ffffff", padding: 4, borderRadius: 16, border: "2px solid #000000", boxShadow: "3px 3px 0 #000" }}>
+            <div style={{ display: "flex", gap: 0, background: "#3a3a3a", padding: 2, borderRadius: 3, border: "1px solid #555" }}>
               {tabs.map(tab => (
                 <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
-                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 7,
-                  padding: "10px 8px", borderRadius: 12,
-                  background: activeTab === tab.id ? "#000000" : "transparent",
-                  border: "none",
-                  color: activeTab === tab.id ? "#ffffff" : "#52525b",
-                  fontSize: 12, fontWeight: 800, cursor: "pointer", transition: "all 0.2s", fontFamily: "'Space Grotesk', sans-serif",
+                  flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 5,
+                  padding: "5px 6px", borderRadius: 2,
+                  background: activeTab === tab.id ? "#505050" : "transparent",
+                  border: activeTab === tab.id ? "1px solid #666" : "1px solid transparent",
+                  color: activeTab === tab.id ? "#fff" : "#888",
+                  fontSize: 11, fontWeight: 400, cursor: "pointer", transition: "all 0.12s", fontFamily: T.font,
                 }}>
-                  <span style={{ opacity: activeTab === tab.id ? 1 : 0.6 }}>{tab.icon}</span>
+                  <span style={{ opacity: activeTab === tab.id ? 1 : 0.5 }}>{tab.icon}</span>
                   <span>{tab.label}</span>
                 </button>
               ))}
             </div>
 
             {/* Panel */}
-            <div style={{ background: "#ffffff", border: "2px solid #000000", borderRadius: 24, padding: 24, boxShadow: "4px 4px 0 #000" }}>
+            <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: 10 }}>
               {tabPanels[activeTab]}
             </div>
           </div>
@@ -1119,16 +1076,16 @@ export default function QRStudio() {
         <div className="qr-mobile-only qr-main-content" style={{ display: "flex", flexDirection: "column", paddingBottom: 90 }}>
 
           {/* Mobile header strip */}
-          <div style={{ padding: "12px 20px 0", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(10px)", transition: "all 0.5s" }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ padding: "10px 16px 0", opacity: mounted ? 1 : 0, transform: mounted ? "none" : "translateY(6px)", transition: "all 0.3s" }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
               <div>
-                <h1 className="ig-display" style={{ margin: 0, fontSize: "1.6rem", fontWeight: 900, color: "#000", letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+                <h1 style={{ margin: 0, fontSize: "1.1rem", fontWeight: 400, color: "#ccc", letterSpacing: "normal", lineHeight: 1.2 }}>
                   QR Code Generator
                 </h1>
-                <p style={{ margin: "4px 0 0", fontSize: 12, color: "#52525b", fontWeight: 500 }}>Client-side · Zero uploads</p>
+                <p style={{ margin: "2px 0 0", fontSize: 10, color: "#888", fontWeight: 400 }}>Client-side · Zero uploads</p>
               </div>
-              <div style={{ display: "flex", gap: 6 }}>
-                <Chip icon={<Shield size={11} />} label="Private" small />
+              <div style={{ display: "flex", gap: 4 }}>
+                <Chip icon={<Shield size={10} />} label="Private" small />
               </div>
             </div>
           </div>
@@ -1141,52 +1098,50 @@ export default function QRStudio() {
           {/* QR PREVIEW (mobile, compact) */}
           <div style={{ padding: "0 20px", marginBottom: 16 }}>
             <div style={{
-              background: "#ffffff", border: "2px solid #000000",
-              borderRadius: 24, padding: 16,
-              boxShadow: "3px 3px 0 #000",
-              opacity: mounted ? 1 : 0, transform: mounted ? "none" : "scale(0.97)",
-              transition: "all 0.5s cubic-bezier(0.22,1,0.36,1) 0.1s",
+              background: "#3a3a3a", border: "1px solid #555",
+              borderRadius: 3, padding: 6,
+              opacity: mounted ? 1 : 0, transform: mounted ? "none" : "scale(0.98)",
+              transition: "all 0.3s ease 0.1s",
             }}>
-              <div style={{ display: "flex", gap: 14, alignItems: "center" }}>
+              <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                 {/* Canvas */}
                 <div
                   className={`${previewPulsed ? "qr-preview-pulse" : ""} ${transparentBg ? "transparent-checkered" : ""}`}
                   onClick={openLightbox}
                   style={{
-                    width: 120, height: 120, flexShrink: 0,
-                    background: transparentBg ? undefined : "#fff", borderRadius: 16, overflow: "hidden",
-                    cursor: "pointer", padding: 6,
-                    border: "2px solid #000000",
+                    width: 100, height: 100, flexShrink: 0,
+                    background: transparentBg ? undefined : "#fff", borderRadius: 2, overflow: "hidden",
+                    cursor: "pointer", padding: 4,
+                    border: "1px solid #555",
                     display: "flex", alignItems: "center", justifyContent: "center",
                   }}
                 >
-                  <canvas ref={mobileCanvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 4 }} />
+                  <canvas ref={mobileCanvasRef} style={{ width: "100%", height: "100%", display: "block", borderRadius: 2 }} />
                 </div>
 
                 {/* Right meta */}
                 <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontSize: 13, fontWeight: 800, color: "#000000", marginBottom: 6, lineHeight: 1.3, fontFamily: "'Space Grotesk', sans-serif" }}>
+                  <div style={{ fontSize: 11, fontWeight: 400, color: "#ccc", marginBottom: 4, lineHeight: 1.3, fontFamily: T.font }}>
                     {url ? "Ready to scan" : "Enter a URL below"}
                   </div>
                   {url && (
-                    <div style={{ fontSize: 11, color: "#52525b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 10, maxWidth: "100%", fontWeight: 550 }}>
+                    <div style={{ fontSize: 10, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6, maxWidth: "100%", fontWeight: 400 }}>
                       {url}
                     </div>
                   )}
-                  <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                  <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
                     <StatPill label="Error" value="H" />
                     <StatPill label="Format" value="PNG" />
                     <StatPill label="Res" value="2K" />
                   </div>
                   {/* Expand button */}
-                  <button onClick={openLightbox} className="ig-btn" style={{
-                    display: "flex", alignItems: "center", gap: 5,
-                    padding: "7px 12px", background: "#ffffff",
-                    border: "2px solid #000000", borderRadius: 10,
-                    color: "#000000", fontSize: 11, fontWeight: 700, cursor: "pointer", fontFamily: T.font,
-                    boxShadow: "2px 2px 0 #000",
+                  <button onClick={openLightbox} style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 8px", background: "#444",
+                    border: "1px solid #555", borderRadius: 2,
+                    color: "#ccc", fontSize: 10, fontWeight: 400, cursor: "pointer", fontFamily: T.font,
                   }}>
-                    {Icons.Expand(12)} Full preview
+                    {Icons.Expand(10)} Full preview
                   </button>
                 </div>
               </div>
@@ -1194,24 +1149,24 @@ export default function QRStudio() {
           </div>
 
           {/* TAB BAR (mobile) */}
-          <div style={{ padding: "0 20px 4px" }}>
-            <div style={{ display: "flex", gap: 0, background: "#ffffff", padding: 4, borderRadius: 16, border: "2px solid #000000", boxShadow: "3px 3px 0 #000" }}>
+          <div style={{ padding: "0 16px 4px" }}>
+            <div style={{ display: "flex", gap: 0, background: "#3a3a3a", padding: 2, borderRadius: 3, border: "1px solid #555" }}>
               {tabs.map(tab => {
                 const active = activeTab === tab.id;
                 return (
                   <button key={tab.id} className="qr-tab-btn" onClick={() => setActiveTab(tab.id)} style={{
                     flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                    gap: 4, padding: "9px 4px",
-                    borderRadius: 12,
-                    background: active ? "#000000" : "transparent",
-                    border: "none",
-                    color: active ? "#ffffff" : "#52525b",
-                    fontSize: 9, fontWeight: 800, letterSpacing: "0.06em",
-                    cursor: "pointer", transition: "all 0.18s", fontFamily: T.font,
-                    textTransform: "uppercase",
+                    gap: 3, padding: "5px 4px",
+                    borderRadius: 2,
+                    background: active ? "#505050" : "transparent",
+                    border: active ? "1px solid #666" : "1px solid transparent",
+                    color: active ? "#fff" : "#888",
+                    fontSize: 9, fontWeight: 400, letterSpacing: "normal",
+                    cursor: "pointer", transition: "all 0.12s", fontFamily: T.font,
+                    textTransform: "none",
                   }}>
-                    <span style={{ opacity: active ? 1 : 0.6 }}>{tab.icon}</span>
-                    <span style={{ color: active ? "#ffffff" : "#52525b" }}>{tab.label}</span>
+                    <span style={{ opacity: active ? 1 : 0.5 }}>{tab.icon}</span>
+                    <span>{tab.label}</span>
                   </button>
                 );
               })}
@@ -1219,11 +1174,10 @@ export default function QRStudio() {
           </div>
 
           {/* SETTINGS PANEL (mobile) */}
-          <div style={{ padding: "12px 20px 0" }}>
+          <div style={{ padding: "8px 16px 0" }}>
             <div style={{
-              background: "#ffffff", border: "2px solid #000000",
-              borderRadius: 24, padding: "20px 18px",
-              boxShadow: "3px 3px 0 #000",
+              background: "#3a3a3a", border: "1px solid #555",
+              borderRadius: 3, padding: "8px",
             }}>
               {tabPanels[activeTab]}
             </div>
@@ -1233,32 +1187,29 @@ export default function QRStudio() {
         {/* ─── MOBILE BOTTOM BAR ─── */}
         <div className="qr-bottom-safe" style={{
           position: "fixed", bottom: 0, left: 0, right: 0, zIndex: 50,
-          padding: "12px 20px 28px",
-          background: "linear-gradient(to top, #F4ECD8 60%, transparent)",
-          display: "flex", alignItems: "center", gap: 10,
+          padding: "8px 16px 20px",
+          background: "linear-gradient(to top, #333 70%, transparent)",
+          display: "flex", alignItems: "center", gap: 6,
         }}>
-          <button className="qr-dl-btn ig-btn" onClick={download} style={{
-            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            padding: "17px 24px",
-            background: "#fde047",
-            border: "2px solid #000000", borderRadius: 16,
-            color: "#000000", fontSize: 15, fontWeight: 900,
+          <button className="qr-dl-btn" onClick={download} style={{
+            flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+            padding: "8px 10px",
+            background: "#4db8d4",
+            border: "none", borderRadius: 3,
+            color: "#1a1a1a", fontSize: 11, fontWeight: 500,
             cursor: "pointer", fontFamily: T.font,
-            boxShadow: "3px 3px 0 #000",
-            transition: "all 0.15s",
-            letterSpacing: "0.01em",
+            transition: "all 0.12s",
           }}>
-            {Icons.Download(18)} Export 2048×2048
+            {Icons.Download(14)} Export 2048×2048
           </button>
 
-          <button onClick={handleCopy} className="ig-btn" style={{
-            width: 52, height: 52, display: "flex", alignItems: "center", justifyContent: "center",
-            background: "#ffffff", border: "2px solid #000000",
-            borderRadius: 12, color: copied ? "#16a34a" : "#000000",
-            cursor: "pointer", transition: "all 0.15s", flexShrink: 0,
-            boxShadow: "2px 2px 0 #000",
+          <button onClick={handleCopy} style={{
+            width: 36, height: 36, display: "flex", alignItems: "center", justifyContent: "center",
+            background: "#3a3a3a", border: "1px solid #555",
+            borderRadius: 3, color: copied ? "#7dcea0" : "#ccc",
+            cursor: "pointer", transition: "all 0.12s", flexShrink: 0,
           }}>
-            {copied ? Icons.Check(18) : Icons.Copy(18)}
+            {copied ? Icons.Check(14) : Icons.Copy(14)}
           </button>
         </div>
 
@@ -1269,16 +1220,16 @@ export default function QRStudio() {
         {/* ─── SEO RICH TEXT SECTION ─── */}
         <div style={{
           marginTop: 64,
-          padding: "48px 24px",
-          background: "#ffffff",
-          border: "2px solid #000000",
-          borderRadius: 36,
-          color: "#000000",
+          padding: "16px",
+          background: "#3a3a3a",
+          border: "1px solid #555",
+          borderRadius: 4,
+          color: "#ccc",
           maxWidth: "100%",
           textAlign: "left",
           position: "relative",
           overflow: "hidden",
-          boxShadow: "6px 6px 0 #000",
+          boxShadow: "none",
         }}>
           <div style={{ position: "relative", zIndex: 1 }}>
             {/* Top Badges */}
@@ -1290,19 +1241,19 @@ export default function QRStudio() {
 
             {/* Main Title & Subtitle */}
             <div style={{ textAlign: "center", marginBottom: 40 }}>
-              <h2 className="ig-display" style={{
-                fontSize: "clamp(1.6rem, 3.5vw, 2.4rem)",
-                fontWeight: 900,
-                color: "#000000",
-                letterSpacing: "-0.02em",
+              <h2 className="" style={{
+                fontSize: 12,
+                fontWeight: 500,
+                color: "#ccc",
+                letterSpacing: "normal",
                 margin: "0 0 16px",
                 lineHeight: 1.2
               }}>
                 Free Custom QR Code Generator with No Watermarks
               </h2>
               <p style={{
-                fontSize: 14,
-                color: "#52525b",
+                fontSize: 12,
+                color: "#888",
                 lineHeight: 1.65,
                 maxWidth: 720,
                 margin: "0 auto",
@@ -1316,7 +1267,7 @@ export default function QRStudio() {
             <div style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: 24,
+              gap: 12,
               marginBottom: 48
             }}>
               {[
@@ -1337,27 +1288,27 @@ export default function QRStudio() {
                 }
               ].map(f => (
                 <div key={f.title} style={{
-                  padding: 24,
-                  background: "#f8fafc",
-                  border: "2px solid #000000",
-                  borderRadius: 16,
-                  boxShadow: "3px 3px 0 #000"
+                  padding: 12,
+                  background: "#323232",
+                  border: "1px solid #555",
+                  borderRadius: 4,
+                  boxShadow: "none"
                 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
-                    <div style={{ color: "#F97316" }}>{f.icon}</div>
-                    <h3 className="ig-display" style={{ fontSize: 16, fontWeight: 800, margin: 0, color: "#000000" }}>{f.title}</h3>
+                    <div style={{ color: "#4db8d4" }}>{f.icon}</div>
+                    <h3 className="" style={{ fontSize: 12, fontWeight: 500, margin: 0, color: "#ccc" }}>{f.title}</h3>
                   </div>
-                  <p style={{ fontSize: 13, color: "#52525b", margin: 0, lineHeight: 1.6, fontWeight: 500 }}>{f.desc}</p>
+                  <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.6, fontWeight: 500 }}>{f.desc}</p>
                 </div>
               ))}
             </div>
 
             {/* FAQ Accordion Section */}
             <div style={{ maxWidth: 800, margin: "0 auto" }}>
-              <h3 className="ig-display" style={{ fontSize: 20, fontWeight: 900, textAlign: "center", color: "#000000", marginBottom: 28 }}>
+              <h3 className="" style={{ fontSize: 12, fontWeight: 500, textAlign: "center", color: "#ccc", marginBottom: 28 }}>
                 Frequently Asked Questions
               </h3>
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 <FAQItem 
                   question="Are these QR codes dynamic or static?" 
                   answer="They are 100% static. Static QR codes encode the destination URL directly into the matrix, which means they never expire and do not route through any third-party redirection servers. They will remain active for as long as your destination link exists." 
@@ -1390,15 +1341,15 @@ export default function QRStudio() {
           <div 
             onClick={e => e.stopPropagation()}
             style={{
-              width: "100%", maxWidth: 460, background: "#ffffff", borderRadius: 28, border: "2px solid #000000",
-              padding: 24, display: "flex", flexDirection: "column", gap: 20, boxShadow: "6px 6px 0 #000"
+              width: "100%", maxWidth: 460, background: "#3a3a3a", borderRadius: 4, border: "1px solid #555",
+              padding: 12, display: "flex", flexDirection: "column", gap: 10, boxShadow: "none"
             }}
           >
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <div style={{ fontSize: 16, fontWeight: 900, color: "#000000", fontFamily: "'Space Grotesk', sans-serif" }}>Full Resolution QR Code</div>
+              <div style={{ fontSize: 12, fontWeight: 500, color: "#ccc", fontFamily: 'system-ui, -apple-system, sans-serif' }}>Full Resolution QR Code</div>
               <button 
                 onClick={() => setLightbox(false)} 
-                style={{ background: "none", border: "none", color: "#000000", cursor: "pointer", display: "flex", padding: 4 }}
+                style={{ background: "none", border: "none", color: "#ccc", cursor: "pointer", display: "flex", padding: 4 }}
               >
                 {Icons.Close(18)}
               </button>
@@ -1407,12 +1358,12 @@ export default function QRStudio() {
               className={transparentBg ? "transparent-checkered" : ""}
               style={{ 
                 background: transparentBg ? undefined : "#fff", 
-                borderRadius: 20, padding: 20, 
-                border: "2px solid #000000",
+                borderRadius: 4, padding: 20, 
+                border: "1px solid #555",
                 display: "flex", alignItems: "center", justifyContent: "center",
               }}
             >
-              <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: 8 }} />
+              <img src={lightboxSrc} alt="QR Code" style={{ width: "100%", height: "auto", display: "block", borderRadius: 4 }} />
             </div>
             <button
               onClick={() => { 
@@ -1424,14 +1375,14 @@ export default function QRStudio() {
               }}
               className="ig-btn"
               style={{
-                width: "100%", padding: "16px", background: "#fde047", border: "2px solid #000000", borderRadius: 16,
-                color: "#000000", fontSize: 15, fontWeight: 900, cursor: "pointer",
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: T.font,
-                boxShadow: "3px 3px 0 #000",
+                width: "100%", padding: "16px", background: "#2a7a8f", border: "1px solid #555", borderRadius: 4,
+                color: "#ccc", fontSize: 12, fontWeight: 500, cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 8, fontFamily: 'system-ui, -apple-system, sans-serif',
+                boxShadow: "none",
               }}>
               {Icons.Download(17)} Download PNG
             </button>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, fontSize: 11, color: "#52525b", fontWeight: 700 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 5, fontSize: 11, color: "#888", fontWeight: 500 }}>
               {Icons.Shield(12)} Generated in your browser · Zero data sent
             </div>
           </div>
@@ -1446,7 +1397,7 @@ export default function QRStudio() {
       >
           <div className="space-y-8 text-left max-w-2xl mx-auto py-4">
               <section className="space-y-3">
-                  <h3 className="text-lg font-bold text-black ig-display">
+                  <h3 className="text-lg font-bold text-[#dcdcdc]">
                       Custom Local QR Architectures
                   </h3>
                   <p className="text-sm text-zinc-600 leading-relaxed font-medium">
@@ -1455,7 +1406,7 @@ export default function QRStudio() {
               </section>
 
               <section className="space-y-4">
-                  <h3 className="text-lg font-bold text-black ig-display">Guidelines for Best Scannability</h3>
+                  <h3 className="text-lg font-bold text-[#dcdcdc]">Guidelines for Best Scannability</h3>
                   <ul className="space-y-3 text-xs text-zinc-600 leading-relaxed font-medium">
                       <li>• <strong>Strong Contrast:</strong> Always maintain a dark color for the foreground modules and a light color for the background to ensure scannability across standard mobile devices.</li>
                       <li>• <strong>Branding Error Tolerance:</strong> Level H error correction is enabled automatically when adding logos, permitting the code to recover up to 30% of missing or obscured data.</li>

@@ -2,76 +2,80 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { PenTool, Download, Trash2, Undo2, Pencil, Check, Shield, Info, ArrowLeft, HelpCircle } from "lucide-react";
+import {
+    PenTool, Download, Trash2, Undo2, Pencil, Check, ShieldCheck,
+    Info, ArrowLeft, HelpCircle, Sparkles, Package, Zap, Share2
+} from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 import ReactSignatureCanvas from "react-signature-canvas";
+import dynamic from "next/dynamic";
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+const ShareModal = dynamic(() => import("@/components/ShareModal"), { ssr: false });
 
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
+/* ─────────────────────────────────────────
+   DESIGN TOKENS (Standard Dark System)
+   ───────────────────────────────────────── */
+const T = {
+    bg:          "#333333",
+    surface:     "#3a3a3a",
+    surfaceHi:   "#444444",
+    surfaceHov:  "#505050",
+    border:      "#555555",
+    borderDim:   "#2a2a2a",
+    accent:      "#4db8d4",
+    accentDark:  "#2a7a8f",
+    accentDim:   "rgba(77,184,212,0.15)",
+    textPri:     "#cccccc",
+    textSec:     "#999999",
+    muted:       "#777777",
+    danger:      "#cc4444",
+    success:     "#7dcea0",
+    font:        "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
 
-function LocalAccordion({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-4 w-full">{children}</div>;
-}
-
-interface LocalAccordionItemProps {
-    title: string;
-    children: React.ReactNode;
-}
-
-function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
-    const [isOpen, setIsOpen] = useState(false);
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
     return (
-        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
-            >
-                <span className="font-bold text-sm sm:text-base text-black pr-4">
-                    {title}
-                </span>
-                <span className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}>
-                    ▼
-                </span>
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
-                }`}
-            >
-                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                    {children}
-                </div>
+        <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: 2,
+            background: T.surface, border: `1px solid ${T.border}`,
+            fontSize: 10, fontWeight: 400, color: "#aaa",
+        }}>
+            {icon}{label}
+        </span>
+    );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div onClick={() => setOpen(!open)} style={{
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+            padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+        }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 400, color: T.textPri, margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+                    <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+                </h4>
+                <span style={{ color: T.textSec, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+            </div>
+            <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+                <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
             </div>
         </div>
     );
 }
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    name: "E-Signature Creator",
+    description: "Draw and download digital signatures as transparent PNG or scalable SVG in your browser. 100% private, zero uploads.",
+    url: "https://www.assetnest.space/tools/e-signature",
+    applicationCategory: "WebApplication",
+    operatingSystem: "All",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+};
 
 export default function ESignaturePage() {
     const padRef = useRef<ReactSignatureCanvas>(null);
@@ -80,6 +84,8 @@ export default function ESignaturePage() {
     const [hasDrawn, setHasDrawn] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [isSharing, setIsSharing] = useState(false);
+    const [shareBlob, setShareBlob] = useState<Blob | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -88,6 +94,7 @@ export default function ESignaturePage() {
     const clearCanvas = () => {
         padRef.current?.clear();
         setHasDrawn(false);
+        setShareBlob(null);
     };
 
     const undoDrawing = () => {
@@ -98,6 +105,7 @@ export default function ESignaturePage() {
             padRef.current.fromData(data);
             if (data.length === 0) {
                 setHasDrawn(false);
+                setShareBlob(null);
             }
         }
     };
@@ -141,247 +149,435 @@ export default function ESignaturePage() {
         }));
     };
 
-    return (
-        <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
-            <style>{GLOBAL_STYLES}</style>
+    const handleOpenShare = () => {
+        if (!padRef.current || padRef.current.isEmpty()) return;
+        const canvas = padRef.current.getTrimmedCanvas();
+        canvas.toBlob(blob => {
+            if (blob) {
+                setShareBlob(blob);
+                setIsSharing(true);
+            }
+        }, "image/png");
+    };
 
-            {/* Header */}
-            <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
-                <Link
-                    href="/tools"
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                >
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+    return (
+        <div style={{ minHeight: "100vh", background: T.bg, color: T.textPri, fontFamily: T.font, paddingBottom: 80 }}>
+            <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+
+            <style>{`
+                * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: #2a2a2a; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #555555; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666666; }
+            `}</style>
+
+            {/* ── HEADER ── */}
+            <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Link href="/tools" style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+                    color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+                }}>
+                    <ArrowLeft size={11} strokeWidth={2} /> Back
                 </Link>
-                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-black border-2 border-black shadow-[2.5px_2.5px_0_#000] bg-orange-500">
-                        <PenTool size={14} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                        <PenTool size={12} />
                     </div>
-                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
-                        E-Signature Creator
-                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: T.textPri }}>E-Signature Creator</span>
                     <button 
-                        onClick={() => setShowHelp(true)}
-                        className="p-1 bg-white border-2 border-black rounded-full text-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
-                        title="Help"
+                        onClick={() => setShowHelp(true)} 
+                        style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.muted, cursor: "pointer", display: "flex" }}
+                        title="Help Guide"
                     >
-                        <HelpCircle size={12} />
+                        <HelpCircle size={11} />
                     </button>
                 </div>
             </header>
 
-            <main className="max-w-4xl mx-auto px-4 sm:px-6 mt-6 relative z-10">
-                <div className="bg-white border-2 sm:border-4 border-black rounded-[2.5rem] p-5 lg:p-8 shadow-[8px_8px_0_#000] max-w-3xl mx-auto">
-                    {/* Controls Panel */}
-                    <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-6 pb-6 border-b-2 border-dashed border-black">
-                        <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
-                            {/* Color Selector */}
-                            <div className="flex items-center gap-2.5 bg-zinc-50 border-2 border-black px-4 py-2 rounded-2xl w-full sm:w-auto justify-between">
-                                <span className="ig-label text-zinc-500">Color</span>
-                                <div className="flex items-center gap-2">
-                                    {["#000000", "#1d4ed8", "#b91c1c", "#16a34a"].map((color) => (
-                                        <button
-                                            key={color}
-                                            onClick={() => setPenColor(color)}
-                                            className={`w-6 h-6 rounded-full border-2 transition-all ${
-                                                penColor === color 
-                                                    ? "border-black scale-110 ring-2 ring-black/20" 
-                                                    : "border-transparent hover:scale-105 opacity-80 hover:opacity-100"
-                                            }`}
-                                            style={{ backgroundColor: color }}
-                                            title={`Select ${color}`}
-                                        />
-                                    ))}
+            <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px" }}>
+
+                {/* Main Signature Workspace */}
+                <div style={{ maxWidth: 740, margin: "0 auto" }}>
+                    <div style={{
+                        background: T.surface, border: `1px solid ${T.border}`,
+                        borderRadius: 4, padding: 18, display: "flex", flexDirection: "column", gap: 16
+                    }}>
+                        {/* Control Toolbar */}
+                        <div style={{
+                            display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between",
+                            gap: 12, paddingBottom: 14, borderBottom: `1px solid ${T.borderDim}`
+                        }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
+                                {/* Color Selector */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ fontSize: 10, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.05em" }}>Color</span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                        {[
+                                            { hex: "#000000", label: "Black" },
+                                            { hex: "#1d4ed8", label: "Royal Blue" },
+                                            { hex: "#b91c1c", label: "Ruby Red" },
+                                            { hex: "#16a34a", label: "Kelly Green" },
+                                        ].map(c => (
+                                            <button
+                                                key={c.hex}
+                                                onClick={() => setPenColor(c.hex)}
+                                                style={{
+                                                    width: 20, height: 20, borderRadius: "50%",
+                                                    backgroundColor: c.hex, border: penColor === c.hex ? `2px solid ${T.accent}` : `1px solid ${T.border}`,
+                                                    boxShadow: penColor === c.hex ? `0 0 0 2px ${T.accentDim}` : "none",
+                                                    cursor: "pointer", transition: "all 0.15s", transform: penColor === c.hex ? "scale(1.15)" : "scale(1)"
+                                                }}
+                                                title={c.label}
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Weight Selector */}
+                                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                                    <span style={{ fontSize: 10, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.05em" }}>Weight</span>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                        {[
+                                            { val: 1.5, dot: 4, label: "Fine" },
+                                            { val: 2.5, dot: 6, label: "Medium" },
+                                            { val: 4.5, dot: 9, label: "Bold" },
+                                        ].map(w => (
+                                            <button
+                                                key={w.val}
+                                                onClick={() => setPenWidth(w.val)}
+                                                style={{
+                                                    width: 24, height: 24, borderRadius: 2,
+                                                    background: penWidth === w.val ? T.surfaceHi : "#2a2a2a",
+                                                    border: `1px solid ${penWidth === w.val ? T.accent : T.border}`,
+                                                    cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                                                    transition: "all 0.15s"
+                                                }}
+                                                title={w.label}
+                                            >
+                                                <div style={{
+                                                    width: w.dot, height: w.dot, borderRadius: "50%",
+                                                    background: penWidth === w.val ? T.accent : "#aaa"
+                                                }} />
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Weight Selector */}
-                            <div className="flex items-center gap-2.5 bg-zinc-50 border-2 border-black px-4 py-2 rounded-2xl w-full sm:w-auto justify-between">
-                                <span className="ig-label text-zinc-500">Weight</span>
-                                <div className="flex items-center gap-1.5">
-                                    {[
-                                        { val: 1.5, size: "w-2 h-2" }, 
-                                        { val: 2.5, size: "w-3 h-3" }, 
-                                        { val: 4.5, size: "w-4 h-4" }
-                                    ].map((w) => (
-                                        <button
-                                            key={w.val}
-                                            onClick={() => setPenWidth(w.val)}
-                                            className={`flex items-center justify-center w-8 h-8 rounded-lg border-2 transition-all ${
-                                                penWidth === w.val 
-                                                    ? "bg-black border-black text-white" 
-                                                    : "bg-white border-transparent hover:bg-zinc-100"
-                                            }`}
-                                        >
-                                            <div className={`rounded-full ${w.size} ${penWidth === w.val ? "bg-white" : "bg-black"}`} />
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* Undo & Clear */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                <button
+                                    onClick={undoDrawing}
+                                    disabled={!hasDrawn}
+                                    style={{
+                                        height: 28, padding: "0 10px", background: T.surfaceHi,
+                                        border: `1px solid ${T.border}`, borderRadius: 2,
+                                        color: hasDrawn ? T.textPri : T.muted, fontSize: 11,
+                                        cursor: hasDrawn ? "pointer" : "not-allowed",
+                                        display: "flex", alignItems: "center", gap: 4, transition: "all 0.15s"
+                                    }}
+                                    title="Undo last stroke"
+                                >
+                                    <Undo2 size={12} /> Undo
+                                </button>
+                                <button
+                                    onClick={clearCanvas}
+                                    disabled={!hasDrawn}
+                                    style={{
+                                        height: 28, padding: "0 10px", background: "transparent",
+                                        border: `1px solid ${hasDrawn ? T.danger : T.border}`, borderRadius: 2,
+                                        color: hasDrawn ? "#ff8888" : T.muted, fontSize: 11,
+                                        cursor: hasDrawn ? "pointer" : "not-allowed",
+                                        display: "flex", alignItems: "center", gap: 4, transition: "all 0.15s"
+                                    }}
+                                    title="Clear canvas"
+                                >
+                                    <Trash2 size={12} /> Clear
+                                </button>
                             </div>
                         </div>
-                        
-                        {/* Undo & Clear */}
-                        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
-                             <button 
-                                onClick={undoDrawing} 
-                                disabled={!hasDrawn}
-                                className="ig-btn h-10 px-4 flex items-center gap-1.5 text-xs font-bold bg-white border-2 border-black rounded-xl shadow-[2px_2px_0_#000] text-black hover:bg-zinc-50 disabled:opacity-30 disabled:hover:bg-white disabled:pointer-events-none"
-                             >
-                                <Undo2 size={13} /> Undo
-                             </button>
-                             <button 
-                                onClick={clearCanvas} 
-                                disabled={!hasDrawn}
-                                className="ig-btn h-10 px-4 flex items-center gap-1.5 text-xs font-bold bg-rose-50 border-2 border-black rounded-xl shadow-[2px_2px_0_#000] text-rose-600 hover:bg-rose-100 disabled:opacity-30 disabled:hover:bg-rose-50 disabled:pointer-events-none"
-                             >
-                                <Trash2 size={13} /> Clear
-                             </button>
-                        </div>
-                    </div>
 
-                    {/* Canvas Area */}
-                    <div 
-                        className="relative w-full h-80 rounded-[1.5rem] overflow-hidden cursor-crosshair border-2 border-black transition-colors"
-                        style={{ 
-                            backgroundImage: `url("data:image/svg+xml,%3Csvg width='16' height='16' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='8' height='8' fill='%23f1f1f3'/%3E%3Crect x='8' y='8' width='8' height='8' fill='%23f1f1f3'/%3E%3C/svg%3E")`, 
-                            backgroundColor: "#ffffff" 
-                        }}
-                    >
-                        <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-30 select-none">
+                        {/* Interactive Drawing Canvas */}
+                        <div
+                            style={{
+                                position: "relative",
+                                width: "100%",
+                                height: 280,
+                                borderRadius: 3,
+                                overflow: "hidden",
+                                cursor: "crosshair",
+                                border: `1px solid ${T.border}`,
+                                backgroundColor: "#ffffff",
+                                backgroundImage: `radial-gradient(#e5e7eb 1px, transparent 1px)`,
+                                backgroundSize: "16px 16px"
+                            }}
+                        >
                             {!hasDrawn && (
-                                <>
-                                    <Pencil size={40} className="text-zinc-400 mb-2" />
-                                    <span className="ig-display text-xl font-bold text-zinc-400 tracking-wider uppercase">Sign Here</span>
-                                </>
+                                <div style={{
+                                    position: "absolute", inset: 0, pointerEvents: "none",
+                                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                                    opacity: 0.35, userSelect: "none"
+                                }}>
+                                    <Pencil size={32} color="#888" style={{ marginBottom: 6 }} />
+                                    <span style={{ fontSize: 14, fontWeight: 600, color: "#666", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                                        Sign Here
+                                    </span>
+                                </div>
                             )}
-                            <div className="w-4/5 border-b-2 border-zinc-300 absolute bottom-16 border-dashed" />
-                        </div>
-                        
-                        {mounted && (
-                            <ReactSignatureCanvas
-                                ref={padRef}
-                                canvasProps={{ className: "w-full h-full absolute inset-0 touch-none" }}
-                                penColor={penColor}
-                                dotSize={penWidth * 0.5}
-                                minWidth={penWidth * 0.5}
-                                maxWidth={penWidth * 1.5}
-                                velocityFilterWeight={0.7}
-                                onBegin={() => setHasDrawn(true)}
-                            />
-                        )}
-                    </div>
 
-                    {/* Download/Export Actions */}
-                    <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <button 
-                            onClick={() => downloadSignature("png")}
-                            disabled={!hasDrawn}
-                            className="ig-btn h-12 px-8 bg-emerald-400 text-black font-black uppercase tracking-widest text-xs border-2 border-black rounded-xl flex items-center justify-center gap-2 shadow-[3px_3px_0_#000] hover:bg-emerald-300 disabled:opacity-30 disabled:hover:bg-emerald-400 disabled:pointer-events-none"
-                        >
-                            <Download size={14} /> Export transparent PNG
-                        </button>
-                        <button 
-                            onClick={() => downloadSignature("svg")}
-                            disabled={!hasDrawn}
-                            className="ig-btn h-12 px-8 bg-white text-black font-black uppercase tracking-widest text-xs border-2 border-black rounded-xl flex items-center justify-center gap-2 shadow-[3px_3px_0_#000] hover:bg-zinc-50 disabled:opacity-30 disabled:hover:bg-white disabled:pointer-events-none"
-                        >
-                            <Download size={14} /> Export scalable SVG
-                        </button>
+                            {/* Signature Baseline */}
+                            <div style={{
+                                position: "absolute", bottom: 50, left: "10%", right: "10%",
+                                borderBottom: "1px dashed #cccccc", pointerEvents: "none"
+                            }} />
+
+                            {mounted && (
+                                <ReactSignatureCanvas
+                                    ref={padRef}
+                                    canvasProps={{
+                                        style: { width: "100%", height: "100%", position: "absolute", inset: 0, touchAction: "none" }
+                                    }}
+                                    penColor={penColor}
+                                    dotSize={penWidth * 0.5}
+                                    minWidth={penWidth * 0.5}
+                                    maxWidth={penWidth * 1.5}
+                                    velocityFilterWeight={0.7}
+                                    onBegin={() => setHasDrawn(true)}
+                                />
+                            )}
+                        </div>
+
+                        {/* Download & Export Actions */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 10, paddingTop: 4 }}>
+                            <button
+                                onClick={() => downloadSignature("png")}
+                                disabled={!hasDrawn}
+                                style={{
+                                    height: 38, background: hasDrawn ? T.accent : T.surfaceHi,
+                                    border: `1px solid ${hasDrawn ? T.accent : T.border}`,
+                                    borderRadius: 3, color: hasDrawn ? "#1a1a1a" : T.muted,
+                                    fontWeight: 600, fontSize: 11,
+                                    cursor: hasDrawn ? "pointer" : "not-allowed",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                    transition: "all 0.15s"
+                                }}
+                            >
+                                <Download size={14} /> Export Transparent PNG
+                            </button>
+
+                            <button
+                                onClick={() => downloadSignature("svg")}
+                                disabled={!hasDrawn}
+                                style={{
+                                    height: 38, background: T.surfaceHi,
+                                    border: `1px solid ${T.border}`,
+                                    borderRadius: 3, color: hasDrawn ? T.textPri : T.muted,
+                                    fontWeight: 500, fontSize: 11,
+                                    cursor: hasDrawn ? "pointer" : "not-allowed",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                    transition: "all 0.15s"
+                                }}
+                            >
+                                <Download size={14} /> Export Scalable SVG
+                            </button>
+
+                            <button
+                                onClick={handleOpenShare}
+                                disabled={!hasDrawn}
+                                style={{
+                                    height: 38, background: T.surfaceHi,
+                                    border: `1px solid ${T.border}`,
+                                    borderRadius: 3, color: hasDrawn ? T.textPri : T.muted,
+                                    fontWeight: 500, fontSize: 11,
+                                    cursor: hasDrawn ? "pointer" : "not-allowed",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                    transition: "all 0.15s"
+                                }}
+                            >
+                                <Share2 size={14} /> Share to Mobile
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* SEO Info Cards Section */}
-                <div className="mt-16 bg-white border-2 sm:border-4 border-black rounded-[2.5rem] p-6 sm:p-10 text-left relative overflow-hidden shadow-[8px_8px_0_#000]">
-                    <div className="flex justify-center gap-2.5 mb-6 flex-wrap">
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#fde047] border-2 border-black text-[10px] font-bold tracking-widest text-black uppercase shadow-[2px_2px_0_#000]">
-                            <Shield size={11} className="text-black shrink-0" /> 100% Private
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#a7f3d0] border-2 border-black text-[10px] font-bold tracking-widest text-black uppercase shadow-[2px_2px_0_#000]">
-                            <Info size={11} className="text-black shrink-0" /> Browser-Side
-                        </span>
-                        <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#fbcfe8] border-2 border-black text-[10px] font-bold tracking-widest text-black uppercase shadow-[2px_2px_0_#000]">
-                            <Check size={11} className="text-black shrink-0" /> Free Forever
-                        </span>
+                {/* ─── SEO RICH CONTENT SECTION ─── */}
+                <div style={{ marginTop: 40, borderTop: `1px solid ${T.borderDim}`, paddingTop: 36 }}>
+                    {/* Top Badges */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                        <Chip icon={<ShieldCheck size={10} />} label="100% In-Browser Privacy" />
+                        <Chip icon={<Sparkles size={10} />} label="Free & Unlimited" />
+                        <Chip icon={<Package size={10} />} label="No Server Uploads" />
                     </div>
 
-                    <div className="text-center mb-10">
-                        <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-black leading-tight mb-4 ig-display">
-                            Free High-Fidelity E-Signature Creator
+                    {/* Section Header */}
+                    <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 36px" }}>
+                        <h2 style={{ fontSize: 16, fontWeight: 500, color: T.textPri, marginBottom: 8 }}>
+                            Free High-Fidelity E-Signature Creator - Draw & Export
                         </h2>
-                        <p className="text-sm text-zinc-700 leading-relaxed max-w-2xl mx-auto font-medium">
-                            Create, customize, and export professional digital signatures instantly from your browser. AssetNest runs entirely locally with zero server logs, maintaining your absolute identity privacy.
+                        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.6 }}>
+                            Create, customize, and export professional digital signatures directly from your browser. AssetNest runs entirely locally with zero server logs, maintaining absolute privacy for your personal signature.
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-zinc-50 border-2 border-black p-6 rounded-2xl shadow-[3px_3px_0_#000]">
-                            <h3 className="text-lg font-bold tracking-tight text-black mb-3 ig-display">How to use</h3>
-                            <ul className="space-y-3.5 text-xs text-zinc-700 font-medium">
-                                <li className="flex gap-3">
-                                    <span className="font-bold text-emerald-600">✓</span>
-                                    <span><strong>Draw Naturally:</strong> Draw with specialized pen weight configurations using your mouse, trackpad, or smartphone.</span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="font-bold text-emerald-600">✓</span>
-                                    <span><strong>Color Adjustments:</strong> Switch between Black, Royal Blue, Ruby Red, and Kelly Green presets to match official document standard requirements.</span>
-                                </li>
-                                <li className="flex gap-3">
-                                    <span className="font-bold text-emerald-600">✓</span>
-                                    <span><strong>Lossless Formats:</strong> Export transparent PNGs for signature stamping or vector SVGs for infinite clean scaling.</span>
-                                </li>
-                            </ul>
-                        </div>
+                    {/* Features Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 44 }}>
+                        {[
+                            {
+                                icon: PenTool,
+                                title: "Natural Smooth Strokes",
+                                desc: "High-precision spline interpolation renders smooth signature curves without jagged pixel stepping."
+                            },
+                            {
+                                icon: ShieldCheck,
+                                title: "100% Client-Side Privacy",
+                                desc: "No database saves or cloud tracking. Your signature never leaves your local device memory."
+                            },
+                            {
+                                icon: Zap,
+                                title: "Dual Format Export",
+                                desc: "Download transparent alpha PNGs for immediate document stamping or resolution-free vector SVGs."
+                            },
+                            {
+                                icon: Sparkles,
+                                title: "Color & Weight Presets",
+                                desc: "Switch instantly between standard black, legal blue, red, and green ink, with fine, medium, and bold pens."
+                            },
+                            {
+                                icon: Package,
+                                title: "Mobile & Touch Optimized",
+                                desc: "Fully responsive touch support for precision fingertip and stylus signing on smartphones and tablets."
+                            },
+                            {
+                                icon: Check,
+                                title: "100% Free & Clean",
+                                desc: "Export unlimited signatures with zero fees, no registration barriers, and no injected watermarks."
+                            }
+                        ].map(f => (
+                            <div key={f.title} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                    <div style={{ color: T.accent }}>
+                                        <f.icon size={15} />
+                                    </div>
+                                    <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.textPri }}>{f.title}</h3>
+                                </div>
+                                <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
 
-                        <div className="bg-zinc-50 border-2 border-black p-6 rounded-2xl shadow-[3px_3px_0_#000] flex flex-col justify-between">
-                            <div>
-                                <h3 className="text-lg font-bold tracking-tight text-black mb-3 ig-display">Security Spec</h3>
-                                <p className="text-xs text-zinc-700 leading-relaxed font-medium">
-                                    Unlike traditional signature capture platforms that log IP data and store signing strokes on remote database clouds, AssetNest executes 100% locally in your client environment.
-                                </p>
-                            </div>
-                            <div className="mt-4 p-4 bg-zinc-200/50 border border-zinc-300 rounded-xl">
-                                <p className="text-[9px] uppercase font-bold tracking-widest text-zinc-500">Signature Standard Specs</p>
-                                <p className="text-[10px] text-zinc-800 font-bold mt-1 tracking-tight uppercase">
-                                    Zero-Server Transmission • Canvas Alpha Channel Preservation • High-Fidelity Stroke Spline Renderer
-                                </p>
-                            </div>
+                    {/* Step Timeline */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 44 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
+                            How to Create an E-Signature Online for Free
+                        </h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+                            {[
+                                { step: "1", title: "Select Ink & Stroke", desc: "Choose your desired ink color (Black, Blue, Red, Green) and pick a pen weight." },
+                                { step: "2", title: "Draw on Canvas", desc: "Sign smoothly using your mouse, trackpad, finger, or stylus pen on the designated pad." },
+                                { step: "3", title: "Export PNG or SVG", desc: "Download your trimmed transparent PNG or scalable vector SVG instantly for your documents." }
+                            ].map(s => (
+                                <div key={s.step} style={{ padding: 14, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 3, position: "relative", paddingTop: 20 }}>
+                                    <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        {s.step}
+                                    </div>
+                                    <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 6px" }}>{s.title}</h4>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* FAQ Accordion Section */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 20 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 16 }}>
+                            Frequently Asked Questions
+                        </h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="Are these electronic signatures legally binding?"
+                                answer="Yes. Electronic signatures are legally recognized in many jurisdictions under regulations like the US ESIGN Act and the EU eIDAS regulation, provided there is demonstrable intent and consent."
+                            />
+                            <FAQItem 
+                                question="Where are my signatures stored?"
+                                answer="Nowhere. All canvas drawing, spline calculations, and export operations are processed entirely locally in your browser RAM. No signature data is ever logged or saved to the cloud."
+                            />
+                            <FAQItem 
+                                question="Should I choose PNG or SVG?"
+                                answer="Choose PNG if you want a transparent background image ready to insert into Word, Google Docs, or PDF files. Choose SVG if you need vector resolution that can scale up infinitely without blurring."
+                            />
+                            <FAQItem 
+                                question="Can I use this on a mobile phone or tablet?"
+                                answer="Yes! The canvas has dedicated touch event listeners, making it easy to sign with your fingertip or an Apple Pencil / stylus on any touch-enabled device."
+                            />
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* FAQ Help Modal */}
-            <HelpModal 
-                isOpen={showHelp} 
-                onClose={() => setShowHelp(false)} 
-                title="E-Signature Technical Architecture"
-            >
-                <div className="space-y-8 text-left max-w-2xl mx-auto py-4">
-                    <section className="space-y-3">
-                        <h3 className="text-lg font-bold text-black ig-display">
-                            How E-Signature Creator Works
+            {/* Help / Documentation Modal */}
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="E-Signature Technical Documentation">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20, color: T.textPri, fontSize: 12, lineHeight: 1.6 }}>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, color: T.accent, margin: "0 0 8px" }}>
+                            In-Browser Signature Engine
                         </h3>
-                        <p className="text-sm text-zinc-600 leading-relaxed font-medium">
-                            Step into a professional-grade workspace for signature creation. The E-Signature Creator provides a high-fidelity ink canvas where you can draw your signature, adjust pen thickness, select core colors, and download instantly without signing up or uploading any data to external servers.
+                        <p style={{ margin: 0, color: T.textSec, fontSize: 11 }}>
+                            AssetNest E-Signature Creator provides a high-fidelity ink canvas where you can draw your signature, adjust pen thickness, select core colors, and download instantly without signing up or transmitting any data to external servers.
                         </p>
                     </section>
 
-                    <section className="space-y-4">
-                        <h3 className="text-lg font-bold text-black ig-display">Frequently Asked Questions</h3>
-                        <LocalAccordion>
-                            <LocalAccordionItem title="Are these signatures legally binding?">
-                                Yes. Electronic signatures are legally recognized in many countries under regulations like the US ESIGN Act and the European Union's eIDAS regulation, provided they are intent-verified and consent-consented.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Where are my files and signature data uploaded?">
-                                Nowhere. All canvas drawing, spline calculations, and export files are processed entirely locally inside your browser container. No data is ever transmitted, logged, or saved to the cloud.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Why choose SVG over PNG?">
-                                PNG files are high-resolution pixel maps with transparency, making them perfect for embedding in PDFs or Word documents. SVG files are scalable vector graphics, meaning they contain instructions on how to draw the curves, enabling them to scale infinitely to any size without becoming pixelated or blurry.
-                            </LocalAccordionItem>
-                        </LocalAccordion>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <PenTool size={14} style={{ color: T.accent }} /> Stroke Interpolation
+                            </h4>
+                            <ul style={{ margin: 0, paddingLeft: 16, color: T.textSec, fontSize: 11, display: "flex", flexDirection: "column", gap: 6 }}>
+                                <li><strong>Velocity Filtering:</strong> Adjusts stroke width dynamically based on drawing speed.</li>
+                                <li><strong>Bézier Splines:</strong> Smooths out hand tremors and raw input jitter.</li>
+                                <li><strong>Auto-Trim:</strong> Exports crop tightly to the bounding box of your signature.</li>
+                            </ul>
+                        </section>
+
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <ShieldCheck size={14} style={{ color: T.accent }} /> Privacy Compliance
+                            </h4>
+                            <p style={{ margin: "0 0 10px", color: T.textSec, fontSize: 11 }}>
+                                Absolute client-side isolation. No biometrics, stroke arrays, or rendered images are uploaded to any server.
+                            </p>
+                            <div style={{ padding: "6px 10px", background: "#2a2a2a", border: `1px solid ${T.borderDim}`, borderRadius: 3, fontSize: 10, color: "#aaa" }}>
+                                Spec: HTML5 Canvas Alpha • Zero-Server Footprint • Client Memory Execution
+                            </div>
+                        </section>
+                    </div>
+
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 10px" }}>
+                            Key Capabilities
+                        </h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="Is my signature saved anywhere?" 
+                                answer="No. The signature exists strictly in your active browser session RAM until cleared or navigated away." 
+                            />
+                            <FAQItem 
+                                question="Can I embed this in PDFs?" 
+                                answer="Yes. The transparent PNG format can be placed directly into any PDF using our PDF Signer tool." 
+                            />
+                        </div>
                     </section>
                 </div>
             </HelpModal>
+
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={isSharing}
+                onClose={() => setIsSharing(false)}
+                file={shareBlob}
+                fileName={`signature-${Date.now()}.png`}
+            />
         </div>
     );
 }

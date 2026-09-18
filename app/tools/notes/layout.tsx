@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Smart Notes — Beautiful, Private Workspaces",
+    title: "Smart Notes - Beautiful, Private Workspaces",
     description: "A beautiful, versatile workspace for capturing thoughts, drafting articles, and organizing your notes securely right in your browser. 100% private, no account needed.",
     keywords: ["notes", "notepad", "workspace", "markdown editor", "browser notes", "smart notes", "productivity tools"],
     alternates: {

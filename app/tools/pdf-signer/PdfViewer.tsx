@@ -176,7 +176,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                 textarea[data-sig-text]::selection { background: #7c6aff !important; color: #fff !important; }
             `}</style>
 
-            {/* Zoom bar — sticky top */}
+            {/* Zoom bar - sticky top */}
             <div style={{ position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", padding: "10px 0 6px", pointerEvents: "none" }}>
                 <div style={{ pointerEvents: "auto" }}><ZoomPill /></div>
             </div>

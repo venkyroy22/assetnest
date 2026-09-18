@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Free Image Compressor — Reduce Image Size Online",
+    title: "Free Image Compressor - Reduce Image Size Online",
     description: "Compress JPEG, PNG, and WebP images instantly in your browser. Reduce image file size with zero quality loss. No uploads, 100% private, completely free.",
     keywords: [
         "image compressor",
@@ -16,8 +16,8 @@ export const metadata: Metadata = {
         "online image compression tool"
     ],
     openGraph: {
-        title: "Free Image Compressor — Reduce Image Size Online | AssetNest",
-        description: "Compress JPEG, PNG, and WebP images instantly in your browser. 100% private — no uploads to any server.",
+        title: "Free Image Compressor - Reduce Image Size Online | AssetNest",
+        description: "Compress JPEG, PNG, and WebP images instantly in your browser. 100% private - no uploads to any server.",
         url: "https://www.assetnest.space/tools/image-compressor",
     },
     alternates: {

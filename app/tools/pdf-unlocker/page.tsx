@@ -1,13 +1,73 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Upload, Lock, Unlock, Download, FileText, ArrowRight, ShieldCheck, FileCheck, X, Loader2, Eye, EyeOff, Info, Zap, Check, RefreshCw, Sparkles, Package, ChevronDown, ArrowLeft } from "lucide-react";
+import {
+    Upload, Lock, Unlock, Download, FileText, ArrowRight, ShieldCheck,
+    X, Loader2, Eye, EyeOff, Info, Zap, Check, RefreshCw, Sparkles,
+    Package, ArrowLeft, HelpCircle, UploadCloud, Share2
+} from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import HelpModal from "@/components/HelpModal";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const ShareModal = dynamic(() => import("@/components/ShareModal"), { ssr: false });
+
+/* ─────────────────────────────────────────
+   DESIGN TOKENS (Standard Dark System)
+   ───────────────────────────────────────── */
+const T = {
+    bg:          "#333333",
+    surface:     "#3a3a3a",
+    surfaceHi:   "#444444",
+    surfaceHov:  "#505050",
+    border:      "#555555",
+    borderDim:   "#2a2a2a",
+    accent:      "#4db8d4",
+    accentDark:  "#2a7a8f",
+    accentDim:   "rgba(77,184,212,0.15)",
+    textPri:     "#cccccc",
+    textSec:     "#999999",
+    muted:       "#777777",
+    danger:      "#cc4444",
+    success:     "#7dcea0",
+    font:        "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
+
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+    return (
+        <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: 2,
+            background: T.surface, border: `1px solid ${T.border}`,
+            fontSize: 10, fontWeight: 400, color: "#aaa",
+        }}>
+            {icon}{label}
+        </span>
+    );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div onClick={() => setOpen(!open)} style={{
+            background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+            padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+        }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 400, color: T.textPri, margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+                    <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+                </h4>
+                <span style={{ color: T.textSec, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+            </div>
+            <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+                <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+            </div>
+        </div>
+    );
+}
 
 // Load qpdf-wasm at runtime from CDN to avoid Turbopack/Next.js bundling issues
-// with Emscripten modules that require('fs') and require('module')
 interface QpdfModule {
     FS: {
         writeFile(path: string, data: Uint8Array): void;
@@ -26,7 +86,6 @@ function loadQpdfWasm(): Promise<QpdfModule> {
         const script = document.createElement("script");
         script.src = "https://unpkg.com/@jspawn/qpdf-wasm@0.0.2/qpdf.js";
         script.onload = () => {
-            // The script sets a global `Module` factory
             const createModule = (globalThis as any).Module;
             if (!createModule) {
                 reject(new Error("Failed to load PDF decryption engine."));
@@ -50,80 +109,12 @@ const jsonLd = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     name: "PDF Password Remover",
-    description: "Remove password protection from your PDF files instantly. Processed using a hybrid secure approach.",
+    description: "Remove password protection from your PDF files instantly in your browser. 100% private, zero uploads.",
     url: "https://www.assetnest.space/tools/pdf-unlocker",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
 };
-
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
-
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
-
-function LocalAccordion({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-4 w-full">{children}</div>;
-}
-
-interface LocalAccordionItemProps {
-    title: string;
-    children: React.ReactNode;
-}
-
-function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
-            >
-                <span className="font-bold text-sm sm:text-base text-black pr-4">
-                    {title}
-                </span>
-                <ChevronDown
-                    size={18}
-                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                />
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
-                }`}
-            >
-                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
-}
 
 export default function PdfUnlockerPage() {
     const [file, setFile] = useState<File | null>(null);
@@ -132,16 +123,19 @@ export default function PdfUnlockerPage() {
     const [isProcessing, setIsProcessing] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [successUrl, setSuccessUrl] = useState<string | null>(null);
+    const [outputBlob, setOutputBlob] = useState<Blob | null>(null);
     const [unlockedFileName, setUnlockedFileName] = useState<string>("");
     const [requiresUserPassword, setRequiresUserPassword] = useState(false);
     const [showHelp, setShowHelp] = useState(false);
+    const [isSharing, setIsSharing] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
             const selectedFile = e.target.files[0];
-            if (selectedFile.type !== "application/pdf") {
+            if (selectedFile.type !== "application/pdf" && !selectedFile.name.toLowerCase().endsWith(".pdf")) {
                 setError("Please select a valid PDF file.");
                 return;
             }
@@ -153,6 +147,7 @@ export default function PdfUnlockerPage() {
         setIsProcessing(true);
         setError(null);
         setSuccessUrl(null);
+        setOutputBlob(null);
         setPassword("");
         setShowPassword(false);
         setRequiresUserPassword(false);
@@ -168,7 +163,7 @@ export default function PdfUnlockerPage() {
                 const pdfDoc = await PDFDocument.load(bytes);
                 
                 if (pdfDoc.isEncrypted) {
-                    // It was encrypted with an owner password, and pdf-lib successfully decrypted it locally.
+                    // Decrypted owner restriction locally
                     const unlockedBytes = await pdfDoc.save();
                     createDownloadUrl(unlockedBytes, selectedFile.name);
                 } else {
@@ -178,7 +173,6 @@ export default function PdfUnlockerPage() {
             } catch (err: unknown) {
                 // pdf-lib throws an error if a User Password is required.
                 if (err instanceof Error && err.message.toLowerCase().includes("encrypt")) {
-                    // Document requires a User Password. We will prompt the user and process securely via API.
                     setRequiresUserPassword(true);
                 } else {
                     setError("Failed to read PDF. It might be corrupted or unsupported.");
@@ -195,9 +189,10 @@ export default function PdfUnlockerPage() {
 
     const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
+        setIsDragging(false);
         if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
             const droppedFile = e.dataTransfer.files[0];
-            if (droppedFile.type === "application/pdf") {
+            if (droppedFile.type === "application/pdf" || droppedFile.name.toLowerCase().endsWith(".pdf")) {
                 await processInitialFile(droppedFile);
             } else {
                 setError("Please drop a valid PDF file.");
@@ -213,7 +208,6 @@ export default function PdfUnlockerPage() {
         setError(null);
 
         try {
-            // Load qpdf-wasm from CDN at runtime (avoids Turbopack bundling issues)
             const qpdf = await loadQpdfWasm();
 
             const inputData = new Uint8Array(await file.arrayBuffer());
@@ -234,7 +228,7 @@ export default function PdfUnlockerPage() {
             } catch {
                 try { qpdf.FS.unlink(inputPath); } catch {}
                 try { qpdf.FS.unlink(outputPath); } catch {}
-                throw new Error("Incorrect password or unsupported encryption.");
+                throw new Error("Incorrect password or unsupported encryption format.");
             }
 
             // Read decrypted output
@@ -247,7 +241,7 @@ export default function PdfUnlockerPage() {
             createDownloadUrl(decryptedData, file.name);
         } catch (err: any) {
             console.error("Unlock Error:", err);
-            setError(err.message || "Failed to unlock PDF.");
+            setError(err.message || "Failed to unlock PDF. Please check your password.");
         } finally {
             setIsProcessing(false);
         }
@@ -256,6 +250,7 @@ export default function PdfUnlockerPage() {
     const createDownloadUrl = (bytes: Uint8Array, originalName: string) => {
         const blob = new Blob([bytes as any], { type: "application/pdf" });
         const url = URL.createObjectURL(blob);
+        setOutputBlob(blob);
         setSuccessUrl(url);
         setRequiresUserPassword(false);
         
@@ -273,409 +268,504 @@ export default function PdfUnlockerPage() {
             URL.revokeObjectURL(successUrl);
             setSuccessUrl(null);
         }
+        setOutputBlob(null);
         if (fileInputRef.current) {
             fileInputRef.current.value = "";
         }
     };
 
     return (
-        <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
-            <style>{GLOBAL_STYLES}</style>
+        <div style={{ minHeight: "100vh", background: T.bg, color: T.textPri, fontFamily: T.font, paddingBottom: 80 }}>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-            <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
-                <Link
-                    href="/tools"
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                >
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+            <style>{`
+                * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+                .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: #2a2a2a; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #555555; border-radius: 3px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666666; }
+            `}</style>
+
+            {/* ── HEADER ── */}
+            <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Link href="/tools" style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+                    color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+                }}>
+                    <ArrowLeft size={11} strokeWidth={2} /> Back
                 </Link>
-                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                    <div className="w-8 h-8 rounded-lg bg-red-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
-                        <Unlock size={14} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                        <Unlock size={12} />
                     </div>
-                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
-                        PDF Unlocker
-                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: T.textPri }}>PDF Password Remover</span>
+                    <button 
+                        onClick={() => setShowHelp(true)} 
+                        style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.muted, cursor: "pointer", display: "flex" }}
+                        title="Help Guide"
+                    >
+                        <HelpCircle size={11} />
+                    </button>
                 </div>
-                <button 
-                    onClick={() => setShowHelp(true)}
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                    title="Help Guide"
-                >
-                    <Info size={12} strokeWidth={2.5} /> INFO
-                </button>
             </header>
 
-            <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 relative z-10 space-y-6">
-                {/* Error */}
+            <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px" }}>
+
+                {/* Error Banner */}
                 {error && (
-                    <div className="p-4 border-2 border-black bg-red-50 flex items-center gap-3 rounded-2xl">
-                        <Info size={16} className="text-red-700 shrink-0" />
-                        <span className="text-xs font-bold text-black">{error}</span>
-                        <button onClick={() => setError(null)} className="ml-auto text-zinc-500 hover:text-black"><X size={16} /></button>
+                    <div style={{
+                        padding: "10px 14px", border: `1px solid ${T.danger}`, background: "#3d2222",
+                        display: "flex", alignItems: "center", gap: 10, borderRadius: 3, marginBottom: 16
+                    }}>
+                        <Info size={14} style={{ color: T.danger, flexShrink: 0 }} />
+                        <span style={{ fontSize: 11, color: "#ff9999", flex: 1 }}>{error}</span>
+                        <button onClick={() => setError(null)} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", display: "flex" }}>
+                            <X size={14} />
+                        </button>
                     </div>
                 )}
 
-                <div className="max-w-xl mx-auto relative z-10">
-                    {/* Step 1: Upload */}
-                    {!file && (
+                {/* Main Workspace */}
+                <div style={{ maxWidth: 680, margin: "0 auto" }}>
+                    {!file ? (
+                        /* Dropzone */
                         <div
-                            onDragOver={(e) => e.preventDefault()}
+                            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                            onDragLeave={() => setIsDragging(false)}
                             onDrop={handleDrop}
                             onClick={() => fileInputRef.current?.click()}
-                            className="relative min-h-[260px] border-2 sm:border-4 border-dashed border-black bg-white hover:bg-zinc-55 shadow-[5px_5px_0_#000] rounded-[2rem] flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-305 group/dropzone"
+                            style={{
+                                minHeight: 240,
+                                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                                border: `1px dashed ${isDragging ? T.accent : T.border}`,
+                                borderRadius: 4, background: isDragging ? T.surfaceHi : T.surface,
+                                cursor: "pointer", transition: "all 0.2s", padding: 24,
+                            }}
                         >
-                            <div className="w-14 h-14 bg-white border-2 border-black rounded-2xl flex items-center justify-center mx-auto shadow-[3px_3px_0_#000] transition-all duration-300 group-hover/dropzone:scale-105 mb-6">
-                                <Upload size={24} className="text-black" />
-                            </div>
-                            <h3 className="text-base font-black text-black tracking-tight mb-2 ig-display">Drag & Drop or Click Here</h3>
-                            <p className="text-xs text-zinc-600 font-medium max-w-sm mx-auto leading-relaxed">
-                                100% Private PDF Decryption • Instant Unlock
-                            </p>
-                            <input
-                                type="file"
-                                ref={fileInputRef}
-                                onChange={handleFileChange}
-                                accept="application/pdf"
-                                className="hidden"
+                            <input 
+                                ref={fileInputRef} 
+                                type="file" 
+                                accept="application/pdf" 
+                                style={{ display: "none" }} 
+                                onChange={handleFileChange} 
                             />
-                        </div>
-                    )}
 
-                    {/* Step 2: Password Input or Success */}
-                    {file && (
-                        <div className="bg-white border-2 border-black rounded-[2rem] p-8 shadow-[5px_5px_0_#000] relative overflow-hidden">
-                            <div className="relative z-10 flex items-center gap-4 mb-6 pb-6 border-b-2 border-black/10">
-                                <div className="w-12 h-12 bg-zinc-50 rounded-xl flex items-center justify-center border-2 border-black shrink-0 shadow-[1.5px_1.5px_0_#000]">
-                                    <FileText size={20} className="text-black" />
+                            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                                <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#444444", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, marginBottom: 12 }}>
+                                    {isProcessing ? <Loader2 className="animate-spin" size={20} /> : <UploadCloud size={22} />}
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <h3 className="text-black font-black text-sm truncate ig-display">{file.name}</h3>
-                                    <p className="text-zinc-600 text-xs font-bold">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                                <div style={{ fontSize: 13, fontWeight: 500, color: T.textPri, marginBottom: 4 }}>
+                                    Drop your locked PDF here
                                 </div>
+                                <p style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>
+                                    or click to browse · 100% In-Browser Decryption
+                                </p>
+                                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+                                    <Chip icon={<ShieldCheck size={10} />} label="100% Private" />
+                                    <Chip icon={<Package size={10} />} label="No Server Upload" />
+                                    <Chip icon={<Sparkles size={10} />} label="Owner & User Passwords" />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: 24, display: "flex", flexDirection: "column", gap: 18
+                        }}>
+                            {/* File Info Bar */}
+                            <div style={{
+                                display: "flex", alignItems: "center", justifyContent: "space-between",
+                                paddingBottom: 14, borderBottom: `1px solid ${T.borderDim}`, gap: 12
+                            }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
+                                    <div style={{
+                                        width: 32, height: 32, borderRadius: 3, background: T.surfaceHi,
+                                        border: `1px solid ${T.border}`, display: "flex", alignItems: "center",
+                                        justifyContent: "center", color: T.accent, flexShrink: 0
+                                    }}>
+                                        <FileText size={15} />
+                                    </div>
+                                    <div style={{ minWidth: 0 }}>
+                                        <div style={{ fontSize: 12, fontWeight: 500, color: T.textPri, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 360 }}>
+                                            {file.name}
+                                        </div>
+                                        <div style={{ fontSize: 10, color: T.textSec }}>
+                                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {!successUrl && (
-                                    <button 
+                                    <button
                                         onClick={handleReset}
-                                        className="text-zinc-650 hover:text-black transition-colors text-xs font-black whitespace-nowrap border-2 border-black bg-white rounded-lg px-2.5 py-1.5 shadow-[1.5px_1.5px_0_#000] ig-btn"
+                                        style={{
+                                            padding: "4px 10px", background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                            borderRadius: 2, color: T.textSec, fontSize: 11, cursor: "pointer"
+                                        }}
                                     >
                                         Change
                                     </button>
                                 )}
                             </div>
 
+                            {/* State 1: Unlocked Successfully */}
                             {successUrl && (
-                                <div className="relative z-10 text-center py-6">
-                                    <div className="w-16 h-16 bg-emerald-55 rounded-full flex items-center justify-center mb-6 mx-auto border-2 border-black shadow-[3px_3px_0_#000]">
-                                        <Unlock size={24} className="text-black" />
+                                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: "12px 0" }}>
+                                    <div style={{
+                                        width: 48, height: 48, borderRadius: "50%",
+                                        background: "rgba(125,206,160,0.15)", border: `1px solid ${T.success}`,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        color: T.success, marginBottom: 12
+                                    }}>
+                                        <Unlock size={22} />
                                     </div>
-                                    <h3 className="text-xl font-black text-black tracking-tight mb-2 ig-display">Successfully Unlocked!</h3>
-                                    <p className="text-zinc-600 text-xs font-bold mb-8">Password protection has been removed from this PDF.</p>
-                                    
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div style={{ fontSize: 14, fontWeight: 600, color: T.textPri, marginBottom: 4 }}>
+                                        Successfully Unlocked!
+                                    </div>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: "0 0 20px" }}>
+                                        Password restrictions have been completely removed from this document.
+                                    </p>
+
+                                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: 10, width: "100%" }}>
                                         <a
                                             href={successUrl}
                                             download={unlockedFileName}
-                                            className="ig-btn h-12 px-6 bg-[#a7f3d0] text-black rounded-full border-2 border-black font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-[2.5px_2.5px_0_#000] transition-all active:scale-[0.98]"
+                                            style={{
+                                                height: 38, background: T.accent, border: `1px solid ${T.accent}`,
+                                                borderRadius: 3, color: "#1a1a1a", fontWeight: 600, fontSize: 11,
+                                                textDecoration: "none", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                                transition: "all 0.15s"
+                                            }}
                                         >
-                                            <Download size={16} />
-                                            Download PDF
+                                            <Download size={14} /> Download PDF
                                         </a>
+
+                                        <button
+                                            onClick={() => setIsSharing(true)}
+                                            style={{
+                                                height: 38, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                                borderRadius: 3, color: T.textPri, fontWeight: 500, fontSize: 11,
+                                                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                                transition: "all 0.15s"
+                                            }}
+                                        >
+                                            <Share2 size={14} /> Share to Mobile
+                                        </button>
+
                                         <button
                                             onClick={handleReset}
-                                            className="ig-btn h-12 px-6 bg-white hover:bg-zinc-50 text-black rounded-full border-2 border-black font-bold text-xs sm:text-sm shadow-[2.5px_2.5px_0_#000] transition-all flex items-center justify-center gap-2"
+                                            style={{
+                                                height: 38, background: "transparent", border: `1px solid ${T.border}`,
+                                                borderRadius: 3, color: T.textSec, fontWeight: 500, fontSize: 11,
+                                                cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                                transition: "all 0.15s"
+                                            }}
+                                            onMouseEnter={e => { e.currentTarget.style.color = T.textPri; e.currentTarget.style.borderColor = "#777"; }}
+                                            onMouseLeave={e => { e.currentTarget.style.color = T.textSec; e.currentTarget.style.borderColor = T.border; }}
                                         >
-                                            <RefreshCw size={14} /> Unlock Another
+                                            <RefreshCw size={13} /> Unlock Another
                                         </button>
                                     </div>
                                 </div>
                             )}
 
+                            {/* State 2: Requires User Password */}
                             {requiresUserPassword && !successUrl && (
-                                <form onSubmit={handleUnlock} className="relative z-10">
-                                    <div className="mb-6">
-                                        <label htmlFor="password" className="block text-xs font-black text-black mb-2 uppercase tracking-wider ig-label">
-                                            Enter PDF Password
+                                <form onSubmit={handleUnlock} style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                                    <div>
+                                        <label htmlFor="pdf-pass" style={{ display: "block", fontSize: 11, fontWeight: 500, color: T.textPri, marginBottom: 6 }}>
+                                            Enter PDF Open Password
                                         </label>
-                                        <div className="relative group">
-                                            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-black">
-                                                <Lock size={16} />
+                                        <div style={{ position: "relative" }}>
+                                            <div style={{ position: "absolute", top: 0, bottom: 0, left: 10, display: "flex", alignItems: "center", color: T.muted }}>
+                                                <Lock size={14} />
                                             </div>
                                             <input
+                                                id="pdf-pass"
                                                 type={showPassword ? "text" : "password"}
-                                                id="password"
                                                 value={password}
-                                                onChange={(e) => setPassword(e.target.value)}
-                                                className="w-full h-12 bg-zinc-50 border-2 border-black focus:bg-white rounded-xl pl-11 pr-11 text-sm text-black font-bold placeholder:text-zinc-400 focus:outline-none transition-all shadow-[2px_2px_0_#000]"
+                                                onChange={e => setPassword(e.target.value)}
                                                 placeholder="Document password"
                                                 autoFocus
                                                 required
+                                                style={{
+                                                    width: "100%", height: 38, background: "#2a2a2a",
+                                                    border: `1px solid ${T.border}`, borderRadius: 3,
+                                                    paddingLeft: 34, paddingRight: 36, color: T.textPri,
+                                                    fontSize: 12, outline: "none"
+                                                }}
                                             />
                                             <button
                                                 type="button"
                                                 onClick={() => setShowPassword(!showPassword)}
-                                                className="absolute inset-y-0 right-0 pr-4 flex items-center text-zinc-500 hover:text-black transition-colors focus:outline-none"
+                                                style={{
+                                                    position: "absolute", top: 0, bottom: 0, right: 8,
+                                                    background: "none", border: "none", color: T.textSec,
+                                                    cursor: "pointer", display: "flex", alignItems: "center"
+                                                }}
                                             >
-                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
                                             </button>
                                         </div>
                                     </div>
+
                                     <button
                                         type="submit"
                                         disabled={isProcessing || !password}
-                                        className="ig-btn w-full h-12 bg-[#fde047] text-black border-2 border-black rounded-full font-black text-xs sm:text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[3px_3px_0_#000]"
+                                        style={{
+                                            height: 38, background: T.accent, border: `1px solid ${T.accent}`,
+                                            borderRadius: 3, color: "#1a1a1a", fontWeight: 600, fontSize: 11,
+                                            cursor: (isProcessing || !password) ? "not-allowed" : "pointer",
+                                            opacity: (isProcessing || !password) ? 0.6 : 1,
+                                            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                            transition: "all 0.15s"
+                                        }}
                                     >
                                         {isProcessing ? (
                                             <>
-                                                <Loader2 size={16} className="animate-spin" />
-                                                Decryption processing...
+                                                <Loader2 size={14} className="animate-spin" />
+                                                Decrypting container...
                                             </>
                                         ) : (
                                             <>
                                                 Unlock PDF
-                                                <ArrowRight size={16} />
+                                                <ArrowRight size={14} />
                                             </>
                                         )}
                                     </button>
-                                    <p className="text-zinc-650 text-[10px] text-center font-bold mt-4 uppercase tracking-wide">
-                                        Calculations happen securely in memory.
+
+                                    <p style={{ margin: 0, fontSize: 10, color: T.muted, textAlign: "center" }}>
+                                        Decryption runs locally in memory with WebAssembly. Password is never logged.
                                     </p>
                                 </form>
                             )}
 
+                            {/* State 3: Auto-processing owner permissions lock */}
                             {isProcessing && !requiresUserPassword && !successUrl && (
-                                <div className="relative z-10 text-center py-12">
-                                    <Loader2 size={24} className="text-black animate-spin mx-auto mb-4" />
-                                    <p className="text-zinc-600 text-xs font-bold">Decrypting container elements...</p>
+                                <div style={{ textAlign: "center", padding: "30px 0" }}>
+                                    <Loader2 size={24} className="animate-spin" style={{ color: T.accent, margin: "0 auto 10px" }} />
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0 }}>
+                                        Decrypting document security permissions...
+                                    </p>
                                 </div>
                             )}
                         </div>
                     )}
                 </div>
 
-                <div className="flex justify-center py-4">
-                </div>
+                {/* ─── SEO RICH CONTENT SECTION ─── */}
+                <div style={{ marginTop: 40, borderTop: `1px solid ${T.borderDim}`, paddingTop: 36 }}>
+                    {/* Top Badges */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                        <Chip icon={<ShieldCheck size={10} />} label="100% In-Browser Privacy" />
+                        <Chip icon={<Sparkles size={10} />} label="Free & Unlimited" />
+                        <Chip icon={<Package size={10} />} label="No Server Uploads" />
+                    </div>
 
-                {/* ─── SEO RICH TEXT SECTION ─── */}
-                <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
-                    <div className="relative z-10 space-y-12">
-                        {/* Top Badges */}
-                        <div className="flex flex-wrap justify-center gap-2.5">
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fbcfe8] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <ShieldCheck size={11} className="text-black" /> 100% Secure & Private
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#a7f3d0] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Sparkles size={11} className="text-black" /> Free & Unlimited
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fde047] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Package size={11} className="text-black" /> Instant Decryption
-                            </span>
-                        </div>
+                    {/* Section Header */}
+                    <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 36px" }}>
+                        <h2 style={{ fontSize: 16, fontWeight: 500, color: T.textPri, marginBottom: 8 }}>
+                            Free PDF Password Remover Online - Unlock PDF Restrictions
+                        </h2>
+                        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.6 }}>
+                            Instantly remove owner security restrictions or user open passwords from your PDF files online. Our client-side WebAssembly processor decrypts PDF document streams directly in your browser without persistent file storage or tracking.
+                        </p>
+                    </div>
 
-                        {/* Main Title & Description */}
-                        <div className="text-center space-y-4 max-w-3xl mx-auto">
-                            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-black leading-tight text-center ig-display">
-                                Free PDF Password Remover Online — Unlock PDF Files Privately
-                            </h2>
-                            <p className="text-sm text-zinc-655 leading-relaxed text-center font-medium">
-                                Instantly remove owner security restrict permissions or user open passwords from your PDF files online. Our hybrid WebAssembly and secure memory processor lets you decrypt PDF document streams directly in your browser or securely in memory without persistent file storage or log trails.
-                            </p>
-                        </div>
-
-                        {/* Features Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                            {[
-                                {
-                                    title: "Hybrid Local Decryption",
-                                    desc: "Automatically detects and strips permissions locks client-side in browser memory via pdf-lib structures.",
-                                    icon: <Unlock size={16} />
-                                },
-                                {
-                                    title: "Absolute Data Privacy",
-                                    desc: "No document storage or persistence. Unlocked data buffers are immediately wiped from RAM after download.",
-                                    icon: <ShieldCheck size={16} />
-                                },
-                                {
-                                    title: "Preserves Formatting",
-                                    desc: "Retains original vector graphics, active hyperlinks, layers, fonts, and document layouts perfectly.",
-                                    icon: <FileText size={16} />
-                                },
-                                {
-                                    title: "High-Strength Support",
-                                    desc: "Easily decrypts PDFs encrypted with standard 128-bit/256-bit AES protection algorithms.",
-                                    icon: <Zap size={16} />
-                                },
-                                {
-                                    title: "No File Size Limits",
-                                    desc: "Process single-page permission forms or massive multi-megabyte encrypted documents with ease.",
-                                    icon: <Package size={16} />
-                                },
-                                {
-                                    title: "100% Free & Unlimited",
-                                    desc: "No registration caps, hourly subscriptions, or advertising watermarks added to your unlocked PDFs.",
-                                    icon: <Lock size={16} />
-                                }
-                            ].map((f, i) => (
-                                <div key={i} className="p-6 bg-zinc-55 border-2 border-black rounded-2xl transition-all duration-300 shadow-[3px_3px_0_#000] hover:bg-zinc-100">
-                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black mb-4 shadow-[1.5px_1.5px_0_#000]">
-                                        {f.icon}
+                    {/* Features Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 44 }}>
+                        {[
+                            {
+                                icon: Unlock,
+                                title: "Hybrid Local Decryption",
+                                desc: "Automatically detects and strips permissions locks client-side in browser memory via pdf-lib structures."
+                            },
+                            {
+                                icon: ShieldCheck,
+                                title: "Absolute Data Privacy",
+                                desc: "No document storage or persistence. Unlocked data buffers are immediately wiped from RAM after download."
+                            },
+                            {
+                                icon: FileText,
+                                title: "Preserves Formatting",
+                                desc: "Retains original vector graphics, active hyperlinks, layers, fonts, and document layouts perfectly."
+                            },
+                            {
+                                icon: Zap,
+                                title: "High-Strength Support",
+                                desc: "Easily decrypts PDFs encrypted with standard 128-bit and 256-bit AES protection algorithms."
+                            },
+                            {
+                                icon: Package,
+                                title: "No File Size Limits",
+                                desc: "Process single-page permission forms or massive multi-megabyte encrypted documents with ease."
+                            },
+                            {
+                                icon: Lock,
+                                title: "100% Free & Unlimited",
+                                desc: "No registration caps, hourly subscriptions, or advertising watermarks added to your unlocked PDFs."
+                            }
+                        ].map(f => (
+                            <div key={f.title} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                    <div style={{ color: T.accent }}>
+                                        <f.icon size={15} />
                                     </div>
-                                    <h4 className="text-sm font-bold text-black mb-2 ig-display">{f.title}</h4>
-                                    <p className="text-xs text-zinc-650 leading-relaxed font-medium">{f.desc}</p>
+                                    <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.textPri }}>{f.title}</h3>
+                                </div>
+                                <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Step Timeline */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 44 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
+                            How to Remove PDF Passwords and Restrictions
+                        </h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+                            {[
+                                { step: "1", title: "Select Protected PDF", desc: "Drag and drop your password-protected or restricted PDF into the secure dropbox." },
+                                { step: "2", title: "Enter Password If Needed", desc: "Owner permission locks unlock automatically; for user open passwords, supply the document password." },
+                                { step: "3", title: "Download Unlocked PDF", desc: "Save your clean, unrestricted PDF file immediately with zero watermarks or ads." }
+                            ].map(s => (
+                                <div key={s.step} style={{ padding: 14, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 3, position: "relative", paddingTop: 20 }}>
+                                    <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        {s.step}
+                                    </div>
+                                    <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 6px" }}>{s.title}</h4>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
                                 </div>
                             ))}
                         </div>
+                    </div>
 
-                        {/* Step Timeline */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                How to Remove PDF Passwords and Restrictions
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {[
-                                    { step: "1", title: "Upload Encrypted PDF", desc: "Drag and drop your password-protected PDF or select it from your device folder securely." },
-                                    { step: "2", title: "Input Document Password", desc: "If your file requires a user open password, type it into our secure decryption input." },
-                                    { step: "3", title: "Decrypt and Save", desc: "Click the 'Unlock PDF' button to decrypt the file container and download your unlocked document." }
-                                ].map((s) => (
-                                    <div key={s.step} className="relative p-6 bg-zinc-55 border-2 border-black rounded-2xl pt-8 shadow-[3px_3px_0_#000]">
-                                        <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-[#fde047] border-2 border-black text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
-                                            {s.step}
-                                        </div>
-                                        <h4 className="text-sm font-bold text-black mb-2 ig-display">{s.title}</h4>
-                                        <p className="text-xs text-zinc-650 leading-relaxed font-medium">{s.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Comparison Table */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-4 tracking-tight ig-display">
-                                AssetNest In-Browser Decryptor vs. Cloud PDF Editors
-                            </h3>
-                            <p className="text-xs text-zinc-605 text-center mb-8 max-w-lg mx-auto font-medium">
-                                Compare our secure browser-based decryption features with standard online PDF unlocking platforms.
-                            </p>
-                            <div className="overflow-x-auto rounded-2xl border-2 border-black bg-white shadow-[4px_4px_0_#000]">
-                                <table className="w-full border-collapse text-left text-xs min-w-[500px]">
-                                    <thead>
-                                        <tr className="bg-zinc-50 border-b-2 border-black">
-                                            <th className="p-4 text-black font-black uppercase tracking-wider">Capability</th>
-                                            <th className="p-4 text-black font-black uppercase tracking-wider bg-yellow-50">AssetNest Hybrid Decryptor</th>
-                                            <th className="p-4 text-zinc-650 font-bold uppercase tracking-wider">Cloud-Based Unlocking Tools</th>
+                    {/* Comparison Table */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 44 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 4 }}>
+                            AssetNest Local Decryption vs. Server-Side Converters
+                        </h3>
+                        <p style={{ fontSize: 11, color: T.textSec, textAlign: "center", marginBottom: 16, maxWidth: 540, margin: "0 auto 16px" }}>
+                            Compare our locally executed script framework with typical cloud-based converters.
+                        </p>
+                        <div style={{ overflowX: "auto" }}>
+                            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 11 }}>
+                                <thead>
+                                    <tr style={{ background: "#2e2e2e", borderBottom: `1px solid ${T.border}` }}>
+                                        <th style={{ padding: "10px 12px", color: T.textPri, fontWeight: 600 }}>Feature Capability</th>
+                                        <th style={{ padding: "10px 12px", color: T.accent, fontWeight: 600 }}>AssetNest In-Browser Decryption</th>
+                                        <th style={{ padding: "10px 12px", color: T.textSec, fontWeight: 600 }}>Cloud-Based Unlockers</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {[
+                                        { feat: "File Confidentiality", ours: "100% Safe (Files never uploaded to remote servers)", other: "Risky (Sensitive documents uploaded to external servers)" },
+                                        { feat: "Owner Restriction Bypass", ours: "Automatic local removal of printing/copying locks in ms", other: "Requires waiting in server queue" },
+                                        { feat: "Daily Limits", ours: "Unlimited files and file sizes (bound only by device RAM)", other: "Hourly usage caps or subscription paywalls" },
+                                        { feat: "Watermark Overlay", ours: "100% clean output without injected stamps", other: "Inserts brand stamps or footer ads" },
+                                        { feat: "Registration", ours: "No sign-ups, accounts, or emails requested", other: "Requires registration before download" }
+                                    ].map((row, idx) => (
+                                        <tr key={idx} style={{ borderBottom: `1px solid ${T.borderDim}` }}>
+                                            <td style={{ padding: "10px 12px", color: T.textPri, fontWeight: 500 }}>{row.feat}</td>
+                                            <td style={{ padding: "10px 12px", color: "#e0e0e0" }}>{row.ours}</td>
+                                            <td style={{ padding: "10px 12px", color: T.textSec }}>{row.other}</td>
                                         </tr>
-                                    </thead>
-                                    <tbody className="divide-y-2 divide-black/10">
-                                        {[
-                                            { feat: "Security Architecture", ours: "Hybrid local + WASM decryption keeps files secure", other: "Always uploads private docs to remote servers, raising leaks risk" },
-                                            { feat: "Permissions Unlocking", ours: "Instant client-side stripping of owner/printing blocks", other: "Requires files to be sent to external web servers" },
-                                            { feat: "Quality Retention", ours: "Lossless vector extraction (original streams remain pristine)", other: "Can degrade resolution or strip font mappings during re-compression" },
-                                            { feat: "Usage Limits", ours: "Completely free with unlimited file size processing", other: "Imposes strict file size caps or asks for premium upgrades" },
-                                            { feat: "Ad Watermarks", ours: "Zero watermarks or stamps added to document footers", other: "Inserts promotional banners or leaves stamp annotations" }
-                                        ].map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-zinc-50/50 transition-colors">
-                                                <td className="p-4 text-black font-bold">{row.feat}</td>
-                                                <td className="p-4 text-black font-semibold bg-yellow-50/50">{row.ours}</td>
-                                                <td className="p-4 text-zinc-650 font-medium">{row.other}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        {/* FAQ Section */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                PDF Unlocker FAQ
-                            </h3>
-                            <LocalAccordion>
-                                <LocalAccordionItem title="Is my document safe when I unlock PDFs on this site?">
-                                    Yes. AssetNest prioritizes absolute security. Owner permissions are stripped locally in browser RAM via script calculations. If your document requires backend processing for decryption, the file is held strictly in volatile memory and permanently erased the instant the buffer compiles.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="What is the difference between User passwords and Owner passwords?">
-                                    User passwords (open passwords) restrict anyone from opening and reading the file content at all. Owner passwords (permissions passwords) restrict specific features like printing, editing text, or extracting pages, while still letting people view the document.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Can I unlock a PDF if I completely forgot the User password?">
-                                    No. This is a secure decryption utility, not a cracking tool. You must input the valid user open password to allow the engine to compute the correct decryption key and build the unlocked file structure.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Will unlocking my PDF file affect its digital signatures or certificates?">
-                                    Yes. Removing encryption alters the structural signature metadata of the document, which invalidates any attached digital signatures or cryptographic certificates for safety verification.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Are there file size limits or page restrictions for decryption?">
-                                    No. You can unlock files of any size or length. Decryption computations are highly efficient and are only capped by your hardware and browser capabilities.
-                                </LocalAccordionItem>
-                            </LocalAccordion>
+                    {/* FAQ Accordion Section */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 20 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 16 }}>
+                            Frequently Asked Questions
+                        </h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="What is the difference between an owner password and a user password?"
+                                answer="An Owner Password restricts specific permissions such as printing, editing, or copying text, while allowing anyone to open the document. A User Password (open password) prevents the document from being opened at all without the correct password. Our tool removes both types."
+                            />
+                            <FAQItem 
+                                question="Do I need to know the password to remove it?"
+                                answer="If the document is protected by an Owner Password (permissions lock), our engine can unlock it automatically without needing the password. If it is protected by a User Open Password, you must supply the password once so our WebAssembly engine can decrypt and resave an unrestricted copy."
+                            />
+                            <FAQItem 
+                                question="Are my sensitive PDF documents uploaded to external servers?"
+                                answer="No! All decryption occurs locally in your browser using client-side WebAssembly and JavaScript. Your files never leave your device."
+                            />
+                            <FAQItem 
+                                question="Will hyperlinks, form fields, and vector resolution be preserved?"
+                                answer="Yes. Decryption removes encryption dictionaries while preserving all native PDF structures, vector artwork, annotations, and hyperlinks with 100% fidelity."
+                            />
                         </div>
                     </div>
                 </div>
             </main>
 
-            {/* Help Modal */}
-            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Unlocker Info">
-                <div className="space-y-12 text-zinc-800 leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000] space-y-6">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                            Security Abstraction Infrastructure
+            {/* Help / Documentation Modal */}
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Password Remover Documentation">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20, color: T.textPri, fontSize: 12, lineHeight: 1.6 }}>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, color: T.accent, margin: "0 0 8px" }}>
+                            In-Browser Decryption Infrastructure
                         </h3>
-                        <p className="text-base leading-relaxed text-zinc-705 font-medium">
-                            Step into a professional-grade workspace for document security management. AssetNest <strong>Smart PDF Unlocker</strong> utilizes a hybrid local/server processing engine to strip rigid password protections with absolute data privacy. Our dual-phase system detects the specific encryption type and applies the exact decryption logic required without unnecessary data transmission.
+                        <p style={{ margin: 0, color: T.textSec, fontSize: 11 }}>
+                            AssetNest PDF Password Remover employs a dual client-side decryption engine. Owner restrictions are lifted via lightweight local PDF parsers, while encrypted user password structures are processed using a sandboxed WebAssembly build of QPDF executing directly inside your browser.
                         </p>
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display flex items-center gap-2">
-                                <Zap size={20} className="text-black" />
-                                How Encryption is Stripped
-                            </h3>
-                            <ul className="space-y-4 text-sm text-zinc-700 font-medium">
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>Owner Passwords (Permissions):</strong> If your PDF restricts printing, copying, or editing, it has an Owner Password. Our tool strips this instantly in your local browser cache without server intervention.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>User Passwords (Viewing):</strong> If your PDF asks for a password to open, it has a User Password. You must provide the password. We securely process the decryption using our ultra-fast backend engine.</span>
-                                </li>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <Unlock size={14} style={{ color: T.accent }} /> Decryption Modes
+                            </h4>
+                            <ul style={{ margin: 0, paddingLeft: 16, color: T.textSec, fontSize: 11, display: "flex", flexDirection: "column", gap: 6 }}>
+                                <li><strong>Owner Permissions:</strong> Strips printing, copying, and annotating locks instantly.</li>
+                                <li><strong>User Open Passwords:</strong> Decrypts document contents with provided credentials.</li>
+                                <li><strong>AES 128/256 Support:</strong> Full compatibility with modern PDF encryption specs.</li>
                             </ul>
                         </section>
 
-                        <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000] space-y-6">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display flex items-center gap-2">
-                                <ShieldCheck size={20} className="text-black" />
-                                Privacy Infrastructure
-                            </h3>
-                            <p className="text-sm text-zinc-700 leading-relaxed font-bold">
-                                <strong>Zero Data Retention.</strong> When a User Password is processed via our secure backend engine, both the encrypted upload and the decrypted output are permanently erased from our server memory within milliseconds of completion.
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <ShieldCheck size={14} style={{ color: T.accent }} /> Privacy Compliance
+                            </h4>
+                            <p style={{ margin: "0 0 10px", color: T.textSec, fontSize: 11 }}>
+                                Memory buffers are cleared immediately upon file download or reset. Zero logs or temporary files exist on any cloud server.
                             </p>
-                            <div className="p-6 bg-zinc-50 rounded-3xl border-2 border-black shadow-[2px_2px_0_#000]">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-black">Technical Spec</p>
-                                <p className="text-[11px] text-zinc-650 mt-2 font-bold tracking-tight uppercase leading-relaxed">
-                                    In-Memory Decryption • Ephemeral Buffers • Local-First Evaluation • Zero Log Retention
-                                </p>
+                            <div style={{ padding: "6px 10px", background: "#2a2a2a", border: `1px solid ${T.borderDim}`, borderRadius: 3, fontSize: 10, color: "#aaa" }}>
+                                Spec: WebAssembly QPDF • Zero-Server Footprint • 100% Client-Side In-Memory
                             </div>
                         </section>
                     </div>
 
-                    <section className="bg-white p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000] pt-12">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">Documentation FAQ</h3>
-                        <LocalAccordion>
-                            <LocalAccordionItem title="Can this hack a forgotten password?">
-                                Absolutely not. This is not a hacking or brute-force tool. We cannot recover lost or forgotten User Passwords. You must know the password to remove the protection.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Why do Owner Passwords not require input?">
-                                Owner Passwords simply restrict permissions (like printing) and do not encrypt the actual document streams. Standard PDF libraries can read the streams and save them to a new, unrestricted document.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Will this invalidate Digital Signatures?">
-                                Yes. Stripping the encryption layer fundamentally alters the file signature, which will invalidate any cryptographic digital signatures or advanced DRM attached to the document.
-                            </LocalAccordionItem>
-                        </LocalAccordion>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 10px" }}>
+                            Key Capabilities
+                        </h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="Can it crack unknown passwords?" 
+                                answer="No. For security and legal compliance, open passwords must be supplied once by the legitimate file owner to remove encryption." 
+                            />
+                            <FAQItem 
+                                question="Is my file data saved anywhere?" 
+                                answer="No. Decrypted buffers exist strictly in temporary browser RAM until the window is closed or reset." 
+                            />
+                        </div>
                     </section>
                 </div>
             </HelpModal>
+
+            {/* Share Modal */}
+            <ShareModal
+                isOpen={isSharing}
+                onClose={() => setIsSharing(false)}
+                file={outputBlob}
+                fileName={unlockedFileName || "unlocked_document.pdf"}
+            />
         </div>
     );
 }
-
-

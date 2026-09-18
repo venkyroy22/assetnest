@@ -6,7 +6,9 @@ import React, {
 import Link from "next/link";
 import {
     Timer, Keyboard, RotateCcw, MousePointer2, ArrowRight,
-    Copy, Check, Settings2, X, Palette, ArrowLeft, HelpCircle
+    Copy, Check, Settings2, X, Palette, ArrowLeft, HelpCircle,
+    Zap, Clock, Sparkles, BarChart2, Shield, Users, Trophy,
+    ShieldCheck, Package
 } from "lucide-react";
 import { Accordion, AccordionItem } from "@/components/Accordion";
 import HelpModal from "@/components/HelpModal";
@@ -18,8 +20,12 @@ interface Theme {
     name: string;
     bg: string;
     surface: string;
+    surfaceHi?: string;
     border: string;
+    borderDim?: string;
     text: string;
+    textPri?: string;
+    textSec?: string;
     muted: string;
     dim: string;
     accent: string;        // caret + correct chars
@@ -28,6 +34,12 @@ interface Theme {
 }
 
 const THEMES: Theme[] = [
+    {
+        name: "dark",
+        bg: "#333333", surface: "#3a3a3a", border: "#555555",
+        text: "#cccccc", muted: "#999999", dim: "#2a2a2a",
+        accent: "#4db8d4", accentHex: "#4db8d4", error: "#e06c75",
+    },
     {
         name: "neobrutalist",
         bg: "#F4ECD8", surface: "#ffffff", border: "#000000",
@@ -210,9 +222,49 @@ interface WordData {
     typed: string;
 }
 
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+    return (
+        <span style={{
+            display: "inline-flex", alignItems: "center", gap: 4,
+            padding: "3px 8px", borderRadius: 2,
+            background: "#3a3a3a", border: "1px solid #555555",
+            fontSize: 10, fontWeight: 400, color: "#aaa",
+        }}>
+            {icon}{label}
+        </span>
+    );
+}
+
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div onClick={() => setOpen(!open)} style={{
+            background: "#3a3a3a", border: "1px solid #555555", borderRadius: 3,
+            padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+        }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                <h4 style={{ fontSize: 11, fontWeight: 400, color: "#cccccc", margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+                    <span style={{ color: "#4db8d4" }}>Q:</span><span>{question}</span>
+                </h4>
+                <span style={{ color: "#999999", transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+            </div>
+            <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+                <p style={{ fontSize: 11, color: "#999999", lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+            </div>
+        </div>
+    );
+}
+
 export default function TypingTesterPage() {
-    const [themeIdx, setThemeIdx] = useState(() => Math.max(0, THEMES.findIndex(t => t.name === "neobrutalist")));
-    const T = THEMES[themeIdx];
+    const [themeIdx, setThemeIdx] = useState(() => Math.max(0, THEMES.findIndex(t => t.name === "dark")));
+    const rawTheme = THEMES[themeIdx];
+    const T = useMemo(() => ({
+        ...rawTheme,
+        surfaceHi: rawTheme.surfaceHi || (rawTheme.name === "dark" ? "#444444" : rawTheme.surface),
+        borderDim: rawTheme.borderDim || (rawTheme.name === "dark" ? "#2a2a2a" : rawTheme.dim || rawTheme.border),
+        textPri: rawTheme.textPri || (rawTheme.name === "dark" ? "#cccccc" : rawTheme.text),
+        textSec: rawTheme.textSec || (rawTheme.name === "dark" ? "#999999" : rawTheme.muted),
+    }), [rawTheme]);
 
     const [testMode, setTestMode] = useState<TestMode>("time");
     const [timeConfig, setTimeConfig] = useState(30);
@@ -818,181 +870,191 @@ export default function TypingTesterPage() {
             `}</style>
 
             {/* ── Header ─────────────────────────────────────────────────────── */}
-            <header className="max-w-5xl mx-auto px-4 sm:px-8 pt-6 sm:pt-10 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+            <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <Link
                         href="/tools"
-                        className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                        style={{ fontFamily: "sans-serif" }}
+                        style={{
+                            display: "flex", alignItems: "center", gap: 4,
+                            padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+                            color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+                        }}
                     >
-                        <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+                        <ArrowLeft size={11} strokeWidth={2} /> Back
                     </Link>
-                    <button onClick={resetTest} className="flex items-center gap-2 group ml-2">
-                        <div
-                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-black text-xs font-black transition-all border border-black shadow-[1.5px_1.5px_0_#000]"
-                            style={{ background: T.accent }}
-                        >AN</div>
-                        <span className="text-base sm:text-lg font-black tracking-tight transition-colors" style={{ color: T.text, fontFamily: "'Space Grotesk', sans-serif" }}>
-                            Typing Tester
-                        </span>
+                    <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                        <Keyboard size={12} />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: T.text }}>Typing Speed Tester</span>
+                    <button
+                        onClick={() => setShowHelp(true)}
+                        style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.muted, cursor: "pointer", display: "flex" }}
+                        title="Help Guide"
+                    >
+                        <HelpCircle size={11} />
                     </button>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                     {isActive && (
-                        <div className="text-sm font-black tracking-wider uppercase bg-white border-2 border-black px-3 py-1 rounded-xl shadow-[1.5px_1.5px_0_#000] text-black">
+                        <div style={{
+                            fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 2,
+                            background: T.surface, border: `1px solid ${T.border}`, color: T.accent
+                        }}>
                             {testMode === "time" ? `${timeLeft}s` : testMode === "words" ? `${currentWordIdx}/${wordConfig}` : `${timeLeft}s • ${currentWordIdx}/${wordConfig}`}
                         </div>
                     )}
                     <button
                         onClick={() => { setCustomInput(activeConfig.toString()); setSettingsModalOpen(true); }}
-                        className="p-2 bg-white border-2 border-black rounded-xl text-black hover:bg-zinc-50 transition-all shadow-[1.5px_1.5px_0_#000]"
+                        style={{
+                            padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 2, color: T.text, cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 11
+                        }}
                         title="Settings"
                     >
-                        <Settings2 size={15} />
-                    </button>
-                    <button
-                        onClick={() => setShowHelp(true)}
-                        className="p-1.5 bg-white border-2 border-black rounded-full text-black hover:bg-zinc-100 transition-all shadow-[1.5px_1.5px_0_#000]"
-                        title="Help"
-                    >
-                        <HelpCircle size={14} />
+                        <Settings2 size={12} /> Config
                     </button>
                 </div>
             </header>
 
-            <main className={`max-w-5xl mx-auto px-4 sm:px-8 mt-6 sm:mt-12 transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
+            <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px" }} className={`transition-opacity duration-700 ${visible ? "opacity-100" : "opacity-0"}`}>
+
 
                 {/* ── Mode toolbar ───────────────────────────────────────────── */}
                 {!isActive && !isFinished && (
-                    <div className="flex justify-center mb-6 sm:mb-10 px-2">
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: 28 }}>
                         <div
-                            className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-1 rounded-2xl p-2.5 text-xs font-bold tracking-wide w-full sm:w-auto shadow-[4px_4px_0_#000] border-2 border-black bg-white text-black"
+                            style={{
+                                display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "center",
+                                gap: 6, padding: "6px 10px", borderRadius: 4,
+                                background: T.surface, border: `1px solid ${T.border}`, color: T.text, fontSize: 11
+                            }}
                         >
                             {/* Group 1: Modes & Modifiers */}
-                            <div className="flex flex-wrap items-center justify-center gap-1">
-                                <div className="flex items-center gap-1 pr-1.5 sm:pr-3 border-b sm:border-b-0 sm:border-r-2 border-black pb-1 sm:pb-0">
-                                    {(["time", "words", "both"] as TestMode[]).map(m => (
-                                        <button
-                                            key={m}
-                                            onClick={() => setTestMode(m)}
-                                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-transparent transition-all hover:bg-zinc-100"
-                                            style={{
-                                                fontWeight: testMode === m ? 900 : 500,
-                                                color: testMode === m ? "#000000" : "#6b7280",
-                                                background: testMode === m ? "#f3f4f6" : "transparent",
-                                                border: testMode === m ? "1.5px solid #000000" : "1.5px solid transparent"
-                                            }}
-                                        >
-                                            {m === "time" ? <Timer size={12} /> : m === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={11}/><Keyboard size={11}/></div>}
-                                            {m}
-                                        </button>
-                                    ))}
-                                </div>
-
-                                <div className="flex items-center gap-1 px-1.5">
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, paddingRight: 8, borderRight: `1px solid ${T.borderDim}` }}>
+                                {(["time", "words", "both"] as TestMode[]).map(m => (
                                     <button
-                                        onClick={() => {
-                                            const next = !usePunctuation;
-                                            punctRef.current = next;
-                                            setUsePunctuation(next);
-                                        }}
-                                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
+                                        key={m}
+                                        onClick={() => setTestMode(m)}
                                         style={{
-                                            fontWeight: usePunctuation ? 900 : 550,
-                                            color: usePunctuation ? "#000000" : "#6b7280",
-                                            background: usePunctuation ? "#f3f4f6" : "transparent",
-                                            border: usePunctuation ? "1.5px solid #000000" : "1.5px solid transparent"
+                                            display: "flex", alignItems: "center", gap: 4,
+                                            padding: "4px 8px", borderRadius: 2,
+                                            background: testMode === m ? T.surfaceHi : "transparent",
+                                            border: `1px solid ${testMode === m ? T.accent : "transparent"}`,
+                                            color: testMode === m ? T.accent : T.muted,
+                                            fontSize: 11, fontWeight: testMode === m ? 600 : 400, cursor: "pointer"
                                         }}
-                                        title="Toggle punctuation"
                                     >
-                                        <span className="text-sm">@</span>
-                                        <span>punct</span>
+                                        {m === "time" ? <Timer size={11} /> : m === "words" ? <Keyboard size={11} /> : <div style={{ display: "flex", gap: 2 }}><Timer size={10}/><Keyboard size={10}/></div>}
+                                        {m}
                                     </button>
-                                    <button
-                                        onClick={() => {
-                                            const next = !useNumbers;
-                                            numsRef.current = next;
-                                            setUseNumbers(next);
-                                        }}
-                                        className="flex items-center gap-1 px-3 py-1.5 rounded-lg transition-all font-mono"
-                                        style={{
-                                            fontWeight: useNumbers ? 900 : 550,
-                                            color: useNumbers ? "#000000" : "#6b7280",
-                                            background: useNumbers ? "#f3f4f6" : "transparent",
-                                            border: useNumbers ? "1.5px solid #000000" : "1.5px solid transparent"
-                                        }}
-                                        title="Toggle numbers"
-                                    >
-                                        <span className="text-sm">#</span>
-                                        <span>nums</span>
-                                    </button>
-                                </div>
+                                ))}
                             </div>
 
-                            <div className="hidden sm:block h-5 w-[2px] bg-black mx-1" />
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, paddingRight: 8, borderRight: `1px solid ${T.borderDim}` }}>
+                                <button
+                                    onClick={() => {
+                                        const next = !usePunctuation;
+                                        punctRef.current = next;
+                                        setUsePunctuation(next);
+                                    }}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 3,
+                                        padding: "4px 8px", borderRadius: 2,
+                                        background: usePunctuation ? T.surfaceHi : "transparent",
+                                        border: `1px solid ${usePunctuation ? T.accent : "transparent"}`,
+                                        color: usePunctuation ? T.accent : T.muted,
+                                        fontSize: 11, fontWeight: usePunctuation ? 600 : 400, cursor: "pointer"
+                                    }}
+                                    title="Toggle punctuation"
+                                >
+                                    <span style={{ fontSize: 11 }}>@</span>
+                                    <span>punct</span>
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        const next = !useNumbers;
+                                        numsRef.current = next;
+                                        setUseNumbers(next);
+                                    }}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 3,
+                                        padding: "4px 8px", borderRadius: 2,
+                                        background: useNumbers ? T.surfaceHi : "transparent",
+                                        border: `1px solid ${useNumbers ? T.accent : "transparent"}`,
+                                        color: useNumbers ? T.accent : T.muted,
+                                        fontSize: 11, fontWeight: useNumbers ? 600 : 400, cursor: "pointer"
+                                    }}
+                                    title="Toggle numbers"
+                                >
+                                    <span style={{ fontSize: 11 }}>#</span>
+                                    <span>nums</span>
+                                </button>
+                            </div>
 
                             {/* Group 2: Presets & Duel */}
-                            <div className="flex flex-wrap items-center justify-center gap-1">
-                                <div className="flex items-center gap-1 px-1.5 sm:px-3 border-r-2 border-black">
-                                    {testMode !== "both" && (testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
-                                        <button
-                                            key={v}
-                                            onClick={() => {
-                                                if (testMode === "time") setTimeConfig(v);
-                                                else setWordConfig(v);
-                                            }}
-                                            className="px-2.5 py-1 rounded-lg transition-all"
-                                            style={{
-                                                fontWeight: activeConfig === v ? 900 : 500,
-                                                color: activeConfig === v ? "#000000" : "#6b7280",
-                                                background: activeConfig === v ? "#f3f4f6" : "transparent",
-                                                border: activeConfig === v ? "1.5px solid #000000" : "1.5px solid transparent"
-                                            }}
-                                        >
-                                            {v}
-                                        </button>
-                                    ))}
+                            <div style={{ display: "flex", alignItems: "center", gap: 4, paddingRight: 8, borderRight: `1px solid ${T.borderDim}` }}>
+                                {testMode !== "both" && (testMode === "time" ? TIME_OPTIONS : WORD_OPTIONS).map(v => (
                                     <button
-                                        onClick={() => { 
-                                            if (testMode === "both") {
-                                                setCustomInput("");
-                                            } else {
-                                                setCustomInput(activeConfig.toString()); 
-                                            }
-                                            setSettingsModalOpen(true); 
-                                        }}
-                                        className="px-2 py-1 rounded-lg transition-all text-zinc-550 hover:text-black"
-                                        title="Custom Settings"
-                                    >
-                                        <Settings2 size={12} />
-                                    </button>
-                                </div>
-
-                                <div className="flex items-center gap-1 pl-1.5 sm:pl-3">
-                                    <button
-                                        onClick={leaveDuel}
-                                        className="px-2.5 py-1 rounded-lg transition-all"
-                                        style={{
-                                            fontWeight: !duelMode ? 900 : 500,
-                                            color: !duelMode ? "#000000" : "#6b7280",
-                                            background: !duelMode ? "#f3f4f6" : "transparent",
-                                            border: !duelMode ? "1.5px solid #000000" : "1.5px solid transparent"
-                                        }}
-                                    >solo</button>
-                                    <button
+                                        key={v}
                                         onClick={() => {
-                                            if (!duelMode) setDuelMode(true);
+                                            if (testMode === "time") setTimeConfig(v);
+                                            else setWordConfig(v);
                                         }}
-                                        className="px-2.5 py-1 rounded-lg transition-all"
                                         style={{
-                                            fontWeight: duelMode ? 900 : 500,
-                                            color: duelMode ? "#000000" : "#6b7280",
-                                            background: duelMode ? "#f3f4f6" : "transparent",
-                                            border: duelMode ? "1.5px solid #000000" : "1.5px solid transparent"
+                                            padding: "4px 8px", borderRadius: 2,
+                                            background: activeConfig === v ? T.surfaceHi : "transparent",
+                                            border: `1px solid ${activeConfig === v ? T.accent : "transparent"}`,
+                                            color: activeConfig === v ? T.accent : T.muted,
+                                            fontSize: 11, fontWeight: activeConfig === v ? 600 : 400, cursor: "pointer"
                                         }}
-                                    >duel</button>
-                                </div>
+                                    >
+                                        {v}
+                                    </button>
+                                ))}
+                                <button
+                                    onClick={() => { 
+                                        if (testMode === "both") {
+                                            setCustomInput("");
+                                        } else {
+                                            setCustomInput(activeConfig.toString()); 
+                                        }
+                                        setSettingsModalOpen(true); 
+                                    }}
+                                    style={{
+                                        padding: "4px 6px", borderRadius: 2,
+                                        background: "transparent", border: "none",
+                                        color: T.muted, cursor: "pointer"
+                                    }}
+                                    title="Custom Settings"
+                                >
+                                    <Settings2 size={12} />
+                                </button>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                <button
+                                    onClick={leaveDuel}
+                                    style={{
+                                        padding: "4px 8px", borderRadius: 2,
+                                        background: !duelMode ? T.surfaceHi : "transparent",
+                                        border: `1px solid ${!duelMode ? T.accent : "transparent"}`,
+                                        color: !duelMode ? T.accent : T.muted,
+                                        fontSize: 11, fontWeight: !duelMode ? 600 : 400, cursor: "pointer"
+                                    }}
+                                >solo</button>
+                                <button
+                                    onClick={() => {
+                                        if (!duelMode) setDuelMode(true);
+                                    }}
+                                    style={{
+                                        padding: "4px 8px", borderRadius: 2,
+                                        background: duelMode ? T.surfaceHi : "transparent",
+                                        border: `1px solid ${duelMode ? T.accent : "transparent"}`,
+                                        color: duelMode ? T.accent : T.muted,
+                                        fontSize: 11, fontWeight: duelMode ? 600 : 400, cursor: "pointer"
+                                    }}
+                                >duel</button>
                             </div>
                         </div>
                     </div>
@@ -1001,20 +1063,26 @@ export default function TypingTesterPage() {
                 {/* ── Duel panel ─────────────────────────────────────────────── */}
                 {duelMode && !isActive && !isFinished && countdown === null && (duelStatus !== "connected" || isHost) && (
                     <div
-                        className="max-w-xl mx-auto mb-8 rounded-2xl border-2 border-black shadow-[4px_4px_0_#000] overflow-hidden"
-                        style={{ background: "#ffffff", color: "#000000" }}
+                        style={{
+                            maxWidth: 580, margin: "0 auto 32px",
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 6, color: T.text, overflow: "hidden",
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.25)"
+                        }}
                     >
                         {/* Status bar */}
                         {duelStatus !== "idle" && (
                             <div
-                                className="px-5 py-2.5 text-xs font-bold tracking-wider uppercase flex items-center gap-2 border-b-2 border-black"
                                 style={{
-                                    background: duelStatus === "connected" ? "#ecfdf5"
-                                        : duelStatus === "error" ? "#fef2f2"
-                                            : "#f9fafb",
-                                    color: duelStatus === "connected" ? "#065f46"
-                                        : duelStatus === "error" ? "#991b1b"
-                                            : "#374151",
+                                    padding: "8px 14px", fontSize: 11, fontWeight: 500,
+                                    display: "flex", alignItems: "center", gap: 8,
+                                    borderBottom: `1px solid ${T.border}`,
+                                    background: duelStatus === "connected" ? "rgba(77,184,212,0.1)"
+                                        : duelStatus === "error" ? "rgba(204,68,68,0.1)"
+                                            : T.surfaceHi,
+                                    color: duelStatus === "connected" ? T.accent
+                                        : duelStatus === "error" ? T.error
+                                            : T.muted,
                                 }}
                             >
                                 {duelStatus === "connecting" && (
@@ -1024,34 +1092,35 @@ export default function TypingTesterPage() {
                                     <><Check size={12} /> Room ready! Waiting for opponent…</>
                                 )}
                                 {duelStatus === "error" && (
-                                    <>✕ Connection failed — check the code and try again</>
+                                    <>✕ Connection failed - check the code and try again</>
                                 )}
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x-2 divide-black">
+                        <div className="grid grid-cols-1 sm:grid-cols-2">
 
                             {/* ── Create side ── */}
-                            <div className="p-4 sm:p-5 space-y-4">
-                                <div className="text-[10px] font-black tracking-widest uppercase text-zinc-500">
+                            <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 12, borderRight: `1px solid ${T.borderDim}` }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted }}>
                                     Race Settings
                                 </div>
-                                <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-zinc-200 bg-zinc-50">
-                                    <div className="flex items-center gap-1.5 text-xs font-bold text-zinc-700">
-                                        {testMode === "time" ? <Timer size={12} /> : testMode === "words" ? <Keyboard size={12} /> : <div className="flex gap-0.5"><Timer size={12}/><Keyboard size={12}/></div>}
-                                        {testMode}
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, padding: "6px 10px", borderRadius: 4, background: T.bg, border: `1px solid ${T.border}` }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, fontWeight: 500, color: T.muted }}>
+                                        {testMode === "time" ? <Timer size={12} /> : testMode === "words" ? <Keyboard size={12} /> : <div style={{ display: "flex", gap: 2 }}><Timer size={11}/><Keyboard size={11}/></div>}
+                                        <span>{testMode}</span>
                                     </div>
-                                    <div className="h-3 w-px bg-zinc-300" />
-                                    <div className="text-xs font-bold text-black">
+                                    <div style={{ height: 12, width: 1, background: T.border }} />
+                                    <div style={{ fontSize: 11, fontWeight: 600, color: T.text }}>
                                         {testMode === "time" ? `${timeConfig}s` : testMode === "words" ? `${wordConfig} words` : `${timeConfig}s & ${wordConfig}w`}
                                     </div>
                                 </div>
-                                <div className="text-[10px] font-black tracking-widest uppercase text-zinc-500 mt-4">
+
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted, marginTop: 4 }}>
                                     Create Room
                                 </div>
                                 {sessionCode && isHost ? (
-                                    <div className="space-y-2">
-                                        <div className="text-3xl font-black tracking-[0.25em] text-black">
+                                    <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                        <div style={{ fontSize: 26, fontWeight: 700, letterSpacing: "0.25em", color: T.accent, textAlign: "center", fontFamily: "monospace", padding: "4px 0" }}>
                                             {sessionCode}
                                         </div>
                                         <button
@@ -1060,11 +1129,17 @@ export default function TypingTesterPage() {
                                                 setCopiedCode(true);
                                                 setTimeout(() => setCopiedCode(false), 2000);
                                             }}
-                                            className="ig-btn flex items-center gap-1.5 text-xs font-bold px-3 py-2 bg-white border-2 border-black rounded-lg w-full justify-center transition-all shadow-[2px_2px_0_#000]"
+                                            style={{
+                                                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                                width: "100%", height: 34, background: T.surfaceHi,
+                                                border: `1px solid ${T.border}`, borderRadius: 4,
+                                                color: T.text, fontSize: 11, cursor: "pointer", fontWeight: 500,
+                                                transition: "all 0.15s"
+                                            }}
                                         >
-                                            {copiedCode ? <><Check size={13} /> Copied!</> : <><Copy size={13} /> Copy Code</>}
+                                            {copiedCode ? <><Check size={13} style={{ color: T.accent }} /> Copied!</> : <><Copy size={13} /> Copy Code</>}
                                         </button>
-                                        <p className="text-[10px] leading-relaxed text-zinc-500 font-semibold">
+                                        <p style={{ fontSize: 10, color: T.muted, lineHeight: 1.5, margin: 0 }}>
                                             Share this code with your opponent. The race starts when both players begin typing.
                                         </p>
                                     </div>
@@ -1072,8 +1147,14 @@ export default function TypingTesterPage() {
                                     <button
                                         onClick={createDuel}
                                         disabled={!supabaseOnline || duelStatus === "connecting"}
-                                        className="ig-btn w-full py-3.5 rounded-xl text-xs font-black uppercase tracking-widest text-black transition-all disabled:opacity-50 border-2 border-black shadow-[3px_3px_0_#000]"
-                                        style={{ background: "#fde047" }}
+                                        style={{
+                                            width: "100%", height: 36, borderRadius: 4,
+                                            background: T.accent, border: "none",
+                                            color: "#111111", fontSize: 11, fontWeight: 600,
+                                            cursor: !supabaseOnline || duelStatus === "connecting" ? "not-allowed" : "pointer",
+                                            opacity: !supabaseOnline || duelStatus === "connecting" ? 0.5 : 1,
+                                            transition: "all 0.15s"
+                                        }}
                                     >
                                         {duelStatus === "connecting" ? "Connecting…" : supabaseOnline ? "Generate Code" : "Unavailable"}
                                     </button>
@@ -1081,8 +1162,8 @@ export default function TypingTesterPage() {
                             </div>
 
                             {/* ── Join side ── */}
-                            <div className="p-4 sm:p-5 space-y-4">
-                                <div className="text-[10px] font-black tracking-widest uppercase text-zinc-500">
+                            <div style={{ padding: 18, display: "flex", flexDirection: "column", gap: 12 }}>
+                                <div style={{ fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", color: T.muted }}>
                                     Join Room
                                 </div>
                                 <input
@@ -1092,19 +1173,31 @@ export default function TypingTesterPage() {
                                     placeholder="6-digit code"
                                     maxLength={6}
                                     disabled={duelStatus === "connecting"}
-                                    className="w-full rounded-xl px-4 py-2.5 text-xl font-bold tracking-[0.2em] text-center focus:outline-none border-2 border-black text-black bg-white shadow-[2px_2px_0_#000] placeholder:tracking-normal placeholder:font-medium placeholder:text-zinc-300"
+                                    style={{
+                                        width: "100%", height: 42, background: T.bg,
+                                        border: `1px solid ${T.border}`, borderRadius: 4,
+                                        color: T.text, fontSize: 18, fontWeight: 700,
+                                        letterSpacing: "0.2em", textAlign: "center",
+                                        outline: "none", fontFamily: "monospace"
+                                    }}
                                 />
                                 <button
                                     onClick={joinDuel}
                                     disabled={!supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting"}
-                                    className="ig-btn w-full py-3.5 rounded-xl text-xs font-black uppercase tracking-widest text-black transition-all disabled:opacity-50 border-2 border-black shadow-[3px_3px_0_#000]"
-                                    style={{ background: "#fde047" }}
+                                    style={{
+                                        width: "100%", height: 36, borderRadius: 4,
+                                        background: T.accent, border: "none",
+                                        color: "#111111", fontSize: 11, fontWeight: 600,
+                                        cursor: !supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting" ? "not-allowed" : "pointer",
+                                        opacity: !supabaseOnline || joinCode.length !== 6 || duelStatus === "connecting" ? 0.5 : 1,
+                                        transition: "all 0.15s"
+                                    }}
                                 >
                                     {duelStatus === "connecting" ? "Joining…"
                                         : supabaseOnline ? "Join Game" : "Unavailable"}
                                 </button>
                                 {duelStatus === "error" && (
-                                    <p className="text-[10px] text-rose-600 font-bold">
+                                    <p style={{ fontSize: 10, color: T.error, fontWeight: 500, margin: 0 }}>
                                         Could not join. Make sure the code is correct.
                                     </p>
                                 )}
@@ -1252,139 +1345,137 @@ export default function TypingTesterPage() {
                     >
                         <RotateCcw size={14} /> restart
                     </button>
-                    <span className="flex items-center gap-1.5 font-bold uppercase tracking-wider text-[10px]">
-                        <span className="px-1.5 py-0.5 rounded text-[10px] border border-black bg-white shadow-[1px_1px_0_#000] text-black">tab</span>
-                        to restart
+                    <span style={{ display: "inline-flex", alignItems: "center", gap: 6, fontSize: 10, color: T.muted }}>
+                        <kbd style={{ padding: "2px 6px", borderRadius: 3, background: T.surfaceHi, border: `1px solid ${T.border}`, color: T.text, fontFamily: "monospace", fontSize: 10 }}>tab</kbd>
+                        <span>to restart</span>
                     </span>
                 </div>
             </main>
 
-
-                <div className="flex justify-center py-4">
-                </div>
-
             {/* ─── SEO RICH TEXT SECTION ─── */}
             {!isActive && !isFinished && (
-                <div className="max-w-5xl mx-auto mt-20 mb-20 p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden text-black shadow-[6px_6px_0_#000] font-sans">
-                    <div className="relative z-10 space-y-12">
+                <div
+                    style={{
+                        maxWidth: 960, margin: "60px auto 40px", padding: "32px 24px",
+                        background: T.surface, border: `1px solid ${T.border}`,
+                        borderRadius: 8, color: T.text, textAlign: "left"
+                    }}
+                >
+                    <div style={{ display: "flex", flexDirection: "column", gap: 32 }}>
                         {/* Top Badges */}
-                        <div className="flex flex-wrap justify-center gap-2.5">
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fef08a] text-[10px] font-black uppercase tracking-wider text-black">
-                                ⚡ Free Typing Speed Tester
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#bfdbfe] text-[10px] font-black uppercase tracking-wider text-black">
-                                ⌨️ Complete Alphabet Practice
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#bbf7d0] text-[10px] font-black uppercase tracking-wider text-black">
-                                ⏱️ Custom Time Sprints
-                            </span>
+                        <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 8 }}>
+                            <Chip icon={<Zap size={11} style={{ color: T.accent }} />} label="Free Typing Speed Tester" />
+                            <Chip icon={<Keyboard size={11} style={{ color: T.accent }} />} label="Complete Alphabet Practice" />
+                            <Chip icon={<Timer size={11} style={{ color: T.accent }} />} label="Custom Time Sprints" />
                         </div>
 
                         {/* Main Title & Subtitle */}
-                        <div className="text-center space-y-4 max-w-3xl mx-auto">
-                            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-black leading-tight ig-display">
-                                Become a <span className="underline decoration-yellow-400 decoration-wavy">Typing Master</span> with Our Free Speed Typing Online Tool
+                        <div style={{ textAlign: "center", maxWidth: 720, margin: "0 auto" }}>
+                            <h2 style={{ fontSize: 20, fontWeight: 700, color: T.text, margin: "0 0 10px", lineHeight: 1.3 }}>
+                                Master Speed Typing Online with Real-Time Accuracy Analytics
                             </h2>
-                            <p className="text-sm sm:text-base text-zinc-650 leading-relaxed font-semibold">
-                                Measure and improve your fingers' velocity with our premium, developer-oriented <strong className="font-bold">speed typing test online</strong>. Whether you need a quick <strong className="font-bold">5 minute typing test</strong>, a detailed <strong className="font-bold">online typing test 10 minutes</strong> session, or targeted <strong className="font-bold">speed typing practice</strong> with punctuation and numbers, our test is 100% free, private, and calculated in real-time.
+                            <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.6, margin: 0 }}>
+                                Measure and improve your fingers' velocity with our developer-oriented, privacy-preserving speed typing test. Whether you need a quick 1-minute sprint, a 5-minute stamina test, or targeted practice with punctuation and numbers, our tester is 100% free, runs client-side, and delivers instant graphical analytics.
                             </p>
                         </div>
 
                         {/* Features Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12 }}>
                             {[
                                 {
                                     title: "Accurate Speed Typing Online",
-                                    desc: "Track your WPM (Words Per Minute), raw keystrokes, and real-time accuracy percentages instantly with no delay or buffering.",
-                                    icon: "⚡"
+                                    desc: "Track your WPM (Words Per Minute), raw keystrokes, and real-time accuracy percentages instantly with zero delay.",
+                                    icon: Zap
                                 },
                                 {
                                     title: "Custom Typing Practice",
-                                    desc: "Train your muscle memory with standard, lowercase-only mode or enable numbers and punctuation to simulate realistic programming and writing sessions.",
-                                    icon: "⌨️"
+                                    desc: "Train muscle memory with standard lowercase mode or enable numbers and punctuation to simulate realistic programming and writing.",
+                                    icon: Keyboard
                                 },
                                 {
                                     title: "Versatile Time Durations",
-                                    desc: "Take a standard 1 minute speed typing test, push your limits with a 5 minute typing test, or run a comprehensive online typing test 10 minutes block.",
-                                    icon: "⏱️"
+                                    desc: "Take a standard 15s or 30s sprint, a 60s benchmark test, or configure custom durations up to 10 minutes.",
+                                    icon: Clock
                                 },
                                 {
                                     title: "Lobby Realtime Duels",
-                                    desc: "Connect with friend codes to race live! Track each other's progress line in real-time with full realtime channel synchronization.",
-                                    icon: "🤝"
+                                    desc: "Connect with friend codes to race live! Track each other's progress line in real time with synchronized Supabase channels.",
+                                    icon: Users
                                 },
                                 {
-                                    title: "100% Free & Open-Access",
-                                    desc: "No subscriptions, sign-ups, or annoying advertisements. Complete your typing master practice directly inside your browser for free.",
-                                    icon: "🎁"
+                                    title: "100% Free & Private",
+                                    desc: "No subscriptions, sign-ups, or trackers. All keystrokes and speed metrics are calculated locally inside your browser memory.",
+                                    icon: Shield
                                 },
                                 {
                                     title: "Detailed Analytics Chart",
-                                    desc: "Get an interactive chart output of your words-per-minute fluctuations and visual markers where keyboard stutter/errors occurred.",
-                                    icon: "📈"
+                                    desc: "Inspect an interactive SVG velocity curve with words-per-minute fluctuations and pinpoint markers where keystroke errors occurred.",
+                                    icon: BarChart2
                                 }
                             ].map((f, i) => (
-                                <div key={i} className="p-6 bg-zinc-50 border-2 border-black rounded-3xl transition-all duration-350 hover:-translate-y-0.5 hover:shadow-[3px_3px_0_#000]">
-                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-lg mb-4 shadow-[2px_2px_0_#000]">
-                                        {f.icon}
+                                <div key={i} style={{ padding: 14, background: T.bg, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                                        <div style={{ color: T.accent, display: "flex" }}>
+                                            <f.icon size={14} />
+                                        </div>
+                                        <h4 style={{ fontSize: 12, fontWeight: 600, color: T.text, margin: 0 }}>{f.title}</h4>
                                     </div>
-                                    <h4 className="text-sm font-black text-black mb-2 uppercase tracking-wide">{f.title}</h4>
-                                    <p className="text-xs text-zinc-500 font-semibold leading-relaxed">{f.desc}</p>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{f.desc}</p>
                                 </div>
                             ))}
                         </div>
 
                         {/* Step Timeline */}
-                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
-                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-8 tracking-tight ig-display">
+                        <div style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6, padding: 20 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 600, textAlign: "center", color: T.text, margin: "0 0 18px" }}>
                                 How to Master Speed Typing Online
                             </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12 }}>
                                 {[
-                                    { step: "1", title: "Select Mode & Parameters", desc: "Choose time, words, or both. Toggle punctuation or numbers if you are testing professional coding/technical transcription." },
-                                    { step: "2", title: "Alphabet & Speed Test", desc: "Start typing the highlighted characters. Keep your eyes on the text block while the cursor tracks your inputs with zero lag." },
-                                    { step: "3", title: "Review Performance Charts", desc: "Evaluate WPM peaks, raw keystrokes, accuracy margins, and identify keys causing stutter errors to target your practice." }
+                                    { step: "1", title: "Select Mode & Limits", desc: "Choose time, words, or both. Toggle punctuation or numbers if you are testing technical transcription." },
+                                    { step: "2", title: "Alphabet & Speed Test", desc: "Start typing the highlighted characters. The smooth caret tracks your inputs with zero lag." },
+                                    { step: "3", title: "Review Performance Charts", desc: "Evaluate WPM peaks, raw keystrokes, accuracy margins, and identify keys causing errors to target practice." }
                                 ].map((s) => (
-                                    <div key={s.step} className="relative p-6 bg-zinc-50 border-2 border-black rounded-3xl pt-8 shadow-[2px_2px_0_#000]">
-                                        <div className="absolute -top-3 left-6 w-8 h-8 rounded-full border-2 border-black bg-yellow-400 text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
+                                    <div key={s.step} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, position: "relative", paddingTop: 18 }}>
+                                        <div style={{ position: "absolute", top: -9, left: 12, width: 20, height: 20, borderRadius: "50%", background: T.accent, color: "#111", fontSize: 10, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
                                             {s.step}
                                         </div>
-                                        <h4 className="text-sm font-black text-black mb-2 uppercase tracking-wide">{s.title}</h4>
-                                        <p className="text-xs text-zinc-500 font-semibold leading-relaxed">{s.desc}</p>
+                                        <h4 style={{ fontSize: 12, fontWeight: 600, color: T.text, margin: "0 0 4px" }}>{s.title}</h4>
+                                        <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
                         {/* Comparison Table */}
-                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
-                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-2 tracking-tight ig-display">
+                        <div style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6, padding: 20 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 600, textAlign: "center", color: T.text, margin: "0 0 4px" }}>
                                 Why Practice with a Dedicated Speed Typing Test?
                             </h3>
-                            <p className="text-xs text-zinc-500 font-bold uppercase tracking-wider text-center mb-8 max-w-lg mx-auto">
-                                Compare structured typing tests with unstructured keyboard practice.
+                            <p style={{ fontSize: 11, color: T.textSec, textAlign: "center", margin: "0 0 16px" }}>
+                                Compare structured typing workouts with unstructured casual keyboard usage.
                             </p>
-                            <div className="overflow-x-auto rounded-2xl border-2 border-black shadow-[4px_4px_0_#000]">
-                                <table className="w-full border-collapse text-left text-xs min-w-[500px]">
+                            <div style={{ overflowX: "auto" }}>
+                                <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: 11 }}>
                                     <thead>
-                                        <tr className="bg-zinc-100 border-b-2 border-black">
-                                            <th className="p-4 text-black font-black uppercase tracking-wider">Metrics Checked</th>
-                                            <th className="p-4 text-emerald-700 font-black uppercase tracking-wider">Structured Typing Tester</th>
-                                            <th className="p-4 text-rose-700 font-black uppercase tracking-wider">Regular Keyboard Usage</th>
+                                        <tr style={{ background: T.surfaceHi, borderBottom: `1px solid ${T.border}` }}>
+                                            <th style={{ padding: "8px 12px", color: T.text, fontWeight: 600 }}>Metrics Checked</th>
+                                            <th style={{ padding: "8px 12px", color: T.accent, fontWeight: 600 }}>Structured Typing Tester</th>
+                                            <th style={{ padding: "8px 12px", color: T.textSec, fontWeight: 600 }}>Regular Keyboard Usage</th>
                                         </tr>
                                     </thead>
-                                    <tbody className="divide-y-2 divide-black bg-white">
+                                    <tbody>
                                         {[
                                             { feat: "Real-time WPM Calculation", ours: "Calculated dynamically and logged per second on interactive charts", other: "No visibility into current speed and speed fluctuations" },
                                             { feat: "Accuracy Validation", ours: "Checks every typed letter against target word list immediately", other: "Errors go unnoticed and lead to bad muscle memory habits" },
                                             { feat: "Special Character practice", ours: "Toggle options for speed typing test online alphabet, symbols, numbers", other: "Relies heavily on letters, leaving numbers/symbols slower" },
-                                            { feat: "Realtime Battle Racing", ours: "Play multiplayer duels against online opponents synchronous", other: "Only solo, unmonitored typing sessions with no comparison" },
+                                            { feat: "Realtime Battle Racing", ours: "Play multiplayer duels against online opponents synchronously", other: "Only solo, unmonitored typing sessions with no comparison" },
                                             { feat: "Zero-Distraction Layout", ours: "Clean, themeable viewport optimized for absolute focus", other: "Surrounded by notifications, ads, and visual clutter" }
                                         ].map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-zinc-50 transition-colors">
-                                                <td className="p-4 text-black font-black">{row.feat}</td>
-                                                <td className="p-4 text-emerald-800 font-semibold">{row.ours}</td>
-                                                <td className="p-4 text-zinc-500 font-medium">{row.other}</td>
+                                            <tr key={idx} style={{ borderBottom: `1px solid ${T.borderDim}` }}>
+                                                <td style={{ padding: "8px 12px", color: T.text, fontWeight: 500 }}>{row.feat}</td>
+                                                <td style={{ padding: "8px 12px", color: T.accent }}>{row.ours}</td>
+                                                <td style={{ padding: "8px 12px", color: T.textSec }}>{row.other}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -1393,21 +1484,28 @@ export default function TypingTesterPage() {
                         </div>
 
                         {/* FAQ Accordion */}
-                        <div className="border-t-2 border-dashed border-zinc-200 pt-10">
-                            <h3 className="text-xl sm:text-2xl font-black text-black text-center mb-8 tracking-tight ig-display">
+                        <div style={{ background: T.bg, border: `1px solid ${T.border}`, borderRadius: 6, padding: 20 }}>
+                            <h3 style={{ fontSize: 13, fontWeight: 600, textAlign: "center", color: T.text, margin: "0 0 16px" }}>
                                 Frequently Asked Questions
                             </h3>
-                            <Accordion>
-                                <AccordionItem title="Is this speed typing practice tool completely free?">
-                                    Yes! Our speed typing test online free application has no premium tiers, paywalls, or feature limitations.
-                                </AccordionItem>
-                                <AccordionItem title="Can I take a 5 minute typing test or a 10 minute typing test?">
-                                    Yes. Click the configurations cog next to the tester to specify any custom time duration in seconds. You can easily set it to 300 seconds (5 minutes) or 600 seconds (10 minutes).
-                                </AccordionItem>
-                                <AccordionItem title="How does the alphabet practice mode work?">
-                                    The typing practice list includes random distributions from the English dictionary, exercising all letters of the alphabet to form consistent finger movements.
-                                </AccordionItem>
-                            </Accordion>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                <FAQItem 
+                                    question="Is this speed typing practice tool completely free?" 
+                                    answer="Yes! Our speed typing test application is 100% free with no premium tiers, registration walls, or advertising interruptions." 
+                                />
+                                <FAQItem 
+                                    question="Can I take a 5 minute or 10 minute typing test?" 
+                                    answer="Yes. Click the configurations cog next to the tester toolbar to specify any custom duration in seconds (e.g. 300s for 5 minutes or 600s for 10 minutes)." 
+                                />
+                                <FAQItem 
+                                    question="How does the alphabet practice mode work?" 
+                                    answer="The practice word bank includes balanced distributions from English dictionaries, exercising all letters of the alphabet to form consistent muscle memory." 
+                                />
+                                <FAQItem 
+                                    question="How is WPM calculated?" 
+                                    answer="Words Per Minute takes your total correct characters divided by 5 (the international standard word length), divided by elapsed minutes." 
+                                />
+                            </div>
                         </div>
 
                     </div>
@@ -1417,43 +1515,55 @@ export default function TypingTesterPage() {
             {/* ── Results Screen ─────────────────────────────────────────────── */}
             {isFinished && (
                 <div
-                    className="fixed inset-0 z-50 flex items-start sm:items-center justify-center px-4 sm:px-8 overflow-y-auto py-6 sm:py-0"
-                    style={{ background: T.bg }}
+                    style={{
+                        position: "fixed", inset: 0, zIndex: 100,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        padding: 16, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)",
+                        overflowY: "auto"
+                    }}
                 >
-                    <div className="w-full max-w-5xl bg-white border-2 border-black p-6 sm:p-10 rounded-[2.5rem] shadow-[8px_8px_0_#000] text-black">
+                    <div
+                        style={{
+                            width: "100%", maxWidth: 880,
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 8, padding: "28px 24px", color: T.text,
+                            boxShadow: "0 16px 48px rgba(0,0,0,0.5)"
+                        }}
+                    >
 
                         {/* ── Duel Result Banner ── */}
                         {duelMode && opponentFinished && (
                             <div
-                                className="mb-6 sm:mb-8 rounded-2xl p-4 sm:p-5 border-2 border-black flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[4px_4px_0_#000]"
                                 style={{
-                                    background: finalStats.finalWpm >= opponentFinishWpm ? "#ecfdf5" : "#fef2f2",
+                                    marginBottom: 24, padding: "14px 18px", borderRadius: 6,
+                                    border: `1px solid ${finalStats.finalWpm >= opponentFinishWpm ? T.accent : T.error}`,
+                                    background: finalStats.finalWpm >= opponentFinishWpm ? "rgba(77,184,212,0.1)" : "rgba(204,68,68,0.1)",
+                                    display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 16
                                 }}
                             >
                                 <div>
                                     <div
-                                        className="text-2xl font-black mb-0.5 animate-pulse"
-                                        style={{ color: finalStats.finalWpm >= opponentFinishWpm ? "#059669" : "#dc2626" }}
+                                        style={{ fontSize: 20, fontWeight: 700, marginBottom: 2, color: finalStats.finalWpm >= opponentFinishWpm ? T.accent : T.error }}
                                     >
                                         {finalStats.finalWpm >= opponentFinishWpm ? "🏆 You Won!" : "😔 You Lost"}
                                     </div>
-                                    <div className="text-xs tracking-wider font-bold uppercase text-zinc-500">
+                                    <div style={{ fontSize: 11, fontWeight: 500, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                                         {finalStats.finalWpm >= opponentFinishWpm
                                             ? `You were faster by ${finalStats.finalWpm - opponentFinishWpm} WPM`
                                             : `Opponent was faster by ${opponentFinishWpm - finalStats.finalWpm} WPM`}
                                     </div>
                                 </div>
-                                <div className="flex items-center gap-8 text-center">
+                                <div style={{ display: "flex", alignItems: "center", gap: 24, textAlign: "center" }}>
                                     <div>
-                                        <div className="text-[9px] font-black text-zinc-500 uppercase tracking-wider mb-1">You</div>
-                                        <div className="text-3xl font-black text-emerald-600">{finalStats.finalWpm}</div>
-                                        <div className="text-[9px] font-bold text-zinc-400 uppercase">wpm</div>
+                                        <div style={{ fontSize: 9, fontWeight: 600, color: T.muted, textTransform: "uppercase", marginBottom: 2 }}>You</div>
+                                        <div style={{ fontSize: 24, fontWeight: 800, color: T.accent }}>{finalStats.finalWpm}</div>
+                                        <div style={{ fontSize: 9, fontWeight: 500, color: T.muted, textTransform: "uppercase" }}>wpm</div>
                                     </div>
-                                    <div className="text-xl font-black text-zinc-400">vs</div>
+                                    <div style={{ fontSize: 14, fontWeight: 600, color: T.muted }}>vs</div>
                                     <div>
-                                        <div className="text-[9px] font-black text-zinc-500 uppercase tracking-wider mb-1">Opponent</div>
-                                        <div className="text-3xl font-black text-rose-500">{opponentFinishWpm}</div>
-                                        <div className="text-[9px] font-bold text-zinc-400 uppercase">wpm</div>
+                                        <div style={{ fontSize: 9, fontWeight: 600, color: T.muted, textTransform: "uppercase", marginBottom: 2 }}>Opponent</div>
+                                        <div style={{ fontSize: 24, fontWeight: 800, color: T.error }}>{opponentFinishWpm}</div>
+                                        <div style={{ fontSize: 9, fontWeight: 500, color: T.muted, textTransform: "uppercase" }}>wpm</div>
                                     </div>
                                 </div>
                             </div>
@@ -1462,33 +1572,37 @@ export default function TypingTesterPage() {
                         {/* Show waiting banner if opponent hasn't finished yet */}
                         {duelMode && !opponentFinished && (
                             <div
-                                className="mb-8 rounded-2xl px-5 py-3 border-2 border-black bg-zinc-50 flex items-center gap-3 shadow-[2px_2px_0_#000]"
+                                style={{
+                                    marginBottom: 24, padding: "10px 16px", borderRadius: 6,
+                                    border: `1px solid ${T.border}`, background: T.bg,
+                                    display: "flex", alignItems: "center", gap: 10
+                                }}
                             >
-                                <span className="animate-spin text-lg">◌</span>
-                                <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+                                <span className="animate-spin text-sm" style={{ color: T.accent }}>◌</span>
+                                <span style={{ fontSize: 11, fontWeight: 500, color: T.textSec, textTransform: "uppercase", letterSpacing: "0.04em" }}>
                                     Waiting for opponent to finish… ({opponentProgress}% done)
                                 </span>
                             </div>
                         )}
 
-                        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 sm:gap-12 mb-8 items-center">
-                            <div className="flex flex-row sm:flex-col gap-6 sm:gap-6">
+                        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-6 sm:gap-10 mb-6 items-center">
+                            <div className="flex flex-row sm:flex-col gap-6 sm:gap-4">
                                 <div>
-                                    <div className="text-xs font-black uppercase tracking-wider text-zinc-500 mb-0.5">wpm</div>
-                                    <div className="text-6xl sm:text-8xl font-black leading-none tracking-tight text-black">
+                                    <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: T.muted, marginBottom: 2 }}>wpm</div>
+                                    <div style={{ fontSize: "clamp(3.5rem, 8vw, 5rem)", fontWeight: 800, lineHeight: 1, letterSpacing: "-0.03em", color: T.accent }}>
                                         {finalStats.finalWpm}
                                     </div>
                                 </div>
                                 <div>
-                                    <div className="text-xs font-black uppercase tracking-wider text-zinc-500 mb-0.5">accuracy</div>
-                                    <div className="text-3xl sm:text-5xl font-black leading-none text-black">
+                                    <div style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: T.muted, marginBottom: 2 }}>accuracy</div>
+                                    <div style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 700, lineHeight: 1, color: T.text }}>
                                         {finalStats.finalAcc}%
                                     </div>
                                 </div>
                             </div>
 
                             {/* WPM Chart */}
-                            <div className="h-[200px] w-full relative border-2 border-black rounded-2xl bg-zinc-50 p-4 shadow-[3px_3px_0_#000]">
+                            <div style={{ height: 190, width: "100%", position: "relative", border: `1px solid ${T.border}`, borderRadius: 6, background: T.bg, padding: 12 }}>
                                 {wpmHistory.length > 0 ? (() => {
                                     const data = [{ t: 0, wpm: 0 }, ...wpmHistory];
                                     const maxWpmValue = Math.max(...data.map(h => h.wpm));
@@ -1524,7 +1638,7 @@ export default function TypingTesterPage() {
                                     return (
                                         <div className="w-full h-full relative group">
                                             {/* Y-Axis Labels */}
-                                            <div className="absolute left-0 inset-y-0 flex flex-col justify-between text-[9px] font-bold pointer-events-none opacity-40 py-2 z-10 text-zinc-500">
+                                            <div className="absolute left-0 inset-y-0 flex flex-col justify-between text-[9px] font-bold pointer-events-none opacity-40 py-2 z-10" style={{ color: T.muted }}>
                                                 <span>{maxWpm}</span>
                                                 <span>{Math.round(maxWpm * 0.5)}</span>
                                                 <span>0</span>
@@ -1533,13 +1647,13 @@ export default function TypingTesterPage() {
                                             <svg className="w-full h-full pl-6" viewBox={`0 0 ${VIEWBOX_W} ${VIEWBOX_H}`} preserveAspectRatio="none">
                                                 <defs>
                                                     <linearGradient id="chartFill" x1="0" y1="0" x2="0" y2="1">
-                                                        <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.2" />
-                                                        <stop offset="100%" stopColor="#f59e0b" stopOpacity="0" />
+                                                        <stop offset="0%" stopColor={T.accent} stopOpacity="0.25" />
+                                                        <stop offset="100%" stopColor={T.accent} stopOpacity="0" />
                                                     </linearGradient>
                                                 </defs>
 
                                                 {[0, 25, 50, 75, 100].map(y => (
-                                                    <line key={y} x1="0" y1={y} x2={VIEWBOX_W} y2={y} stroke="#000" strokeWidth="0.5" strokeDasharray="3,3" strokeOpacity="0.2" />
+                                                    <line key={y} x1="0" y1={y} x2={VIEWBOX_W} y2={y} stroke={T.borderDim} strokeWidth="1" strokeDasharray="3,3" />
                                                 ))}
 
                                                 <polygon points={fillPoints} fill="url(#chartFill)" />
@@ -1547,7 +1661,7 @@ export default function TypingTesterPage() {
                                                 <polyline
                                                     points={polylinePoints}
                                                     fill="none"
-                                                    stroke="#f59e0b"
+                                                    stroke={T.accent}
                                                     strokeWidth="2.5"
                                                     strokeLinecap="round"
                                                     strokeLinejoin="round"
@@ -1556,29 +1670,25 @@ export default function TypingTesterPage() {
 
                                                 {errorPoints.map((p, i) => (
                                                     <g key={`err-${i}`} transform={`translate(${p.x},${p.y})`}>
-                                                        <line x1="-3.5" y1="-3.5" x2="3.5" y2="3.5" stroke="#ef4444" strokeWidth="2" vectorEffect="non-scaling-stroke" />
-                                                        <line x1="3.5" y1="-3.5" x2="-3.5" y2="3.5" stroke="#ef4444" strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                                                        <line x1="-3" y1="-3" x2="3" y2="3" stroke={T.error} strokeWidth="2" vectorEffect="non-scaling-stroke" />
+                                                        <line x1="3" y1="-3" x2="-3" y2="3" stroke={T.error} strokeWidth="2" vectorEffect="non-scaling-stroke" />
                                                     </g>
                                                 ))}
 
                                                 {points.map((p, i) => (
-                                                    <line
+                                                    <circle
                                                         key={i}
-                                                        x1={p.x}
-                                                        y1={p.y}
-                                                        x2={p.x}
-                                                        y2={p.y}
-                                                        stroke="#000000"
-                                                        strokeWidth={points.length > 50 ? "4" : "6"}
-                                                        strokeLinecap="round"
-                                                        vectorEffect="non-scaling-stroke"
+                                                        cx={p.x}
+                                                        cy={p.y}
+                                                        r={points.length > 40 ? 1.5 : 2.5}
+                                                        fill={T.accent}
                                                     />
                                                 ))}
                                             </svg>
                                         </div>
                                     );
                                 })() : (
-                                    <div className="flex items-center justify-center h-full text-xs font-bold text-zinc-400">
+                                    <div className="flex items-center justify-center h-full text-xs font-semibold" style={{ color: T.muted }}>
                                         Not enough data for chart
                                     </div>
                                 )}
@@ -1586,7 +1696,7 @@ export default function TypingTesterPage() {
                         </div>
 
                         {/* Detail row */}
-                        <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 pt-6 border-t-2 border-black">
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 10, paddingTop: 16, borderTop: `1px solid ${T.border}` }}>
                             {[
                                 { label: "raw wpm", value: finalStats.finalRaw },
                                 { label: "characters", value: `${finalStats.correct}/${finalStats.incorrect}` },
@@ -1594,25 +1704,38 @@ export default function TypingTesterPage() {
                                 { label: "mode preset", value: `${testMode} (${testMode === "time" ? timeConfig : wordConfig})` },
                                 { label: "active style", value: T.name },
                             ].map(({ label, value }) => (
-                                <div key={label} className="flex flex-col bg-zinc-50 p-3 border-2 border-black rounded-xl shadow-[2px_2px_0_#000]">
-                                    <div className="text-[9px] font-black text-zinc-500 uppercase tracking-wider mb-0.5">{label}</div>
-                                    <div className="text-sm font-black text-black truncate">{value}</div>
+                                <div key={label} style={{ display: "flex", flexDirection: "column", background: T.bg, padding: "8px 12px", border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                    <div style={{ fontSize: 9, fontWeight: 600, color: T.muted, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>{label}</div>
+                                    <div style={{ fontSize: 13, fontWeight: 600, color: T.text, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{value}</div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className="flex items-center gap-4 mt-8">
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 24 }}>
                             <button
                                 onClick={resetTest}
-                                className="ig-btn flex items-center gap-2 px-6 py-3 bg-white hover:bg-zinc-50 text-black border-2 border-black rounded-xl font-bold text-xs uppercase tracking-widest shadow-[3px_3px_0_#000]"
+                                style={{
+                                    display: "flex", alignItems: "center", gap: 6,
+                                    height: 38, padding: "0 20px",
+                                    background: T.accent, border: "none", borderRadius: 4,
+                                    color: "#111111", fontSize: 11, fontWeight: 600,
+                                    cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em",
+                                    transition: "all 0.15s"
+                                }}
                             >
-                                <RotateCcw size={14} strokeWidth={2.5} /> next test
+                                <RotateCcw size={13} strokeWidth={2.5} /> next test
                             </button>
                             <button
                                 onClick={resetTest}
-                                className="ig-btn p-3 bg-zinc-50 hover:bg-zinc-100 text-black border-2 border-black rounded-xl shadow-[3px_3px_0_#000]"
+                                style={{
+                                    height: 38, width: 38,
+                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                    background: T.surfaceHi, border: `1px solid ${T.border}`, borderRadius: 4,
+                                    color: T.text, cursor: "pointer", transition: "all 0.15s"
+                                }}
+                                title="Next Test"
                             >
-                                <ArrowRight size={16} strokeWidth={2.5} />
+                                <ArrowRight size={15} strokeWidth={2.5} />
                             </button>
                         </div>
                     </div>
@@ -1621,42 +1744,61 @@ export default function TypingTesterPage() {
 
             {/* ── Settings Modal ────────────────────────────────────────────────── */}
             {settingsModalOpen && (
-                <div className="fixed inset-0 z-[200] flex items-center justify-center p-4" onClick={() => setSettingsModalOpen(false)}>
-                    <div className="absolute inset-0 bg-[#000]/40 backdrop-blur-sm" />
-                    <div className="relative bg-white border-2 border-black rounded-[2.5rem] p-6 sm:p-8 w-full max-w-2xl shadow-[8px_8px_0_#000] flex flex-col max-h-[90vh] text-black overflow-hidden" onClick={e => e.stopPropagation()}>
-
+                <div
+                    style={{
+                        position: "fixed", inset: 0, zIndex: 200,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        padding: 16, background: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)"
+                    }}
+                    onClick={() => setSettingsModalOpen(false)}
+                >
+                    <div
+                        style={{
+                            position: "relative", width: "100%", maxWidth: 580,
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 8, padding: "24px", color: T.text,
+                            boxShadow: "0 16px 48px rgba(0,0,0,0.5)",
+                            display: "flex", flexDirection: "column", maxHeight: "90vh", overflow: "hidden"
+                        }}
+                        onClick={e => e.stopPropagation()}
+                    >
                         {/* Modal Header */}
-                        <div className="flex items-center justify-between mb-6 shrink-0">
-                            <h3 className="font-black text-xl lg:text-3xl tracking-tight ig-display text-black">
-                                Workspace Settings
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+                            <h3 style={{ fontSize: 14, fontWeight: 600, color: T.text, margin: 0, display: "flex", alignItems: "center", gap: 8 }}>
+                                <Settings2 size={16} style={{ color: T.accent }} /> Workspace Settings
                             </h3>
-                            <button onClick={() => setSettingsModalOpen(false)} className="p-1.5 border-2 border-black hover:bg-zinc-100 rounded-lg text-black shadow-[1.5px_1.5px_0_#000]">
+                            <button
+                                onClick={() => setSettingsModalOpen(false)}
+                                style={{
+                                    padding: 6, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                    borderRadius: 4, color: T.text, cursor: "pointer", display: "flex"
+                                }}
+                            >
                                 <X size={14} />
                             </button>
                         </div>
 
                         {/* Modal Content container (scrollable) */}
-                        <div data-lenis-prevent className="overflow-y-auto pr-2 space-y-8 pb-4 scrollbar-thin overflow-x-hidden">
-
+                        <div data-lenis-prevent className="overflow-y-auto pr-1 space-y-6 pb-2 scrollbar-thin">
                             {/* Theme Grid */}
                             <section>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Palette size={14} />
-                                    <h4 className="text-xs font-black uppercase tracking-wider text-black">Color theme preset</h4>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+                                    <Palette size={13} style={{ color: T.accent }} />
+                                    <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: T.muted }}>Color Theme Preset</span>
                                 </div>
-                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                     {THEMES.map((th, i) => (
                                         <button
                                             key={th.name}
                                             onClick={() => setThemeIdx(i)}
-                                            className="flex flex-col items-center gap-1.5 border-2 border-black p-2.5 rounded-xl transition-all shadow-[2.5px_2.5px_0_#000] hover:bg-zinc-50"
                                             style={{
-                                                background: th.bg === "#F4ECD8" ? "#ffffff" : th.bg,
-                                                transform: i === themeIdx ? "scale(1.02)" : "scale(1)",
-                                                borderWidth: i === themeIdx ? "3px" : "2px",
+                                                display: "flex", flexDirection: "column", alignItems: "center", gap: 4,
+                                                padding: "10px 8px", borderRadius: 4,
+                                                background: th.bg, border: `1px solid ${i === themeIdx ? T.accent : T.border}`,
+                                                cursor: "pointer", transition: "all 0.15s"
                                             }}
                                         >
-                                            <span className="text-[10px] font-black uppercase tracking-widest text-black">
+                                            <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: th.text }}>
                                                 {th.name}
                                             </span>
                                         </button>
@@ -1664,21 +1806,21 @@ export default function TypingTesterPage() {
                                 </div>
                             </section>
 
-                            <hr className="border-t-2 border-dashed border-zinc-200" />
+                            <hr style={{ border: "none", borderTop: `1px solid ${T.borderDim}`, margin: "16px 0" }} />
 
                             {/* Custom Values */}
                             <section>
-                                <div className="flex items-center gap-2 mb-4">
-                                    <Settings2 size={14} />
-                                    <h4 className="text-xs font-black uppercase tracking-wider text-black">
-                                        Custom limits
-                                    </h4>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12 }}>
+                                    <Settings2 size={13} style={{ color: T.accent }} />
+                                    <span style={{ fontSize: 10, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: T.muted }}>
+                                        Custom Limits
+                                    </span>
                                 </div>
-                                <div className="flex flex-col gap-4">
+                                <div>
                                     {testMode === "both" ? (
-                                        <div className="flex flex-col sm:flex-row gap-4 items-end">
+                                        <div className="flex flex-col sm:flex-row gap-3 items-end">
                                             <div className="flex-1 w-full">
-                                                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-2">
+                                                <label style={{ display: "block", fontSize: 10, fontWeight: 600, textTransform: "uppercase", color: T.muted, marginBottom: 6 }}>
                                                     Time Limit (sec)
                                                 </label>
                                                 <input
@@ -1689,11 +1831,15 @@ export default function TypingTesterPage() {
                                                         const v = parseInt(e.target.value);
                                                         if (!isNaN(v) && v > 0) setTimeConfig(v);
                                                     }}
-                                                    className="w-full rounded-xl px-4 py-2 text-sm font-bold border-2 border-black text-black bg-white"
+                                                    style={{
+                                                        width: "100%", height: 36, padding: "0 10px",
+                                                        background: T.bg, border: `1px solid ${T.border}`,
+                                                        borderRadius: 4, color: T.text, fontSize: 12, outline: "none"
+                                                    }}
                                                 />
                                             </div>
                                             <div className="flex-1 w-full">
-                                                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-2">
+                                                <label style={{ display: "block", fontSize: 10, fontWeight: 600, textTransform: "uppercase", color: T.muted, marginBottom: 6 }}>
                                                     Word Count Limit
                                                 </label>
                                                 <input
@@ -1704,18 +1850,27 @@ export default function TypingTesterPage() {
                                                         const v = parseInt(e.target.value);
                                                         if (!isNaN(v) && v > 0) setWordConfig(v);
                                                     }}
-                                                    className="w-full rounded-xl px-4 py-2 text-sm font-bold border-2 border-black text-black bg-white"
+                                                    style={{
+                                                        width: "100%", height: 36, padding: "0 10px",
+                                                        background: T.bg, border: `1px solid ${T.border}`,
+                                                        borderRadius: 4, color: T.text, fontSize: 12, outline: "none"
+                                                    }}
                                                 />
                                             </div>
                                             <button
                                                 onClick={() => setSettingsModalOpen(false)}
-                                                className="ig-btn px-6 py-2.5 font-bold rounded-xl text-xs uppercase tracking-widest text-black border-2 border-black bg-yellow-350 shadow-[2px_2px_0_#000]"
+                                                style={{
+                                                    height: 36, padding: "0 18px",
+                                                    background: T.accent, border: "none",
+                                                    borderRadius: 4, color: "#111", fontSize: 11, fontWeight: 600,
+                                                    cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em"
+                                                }}
                                             >Apply</button>
                                         </div>
                                     ) : (
-                                        <div className="flex flex-col sm:flex-row gap-4 items-end">
+                                        <div className="flex flex-col sm:flex-row gap-3 items-end">
                                             <div className="flex-1 w-full">
-                                                <label className="block text-[10px] font-black uppercase tracking-wider text-zinc-500 mb-2">
+                                                <label style={{ display: "block", fontSize: 10, fontWeight: 600, textTransform: "uppercase", color: T.muted, marginBottom: 6 }}>
                                                     Custom {testMode === "time" ? "Time (sec)" : "Word Count"}
                                                 </label>
                                                 <input
@@ -1733,7 +1888,11 @@ export default function TypingTesterPage() {
                                                             }
                                                         }
                                                     }}
-                                                    className="w-full rounded-xl px-4 py-2 text-sm font-bold border-2 border-black text-black bg-white"
+                                                    style={{
+                                                        width: "100%", height: 36, padding: "0 10px",
+                                                        background: T.bg, border: `1px solid ${T.border}`,
+                                                        borderRadius: 4, color: T.text, fontSize: 12, outline: "none"
+                                                    }}
                                                 />
                                             </div>
                                             <button
@@ -1745,7 +1904,12 @@ export default function TypingTesterPage() {
                                                         setSettingsModalOpen(false);
                                                     }
                                                 }}
-                                                className="ig-btn px-6 py-2.5 font-bold rounded-xl text-xs uppercase tracking-widest text-black border-2 border-black bg-yellow-350 shadow-[2px_2px_0_#000]"
+                                                style={{
+                                                    height: 36, padding: "0 18px",
+                                                    background: T.accent, border: "none",
+                                                    borderRadius: 4, color: "#111", fontSize: 11, fontWeight: 600,
+                                                    cursor: "pointer", textTransform: "uppercase", letterSpacing: "0.05em"
+                                                }}
                                             >Apply</button>
                                         </div>
                                     )}
@@ -1762,27 +1926,34 @@ export default function TypingTesterPage() {
                 onClose={() => setShowHelp(false)} 
                 title="Typing Tester Technical Details"
             >
-                <div className="space-y-8 text-left max-w-2xl mx-auto py-4 text-black">
-                    <section className="space-y-3">
-                        <h3 className="text-lg font-bold text-black ig-display">Minimalist Core Mechanics</h3>
-                        <p className="text-sm text-zinc-650 leading-relaxed font-medium font-sans">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20, color: T.text, fontSize: 12, lineHeight: 1.6 }}>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 600, color: T.accent, margin: "0 0 8px" }}>
+                            Minimalist Zero-Lag Core Architecture
+                        </h3>
+                        <p style={{ margin: 0, color: T.textSec, fontSize: 11 }}>
                             The Typing Speed Tester evaluates pure keyboarding velocity, character coordination, and accuracy metrics. Calculating statistics locally at high frequency ensures zero-lag rendering.
                         </p>
                     </section>
 
-                    <section className="space-y-3">
-                        <h3 className="text-lg font-bold text-black ig-display">Frequently Asked Questions</h3>
-                        <Accordion>
-                            <AccordionItem title="How is WPM calculated?">
-                                Words Per Minute (WPM) takes your total correct characters, divides by 5 (standard word length unit), and then divides by elapsed minutes.
-                            </AccordionItem>
-                            <AccordionItem title="What is WPM vs Raw WPM?">
-                                WPM strictly checks correctly typed characters, penalizing typos. Raw WPM evaluates total keystrokes without penalties, representing your total motor speed.
-                            </AccordionItem>
-                            <AccordionItem title="How does the Multiplayer Duel work?">
-                                Utilizing Supabase realtime channels, duels allow you to race synchronously. Both players get the exact same text seed and track opponent progress in real time.
-                            </AccordionItem>
-                        </Accordion>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 600, color: T.accent, margin: "0 0 12px" }}>
+                            Frequently Asked Questions
+                        </h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="How is WPM calculated?"
+                                answer="Words Per Minute (WPM) takes your total correct characters, divides by 5 (the standard word length unit), and then divides by elapsed minutes."
+                            />
+                            <FAQItem 
+                                question="What is WPM vs Raw WPM?"
+                                answer="WPM strictly checks correctly typed characters, penalizing typos. Raw WPM evaluates total keystrokes without penalties, representing your gross motor speed."
+                            />
+                            <FAQItem 
+                                question="How does the Multiplayer Duel work?"
+                                answer="Utilizing Supabase realtime channels, duels allow you to race synchronously. Both players get the exact same text seed and track opponent progress in real time."
+                            />
+                        </div>
                     </section>
                 </div>
             </HelpModal>

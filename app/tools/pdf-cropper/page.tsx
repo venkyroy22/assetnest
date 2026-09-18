@@ -1,85 +1,72 @@
 "use client";
 
 import "@/lib/pdfjs-polyfill";
-import { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 import {
     Upload, Download, RefreshCw, Crop, Info, X, Check,
-    ChevronLeft, ChevronRight, ShieldCheck, Layout, Share2, Eye, Sparkles, Package, Lock as LockIcon, Zap, ChevronDown, ArrowLeft
+    ChevronLeft, ChevronRight, ShieldCheck, Layout, Share2, Eye,
+    Sparkles, Package, Lock as LockIcon, Zap, ChevronDown, ArrowLeft,
+    HelpCircle, UploadCloud, FileText
 } from "lucide-react";
 import { PDFDocument } from "pdf-lib";
 import HelpModal from "@/components/HelpModal";
 import ShareModal from "@/components/ShareModal";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import Tooltip from "@/components/Tooltip";
 
 const PdfPageThumbnail = dynamic(() => import("../pdf-merger/PdfPreviewThumbnail"), { ssr: false });
 
-const GLOBAL_STYLES = `
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap');
+/* ─────────────────────────────────────────
+   DESIGN TOKENS (Matching Tool Suite Standard)
+   ───────────────────────────────────────── */
+const T = {
+    bg:          "#333333",
+    surface:     "#3a3a3a",
+    surfaceHi:   "#444444",
+    surfaceHov:  "#505050",
+    border:      "#555555",
+    borderDim:   "#2a2a2a",
+    accent:      "#4db8d4",
+    accentDark:  "#2a7a8f",
+    accentDim:   "rgba(77,184,212,0.15)",
+    textPri:     "#cccccc",
+    textSec:     "#999999",
+    muted:       "#777777",
+    danger:      "#cc4444",
+    success:     "#7dcea0",
+    font:        "system-ui, -apple-system, 'Segoe UI', sans-serif",
+};
 
-.ig-root {
-  font-family: 'DM Sans', system-ui, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  color: #000;
-}
-.ig-display {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  letter-spacing: -0.02em;
-}
-.ig-label {
-  font-family: 'Space Grotesk', system-ui, sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  font-size: 10px;
-  color: #000;
-}
-.ig-btn {
-  cursor: pointer;
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
-}
-.ig-btn:active {
-  transform: translate(2px, 2px) !important;
-  box-shadow: none !important;
-}
-`;
-
-function LocalAccordion({ children }: { children: React.ReactNode }) {
-    return <div className="space-y-4 w-full">{children}</div>;
+function Chip({ icon, label }: { icon: React.ReactNode; label: string }) {
+  return (
+    <span style={{
+      display: "inline-flex", alignItems: "center", gap: 4,
+      padding: "3px 8px", borderRadius: 2,
+      background: T.surface, border: `1px solid ${T.border}`,
+      fontSize: 10, fontWeight: 400, color: "#aaa",
+    }}>{icon}{label}</span>
+  );
 }
 
-interface LocalAccordionItemProps {
-    title: string;
-    children: React.ReactNode;
-}
-
-function LocalAccordionItem({ title, children }: LocalAccordionItemProps) {
-    const [isOpen, setIsOpen] = useState(false);
-    return (
-        <div className="border-2 border-black rounded-2xl bg-zinc-50 overflow-hidden shadow-[3px_3px_0_#000] transition-all">
-            <button
-                onClick={() => setIsOpen(!isOpen)}
-                className="w-full p-5 flex items-center justify-between text-left transition-all hover:bg-zinc-100/80"
-            >
-                <span className="font-bold text-sm sm:text-base text-black pr-4">
-                    {title}
-                </span>
-                <ChevronDown
-                    size={18}
-                    className={`text-black shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                />
-            </button>
-            <div
-                className={`transition-all duration-300 ease-in-out overflow-hidden ${
-                    isOpen ? "max-h-[800px] border-t-2 border-black bg-white" : "max-h-0"
-                }`}
-            >
-                <div className="p-5 text-xs sm:text-sm text-zinc-700 leading-relaxed font-medium">
-                    {children}
-                </div>
-            </div>
-        </div>
-    );
+function FAQItem({ question, answer }: { question: string; answer: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div onClick={() => setOpen(!open)} style={{
+      background: T.surface, border: `1px solid ${T.border}`, borderRadius: 3,
+      padding: "8px 10px", cursor: "pointer", transition: "all 0.15s",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+        <h4 style={{ fontSize: 11, fontWeight: 400, color: T.textPri, margin: 0, display: "flex", gap: 6, alignItems: "flex-start" }}>
+          <span style={{ color: T.accent }}>Q:</span><span>{question}</span>
+        </h4>
+        <span style={{ color: T.textSec, transform: open ? "rotate(180deg)" : "none", transition: "transform 0.15s", fontSize: 9, flexShrink: 0 }}>▼</span>
+      </div>
+      <div style={{ maxHeight: open ? 500 : 0, opacity: open ? 1 : 0, overflow: "hidden", transition: "all 0.2s", marginTop: open ? 8 : 0 }}>
+        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.5, margin: 0, paddingLeft: 18, fontWeight: 400 }}>{answer}</p>
+      </div>
+    </div>
+  );
 }
 
 // ─── Types ───────────────────────────────────────────────────────────────────
@@ -134,7 +121,6 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
         return () => { cancelled = true; };
     }, [file, pageIndex]);
 
-    // Pointer events
     const getRelative = (e: React.PointerEvent | PointerEvent) => {
         const rect = overlayRef.current!.getBoundingClientRect();
         return {
@@ -224,7 +210,6 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
         if (h) {
             dragState.current = { ...h, startX: rx, startY: ry, startCrop: { ...crop } };
         } else {
-            // Start fresh crop draw
             dragState.current = { type: "se", startX: rx, startY: ry, startCrop: { x: rx, y: ry, w: 0.001, h: 0.001 } };
             onCropChange({ x: rx, y: ry, w: 0.001, h: 0.001 });
         }
@@ -241,22 +226,28 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
     const { x, y, w, h } = crop;
 
     return (
-        <div className="relative w-full select-none bg-zinc-100 rounded-2xl overflow-hidden border-2 border-black shadow-[3px_3px_0_#000]">
-            <canvas ref={canvasRef} className="w-full h-auto block" />
+        <div style={{
+            position: "relative", width: "100%", userSelect: "none",
+            background: "#222222", borderRadius: 4, overflow: "hidden",
+            border: `1px solid ${T.border}`
+        }}>
+            <canvas ref={canvasRef} style={{ width: "100%", height: "auto", display: "block" }} />
             {/* Overlay */}
             <div
                 ref={overlayRef}
-                className="absolute inset-0 touch-none"
-                style={{ cursor }}
+                style={{ position: "absolute", inset: 0, touchAction: "none", cursor }}
                 onPointerDown={handlePointerDown}
                 onMouseMove={handleMouseMove}
             >
-                {/* Darkened regions */}
-                <div className="absolute inset-0 bg-[#141414]/30 pointer-events-none" />
-                {/* Crop window cutout (simulate) */}
+                {/* Darkened outer region */}
+                <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.5)", pointerEvents: "none" }} />
+                
+                {/* Crop window cutout */}
                 <div
-                    className="absolute pointer-events-none border-2 border-black shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
                     style={{
+                        position: "absolute", pointerEvents: "none",
+                        border: `1.5px solid ${T.accent}`,
+                        boxShadow: "0 0 0 9999px rgba(0,0,0,0.45)",
                         left: `${x * 100}%`,
                         top: `${y * 100}%`,
                         width: `${w * 100}%`,
@@ -264,24 +255,32 @@ function CropPreviewCanvas({ file, pageIndex, crop, onCropChange }: CropCanvasPr
                     }}
                 >
                     {/* Rule-of-thirds grid */}
-                    <div className="absolute inset-0 pointer-events-none opacity-30">
-                        <div className="absolute inset-0 grid" style={{ gridTemplateColumns: "1fr 1fr 1fr" }}>
+                    <div style={{ position: "absolute", inset: 0, pointerEvents: "none", opacity: 0.35 }}>
+                        <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
                             {[0, 1].map(i => (
-                                <div key={i} className="border-r border-black h-full" style={{ gridColumn: i + 1 }} />
+                                <div key={i} style={{ borderRight: `1px dashed ${T.accent}`, height: "100%", gridColumn: i + 1 }} />
                             ))}
                         </div>
-                        <div className="absolute inset-0 grid" style={{ gridTemplateRows: "1fr 1fr 1fr" }}>
+                        <div style={{ position: "absolute", inset: 0, display: "grid", gridTemplateRows: "1fr 1fr 1fr" }}>
                             {[0, 1].map(i => (
-                                <div key={i} className="border-b border-black w-full" style={{ gridRow: i + 1 }} />
+                                <div key={i} style={{ borderBottom: `1px dashed ${T.accent}`, width: "100%", gridRow: i + 1 }} />
                             ))}
                         </div>
                     </div>
+
                     {/* Corner handles */}
-                    {(["top-0 left-0 cursor-nw-resize", "top-0 right-0 cursor-ne-resize", "bottom-0 left-0 cursor-sw-resize", "bottom-0 right-0 cursor-se-resize"] as const).map((cls, i) => (
-                        <div key={i} className={`absolute w-4 h-4 bg-yellow-400 border-2 border-black rounded-sm shadow-sm ${cls}`}
-                            style={{ 
-                                [i % 2 === 0 ? "left" : "right"]: "-8px", 
-                                [i < 2 ? "top" : "bottom"]: "-8px" 
+                    {[
+                        { top: "-4px", left: "-4px" },
+                        { top: "-4px", right: "-4px" },
+                        { bottom: "-4px", left: "-4px" },
+                        { bottom: "-4px", right: "-4px" }
+                    ].map((pos, i) => (
+                        <div
+                            key={i}
+                            style={{
+                                position: "absolute", width: 8, height: 8,
+                                background: T.accent, border: "1px solid #1a1a1a",
+                                borderRadius: 1, ...pos
                             }}
                         />
                     ))}
@@ -297,9 +296,13 @@ function NumInput({ label, value, min, max, step = 0.5, onChange }: {
     onChange: (v: number) => void;
 }) {
     return (
-        <div className="flex flex-col gap-1.5">
-            <span className="ig-label">{label}</span>
-            <div className="flex items-center gap-2 bg-white border-2 border-black rounded-xl px-3 py-2 shadow-[2px_2px_0_#000]">
+        <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
+            <span style={{ fontSize: 10, fontWeight: 500, color: T.textSec, textTransform: "uppercase" }}>{label}</span>
+            <div style={{
+                display: "flex", alignItems: "center", gap: 4,
+                background: "#2a2a2a", border: `1px solid ${T.border}`,
+                borderRadius: 3, padding: "4px 8px"
+            }}>
                 <input
                     type="number"
                     value={value.toFixed(1)}
@@ -307,9 +310,12 @@ function NumInput({ label, value, min, max, step = 0.5, onChange }: {
                     max={max}
                     step={step}
                     onChange={e => onChange(clamp(parseFloat(e.target.value) || 0, min, max))}
-                    className="bg-transparent text-xs font-bold text-black w-16 focus:outline-none"
+                    style={{
+                        background: "transparent", border: "none", outline: "none",
+                        fontSize: 11, fontWeight: 600, color: T.textPri, width: "100%"
+                    }}
                 />
-                <span className="text-zinc-600 text-[10px] font-black">%</span>
+                <span style={{ color: T.muted, fontSize: 10, fontWeight: 600 }}>%</span>
             </div>
         </div>
     );
@@ -346,7 +352,7 @@ export default function PdfCropperPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFile = async (f: File) => {
-        if (f.type !== "application/pdf") {
+        if (f.type !== "application/pdf" && !f.name.toLowerCase().endsWith(".pdf")) {
             setError("Please upload a valid PDF file.");
             return;
         }
@@ -448,159 +454,235 @@ export default function PdfCropperPage() {
         setOutputUrl(null);
         setOutputBlob(null);
         setError(null);
+        if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
     return (
-        <div className="min-h-screen bg-[#F4ECD8] text-black font-sans pb-24 relative overflow-hidden ig-root">
-            <style>{GLOBAL_STYLES}</style>
+        <div style={{ minHeight: "100vh", background: T.bg, color: T.textPri, fontFamily: T.font, paddingBottom: 80 }}>
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+            
+            <style>{`
+                * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+                input[type=range] { accent-color: ${T.accent}; }
+                .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+                .custom-scrollbar::-webkit-scrollbar-track { background: #2a2a2a; border-radius: 2px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb { background: #555555; border-radius: 2px; }
+                .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #666666; }
+            `}</style>
 
-            <header className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 sm:pt-10 pb-4 flex items-center justify-between relative z-10">
-                <Link
-                    href="/tools"
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                >
-                    <ArrowLeft size={12} strokeWidth={2.5} /> BACK
+            {/* ── HEADER ── */}
+            <header style={{ maxWidth: 1100, margin: "0 auto", padding: "24px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Link href="/tools" style={{
+                    display: "flex", alignItems: "center", gap: 4,
+                    padding: "4px 8px", background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2,
+                    color: "#aaa", fontWeight: 400, fontSize: 11, textDecoration: "none",
+                }}>
+                    <ArrowLeft size={11} strokeWidth={2} /> Back
                 </Link>
-                <div className="flex items-center gap-2 sm:gap-3 relative z-10">
-                    <div className="w-8 h-8 rounded-lg bg-red-500 border-2 border-black flex items-center justify-center text-white text-xs font-black shadow-[2.5px_2.5px_0_#000]">
-                        <Crop size={14} />
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <div style={{ width: 24, height: 24, borderRadius: 2, display: "flex", alignItems: "center", justifyContent: "center", color: "#aaa", border: `1px solid ${T.border}`, background: T.surface }}>
+                        <Crop size={12} />
                     </div>
-                    <span className="ig-display text-sm sm:text-lg font-black tracking-tight text-black">
-                        PDF Cropper
-                    </span>
+                    <span style={{ fontSize: 13, fontWeight: 400, color: T.textPri }}>PDF Cropper</span>
+                    <button 
+                        onClick={() => setShowHelp(true)} 
+                        style={{ padding: 2, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 2, color: T.muted, cursor: "pointer", display: "flex" }}
+                        title="Help Guide"
+                    >
+                        <HelpCircle size={11} />
+                    </button>
                 </div>
-                <button 
-                    onClick={() => setShowHelp(true)}
-                    className="ig-btn flex items-center gap-1.5 px-3 py-1.5 bg-white border-2 border-black rounded-xl text-black font-bold text-[10px] sm:text-xs shadow-[2px_2px_0_#000] hover:bg-zinc-50"
-                    title="Help Guide"
-                >
-                    <Info size={12} strokeWidth={2.5} /> INFO
-                </button>
             </header>
 
-            <main className="max-w-5xl mx-auto px-4 sm:px-6 mt-6 relative z-10 space-y-6">
-                {/* Error */}
+            <main style={{ maxWidth: 1100, margin: "0 auto", padding: "0 16px" }}>
+
+                {/* Error Banner */}
                 {error && (
-                    <div className="p-4 border-2 border-black bg-red-50 flex items-center gap-3 rounded-2xl">
-                        <Info size={16} className="text-red-700 shrink-0" />
-                        <span className="text-xs font-bold text-black">{error}</span>
-                        <button onClick={() => setError(null)} className="ml-auto text-zinc-550 hover:text-black"><X size={16} /></button>
+                    <div style={{
+                        padding: "10px 14px", border: `1px solid ${T.danger}`, background: "#3d2222",
+                        display: "flex", alignItems: "center", gap: 10, borderRadius: 3, marginBottom: 16
+                    }}>
+                        <Info size={14} style={{ color: T.danger, flexShrink: 0 }} />
+                        <span style={{ fontSize: 11, color: "#ff9999", flex: 1 }}>{error}</span>
+                        <button onClick={() => setError(null)} style={{ background: "none", border: "none", color: "#aaa", cursor: "pointer", display: "flex" }}>
+                            <X size={14} />
+                        </button>
                     </div>
                 )}
 
+                {/* Main Workspace */}
                 {!file ? (
-                    /* Upload Zone */
+                    /* Dropzone */
                     <div
                         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
                         onDragLeave={() => setIsDragging(false)}
                         onDrop={handleDrop}
                         onClick={() => fileInputRef.current?.click()}
-                        className={`relative min-h-[260px] border-2 sm:border-4 border-dashed border-black rounded-[2rem] flex flex-col items-center justify-center transition-all duration-300 cursor-pointer group/dropzone ${
-                            isDragging 
-                                ? "bg-red-50" 
-                                : "bg-white hover:bg-zinc-50 shadow-[5px_5px_0_#000]"
-                        }`}
+                        style={{
+                            minHeight: 240,
+                            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                            border: `1px dashed ${isDragging ? T.accent : T.border}`,
+                            borderRadius: 4, background: isDragging ? T.surfaceHi : T.surface,
+                            cursor: "pointer", transition: "all 0.2s", padding: 24,
+                        }}
                     >
-                        <input ref={fileInputRef} type="file" accept="application/pdf" className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
+                        <input ref={fileInputRef} type="file" accept="application/pdf" style={{ display: "none" }} onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
 
-                        <div className="text-center px-8 py-6 space-y-6 relative z-10">
-                            <div className="w-14 h-14 bg-white border-2 border-black rounded-2xl flex items-center justify-center mx-auto shadow-[3px_3px_0_#000] transition-all duration-300 group-hover/dropzone:scale-105">
-                                {isLoading ? <RefreshCw size={24} className="animate-spin text-black" /> : <Upload size={24} className="text-black" />}
+                        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+                            <div style={{ width: 44, height: 44, borderRadius: "50%", background: "#444444", border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center", color: T.accent, marginBottom: 12 }}>
+                                {isLoading ? <RefreshCw className="animate-spin" size={20} /> : <UploadCloud size={22} />}
                             </div>
-                            <div>
-                                <h2 className="text-base font-black text-black tracking-tight ig-display">Drag & Drop PDF or Click to Browse</h2>
-                                <p className="text-xs text-zinc-600 mt-1 font-medium leading-relaxed max-w-sm mx-auto">
-                                    100% Private PDF Cropping • Adjust Margins securely in browser memory.
-                                </p>
+                            <div style={{ fontSize: 13, fontWeight: 500, color: T.textPri, marginBottom: 4 }}>
+                                Drop your PDF here
+                            </div>
+                            <p style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>
+                                or click to browse · 100% Client-side Processing
+                            </p>
+                            <div style={{ display: "flex", gap: 6, flexWrap: "wrap", justifyContent: "center" }}>
+                                <Chip icon={<ShieldCheck size={10} />} label="100% Private" />
+                                <Chip icon={<Package size={10} />} label="No File Upload" />
+                                <Chip icon={<Sparkles size={10} />} label="Instant Margins" />
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="flex flex-col gap-6 animate-in fade-in slide-in-from-bottom duration-500 relative z-10">
-                        {/* Top bar */}
-                        <div className="bg-white border-2 border-black rounded-[2rem] p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-[4px_4px_0_#000] relative overflow-hidden">
-                            <div className="relative z-10 flex items-center gap-3 shrink-0">
-                                <div className="w-10 h-10 bg-red-500/10 border-2 border-black rounded-xl flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
-                                    <Crop size={16} className="text-black" />
+                    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                        {/* Top Bar Controls */}
+                        <div style={{
+                            background: T.surface, border: `1px solid ${T.border}`,
+                            borderRadius: 4, padding: "12px 18px",
+                            display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between",
+                            gap: 12
+                        }}>
+                            {/* File Info */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                                <div style={{
+                                    width: 30, height: 30, borderRadius: 3, background: T.surfaceHi,
+                                    border: `1px solid ${T.border}`, display: "flex", alignItems: "center", justifyContent: "center",
+                                    color: T.accent
+                                }}>
+                                    <Crop size={14} />
                                 </div>
                                 <div>
-                                    <p className="text-xs font-black text-black truncate max-w-[180px] ig-display">{file.name}</p>
-                                    <p className="text-[10px] text-zinc-650 font-bold">{pageCount} page{pageCount !== 1 ? "s" : ""}</p>
+                                    <div style={{ fontSize: 12, fontWeight: 500, color: T.textPri, maxWidth: 200, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                        {file.name}
+                                    </div>
+                                    <div style={{ fontSize: 10, color: T.textSec }}>
+                                        {pageCount} page{pageCount !== 1 ? "s" : ""}
+                                    </div>
                                 </div>
                             </div>
 
-                            <div className="relative z-10 flex flex-wrap items-center gap-3">
-                                {/* Apply to all toggle */}
+                            {/* Batch & Reset Actions */}
+                            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                                 <button
                                     onClick={() => setApplyToAll(!applyToAll)}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full border-2 border-black text-xs font-black transition-all ig-btn ${applyToAll ? "bg-[#a7f3d0] text-black shadow-[2px_2px_0_#000]" : "bg-white text-zinc-600 shadow-[2px_2px_0_#000]"}`}
+                                    style={{
+                                        display: "flex", alignItems: "center", gap: 5,
+                                        padding: "5px 10px", borderRadius: 3, fontSize: 11, cursor: "pointer",
+                                        background: applyToAll ? "rgba(77,184,212,0.15)" : T.surfaceHi,
+                                        border: `1px solid ${applyToAll ? T.accent : T.border}`,
+                                        color: applyToAll ? T.accent : T.textSec, fontWeight: 500
+                                    }}
                                 >
-                                    <Check size={12} className={applyToAll ? "opacity-100" : "opacity-0"} />
-                                    Apply crop to all pages
+                                    <Check size={11} style={{ opacity: applyToAll ? 1 : 0 }} />
+                                    <span>Apply crop to all pages</span>
                                 </button>
 
-                                <div className="flex gap-2">
-                                    <button onClick={reset} className="ig-btn h-9 w-9 flex items-center justify-center text-zinc-600 hover:text-black border-2 border-black bg-white rounded-full shadow-[2px_2px_0_#000]" title="Exit Editor"><X size={14} /></button>
-                                    <button onClick={resetCrop} className="ig-btn h-9 px-4 text-xs font-bold text-black border-2 border-black bg-white rounded-full shadow-[2px_2px_0_#000]">Reset Crop</button>
-                                </div>
+                                <button 
+                                    onClick={resetCrop}
+                                    style={{
+                                        padding: "5px 10px", background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                        borderRadius: 3, color: T.textPri, fontSize: 11, cursor: "pointer"
+                                    }}
+                                >
+                                    Reset Crop
+                                </button>
+                                <button 
+                                    onClick={reset}
+                                    style={{
+                                        padding: "5px 8px", background: "transparent", border: `1px solid ${T.border}`,
+                                        borderRadius: 3, color: T.textSec, cursor: "pointer", display: "flex", alignItems: "center"
+                                    }}
+                                    title="Exit Editor"
+                                >
+                                    <X size={14} />
+                                </button>
                             </div>
                         </div>
 
-                        {/* Main editor */}
-                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
-                            {/* Crop preview */}
-                            <div className="bg-white border-2 border-black rounded-[2rem] p-6 shadow-[5px_5px_0_#000] relative overflow-hidden flex flex-col gap-4">
-                                <div className="relative z-10 flex items-center justify-between">
-                                    <h2 className="text-sm font-black text-black ig-display">
+                        {/* Main Editor 2-Column */}
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: 16 }}>
+                            {/* Left: Canvas Crop Area */}
+                            <div style={{
+                                background: T.surface, border: `1px solid ${T.border}`,
+                                borderRadius: 4, padding: 16, display: "flex", flexDirection: "column", gap: 12
+                            }}>
+                                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                                    <div style={{ fontSize: 12, fontWeight: 500, color: T.textPri }}>
                                         Page {currentPage + 1} of {pageCount}
-                                        <span className="text-zinc-600 font-medium ml-2">— drag handles to crop</span>
-                                    </h2>
-                                    {/* Page nav */}
-                                    <div className="flex gap-1.5">
+                                        <span style={{ fontSize: 10, color: T.textSec, marginLeft: 8 }}>- drag handles to crop</span>
+                                    </div>
+                                    {/* Page navigation */}
+                                    <div style={{ display: "flex", gap: 4 }}>
                                         <button
                                             onClick={() => setCurrentPage(p => Math.max(0, p - 1))}
                                             disabled={currentPage === 0}
-                                            className="ig-btn h-8 w-8 flex items-center justify-center rounded-full border-2 border-black bg-white text-black hover:bg-zinc-100 disabled:opacity-30 disabled:pointer-events-none shadow-[2px_2px_0_#000] transition-all"
+                                            style={{
+                                                width: 26, height: 26, borderRadius: 2, background: T.surfaceHi,
+                                                border: `1px solid ${T.border}`, color: currentPage === 0 ? T.muted : T.textPri,
+                                                cursor: currentPage === 0 ? "not-allowed" : "pointer",
+                                                display: "flex", alignItems: "center", justifyContent: "center"
+                                            }}
                                         >
-                                            <ChevronLeft size={14} strokeWidth={2.5} />
+                                            <ChevronLeft size={13} />
                                         </button>
                                         <button
                                             onClick={() => setCurrentPage(p => Math.min(pageCount - 1, p + 1))}
                                             disabled={currentPage === pageCount - 1}
-                                            className="ig-btn h-8 w-8 flex items-center justify-center rounded-full border-2 border-black bg-white text-black hover:bg-zinc-100 disabled:opacity-30 disabled:pointer-events-none shadow-[2px_2px_0_#000] transition-all"
+                                            style={{
+                                                width: 26, height: 26, borderRadius: 2, background: T.surfaceHi,
+                                                border: `1px solid ${T.border}`, color: currentPage === pageCount - 1 ? T.muted : T.textPri,
+                                                cursor: currentPage === pageCount - 1 ? "not-allowed" : "pointer",
+                                                display: "flex", alignItems: "center", justifyContent: "center"
+                                            }}
                                         >
-                                            <ChevronRight size={14} strokeWidth={2.5} />
+                                            <ChevronRight size={13} />
                                         </button>
                                     </div>
                                 </div>
 
-                                <div className="relative z-10">
-                                    <CropPreviewCanvas
-                                        file={file}
-                                        pageIndex={currentPage}
-                                        crop={currentCrop}
-                                        onCropChange={updateCrop}
-                                    />
-                                </div>
+                                <CropPreviewCanvas
+                                    file={file}
+                                    pageIndex={currentPage}
+                                    crop={currentCrop}
+                                    onCropChange={updateCrop}
+                                />
                             </div>
 
-                            {/* Sidebar: numeric controls + page strip */}
-                            <div className="flex flex-col gap-5">
-                                {/* Numeric crop inputs */}
-                                <div className="bg-white border-2 border-black rounded-[2rem] p-6 shadow-[5px_5px_0_#000] relative overflow-hidden">
-                                    <h3 className="text-xs font-black uppercase tracking-widest text-black mb-5 relative z-10 ig-label">Crop Region (%)</h3>
-                                    <div className="grid grid-cols-2 gap-4 relative z-10">
+                            {/* Right: Sidebar Controls & Thumbnails */}
+                            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                                {/* Numeric inputs card */}
+                                <div style={{
+                                    background: T.surface, border: `1px solid ${T.border}`,
+                                    borderRadius: 4, padding: 16
+                                }}>
+                                    <div style={{ fontSize: 11, fontWeight: 500, color: T.textPri, textTransform: "uppercase", marginBottom: 12 }}>
+                                        Crop Region (%)
+                                    </div>
+                                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                                         <NumInput label="Left (X)" value={currentCrop.x * 100} min={0} max={(1 - currentCrop.w) * 100} onChange={v => setField("x", v)} />
                                         <NumInput label="Top (Y)" value={currentCrop.y * 100} min={0} max={(1 - currentCrop.h) * 100} onChange={v => setField("y", v)} />
                                         <NumInput label="Width (W)" value={currentCrop.w * 100} min={MIN_SIZE * 100} max={(1 - currentCrop.x) * 100} onChange={v => setField("w", v)} />
                                         <NumInput label="Height (H)" value={currentCrop.h * 100} min={MIN_SIZE * 100} max={(1 - currentCrop.y) * 100} onChange={v => setField("h", v)} />
                                     </div>
 
-                                    {/* Quick presets */}
-                                    <div className="mt-5 border-t-2 border-black/10 pt-4 relative z-10">
-                                        <p className="text-[10px] font-black uppercase tracking-widest text-zinc-700 mb-3 ig-label">Quick Presets</p>
-                                        <div className="grid grid-cols-2 gap-2">
+                                    {/* Presets */}
+                                    <div style={{ marginTop: 14, paddingTop: 12, borderTop: `1px solid ${T.borderDim}` }}>
+                                        <div style={{ fontSize: 10, fontWeight: 500, color: T.textSec, textTransform: "uppercase", marginBottom: 8 }}>
+                                            Quick Presets
+                                        </div>
+                                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6 }}>
                                             {[
                                                 { label: "Full page", crop: { x: 0, y: 0, w: 1, h: 1 } },
                                                 { label: "Trim margins", crop: { x: 0.05, y: 0.05, w: 0.9, h: 0.9 } },
@@ -612,7 +694,13 @@ export default function PdfCropperPage() {
                                                 <button
                                                     key={label}
                                                     onClick={() => updateCrop(crop)}
-                                                    className="ig-btn text-[10px] font-bold text-black border-2 border-black rounded-lg px-2 py-1.5 transition-all bg-white hover:bg-zinc-55 text-left shadow-[1.5px_1.5px_0_#000]"
+                                                    style={{
+                                                        padding: "5px 8px", background: "#2a2a2a", border: `1px solid ${T.border}`,
+                                                        borderRadius: 2, color: T.textPri, fontSize: 10, textAlign: "left",
+                                                        cursor: "pointer", transition: "all 0.12s"
+                                                    }}
+                                                    onMouseEnter={e => { e.currentTarget.style.borderColor = T.accent; e.currentTarget.style.background = "#333333"; }}
+                                                    onMouseLeave={e => { e.currentTarget.style.borderColor = T.border; e.currentTarget.style.background = "#2a2a2a"; }}
                                                 >
                                                     {label}
                                                 </button>
@@ -621,19 +709,35 @@ export default function PdfCropperPage() {
                                     </div>
                                 </div>
 
-                                {/* Page thumbnails strip */}
+                                {/* Page thumbnail strip (if multiple pages) */}
                                 {pageCount > 1 && (
-                                    <div className="bg-white border-2 border-black rounded-[2rem] p-5 shadow-[5px_5px_0_#000] relative overflow-hidden">
-                                        <h3 className="text-xs font-black uppercase tracking-widest text-black mb-4 relative z-10 ig-label">Pages</h3>
-                                        <div className="relative z-10 flex flex-col gap-2.5 max-h-[300px] overflow-y-auto custom-scrollbar pr-1">
+                                    <div style={{
+                                        background: T.surface, border: `1px solid ${T.border}`,
+                                        borderRadius: 4, padding: 14
+                                    }}>
+                                        <div style={{ fontSize: 11, fontWeight: 500, color: T.textPri, textTransform: "uppercase", marginBottom: 10 }}>
+                                            All Pages ({pageCount})
+                                        </div>
+                                        <div className="custom-scrollbar" style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 220, overflowY: "auto", paddingRight: 4 }}>
                                             {Array.from({ length: pageCount }, (_, i) => (
                                                 <button
                                                     key={i}
                                                     onClick={() => setCurrentPage(i)}
-                                                    className={`ig-btn relative h-20 rounded-xl border-2 overflow-hidden flex flex-col items-center transition-all duration-200 shrink-0 ${currentPage === i ? "border-red-500 shadow-[2px_2px_0_rgba(239,68,68,1)]" : "border-black/50 hover:border-black shadow-[1.5px_1.5px_0_#000] opacity-80 hover:opacity-100 bg-zinc-50"}`}
+                                                    style={{
+                                                        position: "relative", height: 60, borderRadius: 3,
+                                                        border: `1px solid ${currentPage === i ? T.accent : T.borderDim}`,
+                                                        background: currentPage === i ? "#383838" : "#2a2a2a",
+                                                        overflow: "hidden", display: "flex", flexDirection: "column",
+                                                        alignItems: "center", cursor: "pointer", flexShrink: 0
+                                                    }}
                                                 >
                                                     <PdfPageThumbnail file={file} pageIndex={i} />
-                                                    <div className="absolute bottom-0 inset-x-0 bg-black text-[8px] font-black text-white text-center py-0.5 border-t border-black">
+                                                    <div style={{
+                                                        position: "absolute", bottom: 0, insetInline: 0,
+                                                        background: "#1f1f1f", color: currentPage === i ? T.accent : T.muted,
+                                                        fontSize: 8, textAlign: "center", padding: "1px 0",
+                                                        borderTop: `1px solid ${T.borderDim}`
+                                                    }}>
                                                         Pg {i + 1}
                                                     </div>
                                                 </button>
@@ -644,284 +748,256 @@ export default function PdfCropperPage() {
                             </div>
                         </div>
 
-                        {/* Export button */}
+                        {/* Export Action */}
                         {!outputUrl ? (
                             <button
                                 onClick={exportPdf}
                                 disabled={isExporting}
-                                className={`w-full h-12 font-black tracking-widest text-xs uppercase rounded-full flex items-center justify-center gap-2 border-2 border-black transition-all active:scale-[0.98] ig-btn ${
-                                    isExporting 
-                                        ? "bg-white text-zinc-400 cursor-not-allowed opacity-55" 
-                                        : "bg-[#fde047] text-black shadow-[4px_4px_0_#000]"
-                                }`}
+                                style={{
+                                    width: "100%", height: 42,
+                                    background: isExporting ? T.surfaceHi : T.accent,
+                                    border: `1px solid ${isExporting ? T.border : T.accent}`,
+                                    borderRadius: 3, color: isExporting ? T.muted : "#1a1a1a",
+                                    fontWeight: 600, fontSize: 12,
+                                    cursor: isExporting ? "not-allowed" : "pointer",
+                                    display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                    transition: "all 0.15s"
+                                }}
                             >
-                                {isExporting
-                                    ? <><RefreshCw size={14} className="animate-spin" /> Cropping...</>
-                                    : <><Crop size={14} /> Crop PDF</>
-                                }
+                                {isExporting ? (
+                                    <><RefreshCw size={14} className="animate-spin" /> Cropping PDF Pages...</>
+                                ) : (
+                                    <><Crop size={14} /> Crop PDF Document</>
+                                )}
                             </button>
                         ) : (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 w-full">
+                            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                                 <button
                                     onClick={() => outputUrl && window.open(outputUrl, '_blank')}
-                                    className="ig-btn h-12 px-6 bg-[#fde047] border-2 border-black text-black font-black tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-yellow-350 shadow-[2.5px_2.5px_0_#000] transition-all active:scale-[0.98]"
+                                    style={{
+                                        height: 38, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                        borderRadius: 3, color: T.textPri, fontWeight: 500, fontSize: 11,
+                                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                        transition: "all 0.15s"
+                                    }}
                                 >
-                                    <Eye size={16} /> <span className="hidden sm:inline">Preview PDF</span><span className="sm:hidden">Preview</span>
+                                    <Eye size={14} /> Preview PDF
                                 </button>
                                 <button
                                     onClick={download}
-                                    className="ig-btn h-12 px-6 bg-[#a7f3d0] border-2 border-black text-black font-black tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-emerald-350 shadow-[2.5px_2.5px_0_#000] transition-all active:scale-[0.98]"
+                                    style={{
+                                        height: 38, background: T.accent, border: `1px solid ${T.accent}`,
+                                        borderRadius: 3, color: "#1a1a1a", fontWeight: 600, fontSize: 11,
+                                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                        transition: "all 0.15s"
+                                    }}
                                 >
-                                    <Download size={16} /> Download PDF
+                                    <Download size={14} /> Download PDF
                                 </button>
                                 <button
                                     onClick={() => setIsSharing(true)}
-                                    className="ig-btn h-12 px-6 bg-white border-2 border-black text-black font-black tracking-wider text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-zinc-50 shadow-[2.5px_2.5px_0_#000] transition-all active:scale-[0.98]"
+                                    style={{
+                                        height: 38, background: T.surfaceHi, border: `1px solid ${T.border}`,
+                                        borderRadius: 3, color: T.textPri, fontWeight: 500, fontSize: 11,
+                                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                        transition: "all 0.15s"
+                                    }}
                                 >
-                                    <Share2 size={16} /> Share to Mobile
+                                    <Share2 size={14} /> Share to Mobile
                                 </button>
                                 <button
                                     onClick={() => { setOutputUrl(null); setOutputBlob(null); }}
-                                    className="ig-btn h-12 px-6 bg-transparent border-2 border-black text-zinc-600 hover:text-black font-bold text-xs uppercase rounded-full flex items-center justify-center gap-2 hover:bg-zinc-50 shadow-[2.5px_2.5px_0_#000] transition-all active:scale-[0.98]"
+                                    style={{
+                                        height: 38, background: "transparent", border: `1px solid ${T.border}`,
+                                        borderRadius: 3, color: T.textSec, fontWeight: 500, fontSize: 11,
+                                        cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                                        transition: "all 0.15s"
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.color = T.textPri; e.currentTarget.style.borderColor = "#777"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.color = T.textSec; e.currentTarget.style.borderColor = T.border; }}
                                 >
-                                    <RefreshCw size={14} /> Re-crop PDF
+                                    <RefreshCw size={13} /> Re-crop PDF
                                 </button>
                             </div>
                         )}
                     </div>
                 )}
 
-    
-                <div className="flex justify-center py-4">
-                </div>
+                {/* ─── SEO RICH CONTENT SECTION ─── */}
+                <div style={{ marginTop: 40, borderTop: `1px solid ${T.borderDim}`, paddingTop: 36 }}>
+                    {/* Top Badges */}
+                    <div style={{ display: "flex", justifyContent: "center", gap: 6, flexWrap: "wrap", marginBottom: 20 }}>
+                        <Chip icon={<ShieldCheck size={10} />} label="100% In-Browser Privacy" />
+                        <Chip icon={<Sparkles size={10} />} label="Free & Unlimited" />
+                        <Chip icon={<Package size={10} />} label="No Server Uploads" />
+                    </div>
 
-            {/* ─── SEO RICH TEXT SECTION ─── */}
-                <div className="p-8 sm:p-12 bg-white border-2 border-black rounded-[2.5rem] text-left relative overflow-hidden shadow-[5px_5px_0_#000] text-zinc-700">
-                    <div className="relative z-10 space-y-12">
-                        {/* Top Badges */}
-                        <div className="flex flex-wrap justify-center gap-2.5">
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fbcfe8] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <ShieldCheck size={11} className="text-black" /> 100% In-Browser Privacy
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#a7f3d0] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Sparkles size={11} className="text-black" /> Free & Unlimited
-                            </span>
-                            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border-2 border-black bg-[#fde047] text-[10px] font-bold text-black uppercase tracking-widest shadow-[1.5px_1.5px_0_#000]">
-                                <Package size={11} className="text-black" /> No Server Uploads
-                            </span>
-                        </div>
+                    {/* Section Header */}
+                    <div style={{ textAlign: "center", maxWidth: 680, margin: "0 auto 36px" }}>
+                        <h2 style={{ fontSize: 16, fontWeight: 500, color: T.textPri, marginBottom: 8 }}>
+                            Free PDF Cropper Online - Visual Margin Trimmer
+                        </h2>
+                        <p style={{ fontSize: 11, color: T.textSec, lineHeight: 1.6 }}>
+                            Crop, trim, and adjust PDF viewports instantly in your web browser. Our secure client-side PDF cropper provides an interactive drag-and-resize bounding box overlay to quickly remove empty border margins, split page layouts, or isolate important grid content. Process your critical documents privately with no email signups and zero network uploads.
+                        </p>
+                    </div>
 
-                        {/* Main Title & Description */}
-                        <div className="text-center space-y-4 max-w-3xl mx-auto">
-                            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-black leading-tight ig-display">
-                                Free PDF Cropper Online — Visual Margin Trimmer
-                            </h2>
-                            <p className="text-sm text-zinc-650 leading-relaxed">
-                                Crop, trim, and adjust PDF viewports instantly in your web browser. Our secure client-side PDF cropper provides an interactive drag-and-resize bounding box overlay to quickly remove empty border margins, split page layouts, or isolate important grid content. Process your critical documents privately with no email signups and zero network uploads.
-                            </p>
-                        </div>
-
-                        {/* Features Grid */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4">
-                            {[
-                                {
-                                    title: "Interactive Canvas Overlay",
-                                    desc: "Draw and drag a custom crop window directly over page contents. Visual handles resize margins smoothly.",
-                                    icon: <Crop size={16} />
-                                },
-                                {
-                                    title: "100% Secure Local Execution",
-                                    desc: "All page rendering and coordinate cropping occur locally in your browser cache. No remote cloud saves are ever executed.",
-                                    icon: <ShieldCheck size={16} />
-                                },
-                                {
-                                    title: "Sync Bounding Boxes Easily",
-                                    desc: "Crop a single page or automatically sync identical coordinate adjustments across all pages of the document in one click.",
-                                    icon: <Layout size={16} />
-                                },
-                                {
-                                    title: "Precision Preset Coordinates",
-                                    desc: "Apply perfect preset cuts (like half-pages or margin-trims) or type down exact percentage values to align borders.",
-                                    icon: <Eye size={16} />
-                                },
-                                {
-                                    title: "Completely Watermark-Free",
-                                    desc: "Trimmed documents are exported cleanly without injecting promotional footers, brand stamps, or overlays.",
-                                    icon: <LockIcon size={16} />
-                                },
-                                {
-                                    title: "Fast WebAssembly Re-splicing",
-                                    desc: "Powered by client-side WebAssembly to calculate new CropBox structures immediately. Skip long network queues.",
-                                    icon: <Zap size={16} />
-                                }
-                            ].map((f, i) => (
-                                <div key={i} className="p-6 bg-zinc-55 border-2 border-black rounded-2xl transition-all duration-300 shadow-[3px_3px_0_#000] hover:bg-zinc-100">
-                                    <div className="w-10 h-10 rounded-xl bg-white border-2 border-black flex items-center justify-center text-black mb-4 shadow-[1.5px_1.5px_0_#000]">
-                                        {f.icon}
+                    {/* Features Grid */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: 12, marginBottom: 44 }}>
+                        {[
+                            {
+                                icon: Crop,
+                                title: "Interactive Canvas Overlay",
+                                desc: "Draw and drag a custom crop window directly over page contents. Visual handles resize margins smoothly."
+                            },
+                            {
+                                icon: ShieldCheck,
+                                title: "100% Secure Local Execution",
+                                desc: "All page rendering and coordinate cropping occur locally in your browser cache. No remote cloud saves are ever executed."
+                            },
+                            {
+                                icon: Layout,
+                                title: "Sync Bounding Boxes Easily",
+                                desc: "Crop a single page or automatically sync identical coordinate adjustments across all pages of the document in one click."
+                            },
+                            {
+                                icon: Eye,
+                                title: "Precision Preset Coordinates",
+                                desc: "Apply perfect preset cuts (like half-pages or margin-trims) or type down exact percentage values to align borders."
+                            },
+                            {
+                                icon: LockIcon,
+                                title: "Completely Watermark-Free",
+                                desc: "Trimmed documents are exported cleanly without injecting promotional footers, brand stamps, or overlays."
+                            },
+                            {
+                                icon: Zap,
+                                title: "Fast WebAssembly Re-splicing",
+                                desc: "Powered by client-side WebAssembly to calculate new CropBox structures immediately. Skip long network queues."
+                            }
+                        ].map(f => (
+                            <div key={f.title} style={{ padding: 14, background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4 }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                                    <div style={{ color: T.accent }}>
+                                        <f.icon size={15} />
                                     </div>
-                                    <h4 className="text-sm font-bold text-black mb-2 ig-display">{f.title}</h4>
-                                    <p className="text-xs text-zinc-650 leading-relaxed">{f.desc}</p>
+                                    <h3 style={{ fontSize: 12, fontWeight: 500, margin: 0, color: T.textPri }}>{f.title}</h3>
+                                </div>
+                                <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.6, fontWeight: 400 }}>{f.desc}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Step Timeline */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 44 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 20 }}>
+                            How to Crop PDF Pages Online for Free
+                        </h3>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 12 }}>
+                            {[
+                                { step: "1", title: "Upload Document", desc: "Drag and drop your target PDF file into the secure viewport container or choose it from your local system drive." },
+                                { step: "2", title: "Adjust Bounding Box", desc: "Drag the border handles to shape the crop area, or choose a preset. Toggle whether to apply to all pages." },
+                                { step: "3", title: "Generate and Download", desc: "Click the 'Crop PDF' button to write the new page coordinates and save the optimized, cropped file immediately." }
+                            ].map(s => (
+                                <div key={s.step} style={{ padding: 14, background: "#323232", border: `1px solid ${T.border}`, borderRadius: 3, position: "relative", paddingTop: 20 }}>
+                                    <div style={{ position: "absolute", top: -10, left: 12, width: 22, height: 22, borderRadius: "50%", background: T.accent, color: "#1a1a1a", fontSize: 11, fontWeight: 700, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                                        {s.step}
+                                    </div>
+                                    <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 6px" }}>{s.title}</h4>
+                                    <p style={{ fontSize: 11, color: T.textSec, margin: 0, lineHeight: 1.5 }}>{s.desc}</p>
                                 </div>
                             ))}
                         </div>
+                    </div>
 
-                        {/* Step Timeline */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                How to Crop PDF Pages Online for Free
-                            </h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                {[
-                                    { step: "1", title: "Upload Your Document", desc: "Drag and drop your target PDF file into the secure viewport container or choose it from your local system drive." },
-                                    { step: "2", title: "Adjust the Bounding Box", desc: "Drag the border handles to shape the crop area, or choose a preset. Toggle whether to apply to all pages." },
-                                    { step: "3", title: "Generate and Download", desc: "Click the 'Crop PDF' button to write the new page coordinates and save the optimized, cropped file immediately." }
-                                ].map((s) => (
-                                    <div key={s.step} className="relative p-6 bg-zinc-55 border-2 border-black rounded-2xl pt-8 shadow-[3px_3px_0_#000]">
-                                        <div className="absolute -top-3 left-6 w-7 h-7 rounded-full bg-[#fde047] border-2 border-black text-black font-black text-xs flex items-center justify-center shadow-[1.5px_1.5px_0_#000]">
-                                            {s.step}
-                                        </div>
-                                        <h4 className="text-sm font-bold text-black mb-2 ig-display">{s.title}</h4>
-                                        <p className="text-xs text-zinc-655 leading-relaxed">{s.desc}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Comparison Table */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-4 tracking-tight ig-display">
-                                AssetNest In-Browser PDF Cropper vs. Cloud PDF Converters
-                            </h3>
-                            <p className="text-xs text-zinc-500 text-center mb-8 max-w-lg mx-auto">
-                                Compare our client-side crop boundary logic with typical internet server tools.
-                            </p>
-                            <div className="overflow-x-auto rounded-2xl border-2 border-black bg-zinc-50 shadow-[4px_4px_0_#000]">
-                                <table className="w-full border-collapse text-left text-xs min-w-[500px]">
-                                    <thead>
-                                        <tr className="bg-white border-b-2 border-black">
-                                            <th className="p-4 text-black font-black ig-label">Feature</th>
-                                            <th className="p-4 text-emerald-800 font-black ig-label">AssetNest In-Browser Cropper</th>
-                                            <th className="p-4 text-zinc-600 font-black ig-label">Cloud-Based Croppers</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y-2 divide-black/10">
-                                        {[
-                                            { feat: "Privacy Protection", ours: "100% Safe (Local processing guarantees files are never uploaded or logged)", other: "Risky (Files reside in remote database caches for rendering)" },
-                                            { feat: "Layout Splicing Mode", ours: "Supports independent single page crops or fast 'Apply to All' toggling", other: "Force one crop size across all pages, lacking pagination options" },
-                                            { feat: "Coord Precision", ours: "Drag bounding outlines or input exact numeric box percentages", other: "Basic template cuts only without detailed numeric coordinates inputs" },
-                                            { feat: "Output Resolution", ours: "Lossless vectors (No image resolution downscaling or pixel compression)", other: "Frequently rasterizes pages, reducing text clarity and increasing file size" },
-                                            { feat: "Daily Page Limit", ours: "Absolutely free and unlimited for all PDF page dimensions", other: "Gated behind registration or limited to 5-10 page splits" }
-                                        ].map((row, idx) => (
-                                            <tr key={idx} className="hover:bg-zinc-100 transition-colors">
-                                                <td className="p-4 text-black font-bold ig-display">{row.feat}</td>
-                                                <td className="p-4 text-emerald-800 font-bold">{row.ours}</td>
-                                                <td className="p-4 text-zinc-600">{row.other}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        {/* FAQ Accordion Section */}
-                        <div className="border-t-2 border-black pt-10">
-                            <h3 className="text-xl sm:text-2xl font-bold text-black text-center mb-8 tracking-tight ig-display">
-                                PDF Cropper FAQ
-                            </h3>
-                            <LocalAccordion>
-                                <LocalAccordionItem title="How does the local browser-based PDF cropper preserve confidentiality?">
-                                    All adjustments and rendering calculations are processed locally inside your web browser via JavaScript. Because your target documents are never sent to external servers, they remain strictly confidential.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Can I crop pages inside a PDF individually with different sizes?">
-                                    Yes. Simply disable the 'Apply crop to all pages' option, select whichever page thumbnail you want to modify, and drag the handles to define its specific crop area. Repeat for other pages.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Will cropping my PDF reduce the quality of vector graphics or text?">
-                                    No. AssetNest uses a lossless boundary edit (setting the native PDF CropBox metadata). This instructs PDF readers to only display the selected region without modifying or downscaling the original graphic elements, meaning text and vector designs remain perfectly sharp.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Are there any file size or document length restrictions?">
-                                    No. You can upload and crop files of any size or length. Because operations run in-browser, the performance is limited only by your device's memory and CPU resources.
-                                </LocalAccordionItem>
-                                <LocalAccordionItem title="Does PDF cropping actually delete the hidden parts of the page?">
-                                    Standard PDF cropping via CropBox masks the content outside the boundaries, meaning it is hidden from view in reader programs. If your goal is to physically delete coordinates for highly sensitive text, we recommend flattening or sanitizing the output.
-                                </LocalAccordionItem>
-                            </LocalAccordion>
+                    {/* FAQ Accordion Section */}
+                    <div style={{ background: T.surface, border: `1px solid ${T.border}`, borderRadius: 4, padding: 20, marginBottom: 20 }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, textAlign: "center", color: T.textPri, marginBottom: 16 }}>
+                            Frequently Asked Questions
+                        </h3>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="How does the local browser-based PDF cropper preserve confidentiality?"
+                                answer="All adjustments and rendering calculations are processed locally inside your web browser via JavaScript. Because your target documents are never sent to external servers, they remain strictly confidential."
+                            />
+                            <FAQItem 
+                                question="Can I crop pages inside a PDF individually with different sizes?"
+                                answer="Yes. Simply disable the 'Apply crop to all pages' option, select whichever page thumbnail you want to modify, and drag the handles to define its specific crop area. Repeat for other pages."
+                            />
+                            <FAQItem 
+                                question="Will cropping my PDF reduce the quality of vector graphics or text?"
+                                answer="No. AssetNest uses a lossless boundary edit (setting the native PDF CropBox metadata). This instructs PDF readers to only display the selected region without modifying or downscaling the original graphic elements, meaning text and vector designs remain perfectly sharp."
+                            />
+                            <FAQItem 
+                                question="Are there any file size or document length restrictions?"
+                                answer="No. You can upload and crop files of any size or length. Because operations run in-browser, the performance is limited only by your device's memory and CPU resources."
+                            />
+                            <FAQItem 
+                                question="Does PDF cropping actually delete the hidden parts of the page?"
+                                answer="Standard PDF cropping via CropBox masks the content outside the boundaries, meaning it is hidden from view in reader programs. If your goal is to physically delete coordinates for highly sensitive text, we recommend flattening or sanitizing the output."
+                            />
                         </div>
                     </div>
                 </div>
             </main>
 
             {/* Help Modal */}
-            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Cropper Info">
-                <div className="space-y-12 text-black leading-relaxed text-[15px] sm:text-[17px] text-left w-full max-w-4xl pb-16">
-                    <section className="bg-zinc-50 p-6 sm:p-8 rounded-3xl border-2 border-black space-y-6 shadow-[3px_3px_0_#000]">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                            Precision PDF Viewport Editor
+            <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} title="PDF Cropper Documentation">
+                <div style={{ display: "flex", flexDirection: "column", gap: 20, color: T.textPri, fontSize: 12, lineHeight: 1.6 }}>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h3 style={{ fontSize: 13, fontWeight: 500, color: T.accent, margin: "0 0 8px" }}>
+                            Precision PDF Viewport Architecture
                         </h3>
-                        <p className="text-base leading-relaxed text-zinc-700 font-medium">
-                            The <strong>PDF Cropper</strong> lets you visually define a crop rectangle on any page and export a new PDF where the visible viewport is trimmed to exactly that region. This is ideal for removing white margins, isolating specific content areas, or splitting columnar layouts. Everything runs 100% in your browser — zero uploads, zero privacy compromise.
+                        <p style={{ margin: 0, color: T.textSec, fontSize: 11 }}>
+                            The PDF Cropper lets you visually define a crop rectangle on any page and export a new PDF where the visible viewport is trimmed to exactly that region. Ideal for removing white margins, isolating specific content areas, or splitting columnar layouts.
                         </p>
                     </section>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-                        <section className="bg-zinc-50 p-6 sm:p-8 rounded-3xl border-2 border-black space-y-6 shadow-[3px_3px_0_#000]">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                                <Layout size={20} className="text-black inline mr-2" />
-                                How to Crop
-                            </h3>
-                            <ul className="space-y-4 text-sm text-zinc-700 font-medium">
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>Drag to draw:</strong> Click and drag anywhere on the PDF to start a new crop region.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>Resize handles:</strong> Drag the white corner/edge handles to resize precisely.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>Apply to all:</strong> Toggle "Apply crop to all pages" to sync one crop across the entire document.</span>
-                                </li>
-                                <li className="flex gap-4 items-start">
-                                    <div className="mt-1 shrink-0"><Check size={16} className="text-black" /></div>
-                                    <span><strong>Numeric control:</strong> Type exact percentage values for pixel-perfect positioning.</span>
-                                </li>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 14 }}>
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <Crop size={14} style={{ color: T.accent }} /> How to Crop
+                            </h4>
+                            <ul style={{ margin: 0, paddingLeft: 16, color: T.textSec, fontSize: 11, display: "flex", flexDirection: "column", gap: 6 }}>
+                                <li><strong>Drag to draw:</strong> Click and drag anywhere on the PDF canvas to define a new region.</li>
+                                <li><strong>Resize handles:</strong> Drag corner/edge handles to resize precisely.</li>
+                                <li><strong>Apply to all:</strong> Toggle 'Apply crop to all pages' to sync one crop across the entire document.</li>
+                                <li><strong>Numeric control:</strong> Type exact percentage values for pixel-perfect coordinates.</li>
                             </ul>
                         </section>
 
-                        <section className="bg-zinc-50 p-6 sm:p-8 rounded-3xl border-2 border-black space-y-6 shadow-[3px_3px_0_#000]">
-                            <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">
-                                <ShieldCheck size={20} className="text-black inline mr-2" />
-                                Privacy & Output
-                            </h3>
-                            <p className="text-sm text-zinc-700 leading-relaxed font-bold">
-                                Your file never leaves your device. We use the PDF CropBox / MediaBox standard to define the visible region, so viewers and printers will only show the cropped area.
+                        <section style={{ background: "#333333", padding: 14, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                            <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 8px", display: "flex", alignItems: "center", gap: 6 }}>
+                                <ShieldCheck size={14} style={{ color: T.accent }} /> Privacy & Output
+                            </h4>
+                            <p style={{ margin: "0 0 10px", color: T.textSec, fontSize: 11 }}>
+                                Files never leave your device. We use standard PDF CropBox and MediaBox parameters so viewers and printers only render the cropped area.
                             </p>
-                            <div className="p-6 bg-white rounded-3xl border-2 border-black">
-                                <p className="text-[10px] uppercase font-black tracking-widest text-black ig-label">Technical Spec</p>
-                                <p className="text-[11px] text-zinc-650 mt-2 font-bold tracking-tight uppercase leading-relaxed">
-                                    PDF CropBox + MediaBox • Zero Quality Loss • In-Browser Processing • No Watermarks
-                                </p>
+                            <div style={{ padding: "6px 10px", background: "#2a2a2a", border: `1px solid ${T.borderDim}`, borderRadius: 3, fontSize: 10, color: "#aaa" }}>
+                                Spec: PDF CropBox + MediaBox • Zero Quality Loss • In-Browser Processing
                             </div>
                         </section>
                     </div>
 
-                    <section className="bg-zinc-50 p-6 sm:p-8 rounded-3xl border-2 border-black shadow-[3px_3px_0_#000]">
-                        <h3 className="text-xl sm:text-2xl font-bold tracking-wide text-black mb-6 ig-display">FAQ</h3>
-                        <LocalAccordion>
-                            <LocalAccordionItem title="Does cropping delete page content?">
-                                No. PDF cropping sets the CropBox which hides content outside the region — the original data is preserved inside the file.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Can I crop each page differently?">
-                                Yes! Disable "Apply crop to all pages", navigate between pages, and set a unique crop per page.
-                            </LocalAccordionItem>
-                            <LocalAccordionItem title="Is my file uploaded anywhere?">
-                                Never. Every operation runs in your browser's memory. Nothing is sent to any server.
-                            </LocalAccordionItem>
-                        </LocalAccordion>
+                    <section style={{ background: "#333333", padding: 16, borderRadius: 4, border: `1px solid ${T.border}` }}>
+                        <h4 style={{ fontSize: 12, fontWeight: 500, color: T.textPri, margin: "0 0 10px" }}>
+                            Key Capabilities
+                        </h4>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                            <FAQItem 
+                                question="Does cropping delete page content?" 
+                                answer="No. PDF cropping sets the CropBox which masks content outside the region - original data is preserved inside the file." 
+                            />
+                            <FAQItem 
+                                question="Can I crop each page differently?" 
+                                answer="Yes! Disable 'Apply crop to all pages', navigate between pages, and set a unique crop per page." 
+                            />
+                        </div>
                     </section>
                 </div>
             </HelpModal>
 
+            {/* Share Modal */}
             <ShareModal
                 isOpen={isSharing}
                 onClose={() => setIsSharing(false)}

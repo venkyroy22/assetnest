@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Free Image Cropper — Crop Images Online with Custom Ratios",
-    description: "Crop images online with precision aspect ratios and custom dimensions. Free, browser-based, 100% private — no uploads to any server. Download in high quality.",
+    title: "Free Image Cropper - Crop Images Online with Custom Ratios",
+    description: "Crop images online with precision aspect ratios and custom dimensions. Free, browser-based, 100% private - no uploads to any server. Download in high quality.",
     keywords: [
         "image cropper",
         "crop image online",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     ],
     openGraph: {
         title: "Free Image Cropper | AssetNest",
-        description: "Crop images online with precision aspect ratios. 100% private — files never leave your browser. Free forever.",
+        description: "Crop images online with precision aspect ratios. 100% private - files never leave your browser. Free forever.",
         url: "https://www.assetnest.space/tools/image-cropper",
     },
     alternates: {

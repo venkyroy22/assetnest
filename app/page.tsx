@@ -98,7 +98,7 @@ function VerticalHighlightList() {
         WebkitMaskImage: "linear-gradient(to bottom, transparent 0%, #000 18%, #000 82%, transparent 100%)",
       }}
     >
-      {/* Arrow pointer — vibrant green triangle shifted 120px to the right */}
+      {/* Arrow pointer - vibrant green triangle shifted 120px to the right */}
       <div className="absolute left-[120px] top-1/2 -translate-y-1/2 z-20 pointer-events-none flex items-center">
         <span
           className="w-0 h-0"
@@ -110,7 +110,7 @@ function VerticalHighlightList() {
         />
       </div>
 
-      {/* Scrolling List Container — shifted 120px to the right to maintain perfect visual gap */}
+      {/* Scrolling List Container - shifted 120px to the right to maintain perfect visual gap */}
       <div className="w-full h-full relative">
         <div className="absolute inset-y-0 left-[144px] right-0">
           {items.map((item, idx) => {
@@ -340,7 +340,7 @@ function BentoGridSection() {
             Every tool, ready to go
           </h3>
           <p className="text-sm leading-relaxed font-medium" style={{ color: "rgba(255, 255, 255, 0.75)" }}>
-            Every tool, ready to go. Images, PDFs, design, productivity—34 tools, no setup.{" "}
+            Every tool, ready to go. Images, PDFs, design, productivity-34 tools, no setup.{" "}
             <span style={{ color: "#ffffff", textDecoration: "underline", textUnderlineOffset: "3px" }}>Open what you need</span>,{" "}
             make what you want.
           </p>
@@ -456,7 +456,7 @@ export default function Home() {
     { icon: Zap, title: "Lightning Fast", desc: "Zero server round-trips. Instant results powered by modern browser APIs.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyfast-1785231465559.webp" },
     { icon: Globe, title: "No Sign-Up Needed", desc: "Jump straight in. No account, no email, no credit card. Ever.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whynosignup-1785231468597.webp" },
     { icon: Star, title: "Premium Quality", desc: "Professional-grade tools with clean, intuitive interfaces built for creators.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whypremium-1785231471506.webp" },
-    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free — no hidden fees or paywalls.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyfree-1785231474471.webp" },
+    { icon: Shield, title: "Always Free", desc: "Every tool on AssetNest is completely free - no hidden fees or paywalls.", accent: "#ffffff", image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/whyfree-1785231474471.webp" },
   ];
 
   if (!mounted) return <div className="min-h-screen" style={{ background: "#141414" }} />;
@@ -486,7 +486,7 @@ export default function Home() {
         </div>
 
         {/* ── Atmospheric background layers (replaces the person image) ── */}
-        {/* Large soft glow — bottom right, like Magnific's warm center-right light */}
+        {/* Large soft glow - bottom right, like Magnific's warm center-right light */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -498,7 +498,7 @@ export default function Home() {
             filter: "blur(40px)",
           }}
         />
-        {/* Secondary glow — upper right */}
+        {/* Secondary glow - upper right */}
         <div
           className="absolute pointer-events-none"
           style={{
@@ -533,7 +533,7 @@ export default function Home() {
           {/* ── LEFT: Badge → Headline → Subtitle → Dual CTAs ── */}
           <div className="flex flex-col justify-center items-start text-left py-12 md:py-24 lg:py-0 lg:pr-8">
 
-            {/* Headline — Magnific weight and size */}
+            {/* Headline - Magnific weight and size */}
             <h1
               className="text-[1.75rem] sm:text-[2.25rem] md:text-[3rem] lg:text-[2.6rem] xl:text-[3.2rem] font-extrabold tracking-tight leading-[1.07] mb-6"
               style={{ color: "#f0ede8" }}
@@ -550,7 +550,7 @@ export default function Home() {
               Free, browser-based tools for images, PDFs, prompts, and developer workflows. No signup, no storage, 100% secure.
             </p>
 
-            {/* Dual CTAs — Magnific layout: solid + ghost-with-icon */}
+            {/* Dual CTAs - Magnific layout: solid + ghost-with-icon */}
             <div className="flex items-center gap-4 flex-wrap">
               {/* Primary: solid filled */}
               <Link
@@ -564,7 +564,7 @@ export default function Home() {
                 Start exploring
               </Link>
 
-              {/* Secondary: ghost with play icon — "Why AssetNest?" */}
+              {/* Secondary: ghost with play icon - "Why AssetNest?" */}
               <Link
                 href="/about"
                 className="inline-flex items-center gap-3 px-6 py-3.5 rounded-lg font-semibold text-sm tracking-wide transition-all duration-200 active:scale-95 group"
@@ -614,7 +614,7 @@ export default function Home() {
                   Pick a tool, start creating
                 </h2>
                 <p className="text-sm sm:text-base font-medium max-w-xl mx-auto leading-relaxed" style={{ color: "#71381d", opacity: 0.85 }}>
-                  Remove backgrounds, sign PDFs, compress images, and generate assets—your secure browser-based workflow.
+                  Remove backgrounds, sign PDFs, compress images, and generate assets-your secure browser-based workflow.
                 </p>
               </div>
               
@@ -715,7 +715,7 @@ export default function Home() {
                   <span style={{ color: "#71381d" }}>Designed for you.</span>
                 </h2>
                 <p className="text-sm md:text-base max-w-lg mx-auto font-medium leading-relaxed" style={{ color: "#71381d" }}>
-                  We believe powerful tools should be accessible, private, and beautiful — all at the same time.
+                  We believe powerful tools should be accessible, private, and beautiful - all at the same time.
                 </p>
               </div>
 

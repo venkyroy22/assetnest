@@ -1,7 +1,7 @@
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "PDF Password Remover — Unlock PDFs Free Online | AssetNest",
+    title: "PDF Password Remover - Unlock PDFs Free Online | AssetNest",
     description: "Remove passwords from your PDF files instantly. Unlock encrypted PDFs locally in your browser without uploading to any server for 100% privacy.",
     keywords: [
         "pdf password remover", "unlock pdf online", "remove pdf password", "decrypt pdf",
@@ -13,7 +13,7 @@ export const metadata: Metadata = {
     robots: { index: true, follow: true },
     alternates: { canonical: "https://www.assetnest.space/tools/pdf-unlocker" },
     openGraph: {
-        title: "PDF Password Remover — Unlock PDFs Free Online",
+        title: "PDF Password Remover - Unlock PDFs Free Online",
         description: "Remove passwords from your PDF files instantly. Unlock encrypted PDFs locally in your browser for 100% privacy.",
         url: "https://www.assetnest.space/tools/pdf-unlocker",
         siteName: "AssetNest",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     },
     twitter: {
         card: "summary_large_image",
-        title: "PDF Password Remover — Unlock PDFs Free Online | AssetNest",
+        title: "PDF Password Remover - Unlock PDFs Free Online | AssetNest",
         description: "Remove passwords from your PDF files instantly in your browser. 100% private.",
         images: ["/logo.png"],
     },

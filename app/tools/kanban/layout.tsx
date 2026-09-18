@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Kanban Board — Professional Task Workflow | AssetNest",
+    title: "Kanban Board - Professional Task Workflow | AssetNest",
     description: "Organize your projects with a stunning, minimalist Kanban board. Features seamless drag-and-drop, custom columns, and local-first privacy. Free to use.",
     keywords: [
         "kanban",
@@ -15,7 +15,7 @@ export const metadata: Metadata = {
         "minimalist kanban"
     ],
     openGraph: {
-        title: "Kanban Board — Professional Task Workflow | AssetNest",
+        title: "Kanban Board - Professional Task Workflow | AssetNest",
         description: "Organize your projects with a stunning, minimalist Kanban board. Features seamless drag-and-drop, custom columns, and local-first privacy.",
         url: "https://www.assetnest.space/tools/kanban",
         type: "website",
