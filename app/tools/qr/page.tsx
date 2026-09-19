@@ -1148,6 +1148,89 @@ function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transpare
 }
 
 /* ─────────────────────────────────────────
+   SEO QR TYPE DESCRIPTIONS & KEYWORDS
+   ───────────────────────────────────────── */
+const QR_TYPE_SEO_DATA = [
+  {
+    id: "url",
+    title: "Website & Link QR Code",
+    icon: <LinkIcon size={15} strokeWidth={2} />,
+    description: "Instantly routes scanners to any website, landing page, portfolio, social profile, or digital menu. Opens automatically in the user's default browser.",
+    keywords: ["url qr code generator", "website qr code maker", "link to qr code", "free custom link qr", "web page qr code"],
+  },
+  {
+    id: "wifi",
+    title: "Wi-Fi Access QR Code",
+    icon: <Wifi size={15} strokeWidth={2} />,
+    description: "Enables guests and customers to join your Wi-Fi network instantly without typing complex passwords. Encodes SSID, security type (WPA/WEP), and password.",
+    keywords: ["wifi qr code generator", "connect to wifi qr", "wifi password qr code", "scan to join wifi", "guest wifi qr maker"],
+  },
+  {
+    id: "vcard",
+    title: "vCard Digital Business Card",
+    icon: <Contact size={15} strokeWidth={2} />,
+    description: "Stores complete contact information—name, phone number, email, company, job title, and website. Scanners can save you directly into their address book with a single tap.",
+    keywords: ["vcard qr code generator", "digital business card qr", "contact qr code", "electronic business card", "qr business card maker"],
+  },
+  {
+    id: "whatsapp",
+    title: "WhatsApp Direct Chat QR Code",
+    icon: <MessageCircle size={15} strokeWidth={2} />,
+    description: "Opens a direct chat window in WhatsApp with your phone number and an optional pre-filled message. Ideal for customer service, inquiries, and lead generation.",
+    keywords: ["whatsapp qr code generator", "direct whatsapp qr", "whatsapp click to chat qr", "scan to chat whatsapp", "whatsapp business qr"],
+  },
+  {
+    id: "email",
+    title: "Email Draft QR Code",
+    icon: <Mail size={15} strokeWidth={2} />,
+    description: "Launches the user's native email client with recipient address, subject line, and draft message body already filled in. Streamlines support requests, RSVPs, and feedback.",
+    keywords: ["email qr code generator", "mailto qr code maker", "send email qr code", "prefilled email qr", "contact email qr code"],
+  },
+  {
+    id: "sms",
+    title: "SMS Text Message QR Code",
+    icon: <MessageSquareText size={15} strokeWidth={2} />,
+    description: "Triggers the native SMS messaging app with a pre-configured phone number and pre-written message template. Great for SMS opt-in marketing, alerts, and customer text support.",
+    keywords: ["sms qr code generator", "text message qr code", "scan to send sms", "prefilled sms qr", "mobile message qr maker"],
+  },
+  {
+    id: "phone",
+    title: "Direct Phone Call QR Code",
+    icon: <Phone size={15} strokeWidth={2} />,
+    description: "Prompts smartphones to dial your phone number immediately when scanned. Perfect for print ads, brochures, delivery boxes, and storefront signage.",
+    keywords: ["phone call qr code", "click to call qr", "call us qr code generator", "telephone qr code maker", "direct dial qr code"],
+  },
+  {
+    id: "event",
+    title: "Calendar Event QR Code",
+    icon: <Calendar size={15} strokeWidth={2} />,
+    description: "Encodes date, start/end time, location, and meeting agenda. Users can add webinars, meetings, concerts, and festivals straight to their calendar in one click.",
+    keywords: ["event qr code generator", "calendar event qr code", "add to calendar qr", "meeting invite qr code", "webinar event qr maker"],
+  },
+  {
+    id: "geo",
+    title: "Location & GPS Maps QR Code",
+    icon: <MapPin size={15} strokeWidth={2} />,
+    description: "Encodes precise latitude and longitude coordinates that launch Google Maps, Apple Maps, or Waze. Gives customers pinpoint navigation to your physical storefront or event venue.",
+    keywords: ["location qr code generator", "gps qr code maker", "google maps qr code", "scan for directions qr", "geo coordinates qr code"],
+  },
+  {
+    id: "upi",
+    title: "UPI Payment QR Code",
+    icon: <CreditCard size={15} strokeWidth={2} />,
+    description: "Generates an NPCI-compliant UPI payment QR code compatible with Google Pay, PhonePe, Paytm, and BHIM. Supports pre-set amounts, payee name, and payment notes.",
+    keywords: ["upi qr code generator", "bhim upi qr maker", "scan and pay qr code", "google pay phonepe qr", "cashless payment qr generator"],
+  },
+  {
+    id: "crypto",
+    title: "Cryptocurrency Wallet QR Code",
+    icon: <Coins size={15} strokeWidth={2} />,
+    description: "Encodes wallet addresses for Bitcoin (BTC), Ethereum (ETH), and Litecoin (LTC) with optional payment amounts. Eliminates risky manual address typing.",
+    keywords: ["crypto qr code generator", "bitcoin qr code maker", "ethereum qr code generator", "crypto wallet qr", "btc scan to pay qr"],
+  },
+];
+
+/* ─────────────────────────────────────────
    MAIN COMPONENT
    ───────────────────────────────────────── */
 export default function QRStudio() {
@@ -1780,6 +1863,102 @@ export default function QRStudio() {
                   <p style={{ fontSize: 12, color: "#888", margin: 0, lineHeight: 1.6, fontWeight: 500 }}>{f.desc}</p>
                 </div>
               ))}
+            </div>
+
+            {/* Supported QR Code Types & Formats Section */}
+            <div style={{ marginBottom: 48 }}>
+              <div style={{ textAlign: "center", marginBottom: 24 }}>
+                <h3 style={{
+                  fontSize: 13,
+                  fontWeight: 500,
+                  color: "#ccc",
+                  letterSpacing: "normal",
+                  margin: "0 0 8px",
+                  lineHeight: 1.3
+                }}>
+                  Supported QR Code Types & Use Cases
+                </h3>
+                <p style={{
+                  fontSize: 11,
+                  color: "#888",
+                  maxWidth: 680,
+                  margin: "0 auto",
+                  lineHeight: 1.6,
+                  fontWeight: 400
+                }}>
+                  Explore our 11 supported static QR code formats. Each type generates standard, platform-compatible payloads that modern iPhone and Android cameras recognize instantly.
+                </p>
+              </div>
+
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+                gap: 12
+              }}>
+                {QR_TYPE_SEO_DATA.map(item => (
+                  <div 
+                    key={item.id} 
+                    style={{
+                      padding: "12px 14px",
+                      background: "#323232",
+                      border: "1px solid #555",
+                      borderRadius: 4,
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{
+                        width: 26,
+                        height: 26,
+                        borderRadius: 3,
+                        background: "rgba(77,184,212,0.12)",
+                        border: "1px solid rgba(77,184,212,0.3)",
+                        color: "#4db8d4",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}>
+                        {item.icon}
+                      </div>
+                      <h4 style={{ fontSize: 12, fontWeight: 500, color: "#ddd", margin: 0 }}>
+                        {item.title}
+                      </h4>
+                    </div>
+
+                    <p style={{ fontSize: 11, color: "#888", lineHeight: 1.6, margin: 0, fontWeight: 400, flex: 1 }}>
+                      {item.description}
+                    </p>
+
+                    <div style={{ paddingTop: 8, borderTop: "1px solid #444", marginTop: "auto" }}>
+                      <div style={{ fontSize: 9, color: "#777", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5, fontWeight: 500 }}>
+                        Target SEO Keywords
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                        {item.keywords.map(kw => (
+                          <span 
+                            key={kw} 
+                            style={{
+                              fontSize: 9.5,
+                              color: "#aaa",
+                              background: "#2a2a2a",
+                              border: "1px solid #484848",
+                              borderRadius: 2,
+                              padding: "2px 6px",
+                              lineHeight: "13px",
+                              fontFamily: T.font,
+                            }}
+                          >
+                            {kw}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* FAQ Accordion Section */}

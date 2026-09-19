@@ -13,11 +13,22 @@ export const metadata: Metadata = {
         "qr code maker",
         "custom qr code creator",
         "transparent qr code download",
-        "private qr code maker"
+        "private qr code maker",
+        "wifi qr code generator",
+        "vcard qr code generator",
+        "digital business card qr",
+        "whatsapp qr code generator",
+        "upi qr code generator",
+        "crypto qr code generator",
+        "bitcoin qr maker",
+        "calendar event qr code",
+        "location maps qr code",
+        "email qr code generator",
+        "sms text qr code"
     ],
     openGraph: {
         title: "100% Free QR Code Generator - No Watermark & Unlimited | AssetNest",
-        description: "Create beautiful custom QR codes locally in your browser. 100% free, unlimited lifetime scans, and zero watermarks.",
+        description: "Create beautiful custom QR codes locally in your browser. Generate URL, Wi-Fi, vCard, WhatsApp, UPI, Crypto, and Event QR codes with 100% free, unlimited scans and zero watermarks.",
         url: "https://assetnest.gloyas.com/tools/qr",
     },
     alternates: {
