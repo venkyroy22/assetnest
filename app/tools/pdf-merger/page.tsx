@@ -95,7 +95,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "PDF Merger",
     description: "Combine multiple PDF files into one instantly and securely. 100% private, browser-based.",
-    url: "https://www.assetnest.space/tools/pdf-merger",
+    url: "https://assetnest.gloyas.com/tools/pdf-merger",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

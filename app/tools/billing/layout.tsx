@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Invoice & Billing Generator | AssetNest",
         description: "Generate professional invoices in seconds. Free, no account needed, download as PDF.",
-        url: "https://www.assetnest.space/tools/billing",
+        url: "https://assetnest.gloyas.com/tools/billing",
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/billing",
+        canonical: "https://assetnest.gloyas.com/tools/billing",
     },
 };
 
@@ -31,7 +31,7 @@ export default function BillingLayout({ children }: { children: React.ReactNode 
         "@type": "SoftwareApplication",
         name: "AssetNest Free Invoice & GST Billing Generator",
         description: "Generate professional GST-ready invoices with integrated barcode scanning. Export high-quality receipts for customers instantly. Free, no login required.",
-        url: "https://www.assetnest.space/tools/billing",
+        url: "https://assetnest.gloyas.com/tools/billing",
         applicationCategory: "WebApplication",
         operatingSystem: "All",
         offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

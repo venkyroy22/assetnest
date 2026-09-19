@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "AssetNest Studio" }],
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://www.assetnest.space/tools/pdf-splitter" },
+    alternates: { canonical: "https://assetnest.gloyas.com/tools/pdf-splitter" },
     openGraph: {
         title: "PDF Splitter - Extract & Split PDF Pages Free Online",
         description: "Extract specific pages from any PDF instantly in your browser. Visual page selector, 100% private - no uploads needed.",
-        url: "https://www.assetnest.space/tools/pdf-splitter",
+        url: "https://assetnest.gloyas.com/tools/pdf-splitter",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest PDF Splitter" }],
         locale: "en_US",

@@ -68,7 +68,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "AI Background Remover",
     description: "Remove backgrounds from your images instantly and for free. 100% private, browser-based processing.",
-    url: "https://www.assetnest.space/tools/bg-remover",
+    url: "https://assetnest.gloyas.com/tools/bg-remover",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

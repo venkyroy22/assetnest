@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "AssetNest Studio" }],
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://www.assetnest.space/tools/pdf-cropper" },
+    alternates: { canonical: "https://assetnest.gloyas.com/tools/pdf-cropper" },
     openGraph: {
         title: "PDF Cropper - Crop & Trim PDF Pages Free Online",
         description: "Visually crop any PDF page region instantly in your browser. Set crop area, apply to all pages, download - 100% private, no uploads.",
-        url: "https://www.assetnest.space/tools/pdf-cropper",
+        url: "https://assetnest.gloyas.com/tools/pdf-cropper",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest PDF Cropper" }],
         locale: "en_US",

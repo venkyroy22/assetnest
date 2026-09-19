@@ -16,10 +16,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Image Cropper | AssetNest",
         description: "Crop images online with precision aspect ratios. 100% private - files never leave your browser. Free forever.",
-        url: "https://www.assetnest.space/tools/image-cropper",
+        url: "https://assetnest.gloyas.com/tools/image-cropper",
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/image-cropper",
+        canonical: "https://assetnest.gloyas.com/tools/image-cropper",
     },
 };
 
@@ -28,7 +28,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Image Cropper",
     description: "Crop images online with precision aspect ratios and custom dimensions. Free, browser-based, 100% private.",
-    url: "https://www.assetnest.space/tools/image-cropper",
+    url: "https://assetnest.gloyas.com/tools/image-cropper",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

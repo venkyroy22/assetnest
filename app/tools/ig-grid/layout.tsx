@@ -47,10 +47,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Instagram Grid Planner | AssetNest",
         description: "Plan your Instagram feed layout visually - drag, drop, and preview before posting. Free, no login required.",
-        url: "https://www.assetnest.space/tools/ig-grid",
+        url: "https://assetnest.gloyas.com/tools/ig-grid",
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/ig-grid",
+        canonical: "https://assetnest.gloyas.com/tools/ig-grid",
     },
 };
 
@@ -59,7 +59,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Instagram Grid Planner",
     description: "Plan your Instagram grid layout visually. Upload photos, drag and drop to rearrange, and preview how your profile will look before posting.",
-    url: "https://www.assetnest.space/tools/ig-grid",
+    url: "https://assetnest.gloyas.com/tools/ig-grid",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

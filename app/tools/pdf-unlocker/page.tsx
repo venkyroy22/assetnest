@@ -110,7 +110,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "PDF Password Remover",
     description: "Remove password protection from your PDF files instantly in your browser. 100% private, zero uploads.",
-    url: "https://www.assetnest.space/tools/pdf-unlocker",
+    url: "https://assetnest.gloyas.com/tools/pdf-unlocker",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

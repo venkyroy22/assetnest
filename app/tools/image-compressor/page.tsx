@@ -68,7 +68,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Image Compressor",
     description: "Compress JPEG, PNG, and WebP images instantly in your browser. Reduce image file size with zero quality loss. No uploads, 100% private, completely free.",
-    url: "https://www.assetnest.space/tools/image-compressor",
+    url: "https://assetnest.gloyas.com/tools/image-compressor",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

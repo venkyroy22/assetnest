@@ -75,7 +75,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "PDF Splitter",
     description: "Split and extract pages from a PDF instantly in your browser. 100% private, no uploads.",
-    url: "https://www.assetnest.space/tools/pdf-splitter",
+    url: "https://assetnest.gloyas.com/tools/pdf-splitter",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

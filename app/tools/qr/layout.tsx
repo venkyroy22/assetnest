@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "100% Free QR Code Generator - No Watermark & Unlimited | AssetNest",
         description: "Create beautiful custom QR codes locally in your browser. 100% free, unlimited lifetime scans, and zero watermarks.",
-        url: "https://www.assetnest.space/tools/qr",
+        url: "https://assetnest.gloyas.com/tools/qr",
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/qr",
+        canonical: "https://assetnest.gloyas.com/tools/qr",
     },
 };
 
@@ -30,7 +30,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "AssetNest QR Code Generator",
     description: "Create fully custom, beautiful QR codes 100% free with no watermarks and unlimited lifetime scans. Choose colors, transparent backgrounds, customize finder markers, and add logos securely.",
-    url: "https://www.assetnest.space/tools/qr",
+    url: "https://assetnest.gloyas.com/tools/qr",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

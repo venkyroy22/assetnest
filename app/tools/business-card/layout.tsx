@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Business Card Generator",
         description: "Design and export a beautiful, print-ready business card directly from your browser.",
-        url: "https://www.assetnest.space/tools/business-card",
+        url: "https://assetnest.gloyas.com/tools/business-card",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "Business Card Maker Preview" }],
         type: "website",

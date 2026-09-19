@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Kanban Board - Professional Task Workflow | AssetNest",
         description: "Organize your projects with a stunning, minimalist Kanban board. Features seamless drag-and-drop, custom columns, and local-first privacy.",
-        url: "https://www.assetnest.space/tools/kanban",
+        url: "https://assetnest.gloyas.com/tools/kanban",
         type: "website",
     },
 };

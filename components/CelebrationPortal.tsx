@@ -55,7 +55,7 @@ export default function CelebrationPortal() {
 
     // Copy Link Action
     const copyLink = () => {
-        navigator.clipboard.writeText("https://www.assetnest.space");
+        navigator.clipboard.writeText("https://assetnest.gloyas.com");
         setCopied(true);
         if (ratingSuccessTimerRef.current) clearTimeout(ratingSuccessTimerRef.current);
         ratingSuccessTimerRef.current = setTimeout(() => setCopied(false), 2000);
@@ -278,7 +278,7 @@ export default function CelebrationPortal() {
                             </button>
                             {/* Share on X */}
                             <a
-                                href={`https://twitter.com/intent/tweet?text=I%20just%20used%20AssetNest%20to%20optimize%20my%20creative%2520assets%20locally%20and%20securely%20in%20my%20browser!%20Check%20it%20out%20at%20https%3A%2F%2Fwww.assetnest.space`}
+                                href={`https://twitter.com/intent/tweet?text=I%20just%20used%20AssetNest%20to%20optimize%20my%20creative%2520assets%20locally%20and%20securely%20in%20my%20browser!%20Check%20it%20out%20at%20https%3A%2F%2Fassetnest.gloyas.com`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-2 bg-zinc-800/40 border border-white/5 hover:border-white/10 rounded-lg text-zinc-400 hover:text-white transition-all flex items-center justify-center"
@@ -296,7 +296,7 @@ export default function CelebrationPortal() {
                             </a>
                             {/* LinkedIn Share */}
                             <a
-                                href={`https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fwww.assetnest.space`}
+                                href={`https://www.linkedin.com/sharing/share-offsite/?url=https%3A%2F%2Fassetnest.gloyas.com`}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="p-2 bg-zinc-800/40 border border-white/5 hover:border-white/10 rounded-lg text-zinc-400 hover:text-white transition-all"

@@ -93,7 +93,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Image to PDF Converter",
     description: "Convert JPG, PNG, WebP images into a PDF instantly in your browser. 100% private.",
-    url: "https://www.assetnest.space/tools/image-to-pdf",
+    url: "https://assetnest.gloyas.com/tools/image-to-pdf",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

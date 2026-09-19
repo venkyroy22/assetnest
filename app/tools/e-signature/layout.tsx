@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     openGraph: {
         title: "E-Signature Creator - Free Digital Signatures",
         description: "Draw your signature securely in your browser and download as a transparent image.",
-        url: "https://www.assetnest.space/tools/e-signature",
+        url: "https://assetnest.gloyas.com/tools/e-signature",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "E-Signature Creator Preview" }],
         type: "website",

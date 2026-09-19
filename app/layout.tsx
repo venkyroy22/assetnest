@@ -15,7 +15,7 @@ const outfit = Outfit({
   display: "swap",
 });
 
-const siteUrl = "https://www.assetnest.space";
+const siteUrl = "https://assetnest.gloyas.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -81,7 +81,7 @@ export const metadata: Metadata = {
   },
 
   verification: {
-    // google: "YOUR_GOOGLE_SEARCH_CONSOLE_VERIFICATION_CODE",
+    google: "7QFuqrCj2b2iX_1zPtz27C-gdfoEJ7ZkJAriUFkQf5A",
   },
 };
 

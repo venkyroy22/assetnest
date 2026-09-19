@@ -71,7 +71,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "E-Signature Creator",
     description: "Draw and download digital signatures as transparent PNG or scalable SVG in your browser. 100% private, zero uploads.",
-    url: "https://www.assetnest.space/tools/e-signature",
+    url: "https://assetnest.gloyas.com/tools/e-signature",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

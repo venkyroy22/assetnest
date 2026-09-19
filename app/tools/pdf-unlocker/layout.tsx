@@ -11,11 +11,11 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "AssetNest Studio" }],
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://www.assetnest.space/tools/pdf-unlocker" },
+    alternates: { canonical: "https://assetnest.gloyas.com/tools/pdf-unlocker" },
     openGraph: {
         title: "PDF Password Remover - Unlock PDFs Free Online",
         description: "Remove passwords from your PDF files instantly. Unlock encrypted PDFs locally in your browser for 100% privacy.",
-        url: "https://www.assetnest.space/tools/pdf-unlocker",
+        url: "https://assetnest.gloyas.com/tools/pdf-unlocker",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest PDF Password Remover" }],
         locale: "en_US",

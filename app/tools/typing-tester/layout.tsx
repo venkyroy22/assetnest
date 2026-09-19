@@ -5,12 +5,12 @@ export const metadata: Metadata = {
     description: "Test and improve your typing speed (WPM) and accuracy with our advanced typing speed test. Get real-time stats, detailed results, and professional feedback.",
     keywords: ["typing speed test", "wpm test", "typing speed", "typing accuracy", "online typing tutor", "improve typing", "free typing tool"],
     alternates: {
-        canonical: "https://www.assetnest.space/tools/typing-tester",
+        canonical: "https://assetnest.gloyas.com/tools/typing-tester",
     },
     openGraph: {
         title: "Free Typing Speed Test | AssetNest",
         description: "Test and improve your WPM typing speed with real-time stats, detailed results, and professional feedback. Free, no account needed.",
-        url: "https://www.assetnest.space/tools/typing-tester",
+        url: "https://assetnest.gloyas.com/tools/typing-tester",
     },
 };
 
@@ -19,7 +19,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Typing Speed Test",
     description: "Test and improve your typing speed (WPM) and accuracy. Real-time stats, detailed results, free forever.",
-    url: "https://www.assetnest.space/tools/typing-tester",
+    url: "https://assetnest.gloyas.com/tools/typing-tester",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

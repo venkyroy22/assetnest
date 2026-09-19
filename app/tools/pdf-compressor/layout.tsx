@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "AssetNest Studio" }],
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://www.assetnest.space/tools/pdf-compressor" },
+    alternates: { canonical: "https://assetnest.gloyas.com/tools/pdf-compressor" },
     openGraph: {
         title: "PDF Compressor - Reduce PDF Size Free Online",
         description: "Compress your PDF and make it smaller instantly in the browser. No uploads, 100% private, completely free.",
-        url: "https://www.assetnest.space/tools/pdf-compressor",
+        url: "https://assetnest.gloyas.com/tools/pdf-compressor",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest PDF Compressor" }],
         locale: "en_US",

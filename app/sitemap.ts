@@ -2,7 +2,7 @@ import { MetadataRoute } from 'next'
 import { ALL_TOOLS } from '@/lib/tools'
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://www.assetnest.space'
+    const baseUrl = 'https://assetnest.gloyas.com'
     const now = new Date()
 
     // 1. Static high-priority pages

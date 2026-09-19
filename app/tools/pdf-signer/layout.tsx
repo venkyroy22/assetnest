@@ -16,12 +16,12 @@ export const metadata: Metadata = {
         "sign pdf in browser"
     ],
     alternates: {
-        canonical: "https://www.assetnest.space/tools/pdf-signer",
+        canonical: "https://assetnest.gloyas.com/tools/pdf-signer",
     },
     openGraph: {
         title: "Free PDF Signature Online - No Sign Up Required",
         description: "Fill, sign, and download PDF documents securely in your browser. 100% local processing with zero server uploads.",
-        url: "https://www.assetnest.space/tools/pdf-signer",
+        url: "https://assetnest.gloyas.com/tools/pdf-signer",
         siteName: "AssetNest Tools",
         type: "website",
     },

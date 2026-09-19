@@ -500,7 +500,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Pomodoro Focus Timer",
     description: "Scientific time-boxing pomodoro focus timer with audio ambience and break mini-games. 100% free and private.",
-    url: "https://www.assetnest.space/tools/pomodoro",
+    url: "https://assetnest.gloyas.com/tools/pomodoro",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

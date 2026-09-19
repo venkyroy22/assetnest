@@ -218,7 +218,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Smart PDF Signer",
     description: "Sign PDF documents professionally. Select an area, draw your signature, and apply it to one or all pages instantly. 100% private, browser-based.",
-    url: "https://www.assetnest.space/tools/pdf-signer",
+    url: "https://assetnest.gloyas.com/tools/pdf-signer",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

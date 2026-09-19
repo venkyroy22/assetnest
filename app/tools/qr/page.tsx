@@ -5,7 +5,9 @@ import QRCode from "qrcode";
 import Link from "next/link";
 import { 
   ArrowLeft, HelpCircle, QrCode, Shield, Zap, Check, Download, 
-  Copy, Image as ImageIcon, Smile, Star, Trash2 
+  Copy, Image as ImageIcon, Smile, Star, Trash2,
+  Link as LinkIcon, Wifi, Contact, MessageCircle, Mail, MessageSquareText,
+  Phone, Calendar, MapPin, CreditCard, Coins, AlertTriangle, Heart
 } from "lucide-react";
 import HelpModal from "@/components/HelpModal";
 
@@ -47,6 +49,135 @@ const QUICK_PRESETS = [
 
 type PatternType = "square" | "dots" | "rounded" | "star" | "emoji" | "logo";
 type CornerType  = "square" | "dots" | "rounded" | "heart";
+type ContentType = "url" | "wifi" | "vcard" | "whatsapp" | "email" | "sms" | "phone" | "event" | "geo" | "upi" | "crypto";
+
+interface WifiData { ssid: string; password: string; encryption: "WPA" | "WEP" | "nopass"; hidden: boolean; }
+interface VCardData { firstName: string; lastName: string; phone: string; email: string; company: string; title: string; website: string; address: string; }
+interface WhatsAppData { phone: string; message: string; }
+interface EmailData { to: string; subject: string; body: string; }
+interface SMSData { phone: string; message: string; }
+interface PhoneData { phone: string; }
+interface EventData { title: string; startDate: string; startTime: string; endDate: string; endTime: string; location: string; description: string; }
+interface GeoData { latitude: string; longitude: string; }
+interface UPIData { vpa: string; name: string; amount: string; note: string; }
+interface CryptoData { coin: "bitcoin" | "ethereum" | "litecoin"; address: string; amount: string; }
+
+const CONTENT_TYPE_LIST: { id: ContentType; label: string; icon: React.ReactNode; desc: string }[] = [
+  { id: "url", label: "URL", icon: <LinkIcon size={16} strokeWidth={1.8} />, desc: "Website link" },
+  { id: "wifi", label: "Wi-Fi", icon: <Wifi size={16} strokeWidth={1.8} />, desc: "Network credentials" },
+  { id: "vcard", label: "vCard", icon: <Contact size={16} strokeWidth={1.8} />, desc: "Contact card" },
+  { id: "whatsapp", label: "WhatsApp", icon: <MessageCircle size={16} strokeWidth={1.8} />, desc: "Direct chat" },
+  { id: "email", label: "Email", icon: <Mail size={16} strokeWidth={1.8} />, desc: "Compose email" },
+  { id: "sms", label: "SMS", icon: <MessageSquareText size={16} strokeWidth={1.8} />, desc: "Text message" },
+  { id: "phone", label: "Phone", icon: <Phone size={16} strokeWidth={1.8} />, desc: "Direct call" },
+  { id: "event", label: "Event", icon: <Calendar size={16} strokeWidth={1.8} />, desc: "Calendar event" },
+  { id: "geo", label: "Location", icon: <MapPin size={16} strokeWidth={1.8} />, desc: "GPS coordinates" },
+  { id: "upi", label: "UPI", icon: <CreditCard size={16} strokeWidth={1.8} />, desc: "UPI payment" },
+  { id: "crypto", label: "Crypto", icon: <Coins size={16} strokeWidth={1.8} />, desc: "Wallet payment" },
+];
+
+function buildPayload(
+  contentType: ContentType,
+  urlData: string,
+  wifiData: WifiData,
+  vcardData: VCardData,
+  whatsappData: WhatsAppData,
+  emailData: EmailData,
+  smsData: SMSData,
+  phoneData: PhoneData,
+  eventData: EventData,
+  geoData: GeoData,
+  upiData: UPIData,
+  cryptoData: CryptoData,
+): string {
+  switch (contentType) {
+    case "url": return urlData;
+    case "wifi": {
+      const { ssid, password, encryption, hidden } = wifiData;
+      if (!ssid) return "";
+      const esc = (s: string) => s.replace(/[\\;,:\"]/g, "\\$&");
+      return `WIFI:S:${esc(ssid)};T:${encryption};P:${esc(password)};H:${hidden ? "true" : "false"};;`;
+    }
+    case "vcard": {
+      const v = vcardData;
+      if (!v.firstName && !v.lastName) return "";
+      let card = `BEGIN:VCARD\nVERSION:3.0\n`;
+      card += `N:${v.lastName};${v.firstName};;;\nFN:${v.firstName}${v.firstName && v.lastName ? " " : ""}${v.lastName}\n`;
+      if (v.phone) card += `TEL:${v.phone}\n`;
+      if (v.email) card += `EMAIL:${v.email}\n`;
+      if (v.company) card += `ORG:${v.company}\n`;
+      if (v.title) card += `TITLE:${v.title}\n`;
+      if (v.website) card += `URL:${v.website}\n`;
+      if (v.address) card += `ADR:;;${v.address};;;;\n`;
+      card += `END:VCARD`;
+      return card;
+    }
+    case "whatsapp": {
+      const { phone, message } = whatsappData;
+      if (!phone) return "";
+      let wa = `https://wa.me/${phone.replace(/[^0-9]/g, "")}`;
+      if (message) wa += `?text=${encodeURIComponent(message)}`;
+      return wa;
+    }
+    case "email": {
+      const { to, subject, body } = emailData;
+      if (!to) return "";
+      let mailto = `mailto:${to}`;
+      const params: string[] = [];
+      if (subject) params.push(`subject=${encodeURIComponent(subject)}`);
+      if (body) params.push(`body=${encodeURIComponent(body)}`);
+      if (params.length) mailto += `?${params.join("&")}`;
+      return mailto;
+    }
+    case "sms": {
+      const { phone, message } = smsData;
+      if (!phone) return "";
+      return `smsto:${phone}:${message}`;
+    }
+    case "phone": {
+      if (!phoneData.phone) return "";
+      return `tel:${phoneData.phone}`;
+    }
+    case "event": {
+      const e = eventData;
+      if (!e.title) return "";
+      const fmtDT = (d: string, t: string) => {
+        if (!d) return "";
+        return d.replace(/-/g, "") + "T" + (t ? t.replace(/:/g, "") + "00" : "000000");
+      };
+      let ev = `BEGIN:VEVENT\nSUMMARY:${e.title}\n`;
+      if (e.startDate) ev += `DTSTART:${fmtDT(e.startDate, e.startTime)}\n`;
+      if (e.endDate) ev += `DTEND:${fmtDT(e.endDate, e.endTime)}\n`;
+      if (e.location) ev += `LOCATION:${e.location}\n`;
+      if (e.description) ev += `DESCRIPTION:${e.description}\n`;
+      ev += `END:VEVENT`;
+      return ev;
+    }
+    case "geo": {
+      const { latitude, longitude } = geoData;
+      if (!latitude || !longitude) return "";
+      return `geo:${latitude},${longitude}`;
+    }
+    case "upi": {
+      const { vpa, name, amount, note } = upiData;
+      if (!vpa) return "";
+      let u = `upi://pay?pa=${encodeURIComponent(vpa)}`;
+      if (name) u += `&pn=${encodeURIComponent(name)}`;
+      if (amount) u += `&am=${amount}`;
+      u += `&cu=INR`;
+      if (note) u += `&tn=${encodeURIComponent(note)}`;
+      return u;
+    }
+    case "crypto": {
+      const { coin, address, amount } = cryptoData;
+      if (!address) return "";
+      let uri = `${coin}:${address}`;
+      if (amount) uri += `?amount=${amount}`;
+      return uri;
+    }
+    default: return urlData;
+  }
+}
 
 
 /* ─────────────────────────────────────────
@@ -98,7 +229,7 @@ function useQRRenderer({ url, fgColor, bgColor, patternType, cornerType, emojiCh
 
       let matrix: any;
       try {
-        const qr = (QRCode as any).create(url || "https://assetnest.space", { errorCorrectionLevel: "H" });
+        const qr = (QRCode as any).create(url || "https://assetnest.gloyas.com", { errorCorrectionLevel: "H" });
         matrix = qr.modules;
       } catch { return; }
 
@@ -537,7 +668,7 @@ function ScanTip() {
       border: "1px solid #555", borderRadius: 2,
       display: "flex", gap: 8, alignItems: "flex-start",
     }}>
-      <span style={{ fontSize: 11, flexShrink: 0, color: "#d4a843" }}>⚡</span>
+      <Zap size={14} color="#d4a843" style={{ flexShrink: 0, marginTop: 1 }} />
       <div style={{ textAlign: "left" }}>
         <div style={{ fontSize: 11, fontWeight: 400, color: "#d4a843", marginBottom: 2, fontFamily: T.font }}>Scannability tip</div>
         <div style={{ fontSize: 10, color: "#888", lineHeight: 1.5, fontWeight: 400 }}>
@@ -629,17 +760,33 @@ interface URLInputProps {
 }
 
 function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
+  const [isFocused, setIsFocused] = useState(false);
+
   return (
     <div style={{
       background: "#3a3a3a",
       border: "1px solid #555",
-      borderRadius: 3, padding: "6px 10px",
+      borderRadius: 3,
+      padding: "8px 10px",
     }}>
       <label style={{ display: "block", fontSize: 10, fontWeight: 400, color: "#888", letterSpacing: "normal", marginBottom: 4, textAlign: "left", fontFamily: T.font }}>
         Destination URL
       </label>
-      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-        <span style={{ color: "#888", flexShrink: 0, display: "flex" }}>
+      <div 
+        className="qr-input-box"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 6,
+          background: "#2a2a2a",
+          border: `1px solid ${isFocused ? "#4db8d4" : "#555"}`,
+          borderRadius: 2,
+          padding: "6px 8px",
+          boxShadow: isFocused ? "0 0 0 1px rgba(77, 184, 212, 0.25)" : "none",
+          transition: "border-color 0.15s ease, box-shadow 0.15s ease",
+        }}
+      >
+        <span style={{ color: isFocused ? "#4db8d4" : "#888", flexShrink: 0, display: "flex", alignItems: "center", transition: "color 0.15s" }}>
           <svg width={13} height={13} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
           </svg>
@@ -648,21 +795,44 @@ function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
           type="url"
           value={url}
           onChange={e => setUrl(e.target.value)}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
           placeholder="https://your-link.com"
           style={{
-            flex: 1, background: "none", border: "none", outline: "none",
-            fontSize: 11, color: "#ccc", fontFamily: T.font,
-            fontWeight: 400, minWidth: 0,
+            flex: 1,
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            fontSize: 11,
+            color: "#ccc",
+            fontFamily: T.font,
+            fontWeight: 400,
+            minWidth: 0,
+            lineHeight: "16px",
           }}
         />
         {url && (
-          <button onClick={onCopy} style={{
-            padding: "3px 8px", background: copied ? "rgba(77,184,120,0.2)" : "#444",
-            border: "1px solid #555",
-            borderRadius: 2, color: copied ? "#7dcea0" : "#ccc",
-            cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 10,
-            fontWeight: 400, transition: "all 0.12s", fontFamily: T.font, whiteSpace: "nowrap",
-          }}>
+          <button 
+            type="button"
+            onClick={onCopy} 
+            style={{
+              padding: "2px 7px",
+              background: copied ? "rgba(77,184,120,0.2)" : "#383838",
+              border: `1px solid ${copied ? "#7dcea0" : "#555"}`,
+              borderRadius: 2,
+              color: copied ? "#7dcea0" : "#ccc",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 4,
+              fontSize: 10,
+              fontWeight: 400,
+              transition: "all 0.12s",
+              fontFamily: T.font,
+              whiteSpace: "nowrap",
+            }}
+            title="Copy URL"
+          >
             {copied
               ? <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M20 6 9 17l-5-5"/></svg> Copied</>
               : <><svg width={10} height={10} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.5}><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-2M8 4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2H8z"/></svg> Copy</>
@@ -674,15 +844,240 @@ function URLInput({ url, setUrl, copied, onCopy }: URLInputProps) {
   );
 }
 
+/* ─────────────────────────────────────────
+   FORM STYLES & COMPONENTS
+   ───────────────────────────────────────── */
+const formInputStyle: React.CSSProperties = {
+  width: "100%", padding: "6px 8px", background: "#2a2a2a",
+  border: "1px solid #555", borderRadius: 2, fontSize: 11,
+  color: "#ccc", outline: "none", fontFamily: T.font, fontWeight: 400,
+  colorScheme: "dark",
+};
+
+const formLabelStyle: React.CSSProperties = {
+  display: "block", fontSize: 10, fontWeight: 400, color: "#888",
+  letterSpacing: "normal", marginBottom: 3, textAlign: "left", fontFamily: T.font,
+};
+
+function ContentTypeSelector({ value, onChange }: { value: ContentType; onChange: (v: ContentType) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "6px 8px" }}>
+      <label style={{ ...formLabelStyle, marginBottom: 6 }}>Content Type</label>
+      <div style={{ display: "flex", gap: 4, overflowX: "auto", paddingBottom: 2, scrollbarWidth: "none" }}>
+        {CONTENT_TYPE_LIST.map(ct => {
+          const active = value === ct.id;
+          return (
+            <button key={ct.id} onClick={() => onChange(ct.id)} title={ct.desc} style={{
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
+              padding: "5px 6px", minWidth: 52, borderRadius: 3, flexShrink: 0,
+              border: active ? "1px solid #4db8d4" : "1px solid #444",
+              background: active ? "rgba(77,184,212,0.15)" : "#333",
+              color: active ? "#4db8d4" : "#999",
+              fontSize: 9, fontWeight: 400, cursor: "pointer", transition: "all 0.12s", fontFamily: T.font,
+            }}>
+              <span style={{ display: "flex", alignItems: "center", justifyContent: "center", height: 18 }}>{ct.icon}</span>
+              <span>{ct.label}</span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function FormInput({ label, value, onChange, placeholder, type = "text" }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string;
+}) {
+  return (
+    <div>
+      <label style={formLabelStyle}>{label}</label>
+      <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || ""}
+        style={formInputStyle} />
+    </div>
+  );
+}
+
+function FormTextarea({ label, value, onChange, placeholder, rows = 3 }: {
+  label: string; value: string; onChange: (v: string) => void; placeholder?: string; rows?: number;
+}) {
+  return (
+    <div>
+      <label style={formLabelStyle}>{label}</label>
+      <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder || ""} rows={rows}
+        style={{ ...formInputStyle, resize: "vertical", minHeight: 40 }} />
+    </div>
+  );
+}
+
+function FormSelect({ label, value, onChange, options }: {
+  label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[];
+}) {
+  return (
+    <div>
+      <label style={formLabelStyle}>{label}</label>
+      <select value={value} onChange={e => onChange(e.target.value)}
+        style={{ ...formInputStyle, cursor: "pointer" }}>
+        {options.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </div>
+  );
+}
+
+function WifiForm({ data, onChange }: { data: WifiData; onChange: (d: WifiData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Network Name (SSID)" value={data.ssid} onChange={v => onChange({ ...data, ssid: v })} placeholder="MyWiFiNetwork" />
+      <FormInput label="Password" value={data.password} onChange={v => onChange({ ...data, password: v })} placeholder="Enter password" type="password" />
+      <FormSelect label="Encryption" value={data.encryption} onChange={v => onChange({ ...data, encryption: v as "WPA" | "WEP" | "nopass" })} options={[
+        { value: "WPA", label: "WPA / WPA2 / WPA3" },
+        { value: "WEP", label: "WEP" },
+        { value: "nopass", label: "None (Open Network)" },
+      ]} />
+      <ToggleSwitch label="Hidden Network" checked={data.hidden} onChange={v => onChange({ ...data, hidden: v })} description="SSID is not broadcast" />
+    </div>
+  );
+}
+
+function VCardForm({ data, onChange }: { data: VCardData; onChange: (d: VCardData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <FormInput label="First Name" value={data.firstName} onChange={v => onChange({ ...data, firstName: v })} placeholder="John" />
+        <FormInput label="Last Name" value={data.lastName} onChange={v => onChange({ ...data, lastName: v })} placeholder="Doe" />
+      </div>
+      <FormInput label="Phone" value={data.phone} onChange={v => onChange({ ...data, phone: v })} placeholder="+1 234 567 8900" type="tel" />
+      <FormInput label="Email" value={data.email} onChange={v => onChange({ ...data, email: v })} placeholder="john@example.com" type="email" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <FormInput label="Company" value={data.company} onChange={v => onChange({ ...data, company: v })} placeholder="Acme Inc." />
+        <FormInput label="Job Title" value={data.title} onChange={v => onChange({ ...data, title: v })} placeholder="Designer" />
+      </div>
+      <FormInput label="Website" value={data.website} onChange={v => onChange({ ...data, website: v })} placeholder="https://example.com" type="url" />
+      <FormInput label="Address" value={data.address} onChange={v => onChange({ ...data, address: v })} placeholder="123 Main St, City" />
+    </div>
+  );
+}
+
+function WhatsAppForm({ data, onChange }: { data: WhatsAppData; onChange: (d: WhatsAppData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Phone Number (with country code)" value={data.phone} onChange={v => onChange({ ...data, phone: v })} placeholder="+919876543210" type="tel" />
+      <FormTextarea label="Pre-filled Message (optional)" value={data.message} onChange={v => onChange({ ...data, message: v })} placeholder="Hello! I'd like to know more..." rows={2} />
+    </div>
+  );
+}
+
+function EmailForm({ data, onChange }: { data: EmailData; onChange: (d: EmailData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Recipient Email" value={data.to} onChange={v => onChange({ ...data, to: v })} placeholder="hello@example.com" type="email" />
+      <FormInput label="Subject" value={data.subject} onChange={v => onChange({ ...data, subject: v })} placeholder="Meeting Follow-up" />
+      <FormTextarea label="Body" value={data.body} onChange={v => onChange({ ...data, body: v })} placeholder="Write your message..." rows={3} />
+    </div>
+  );
+}
+
+function SMSForm({ data, onChange }: { data: SMSData; onChange: (d: SMSData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Phone Number" value={data.phone} onChange={v => onChange({ ...data, phone: v })} placeholder="+1234567890" type="tel" />
+      <FormTextarea label="Message" value={data.message} onChange={v => onChange({ ...data, message: v })} placeholder="Your SMS message..." rows={2} />
+    </div>
+  );
+}
+
+function PhoneForm({ data, onChange }: { data: PhoneData; onChange: (d: PhoneData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Phone Number" value={data.phone} onChange={v => onChange({ ...data, phone: v })} placeholder="+1234567890" type="tel" />
+      <div style={{ fontSize: 10, color: "#888", lineHeight: 1.5, fontWeight: 400, padding: "4px 0" }}>
+        Scanning this QR code will prompt the user to dial this number directly.
+      </div>
+    </div>
+  );
+}
+
+function EventForm({ data, onChange }: { data: EventData; onChange: (d: EventData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="Event Title" value={data.title} onChange={v => onChange({ ...data, title: v })} placeholder="Team Meeting" />
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <FormInput label="Start Date" value={data.startDate} onChange={v => onChange({ ...data, startDate: v })} type="date" />
+        <FormInput label="Start Time" value={data.startTime} onChange={v => onChange({ ...data, startTime: v })} type="time" />
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <FormInput label="End Date" value={data.endDate} onChange={v => onChange({ ...data, endDate: v })} type="date" />
+        <FormInput label="End Time" value={data.endTime} onChange={v => onChange({ ...data, endTime: v })} type="time" />
+      </div>
+      <FormInput label="Location" value={data.location} onChange={v => onChange({ ...data, location: v })} placeholder="Room 101, Building A" />
+      <FormTextarea label="Description" value={data.description} onChange={v => onChange({ ...data, description: v })} placeholder="Meeting agenda..." rows={2} />
+    </div>
+  );
+}
+
+function GeoForm({ data, onChange }: { data: GeoData; onChange: (d: GeoData) => void }) {
+  const handleUseCurrentLocation = () => {
+    if (!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(
+      (pos) => onChange({ latitude: pos.coords.latitude.toFixed(6), longitude: pos.coords.longitude.toFixed(6) }),
+      () => { /* silently fail */ }
+    );
+  };
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+        <FormInput label="Latitude" value={data.latitude} onChange={v => onChange({ ...data, latitude: v })} placeholder="37.7749" />
+        <FormInput label="Longitude" value={data.longitude} onChange={v => onChange({ ...data, longitude: v })} placeholder="-122.4194" />
+      </div>
+      <button onClick={handleUseCurrentLocation} style={{
+        padding: "6px 10px", background: "#333", border: "1px dashed #666", borderRadius: 3,
+        color: "#4db8d4", fontSize: 10, fontWeight: 400, cursor: "pointer", fontFamily: T.font,
+        display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+      }}>
+        <MapPin size={13} strokeWidth={2} />
+        <span>Use Current Location</span>
+      </button>
+    </div>
+  );
+}
+
+function UPIForm({ data, onChange }: { data: UPIData; onChange: (d: UPIData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormInput label="UPI ID / VPA" value={data.vpa} onChange={v => onChange({ ...data, vpa: v })} placeholder="yourname@upi" />
+      <FormInput label="Payee Name" value={data.name} onChange={v => onChange({ ...data, name: v })} placeholder="John Doe" />
+      <FormInput label="Amount ₹ (optional)" value={data.amount} onChange={v => onChange({ ...data, amount: v })} placeholder="Leave empty for open amount" />
+      <div style={{ fontSize: 10, color: "#888", lineHeight: 1.5, fontWeight: 400, padding: "0 0 2px" }}>
+        Leave amount blank to let the payer enter any amount when scanning.
+      </div>
+      <FormInput label="Transaction Note" value={data.note} onChange={v => onChange({ ...data, note: v })} placeholder="Payment for..." />
+    </div>
+  );
+}
+
+function CryptoForm({ data, onChange }: { data: CryptoData; onChange: (d: CryptoData) => void }) {
+  return (
+    <div style={{ background: "#3a3a3a", border: "1px solid #555", borderRadius: 3, padding: "8px 10px", display: "flex", flexDirection: "column", gap: 8 }}>
+      <FormSelect label="Cryptocurrency" value={data.coin} onChange={v => onChange({ ...data, coin: v as "bitcoin" | "ethereum" | "litecoin" })} options={[
+        { value: "bitcoin", label: "Bitcoin (BTC)" },
+        { value: "ethereum", label: "Ethereum (ETH)" },
+        { value: "litecoin", label: "Litecoin (LTC)" },
+      ]} />
+      <FormInput label="Wallet Address" value={data.address} onChange={v => onChange({ ...data, address: v })} placeholder="bc1qxy2kgdygjrsqtzq2n0yrf..." />
+      <FormInput label="Amount (optional)" value={data.amount} onChange={v => onChange({ ...data, amount: v })} placeholder="0.001" />
+    </div>
+  );
+}
+
 interface PreviewCardProps {
   canvasRef: React.RefObject<HTMLCanvasElement | null>;
   previewPulsed: boolean;
   onExpand: () => void;
   onDownload: () => void;
   transparentBg: boolean;
+  setTransparentBg: (val: boolean) => void;
 }
 
-function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transparentBg }: PreviewCardProps) {
+function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transparentBg, setTransparentBg }: PreviewCardProps) {
   return (
     <div style={{
       background: "#3a3a3a", border: "1px solid #555",
@@ -722,6 +1117,22 @@ function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transpare
         ))}
       </div>
 
+      {/* Transparent Background Quick Toggle */}
+      <div style={{
+        margin: "8px 0",
+        padding: "8px 10px",
+        background: "#323232",
+        border: "1px solid #555",
+        borderRadius: 3,
+      }}>
+        <ToggleSwitch 
+          label="Transparent Background" 
+          checked={transparentBg} 
+          onChange={setTransparentBg}
+          description="Remove background for overlaying on design assets"
+        />
+      </div>
+
       {/* Download */}
       <button onClick={onDownload} style={{
         width: "100%", padding: "7px 10px", background: "#4db8d4",
@@ -741,6 +1152,18 @@ function PreviewCard({ canvasRef, previewPulsed, onExpand, onDownload, transpare
    ───────────────────────────────────────── */
 export default function QRStudio() {
   const [url, setUrl] = useState("");
+  const [contentType, setContentType] = useState<ContentType>("url");
+  const [wifiData, setWifiData] = useState<WifiData>({ ssid: "", password: "", encryption: "WPA", hidden: false });
+  const [vcardData, setVcardData] = useState<VCardData>({ firstName: "", lastName: "", phone: "", email: "", company: "", title: "", website: "", address: "" });
+  const [whatsappData, setWhatsappData] = useState<WhatsAppData>({ phone: "", message: "" });
+  const [emailData, setEmailData] = useState<EmailData>({ to: "", subject: "", body: "" });
+  const [smsData, setSmsData] = useState<SMSData>({ phone: "", message: "" });
+  const [phoneData, setPhoneData] = useState<PhoneData>({ phone: "" });
+  const [eventData, setEventData] = useState<EventData>({ title: "", startDate: "", startTime: "", endDate: "", endTime: "", location: "", description: "" });
+  const [geoData, setGeoData] = useState<GeoData>({ latitude: "", longitude: "" });
+  const [upiData, setUpiData] = useState<UPIData>({ vpa: "", name: "", amount: "", note: "" });
+  const [cryptoData, setCryptoData] = useState<CryptoData>({ coin: "bitcoin", address: "", amount: "" });
+
   const [fgColor, setFgColor] = useState("#000000");
   const [bgColor, setBgColor] = useState("#ffffff");
   const [patternType, setPatternType] = useState<PatternType>("rounded");
@@ -765,6 +1188,9 @@ export default function QRStudio() {
   const patternLogoRef = useRef<HTMLInputElement | null>(null);
   const centerLogoRef  = useRef<HTMLInputElement | null>(null);
 
+  const payload = buildPayload(contentType, url, wifiData, vcardData, whatsappData, emailData, smsData, phoneData, eventData, geoData, upiData, cryptoData);
+  const activeContentLabel = CONTENT_TYPE_LIST.find(c => c.id === contentType)?.label || "URL";
+
   useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
 
   useEffect(() => {
@@ -774,12 +1200,12 @@ export default function QRStudio() {
   }, [fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, transparentBg, customCornerColor, cornerFgColor]);
 
   const { download, getDataURL } = useQRRenderer({
-    url, fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, canvasRef, canvasRefMobile: mobileCanvasRef, transparentBg, customCornerColor, cornerFgColor
+    url: payload, fgColor, bgColor, patternType, cornerType, emojiChar, patternLogo, centerLogo, canvasRef, canvasRefMobile: mobileCanvasRef, transparentBg, customCornerColor, cornerFgColor
   });
 
   const handleCopy = async () => {
-    if (!url) return;
-    await navigator.clipboard.writeText(url);
+    if (!payload) return;
+    await navigator.clipboard.writeText(payload);
     setCopied(true); setTimeout(() => setCopied(false), 2200);
   };
 
@@ -790,6 +1216,23 @@ export default function QRStudio() {
 
   const applyPreset = (p: { fg: string; bg: string; pattern: string; corner: string }) => {
     setFgColor(p.fg); setBgColor(p.bg); setPatternType(p.pattern as PatternType); setCornerType(p.corner as CornerType);
+  };
+
+  const renderContentForm = () => {
+    switch (contentType) {
+      case "url": return <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />;
+      case "wifi": return <WifiForm data={wifiData} onChange={setWifiData} />;
+      case "vcard": return <VCardForm data={vcardData} onChange={setVcardData} />;
+      case "whatsapp": return <WhatsAppForm data={whatsappData} onChange={setWhatsappData} />;
+      case "email": return <EmailForm data={emailData} onChange={setEmailData} />;
+      case "sms": return <SMSForm data={smsData} onChange={setSmsData} />;
+      case "phone": return <PhoneForm data={phoneData} onChange={setPhoneData} />;
+      case "event": return <EventForm data={eventData} onChange={setEventData} />;
+      case "geo": return <GeoForm data={geoData} onChange={setGeoData} />;
+      case "upi": return <UPIForm data={upiData} onChange={setUpiData} />;
+      case "crypto": return <CryptoForm data={cryptoData} onChange={setCryptoData} />;
+      default: return <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />;
+    }
   };
 
   /* ── Tab panel contents ── */
@@ -874,8 +1317,9 @@ export default function QRStudio() {
         }}>
           <ColorPicker label="Background Color" value={bgColor} presets={BG_PRESETS} onChange={setBgColor} />
           {transparentBg && (
-            <div style={{ fontSize: 11, color: "#ea580c", marginTop: 8, fontWeight: 500, textAlign: "left", fontFamily: 'system-ui, -apple-system, sans-serif' }}>
-              ⚠ Background color is hidden (transparent is enabled)
+            <div style={{ fontSize: 11, color: "#ea580c", marginTop: 8, fontWeight: 500, textAlign: "left", fontFamily: 'system-ui, -apple-system, sans-serif', display: "flex", alignItems: "center", gap: 5 }}>
+              <AlertTriangle size={13} style={{ flexShrink: 0 }} />
+              <span>Background color is hidden (transparent is enabled)</span>
             </div>
           )}
         </div>
@@ -911,7 +1355,7 @@ export default function QRStudio() {
           { id: "square",  label: "Classic", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor" }} /> },
           { id: "rounded", label: "Rounded", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: 4 }} /> },
           { id: "dots",    label: "Circles", icon: <div style={{ width: 14, height: 14, border: "2px solid currentColor", borderRadius: "50%" }} /> },
-          { id: "heart",   label: "Heart",   icon: <span style={{ fontSize: 12 }}>♥</span> },
+          { id: "heart",   label: "Heart",   icon: <Heart size={13} fill="currentColor" /> },
         ]} />
         <div style={{ padding: "8px 10px", background: "#323232", border: "1px solid #555", borderRadius: 4, boxShadow: "none" }}>
           <div style={{ fontSize: 12, fontWeight: 500, color: "#ccc", marginBottom: 4, fontFamily: 'system-ui, -apple-system, sans-serif' }}>What are finder markers?</div>
@@ -978,6 +1422,16 @@ export default function QRStudio() {
           background-position: 0 0, 8px 8px !important;
         }
 
+        .qr-outer input:not([type=range]):not(.qr-input-box input):focus,
+        .qr-outer textarea:focus,
+        .qr-outer select:focus {
+          border-color: #4db8d4 !important;
+          box-shadow: 0 0 0 1px rgba(77, 184, 212, 0.25) !important;
+        }
+        .qr-input-box:hover {
+          border-color: #666;
+        }
+
         /* Desktop grid */
         @media (min-width: 900px) {
           .qr-outer { max-width: 1100px; margin: 0 auto; padding: 32px 40px 80px !important; }
@@ -1040,8 +1494,9 @@ export default function QRStudio() {
               </p>
             </div>
 
-            {/* URL input */}
-            <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />
+            {/* Content type selector + form */}
+            <ContentTypeSelector value={contentType} onChange={setContentType} />
+            {renderContentForm()}
 
             {/* Tab bar (desktop) */}
             <div style={{ display: "flex", gap: 0, background: "#3a3a3a", padding: 2, borderRadius: 3, border: "1px solid #555" }}>
@@ -1068,7 +1523,14 @@ export default function QRStudio() {
 
           {/* Right: sticky preview */}
           <div className="qr-sidebar-sticky">
-            <PreviewCard canvasRef={canvasRef} previewPulsed={previewPulsed} onExpand={openLightbox} onDownload={download} transparentBg={transparentBg} />
+            <PreviewCard 
+              canvasRef={canvasRef} 
+              previewPulsed={previewPulsed} 
+              onExpand={openLightbox} 
+              onDownload={download} 
+              transparentBg={transparentBg} 
+              setTransparentBg={setTransparentBg}
+            />
           </div>
         </div>
 
@@ -1090,16 +1552,17 @@ export default function QRStudio() {
             </div>
           </div>
 
-          {/* URL Input (mobile) */}
-          <div style={{ padding: "0 20px 16px" }}>
-            <URLInput url={url} setUrl={setUrl} copied={copied} onCopy={handleCopy} />
+          {/* Content Type + Form (mobile) */}
+          <div style={{ padding: "0 20px 16px", display: "flex", flexDirection: "column", gap: 8 }}>
+            <ContentTypeSelector value={contentType} onChange={setContentType} />
+            {renderContentForm()}
           </div>
 
           {/* QR PREVIEW (mobile, compact) */}
           <div style={{ padding: "0 20px", marginBottom: 16 }}>
             <div style={{
               background: "#3a3a3a", border: "1px solid #555",
-              borderRadius: 3, padding: 6,
+              borderRadius: 3, padding: 8,
               opacity: mounted ? 1 : 0, transform: mounted ? "none" : "scale(0.98)",
               transition: "all 0.3s ease 0.1s",
             }}>
@@ -1122,11 +1585,11 @@ export default function QRStudio() {
                 {/* Right meta */}
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ fontSize: 11, fontWeight: 400, color: "#ccc", marginBottom: 4, lineHeight: 1.3, fontFamily: T.font }}>
-                    {url ? "Ready to scan" : "Enter a URL below"}
+                    {payload ? "Ready to scan" : "Enter content below"}
                   </div>
-                  {url && (
+                  {payload && (
                     <div style={{ fontSize: 10, color: "#888", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginBottom: 6, maxWidth: "100%", fontWeight: 400 }}>
-                      {url}
+                      {contentType === "url" ? url : `${activeContentLabel} QR Code`}
                     </div>
                   )}
                   <div style={{ display: "flex", gap: 4, marginBottom: 6 }}>
@@ -1144,6 +1607,22 @@ export default function QRStudio() {
                     {Icons.Expand(10)} Full preview
                   </button>
                 </div>
+              </div>
+
+              {/* Transparent Background Quick Toggle on Mobile */}
+              <div style={{
+                marginTop: 8,
+                padding: "8px 10px",
+                background: "#323232",
+                border: "1px solid #555",
+                borderRadius: 2,
+              }}>
+                <ToggleSwitch 
+                  label="Transparent Background" 
+                  checked={transparentBg} 
+                  onChange={setTransparentBg}
+                  description="Remove background for overlaying on design assets"
+                />
               </div>
             </div>
           </div>
@@ -1283,7 +1762,7 @@ export default function QRStudio() {
                 },
                 {
                   title: "Extensive Customization",
-                  desc: "Diverge from boring barcodes. Customize module dots, finder marker circles/hearts, center logo overlays, and contrast configurations.",
+                  desc: "Create 11 types of QR codes (URL, Wi-Fi, vCard, WhatsApp, Email, SMS, Phone, Calendar, Location, UPI, Crypto) with custom dot patterns, finder markers, branded logo overlays, and precision color control.",
                   icon: <Check size={16} />
                 }
               ].map(f => (
@@ -1320,6 +1799,14 @@ export default function QRStudio() {
                 <FAQItem 
                   question="Can I use custom branding logos?" 
                   answer="Yes! Under the 'Brand' tab, you can upload any custom brand logo (transparent PNG or SVG recommended). Our engine automatically configures error correction to Level H (High), which allows up to 30% of the QR code area to be covered while remaining fully scannable." 
+                />
+                <FAQItem 
+                  question="What types of QR codes can I create?" 
+                  answer="We support 11 content types: URL links, Wi-Fi network credentials, vCard digital business cards, WhatsApp direct chat, Email compose, SMS messages, Phone call, Calendar events, GPS geo-location, UPI payments, and Cryptocurrency wallet addresses. Each type generates a properly formatted payload that phone cameras and QR scanners natively understand." 
+                />
+                <FAQItem 
+                  question="How does the Wi-Fi QR code work?" 
+                  answer="When you select the Wi-Fi content type, enter your network name (SSID), password, and encryption type. The generated QR code follows the standard WIFI: protocol. When scanned on iOS or Android, it prompts the user to join your Wi-Fi network instantly without manually typing the password." 
                 />
               </div>
             </div>

@@ -33,12 +33,12 @@ export const metadata: Metadata = {
         },
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/bg-remover",
+        canonical: "https://assetnest.gloyas.com/tools/bg-remover",
     },
     openGraph: {
         title: "Background Remover - 100% Free & Private Online AI Tool",
         description: "Remove image backgrounds instantly in your browser. 100% private, no uploads, high-quality PNG.",
-        url: "https://www.assetnest.space/tools/bg-remover",
+        url: "https://assetnest.gloyas.com/tools/bg-remover",
         siteName: "AssetNest",
         images: [
             {

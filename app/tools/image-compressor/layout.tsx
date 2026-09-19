@@ -18,10 +18,10 @@ export const metadata: Metadata = {
     openGraph: {
         title: "Free Image Compressor - Reduce Image Size Online | AssetNest",
         description: "Compress JPEG, PNG, and WebP images instantly in your browser. 100% private - no uploads to any server.",
-        url: "https://www.assetnest.space/tools/image-compressor",
+        url: "https://assetnest.gloyas.com/tools/image-compressor",
     },
     alternates: {
-        canonical: "https://www.assetnest.space/tools/image-compressor",
+        canonical: "https://assetnest.gloyas.com/tools/image-compressor",
     },
 };
 

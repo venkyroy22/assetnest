@@ -5,12 +5,12 @@ export const metadata: Metadata = {
     description: "A beautiful Pomodoro timer with animated progress ring, achievement system, and session tracking. Free, no account needed. Stay focused and build deep work habits.",
     keywords: ["pomodoro timer", "focus timer", "productivity timer", "work timer", "pomodoro technique", "free pomodoro", "study timer", "deep work"],
     alternates: {
-        canonical: "https://www.assetnest.space/tools/pomodoro",
+        canonical: "https://assetnest.gloyas.com/tools/pomodoro",
     },
     openGraph: {
         title: "Free Pomodoro Timer | AssetNest",
         description: "Beautiful Pomodoro timer with achievements & session tracking. Free, no account needed.",
-        url: "https://www.assetnest.space/tools/pomodoro",
+        url: "https://assetnest.gloyas.com/tools/pomodoro",
     },
 };
 
@@ -19,7 +19,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Pomodoro Timer",
     description: "A beautiful Pomodoro timer with animated progress ring, achievement system, and session tracking. Free, no account needed.",
-    url: "https://www.assetnest.space/tools/pomodoro",
+    url: "https://assetnest.gloyas.com/tools/pomodoro",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

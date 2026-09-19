@@ -327,7 +327,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "PDF Cropper",
     description: "Visually crop and trim PDF pages in your browser. 100% private, no uploads.",
-    url: "https://www.assetnest.space/tools/pdf-cropper",
+    url: "https://assetnest.gloyas.com/tools/pdf-cropper",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

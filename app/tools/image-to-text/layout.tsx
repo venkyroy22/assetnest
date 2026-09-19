@@ -5,12 +5,12 @@ export const metadata: Metadata = {
     description: "Extract text from images (JPG, PNG, WebP) instantly using our free online OCR tool. 100% private, browser-based text extraction.",
     keywords: ["image to text", "ocr online", "extract text from image", "photo to text", "free ocr", "image to text converter", "free image to text", "online ocr", "extract text from photo"],
     alternates: {
-        canonical: "https://www.assetnest.space/tools/image-to-text",
+        canonical: "https://assetnest.gloyas.com/tools/image-to-text",
     },
     openGraph: {
         title: "Image to Text | AssetNest",
         description: "Extract text from your images securely in your browser.",
-        url: "https://www.assetnest.space/tools/image-to-text",
+        url: "https://assetnest.gloyas.com/tools/image-to-text",
     },
 };
 
@@ -19,7 +19,7 @@ const jsonLd = {
     "@type": "SoftwareApplication",
     name: "Image to Text Converter",
     description: "Extract text from images instantly in your browser using OCR.",
-    url: "https://www.assetnest.space/tools/image-to-text",
+    url: "https://assetnest.gloyas.com/tools/image-to-text",
     applicationCategory: "WebApplication",
     operatingSystem: "All",
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },

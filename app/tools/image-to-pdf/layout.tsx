@@ -13,11 +13,11 @@ export const metadata: Metadata = {
     ],
     authors: [{ name: "AssetNest Studio" }],
     robots: { index: true, follow: true },
-    alternates: { canonical: "https://www.assetnest.space/tools/image-to-pdf" },
+    alternates: { canonical: "https://assetnest.gloyas.com/tools/image-to-pdf" },
     openGraph: {
         title: "Image to PDF Converter - JPG, PNG, WebP to PDF Free",
         description: "Turn your images into a PDF in seconds. Upload multiple photos, reorder them, set page size - all free and 100% private in your browser.",
-        url: "https://www.assetnest.space/tools/image-to-pdf",
+        url: "https://assetnest.gloyas.com/tools/image-to-pdf",
         siteName: "AssetNest",
         images: [{ url: "/logo.png", width: 1200, height: 630, alt: "AssetNest Image to PDF Converter" }],
         locale: "en_US",
