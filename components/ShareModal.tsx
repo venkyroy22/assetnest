@@ -13,6 +13,7 @@ interface ShareModalProps {
 
 export default function ShareModal({ isOpen, onClose, file, fileName }: ShareModalProps) {
     const [status, setStatus] = useState<"idle" | "uploading" | "success" | "error">("idle");
+    const [errorMessage, setErrorMessage] = useState<string>("");
     const [url, setUrl] = useState<string>("");
     const [copied, setCopied] = useState(false);
 
@@ -30,6 +31,7 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
             setTimeout(() => {
                 setStatus("idle");
                 setUrl("");
+                setErrorMessage("");
                 setCopied(false);
             }, 300);
         } else if (isOpen && file && status === "idle") {
@@ -38,8 +40,13 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
     }, [isOpen, file]);
 
     const handleUpload = async () => {
-        if (!file) return;
+        if (!file) {
+            setStatus("error");
+            setErrorMessage("No document file available to share. Please generate or export the file first.");
+            return;
+        }
         setStatus("uploading");
+        setErrorMessage("");
         try {
             const formData = new FormData();
             formData.append("file", file, fileName);
@@ -49,18 +56,21 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                 body: formData,
             });
 
-            if (!res.ok) throw new Error("Upload failed");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => null);
+                throw new Error(errData?.error || `Upload failed with status ${res.status}`);
+            }
             
             const data = await res.json();
             if (data.url) {
-                // Return secure https url
                 setUrl(data.url);
                 setStatus("success");
             } else {
-                throw new Error("No URL returned");
+                throw new Error("No URL returned from upload service");
             }
-        } catch (e) {
-            console.error(e);
+        } catch (e: any) {
+            console.error("ShareModal upload error:", e);
+            setErrorMessage(e?.message || "Could not generate a sharing link.");
             setStatus("error");
         }
     };
@@ -105,8 +115,8 @@ export default function ShareModal({ isOpen, onClose, file, fileName }: ShareMod
                     <div className="flex flex-col items-center justify-center py-10 px-4 border border-red-500/20 rounded-2xl bg-red-500/5 text-center">
                         <X size={32} className="text-red-400 mb-3" />
                         <p className="text-sm font-bold text-red-200">Upload Failed</p>
-                        <p className="text-xs text-red-300/70 mt-1 mb-4">Could not generate a sharing link.</p>
-                        <button onClick={handleUpload} className="px-4 py-2 bg-[#1c1c1c] text-[#f0ede8] rounded-lg text-xs font-bold hover:bg-white/[0.06]">Try Again</button>
+                        <p className="text-xs text-red-300/70 mt-1 mb-4 max-w-xs">{errorMessage || "Could not generate a sharing link."}</p>
+                        <button onClick={handleUpload} className="px-4 py-2 bg-[#1c1c1c] text-[#f0ede8] rounded-lg text-xs font-bold hover:bg-white/[0.06] border border-white/10 transition-colors">Try Again</button>
                     </div>
                 )}
 
