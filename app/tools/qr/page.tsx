@@ -1155,78 +1155,67 @@ const QR_TYPE_SEO_DATA = [
     id: "url",
     title: "Website & Link QR Code",
     icon: <LinkIcon size={15} strokeWidth={2} />,
-    description: "Instantly routes scanners to any website, landing page, portfolio, social profile, or digital menu. Opens automatically in the user's default browser.",
-    keywords: ["url qr code generator", "website qr code maker", "link to qr code", "free custom link qr", "web page qr code"],
+    description: "Use our free URL QR code generator to convert any website, portfolio, landing page, or web link into a clean scannable code. This website QR code maker ensures permanent, static codes that launch directly in mobile browsers with zero redirects.",
   },
   {
     id: "wifi",
     title: "Wi-Fi Access QR Code",
     icon: <Wifi size={15} strokeWidth={2} />,
-    description: "Enables guests and customers to join your Wi-Fi network instantly without typing complex passwords. Encodes SSID, security type (WPA/WEP), and password.",
-    keywords: ["wifi qr code generator", "connect to wifi qr", "wifi password qr code", "scan to join wifi", "guest wifi qr maker"],
+    description: "Generate a Wi-Fi password QR code that lets visitors connect to Wi-Fi instantly. This Wi-Fi QR code generator securely encodes your network SSID and WPA/WEP encryption so guests can scan to join Wi-Fi without typing passwords.",
   },
   {
     id: "vcard",
     title: "vCard Digital Business Card",
     icon: <Contact size={15} strokeWidth={2} />,
-    description: "Stores complete contact information—name, phone number, email, company, job title, and website. Scanners can save you directly into their address book with a single tap.",
-    keywords: ["vcard qr code generator", "digital business card qr", "contact qr code", "electronic business card", "qr business card maker"],
+    description: "Create a vCard digital business card QR code containing your full name, phone number, email, company, and website. Acts as an electronic business card and contact QR code that clients can save directly to their smartphone contacts.",
   },
   {
     id: "whatsapp",
     title: "WhatsApp Direct Chat QR Code",
     icon: <MessageCircle size={15} strokeWidth={2} />,
-    description: "Opens a direct chat window in WhatsApp with your phone number and an optional pre-filled message. Ideal for customer service, inquiries, and lead generation.",
-    keywords: ["whatsapp qr code generator", "direct whatsapp qr", "whatsapp click to chat qr", "scan to chat whatsapp", "whatsapp business qr"],
+    description: "Build a custom WhatsApp QR code generator link with your phone number and optional pre-filled greeting. Scanners can click to chat or scan to chat on WhatsApp instantly, connecting leads directly with your business or support team.",
   },
   {
     id: "email",
     title: "Email Draft QR Code",
     icon: <Mail size={15} strokeWidth={2} />,
-    description: "Launches the user's native email client with recipient address, subject line, and draft message body already filled in. Streamlines support requests, RSVPs, and feedback.",
-    keywords: ["email qr code generator", "mailto qr code maker", "send email qr code", "prefilled email qr", "contact email qr code"],
+    description: "Deploy an email QR code generator to produce mailto QR codes with pre-filled recipient addresses, subject lines, and draft body text. Streamlines customer service tickets, event RSVPs, and quick user inquiries.",
   },
   {
     id: "sms",
     title: "SMS Text Message QR Code",
     icon: <MessageSquareText size={15} strokeWidth={2} />,
-    description: "Triggers the native SMS messaging app with a pre-configured phone number and pre-written message template. Great for SMS opt-in marketing, alerts, and customer text support.",
-    keywords: ["sms qr code generator", "text message qr code", "scan to send sms", "prefilled sms qr", "mobile message qr maker"],
+    description: "Use this SMS QR code generator to launch native mobile texting apps with your phone number and pre-written message template. Enables effortless SMS marketing opt-ins, contest entries, and automated text responses.",
   },
   {
     id: "phone",
     title: "Direct Phone Call QR Code",
     icon: <Phone size={15} strokeWidth={2} />,
-    description: "Prompts smartphones to dial your phone number immediately when scanned. Perfect for print ads, brochures, delivery boxes, and storefront signage.",
-    keywords: ["phone call qr code", "click to call qr", "call us qr code generator", "telephone qr code maker", "direct dial qr code"],
+    description: "Create a direct phone call QR code for brochures, posters, delivery packaging, and storefront signage. Scanners receive an immediate click-to-call prompt on their mobile dialer, eliminating manual dialing errors.",
   },
   {
     id: "event",
     title: "Calendar Event QR Code",
     icon: <Calendar size={15} strokeWidth={2} />,
-    description: "Encodes date, start/end time, location, and meeting agenda. Users can add webinars, meetings, concerts, and festivals straight to their calendar in one click.",
-    keywords: ["event qr code generator", "calendar event qr code", "add to calendar qr", "meeting invite qr code", "webinar event qr maker"],
+    description: "Create an event QR code generator payload with dates, times, venue locations, and meeting agendas. Lets attendees scan and add to calendar in Google Calendar, Apple Calendar, or Outlook with one tap.",
   },
   {
     id: "geo",
     title: "Location & GPS Maps QR Code",
     icon: <MapPin size={15} strokeWidth={2} />,
-    description: "Encodes precise latitude and longitude coordinates that launch Google Maps, Apple Maps, or Waze. Gives customers pinpoint navigation to your physical storefront or event venue.",
-    keywords: ["location qr code generator", "gps qr code maker", "google maps qr code", "scan for directions qr", "geo coordinates qr code"],
+    description: "Generate a location QR code with pinpoint latitude and longitude coordinates. This Google Maps QR code and GPS QR code maker provides immediate turn-by-turn driving directions to your storefront or venue.",
   },
   {
     id: "upi",
     title: "UPI Payment QR Code",
     icon: <CreditCard size={15} strokeWidth={2} />,
-    description: "Generates an NPCI-compliant UPI payment QR code compatible with Google Pay, PhonePe, Paytm, and BHIM. Supports pre-set amounts, payee name, and payment notes.",
-    keywords: ["upi qr code generator", "bhim upi qr maker", "scan and pay qr code", "google pay phonepe qr", "cashless payment qr generator"],
+    description: "Create a BHIM UPI QR code generator compatible with Google Pay, PhonePe, and Paytm. This scan and pay QR code supports custom payment amounts and transaction notes for seamless cashless transactions.",
   },
   {
     id: "crypto",
     title: "Cryptocurrency Wallet QR Code",
     icon: <Coins size={15} strokeWidth={2} />,
-    description: "Encodes wallet addresses for Bitcoin (BTC), Ethereum (ETH), and Litecoin (LTC) with optional payment amounts. Eliminates risky manual address typing.",
-    keywords: ["crypto qr code generator", "bitcoin qr code maker", "ethereum qr code generator", "crypto wallet qr", "btc scan to pay qr"],
+    description: "Generate a Bitcoin QR code maker and crypto QR code generator for BTC, ETH, and LTC wallet addresses. Prevents costly typing errors by enabling fast, error-free scan to pay crypto transfers.",
   },
 ];
 
@@ -1928,34 +1917,9 @@ export default function QRStudio() {
                       </h4>
                     </div>
 
-                    <p style={{ fontSize: 11, color: "#888", lineHeight: 1.6, margin: 0, fontWeight: 400, flex: 1 }}>
+                    <p style={{ fontSize: 11, color: "#999", lineHeight: 1.65, margin: 0, fontWeight: 400 }}>
                       {item.description}
                     </p>
-
-                    <div style={{ paddingTop: 8, borderTop: "1px solid #444", marginTop: "auto" }}>
-                      <div style={{ fontSize: 9, color: "#777", textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: 5, fontWeight: 500 }}>
-                        Target SEO Keywords
-                      </div>
-                      <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-                        {item.keywords.map(kw => (
-                          <span 
-                            key={kw} 
-                            style={{
-                              fontSize: 9.5,
-                              color: "#aaa",
-                              background: "#2a2a2a",
-                              border: "1px solid #484848",
-                              borderRadius: 2,
-                              padding: "2px 6px",
-                              lineHeight: "13px",
-                              fontFamily: T.font,
-                            }}
-                          >
-                            {kw}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
                   </div>
                 ))}
               </div>
