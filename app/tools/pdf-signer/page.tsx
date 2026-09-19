@@ -261,8 +261,24 @@ export default function PdfSignerPage() {
     const [canUndo, setCanUndo] = useState(false);
     const [canRedo, setCanRedo] = useState(false);
     const fileInputRef  = useRef<HTMLInputElement>(null);
+    const pdfViewerRef  = useRef<{ scrollToPage: (pageIndex: number) => void } | null>(null);
 
     useEffect(() => { setTimeout(() => setMounted(true), 80); }, []);
+
+    useEffect(() => {
+        if (!file) return;
+        const prevBodyOverflow = document.body.style.overflow;
+        const prevHtmlOverflow = document.documentElement.style.overflow;
+        document.body.style.overflow = "hidden";
+        document.documentElement.style.overflow = "hidden";
+        (window as any).lenis?.stop();
+
+        return () => {
+            document.body.style.overflow = prevBodyOverflow;
+            document.documentElement.style.overflow = prevHtmlOverflow;
+            (window as any).lenis?.start();
+        };
+    }, [file]);
 
     useEffect(() => {
         if (!file) return;
@@ -593,7 +609,14 @@ export default function PdfSignerPage() {
     });
 
     return (
-        <div className={`w-full min-h-screen bg-[#333333] text-[#cccccc] font-sans relative overflow-x-hidden ig-root flex flex-col ${file ? "h-screen overflow-hidden pb-0" : "pb-24"}`}>
+        <div 
+            data-lenis-prevent="true"
+            className={`w-full bg-[#333333] text-[#cccccc] font-sans relative overflow-x-hidden ig-root flex flex-col ${
+                file 
+                    ? "h-[calc(100dvh-64px)] md:h-[calc(100dvh-80px)] max-h-[calc(100dvh-64px)] md:max-h-[calc(100dvh-80px)] overflow-hidden pb-0" 
+                    : "min-h-screen pb-24"
+            }`}
+        >
             <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
             <style>{`
                 @keyframes spin { to { transform: rotate(360deg); } }
@@ -836,7 +859,7 @@ export default function PdfSignerPage() {
                                 onClick={() => {
                                     const prev = Math.max(0, activePage - 1);
                                     setActivePage(prev);
-                                    document.getElementById(`pdf-page-${prev}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                    pdfViewerRef.current?.scrollToPage(prev);
                                 }}
                                 disabled={activePage === 0}
                                 className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
@@ -850,7 +873,7 @@ export default function PdfSignerPage() {
                                 onClick={() => {
                                     const next = Math.min(pageCount - 1, activePage + 1);
                                     setActivePage(next);
-                                    document.getElementById(`pdf-page-${next}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                    pdfViewerRef.current?.scrollToPage(next);
                                 }}
                                 disabled={activePage === pageCount - 1}
                                 className="w-7 h-7 rounded border border-[#555555] bg-[#444444] flex items-center justify-center text-[#cccccc] hover:bg-[#505050] disabled:opacity-30 transition-all cursor-pointer"
@@ -903,7 +926,7 @@ export default function PdfSignerPage() {
                                     isActive={activePage === i}
                                     onClick={() => {
                                         setActivePage(i);
-                                        document.getElementById(`pdf-page-${i}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+                                        pdfViewerRef.current?.scrollToPage(i);
                                     }}
                                 />
                             ))}
@@ -912,7 +935,7 @@ export default function PdfSignerPage() {
                         {/* COLUMN 2: CENTER CANVAS (flex-grow) */}
                         <main 
                             data-lenis-prevent="true"
-                            className="flex-1 bg-[#2a2a2a] p-3 sm:p-6 pb-24 flex flex-col gap-4 overflow-y-auto overscroll-contain relative min-w-0"
+                            className="flex-1 bg-[#2a2a2a] p-2 sm:p-4 flex flex-col overflow-hidden relative min-w-0 min-h-0 h-full"
                         >
                             {/* Success Card */}
                             {outputUrl && (
@@ -958,7 +981,7 @@ export default function PdfSignerPage() {
 
                             {/* Document Viewer Canvas with How-To-Sign Animation Guide */}
                             {!outputUrl && (
-                                <div className="flex-1 bg-[#333333] border border-[#555555] rounded-xl p-2 relative min-h-[500px]">
+                                <div className="flex-1 bg-[#333333] border border-[#555555] rounded-xl relative min-h-0 h-full overflow-hidden flex flex-col">
                                     {/* ── THE ANIMATED GUIDE OVERLAY ── */}
                                     {signatures.length === 0 && !dismissHint && (
                                         <div 
@@ -1078,6 +1101,7 @@ export default function PdfSignerPage() {
                                     )}
 
                                     <PdfViewer
+                                        ref={pdfViewerRef}
                                         file={file}
                                         signatures={signatures}
                                         setSignatures={setSigsNoHistory}

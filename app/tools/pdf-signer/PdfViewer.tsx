@@ -1,7 +1,7 @@
 "use client";
 
 import "./polyfill";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useEffect, useRef, useState, useCallback, forwardRef, useImperativeHandle } from "react";
 import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 import {
     X, Maximize2, Type, Calendar, CheckSquare, Check as CheckIcon,
@@ -40,6 +40,10 @@ const V = {
     danger:  "#ef4444",
 };
 
+export interface PdfViewerHandle {
+    scrollToPage: (pageIndex: number) => void;
+}
+
 interface PdfViewerProps {
     file: File;
     signatures: Signature[];
@@ -54,17 +58,37 @@ interface PdfViewerProps {
     setActiveSigId: (id: string | null) => void;
 }
 
-export default function PdfViewer({ file, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, onPageChange, activeTool, activeSigId, setActiveSigId }: PdfViewerProps) {
-    const [pageCount,  setPageCount]  = useState(0);
-    const [pdf,        setPdf]        = useState<any>(null);
-    const [loadError,  setLoadError]  = useState<string | null>(null);
-    const [zoom,       setZoom]       = useState(1);
+const PdfViewer = forwardRef<PdfViewerHandle, PdfViewerProps>(function PdfViewer(
+    { file, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, onLoadSuccess, onPageChange, activeTool, activeSigId, setActiveSigId },
+    ref
+) {
+    const [pageCount,   setPageCount]   = useState(0);
+    const [pdf,         setPdf]         = useState<any>(null);
+    const [loadError,   setLoadError]   = useState<string | null>(null);
+    const [zoom,        setZoom]        = useState(1);
     const [visiblePage, setVisiblePage] = useState(0);
+    const [spaceDown,   setSpaceDown]   = useState(false);
+    const [isPanning,   setIsPanning]   = useState(false);
 
-    const scrollRef  = useRef<HTMLDivElement>(null);
-    const pageRefs   = useRef<(HTMLDivElement | null)[]>([]);
-    const onLoadRef  = useRef(onLoadSuccess);
+    const scrollRef   = useRef<HTMLDivElement>(null);
+    const pageRefs    = useRef<(HTMLDivElement | null)[]>([]);
+    const onLoadRef   = useRef(onLoadSuccess);
     onLoadRef.current = onLoadSuccess;
+    const panState    = useRef({ isDown: false, startX: 0, startY: 0, scrollLeft: 0, scrollTop: 0 });
+
+    const scrollToPage = useCallback((idx: number) => {
+        const pageEl = pageRefs.current[idx];
+        const container = scrollRef.current;
+        if (!pageEl || !container) return;
+        const containerRect = container.getBoundingClientRect();
+        const pageRect = pageEl.getBoundingClientRect();
+        const targetScrollTop = container.scrollTop + (pageRect.top - containerRect.top) - 16;
+        container.scrollTo({ top: Math.max(0, targetScrollTop), behavior: "smooth" });
+    }, []);
+
+    useImperativeHandle(ref, () => ({
+        scrollToPage,
+    }), [scrollToPage]);
 
     useEffect(() => {
         if (!file) return;
@@ -114,9 +138,96 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
         );
         const t = setTimeout(() => { pageRefs.current.forEach(r => r && observer.observe(r)); }, 500);
         return () => { clearTimeout(t); observer.disconnect(); };
-    }, [pageCount]);
+    }, [pageCount, onPageChange]);
 
-    const scrollToPage = (idx: number) => pageRefs.current[idx]?.scrollIntoView({ behavior: "smooth", block: "start" });
+    // Track Space key for Hand/Pan tool
+    useEffect(() => {
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.code === "Space" && !(e.target as HTMLElement)?.closest("input, textarea, [contenteditable]")) {
+                setSpaceDown(true);
+            }
+        };
+        const onKeyUp = (e: KeyboardEvent) => {
+            if (e.code === "Space") {
+                setSpaceDown(false);
+            }
+        };
+        window.addEventListener("keydown", onKeyDown);
+        window.addEventListener("keyup", onKeyUp);
+        return () => {
+            window.removeEventListener("keydown", onKeyDown);
+            window.removeEventListener("keyup", onKeyUp);
+        };
+    }, []);
+
+    // Non-passive wheel listener: stop propagation to main page/Lenis, support Ctrl+wheel zoom & Shift+wheel horiz
+    useEffect(() => {
+        const container = scrollRef.current;
+        if (!container) return;
+
+        const handleWheel = (e: WheelEvent) => {
+            // Stop wheel events from reaching window or Lenis
+            e.stopPropagation();
+
+            // Zoom on Ctrl/Cmd + wheel
+            if (e.ctrlKey || e.metaKey) {
+                e.preventDefault();
+                if (e.deltaY < 0) {
+                    setZoom(z => Math.min(3, +(z + 0.15).toFixed(2)));
+                } else {
+                    setZoom(z => Math.max(0.5, +(z - 0.15).toFixed(2)));
+                }
+                return;
+            }
+
+            // Horizontal scroll on Shift + wheel
+            if (e.shiftKey) {
+                e.preventDefault();
+                container.scrollLeft += e.deltaY;
+                return;
+            }
+        };
+
+        container.addEventListener("wheel", handleWheel, { passive: false });
+        return () => container.removeEventListener("wheel", handleWheel);
+    }, []);
+
+    // Middle-click and Spacebar panning
+    const handleContainerPointerDown = (e: React.PointerEvent) => {
+        if (e.button === 1 || (e.button === 0 && spaceDown)) {
+            e.preventDefault();
+            e.stopPropagation();
+            const container = scrollRef.current;
+            if (!container) return;
+            panState.current = {
+                isDown: true,
+                startX: e.clientX,
+                startY: e.clientY,
+                scrollLeft: container.scrollLeft,
+                scrollTop: container.scrollTop,
+            };
+            setIsPanning(true);
+            (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        }
+    };
+
+    const handleContainerPointerMove = (e: React.PointerEvent) => {
+        if (!panState.current.isDown || !scrollRef.current) return;
+        e.preventDefault();
+        e.stopPropagation();
+        const dx = e.clientX - panState.current.startX;
+        const dy = e.clientY - panState.current.startY;
+        scrollRef.current.scrollLeft = panState.current.scrollLeft - dx;
+        scrollRef.current.scrollTop = panState.current.scrollTop - dy;
+    };
+
+    const handleContainerPointerUp = (e: React.PointerEvent) => {
+        if (panState.current.isDown) {
+            panState.current.isDown = false;
+            setIsPanning(false);
+            try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {}
+        }
+    };
 
     const zoomIn    = () => setZoom(z => Math.min(3, +(z + 0.25).toFixed(2)));
     const zoomOut   = () => setZoom(z => Math.max(0.5, +(z - 0.25).toFixed(2)));
@@ -159,16 +270,23 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
     return (
         <div
             ref={scrollRef}
-            data-lenis-prevent
-            data-lenis-prevent-touch
+            data-lenis-prevent="true"
+            data-lenis-prevent-touch="true"
+            data-lenis-prevent-wheel="true"
+            onPointerDown={handleContainerPointerDown}
+            onPointerMove={handleContainerPointerMove}
+            onPointerUp={handleContainerPointerUp}
             style={{
                 display: "flex", flexDirection: "column",
-                maxHeight: "78vh", overflowY: "auto", overflowX: "auto",
+                height: "100%", width: "100%",
+                flex: 1, minHeight: 0,
+                overflowY: "auto", overflowX: "auto",
                 overscrollBehavior: "contain",
                 background: "transparent",
-                borderRadius: 18,
+                borderRadius: 8,
                 position: "relative",
                 scrollbarWidth: "thin",
+                cursor: isPanning ? "grabbing" : spaceDown ? "grab" : "default",
             }}
         >
             <style>{`
@@ -177,7 +295,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
             `}</style>
 
             {/* Zoom bar - sticky top */}
-            <div style={{ position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", padding: "10px 0 6px", pointerEvents: "none" }}>
+            <div style={{ position: "sticky", top: 10, zIndex: 30, display: "flex", justifyContent: "center", padding: "6px 0", pointerEvents: "none" }}>
                 <div style={{ pointerEvents: "auto" }}><ZoomPill /></div>
             </div>
 
@@ -191,7 +309,7 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
             )}
 
             {/* Pages */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "8px 12px 16px", zoom }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 20, padding: "16px 20px 80px", zoom }}>
                 {Array.from({ length: pageCount }, (_, i) => (
                     <div key={`${file.name}-${i}`} ref={el => { pageRefs.current[i] = el; }} data-page-idx={i} id={`pdf-page-${i}`}>
                         <PdfPage
@@ -200,18 +318,20 @@ export default function PdfViewer({ file, signatures, setSignatures, pushSignatu
                             pushSignatures={pushSignatures} onBoxSelected={onBoxSelected}
                             applyToAllPages={applyToAllPages} activeTool={activeTool}
                             activeSigId={activeSigId} setActiveSigId={setActiveSigId}
+                            spaceDown={spaceDown}
                         />
                     </div>
                 ))}
             </div>
 
-
         </div>
     );
-}
+});
+
+export default PdfViewer;
 
 /* ─── Single PDF page ─── */
-function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, activeTool, activeSigId, setActiveSigId }: any) {
+function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, onBoxSelected, applyToAllPages, activeTool, activeSigId, setActiveSigId, spaceDown }: any) {
     const wrapperRef   = useRef<HTMLDivElement>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const canvasRef    = useRef<HTMLCanvasElement>(null);
@@ -301,6 +421,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
     };
 
     const handlePointerDown = (e: React.PointerEvent) => {
+        if (e.button !== 0 || spaceDown) return;
         if ((e.target as HTMLElement).closest("[data-sig]")) return;
         if (skipDeselectRef.current) {
             skipDeselectRef.current = false;
@@ -317,6 +438,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
     };
 
     const handlePointerMove = (e: React.PointerEvent) => {
+        if (spaceDown) return;
         const pos = getPos(e);
         if (e.pointerType === "touch" && intentLocked.current === null) {
             const dx = Math.abs(pos.x - startPos.x), dy = Math.abs(pos.y - startPos.y);
@@ -379,7 +501,7 @@ function PdfPage({ pdf, index, zoom, signatures, setSignatures, pushSignatures, 
                         overflow: "hidden",
                         width: "100%", height: dimensions.h || "auto", minHeight: 200,
                         touchAction: isSelecting ? "none" : "pan-y",
-                        cursor: toolCursor(),
+                        cursor: spaceDown ? "grab" : toolCursor(),
                         boxShadow: "0 4px 24px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)",
                     }}
                     onPointerDown={handlePointerDown}
