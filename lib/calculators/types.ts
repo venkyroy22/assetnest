@@ -55,5 +55,5 @@ export interface CalculatorDefinition {
     
     // A specific React component to render the results, or use the default standard output
     // We will define this when building the shell
-    outputLayout?: "standard" | "mortgage" | "bmi"; 
+    outputLayout?: "standard" | "mortgage" | "bmi" | "calorie" | "scientific"; 
 }

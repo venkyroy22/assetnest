@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, ChevronLeft, ChevronDown, Home, Info, ZoomIn, Check, RotateCcw, FileText, Settings, BookOpen, ImageIcon, Timer, Briefcase, Gamepad2, Ruler, PanelLeft } from "lucide-react";
+import { Menu, X, Search, ArrowRight, Wrench, Sparkles, ChevronRight, ChevronLeft, ChevronDown, Home, Info, ZoomIn, Check, RotateCcw, FileText, Settings, BookOpen, ImageIcon, Timer, Briefcase, Gamepad2, Ruler, PanelLeft, Calculator } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useMemo } from "react";
 import Logo from "./Logo";
 import { useSidebar } from "./SidebarProvider";
 import { ALL_TOOLS, ToolCategory } from "@/lib/tools";
+import { ALL_CALCULATORS } from "@/lib/calculators";
 import Tooltip from "./Tooltip";
 import { useSettings } from "./SettingsProvider";
 
@@ -16,8 +17,12 @@ type SearchItem = { title: string; desc: string; href: string; tag: string; keyw
 const TOOL_ENTRIES: SearchItem[] = ALL_TOOLS.map(t => ({
     title: t.name, desc: t.description, href: t.href, tag: "Tool", keywords: t.tags,
 }));
+const CALC_ENTRIES: SearchItem[] = ALL_CALCULATORS.map(c => ({
+    title: c.name, desc: c.description, href: `/calculators/${c.id}`, tag: "Calculator", keywords: c.seo.keywords,
+}));
 const SEARCH_INDEX: SearchItem[] = [
     ...TOOL_ENTRIES,
+    ...CALC_ENTRIES,
     { title: "AI Image Prompts", desc: "Curated prompt lists for leading image generation models", href: "/prompts", tag: "Prompts" },
     { title: "Privacy Policy", desc: "AssetNest privacy policy", href: "/privacy", tag: "Page" },
     { title: "Terms of Service", desc: "AssetNest terms of service", href: "/terms", tag: "Page" },
@@ -27,6 +32,7 @@ const SEARCH_INDEX: SearchItem[] = [
 
 const TAG_COLORS: Record<string, string> = {
     Tool: "text-[#f0ede8]",
+    Calculator: "text-[#34d399]",
     Prompts: "text-[#f0ede8]",
     Page: "text-zinc-400",
 };
@@ -41,11 +47,22 @@ const CATEGORY_ICONS: Record<ToolCategory, any> = {
     "Business": Briefcase,
 };
 
-const TOOLS_BY_CATEGORY = TOOL_CATEGORIES.map(cat => ({
-    category: cat,
-    icon: CATEGORY_ICONS[cat],
-    tools: ALL_TOOLS.filter(t => t.category === cat),
-}));
+const TOOLS_BY_CATEGORY = [
+    ...TOOL_CATEGORIES.map(cat => ({
+        category: cat,
+        icon: CATEGORY_ICONS[cat],
+        tools: ALL_TOOLS.filter(t => t.category === cat),
+    })),
+    {
+        category: "Calculators",
+        icon: Calculator,
+        tools: ALL_CALCULATORS.map(c => ({
+            id: c.id,
+            name: c.name,
+            href: `/calculators/${c.id}`,
+        })),
+    },
+];
 
 const NAV_LINKS = [
     { name: "Tools", href: "/tools", hasMega: true },

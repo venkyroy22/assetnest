@@ -314,5 +314,6 @@ export const ALL_TOOLS: Tool[] = [
         accent: "#ffffff",
         category: "PDF",
         image: "https://cdn-img.streamletedge.com/6a6874155ad7d80e5dbcdb7b/images/pdfpasswordremover-1785231318883.webp"
-    }
+    },
 ];
+

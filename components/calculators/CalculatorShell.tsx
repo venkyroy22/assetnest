@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { getCalculator } from "@/lib/calculators";
+import CalorieCalculator from "@/components/calculators/CalorieCalculator";
+import ScientificCalculator from "@/components/calculators/ScientificCalculator";
 
 const T = {
     background: "#121212",
@@ -24,11 +26,9 @@ export default function CalculatorShell({ calculatorId }: CalculatorShellProps) 
     const [inputs, setInputs] = useState<Record<string, any>>({});
     const [result, setResult] = useState<any>(null);
 
-    // If calculator not found, return null
-    if (!calculator) return null;
-
     // Initialize inputs with default values
     useEffect(() => {
+        if (!calculator) return;
         const initialInputs: Record<string, any> = {};
         calculator.inputs.forEach(input => {
             initialInputs[input.id] = input.defaultValue ?? "";
@@ -38,6 +38,7 @@ export default function CalculatorShell({ calculatorId }: CalculatorShellProps) 
 
     // Recalculate whenever inputs change
     useEffect(() => {
+        if (!calculator) return;
         if (Object.keys(inputs).length > 0) {
             try {
                 const res = calculator.calculate(inputs);
@@ -51,6 +52,19 @@ export default function CalculatorShell({ calculatorId }: CalculatorShellProps) 
     const handleInputChange = (id: string, value: any) => {
         setInputs(prev => ({ ...prev, [id]: value }));
     };
+
+    // If calculator not found, return null
+    if (!calculator) return null;
+
+    // For calorie layout, render the fully self-contained CalorieCalculator component
+    if (calculator.outputLayout === "calorie") {
+        return <CalorieCalculator />;
+    }
+
+    // For scientific layout, render the self-contained ScientificCalculator component
+    if (calculator.outputLayout === "scientific") {
+        return <ScientificCalculator />;
+    }
 
     return (
         <div style={{ maxWidth: 800, margin: "0 auto", padding: "40px 16px", color: T.text }}>
@@ -140,3 +154,5 @@ export default function CalculatorShell({ calculatorId }: CalculatorShellProps) 
         </div>
     );
 }
+
+
