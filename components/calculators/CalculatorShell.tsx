@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { getCalculator } from "@/lib/calculators";
 import CalorieCalculator from "@/components/calculators/CalorieCalculator";
 import ScientificCalculator from "@/components/calculators/ScientificCalculator";
+import BMICalculator from "@/components/calculators/BMICalculator";
 
 const T = {
     background: "#121212",
@@ -64,6 +65,11 @@ export default function CalculatorShell({ calculatorId }: CalculatorShellProps) 
     // For scientific layout, render the self-contained ScientificCalculator component
     if (calculator.outputLayout === "scientific") {
         return <ScientificCalculator />;
+    }
+
+    // For BMI layout, render the self-contained BMICalculator component
+    if (calculator.outputLayout === "bmi") {
+        return <BMICalculator />;
     }
 
     return (

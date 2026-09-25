@@ -22,6 +22,27 @@ export const healthCalculators: CalculatorDefinition[] = [
         calculate: () => ({}),
         content: {},
         outputLayout: "calorie"
+    },
+    {
+        id: "bmi-calculator",
+        name: "BMI Calculator",
+        description: "Calculate your Body Mass Index (BMI) and find out where you stand on the health spectrum with detailed analysis.",
+        category: "Fitness & Health",
+        icon: Activity,
+        seo: {
+            title: "Free BMI Calculator - Body Mass Index Calculator",
+            description: "Calculate your BMI with our advanced Body Mass Index calculator. Get your BMI value, category, healthy weight range, BMI Prime, and Ponderal Index — all for free.",
+            keywords: [
+                "bmi calculator", "body mass index calculator", "BMI", "body mass index",
+                "healthy weight calculator", "weight calculator", "ideal weight",
+                "bmi chart", "bmi categories", "am I overweight", "healthy BMI range",
+                "BMI Prime", "Ponderal Index", "WHO BMI classification"
+            ]
+        },
+        inputs: [],
+        calculate: () => ({}),
+        content: {},
+        outputLayout: "bmi"
     }
 ];
 
